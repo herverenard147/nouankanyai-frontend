@@ -2,14 +2,7 @@ import { LevelSelector } from '@/components/level/LevelSelector'
 import { PhotoPlaceholder } from '@/components/ui/PhotoPlaceholder'
 import type { Level } from '@/types/domain'
 
-const PROFILES: { tag: string; caption: string; title: string; body: string; level: Level }[] = [
-  {
-    tag: 'Ménage',
-    caption: 'Intérieur de foyer, ambiance quotidienne',
-    title: 'Comprendre et anticiper',
-    body: 'Prédiction hebdomadaire, un seuil global simple, conseils directs pour éviter la mauvaise surprise en fin de mois.',
-    level: 'debutant',
-  },
+const PROFILES: { tag: string; caption: string; title: string; body: string; level: Level; badge?: string }[] = [
   {
     tag: 'PME',
     caption: 'Gérant PME dans son commerce, en activité',
@@ -24,6 +17,14 @@ const PROFILES: { tag: string; caption: string; title: string; body: string; lev
     body: 'Alertes multi-niveaux, détection d’anomalie machine, plan d’action chiffré. Pensé pour un usage technique quotidien.',
     level: 'technique',
   },
+  {
+    tag: 'Ménage',
+    caption: 'Intérieur de foyer, ambiance quotidienne',
+    title: 'Comprendre et anticiper',
+    body: 'Prédiction hebdomadaire, un seuil global simple, conseils directs pour éviter la mauvaise surprise en fin de mois.',
+    level: 'debutant',
+    badge: 'Bientôt disponible',
+  },
 ]
 
 export function ProfilesSection() {
@@ -32,12 +33,13 @@ export function ProfilesSection() {
       <div className="mx-auto max-w-[1120px] px-6">
         <div className="mb-10 flex flex-col gap-2">
           <p className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-secondary">
-            Un seul produit, trois réalités
+            PME et Industrie d&rsquo;abord, ménages ensuite
           </p>
           <h2 className="text-h2-section font-bold text-text-primary">Le dashboard s&rsquo;adapte à qui l&rsquo;utilise</h2>
           <p className="max-w-[60ch] text-[1.02rem] text-text-secondary">
-            Même identité, même logique de lecture. Le niveau de détail et l&rsquo;ordre des priorités changent selon
-            votre profil. Le niveau est suggéré automatiquement et reste modifiable à tout moment.
+            PME et Industrie sont en phase pilote active dès aujourd&rsquo;hui. La formule Ménage arrive dans un
+            second temps, une fois le pilote industriel consolidé. Le niveau de détail affiché s&rsquo;adapte à
+            votre profil, et reste modifiable à tout moment.
           </p>
         </div>
 
@@ -49,9 +51,16 @@ export function ProfilesSection() {
             >
               <PhotoPlaceholder caption={profile.caption} aspect="4/3" className="rounded-b-none" />
               <div className="flex flex-1 flex-col gap-2 p-5.5">
-                <p className="font-mono text-[0.72rem] font-semibold uppercase tracking-wide text-text-secondary">
-                  {profile.tag}
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-mono text-[0.72rem] font-semibold uppercase tracking-wide text-text-secondary">
+                    {profile.tag}
+                  </p>
+                  {profile.badge && (
+                    <span className="w-fit rounded-pill bg-bg-elevated px-2.5 py-0.5 text-[0.68rem] font-semibold text-text-secondary">
+                      {profile.badge}
+                    </span>
+                  )}
+                </div>
                 <h3 className="text-h3-card font-semibold text-text-primary">{profile.title}</h3>
                 <p className="text-sm text-text-secondary">{profile.body}</p>
                 <div className="mt-auto border-t border-border pt-3.5">

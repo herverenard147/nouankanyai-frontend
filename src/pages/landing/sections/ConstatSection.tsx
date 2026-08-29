@@ -12,7 +12,7 @@ export function ConstatSection() {
           <h2 className="text-h2-section font-bold text-text-primary">Une hausse structurelle, pas un accident</h2>
           <p className="text-[1.02rem] text-text-secondary">
             Le coût de revient de l&rsquo;électricité dépasse déjà le tarif moyen facturé en Côte d&rsquo;Ivoire. De
-            nouvelles hausses sont probables. Sans outil de suivi, ménages et entreprises pilotent leur consommation
+            nouvelles hausses sont probables. Sans outil de suivi, entreprises et ménages pilotent leur consommation
             à l&rsquo;aveugle, sur la seule base de la facture mensuelle.
           </p>
         </div>

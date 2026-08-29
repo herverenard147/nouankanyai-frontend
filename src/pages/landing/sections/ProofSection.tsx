@@ -1,9 +1,9 @@
 import { PhotoPlaceholder } from '@/components/ui/PhotoPlaceholder'
 
 const CAPTIONS = [
-  'Facture CIE photographiée au téléphone, gros plan',
-  'Compteur électrique CIE, cadrage serré',
   'Devanture ou intérieur PME à Abidjan',
+  'Technicien devant un équipement industriel',
+  'Facture CIE photographiée au téléphone, gros plan',
 ]
 
 export function ProofSection() {

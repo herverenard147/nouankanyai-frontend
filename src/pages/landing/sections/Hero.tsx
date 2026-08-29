@@ -8,30 +8,34 @@ export function Hero() {
     <section className="border-b border-border py-16">
       <div className="mx-auto grid max-w-[1120px] gap-14 px-6 [grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))] lg:items-center">
         <div className="flex flex-col gap-5">
-          <h1 className="max-w-[12ch] text-h1 font-bold text-text-primary">
-            Prenez en photo votre facture CIE. On s&rsquo;occupe du reste.
+          <h1 className="max-w-[16ch] text-h1 font-bold text-text-primary">
+            Pilotez la consommation électrique de votre site, avant qu&rsquo;elle ne pilote vos coûts.
           </h1>
           <p className="max-w-[46ch] text-lede text-text-secondary">
-            Nouankany lit votre facture, prédit votre prochaine consommation et vous dit précisément quoi éteindre
-            ou décaler pour payer moins. Pas de capteur à acheter pour commencer, pas d&rsquo;engagement.
+            Nouankany détecte les dérives, priorise les équipements à surveiller et chiffre vos économies
+            potentielles, mesures à l&rsquo;appui. Un audit initial, un pilote de 6 à 9 mois sur vos équipements
+            prioritaires, une généralisation si les résultats sont concluants.
           </p>
           <div className="flex flex-wrap gap-3.5">
             <Link
-              to="/login?mode=signup"
+              to="/demander-un-audit"
               className="focus-ring inline-flex min-h-11 items-center rounded-control bg-accent-cta px-5 py-3.5 text-sm font-semibold text-white hover:bg-accent-cta-hover"
             >
-              Essayer gratuitement
+              Demander un audit
             </Link>
-            <a
-              href="#profils"
+            <Link
+              to="/comment-ca-marche"
               className="focus-ring inline-flex min-h-11 items-center rounded-control border border-border px-5 py-3.5 text-sm font-semibold text-text-primary hover:bg-bg-elevated"
             >
               Voir comment ça marche
-            </a>
+            </Link>
           </div>
           <p className="text-[0.85rem] text-text-secondary">
-            <span className="font-semibold text-text-primary">Zéro investissement de départ.</span> Application
-            logicielle dès aujourd&rsquo;hui. Capteurs ajoutés au besoin, jamais imposés.
+            <span className="font-semibold text-text-primary">Ménages :</span> la formule arrive dans les
+            prochains mois.{' '}
+            <Link to="/comment-ca-marche" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+              Être informé à l&rsquo;ouverture
+            </Link>
           </p>
         </div>
 

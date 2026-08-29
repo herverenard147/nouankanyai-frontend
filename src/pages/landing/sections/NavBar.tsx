@@ -40,10 +40,10 @@ export function NavBar() {
             Se connecter
           </Link>
           <Link
-            to="/login?mode=signup"
+            to="/demander-un-audit"
             className="focus-ring inline-flex min-h-11 items-center rounded-control bg-accent-cta px-5 py-3.5 text-sm font-semibold text-white hover:bg-accent-cta-hover"
           >
-            Essayer gratuitement
+            Demander un audit
           </Link>
         </div>
 
@@ -77,11 +77,11 @@ export function NavBar() {
               Se connecter
             </Link>
             <Link
-              to="/login?mode=signup"
+              to="/demander-un-audit"
               onClick={() => setOpen(false)}
               className="focus-ring inline-flex min-h-11 items-center justify-center rounded-control bg-accent-cta px-5 py-3 text-sm font-semibold text-white hover:bg-accent-cta-hover"
             >
-              Essayer gratuitement
+              Demander un audit
             </Link>
           </div>
         </div>

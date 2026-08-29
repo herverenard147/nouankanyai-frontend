@@ -13,8 +13,9 @@ export function Footer() {
               </span>
             </div>
             <p className="mt-2 text-[0.8rem] text-text-secondary">
-              Plateforme logicielle en développement actif, sans dépendance matérielle initiale. Équipement IoT
-              prévu en phase d&rsquo;industrialisation.
+              Plateforme logicielle en démonstration active, avec instrumentation IoT ciblée dès le pilote
+              industriel de 6 à 9 mois. Nous ne confondons pas preuve de concept et industrialisation à grande
+              échelle.
             </p>
           </div>
 
@@ -27,6 +28,11 @@ export function Footer() {
                 <a href="#profils" className="hover:text-text-primary">
                   Pour qui
                 </a>
+              </li>
+              <li>
+                <Link to="/comment-ca-marche" className="hover:text-text-primary">
+                  Comment ça marche
+                </Link>
               </li>
               <li>
                 <a href="#formules" className="hover:text-text-primary">
