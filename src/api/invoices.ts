@@ -40,6 +40,21 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
       editable: false,
     })
   }
+  // Détail NouankanyAI (extraction par photo uniquement, voir document_type sur
+  // BackendElectricityBill) : le type de document et, pour un paiement numérique,
+  // l'opérateur et la référence de transaction — jamais affichés pour une saisie
+  // manuelle ou une prévision, où ces champs sont toujours null côté backend.
+  if (bill.document_type === 'recu_paiement_numerique') {
+    fields.push({ key: 'type_document', label: 'Type de document', value: 'Reçu de paiement numérique', provenance: 'estime', editable: false })
+    if (bill.payment_operator) {
+      fields.push({ key: 'operateur', label: 'Opérateur de paiement', value: bill.payment_operator, provenance: 'estime', editable: false })
+    }
+  } else if (bill.document_type === 'facture_papier') {
+    fields.push({ key: 'type_document', label: 'Type de document', value: 'Facture CIE papier', provenance: 'estime', editable: false })
+  }
+  if (bill.payment_reference) {
+    fields.push({ key: 'reference', label: 'Référence', value: bill.payment_reference, provenance: 'estime', editable: false })
+  }
   fields.push({ key: 'source', label: 'Source', value: SOURCE_LABEL[bill.source] ?? bill.source, provenance: 'estime', editable: false })
 
   return {

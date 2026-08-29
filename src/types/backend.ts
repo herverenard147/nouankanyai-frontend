@@ -179,6 +179,11 @@ export interface BackendFacturation {
 }
 
 export type BackendBillSource = 'manuel' | 'ocr' | 'ocr-mock' | 'statistique'
+// Renseignés uniquement pour source="ocr"/"ocr-mock" (extraction NouankanyAI, voir
+// backend/app/ai/nouankany_vision.py) : le modèle vision détecte lui-même s'il a lu
+// une facture CIE papier ou un reçu de paiement numérique (Wave, Mobile Money,
+// application CIE). Toujours null pour une saisie manuelle ou une prévision.
+export type BackendBillDocumentType = 'facture_papier' | 'recu_paiement_numerique'
 export interface BackendElectricityBill {
   id: string
   month: string
@@ -188,6 +193,9 @@ export interface BackendElectricityBill {
   is_forecast: boolean
   actual_amount_xof: number | null
   kwh_consumed: number | null
+  document_type: BackendBillDocumentType | null
+  payment_operator: string | null
+  payment_reference: string | null
   has_photo: boolean
   created_at: string
 }
