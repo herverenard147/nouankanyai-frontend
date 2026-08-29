@@ -12,7 +12,7 @@ import { fetchJournal } from '@/api/journal'
 import { fetchKpi, kpiIdsFor } from '@/api/kpis'
 import { fetchMachinesTable } from '@/api/machinesTable'
 import { fetchOpenAnomalies } from '@/api/anomalies'
-import { fetchPrediction } from '@/api/prediction'
+import { fetchPredictionsBundle } from '@/api/prediction'
 import {
   rawAddMachine,
   rawAuditRequests,
@@ -64,9 +64,10 @@ describe('intégration backend réel — compte Ménage', () => {
     const advice = await fetchAdvice('menage')
     expect(Array.isArray(advice)).toBe(true)
 
-    const prediction = await fetchPrediction('menage')
-    expect(prediction.series.length).toBeGreaterThan(0)
-    expect(prediction.provenance).toBe('synthetique')
+    const predictions = await fetchPredictionsBundle('menage', 'heure')
+    expect(predictions.global.series.length).toBeGreaterThan(0)
+    expect(predictions.global.provenance).toBe('synthetique')
+    expect(predictions.perDevice.length).toBeGreaterThan(0)
 
     const consumption = await fetchConsumptionSeries('menage')
     expect(consumption.length).toBeGreaterThan(0)

@@ -113,6 +113,18 @@ export interface Prediction {
   yAxisUnit: string
 }
 
+/** Heure : prochaines 24h, une barre par heure, en kW (puissance instantanée).
+ * Jour : prochains 7 jours, une barre par jour, en kWh (énergie du jour).
+ * Semaine : prochaines 4 semaines, une barre par semaine, en kWh. */
+export type PredictionGranularity = 'heure' | 'jour' | 'semaine'
+
+export interface PredictionsBundle {
+  /** Somme des prédictions de tous les équipements du compte, point par point. */
+  global: Prediction
+  /** Une prédiction par équipement, dans le même ordre que /api/machines. */
+  perDevice: Prediction[]
+}
+
 export interface Advice {
   rank: string
   title: string

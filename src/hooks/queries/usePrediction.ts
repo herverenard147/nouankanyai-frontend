@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { fetchPrediction } from '@/api/prediction'
-import type { Profile } from '@/types/domain'
+import { fetchPredictionsBundle } from '@/api/prediction'
+import type { PredictionGranularity, Profile } from '@/types/domain'
 
-export function usePrediction(profile: Profile) {
-  return useQuery({ queryKey: ['prediction', profile], queryFn: () => fetchPrediction(profile) })
+export function usePredictionsBundle(profile: Profile, granularity: PredictionGranularity) {
+  return useQuery({
+    queryKey: ['predictions-bundle', profile, granularity],
+    queryFn: () => fetchPredictionsBundle(profile, granularity),
+  })
 }

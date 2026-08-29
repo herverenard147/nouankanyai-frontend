@@ -4,35 +4,36 @@ import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
 import { BarChart, type ChartBar } from '@/components/charts/BarChart'
-import { usePrediction } from '@/hooks/queries/usePrediction'
-import type { Level, Profile } from '@/types/domain'
+import { usePredictionsBundle } from '@/hooks/queries/usePrediction'
+import type { Level, Prediction, Profile } from '@/types/domain'
 
 interface PredictionPanelProps {
   profile: Profile
   level: Level
 }
 
+/** Aperçu compact utilisé sur les pages Vue d'ensemble : uniquement la prédiction
+ * globale (tous équipements), à l'heure — le détail par équipement et les autres
+ * granularités vivent sur la page dédiée /app/prediction. */
 export function PredictionPanel({ profile, level }: PredictionPanelProps) {
-  const query = usePrediction(profile)
+  const query = usePredictionsBundle(profile, 'heure')
 
   return (
     <Card className="flex flex-col gap-4 p-6" aria-label="Prédiction IA">
       <MetricState status={query.status}>
         {query.data && (
-          <PredictionContent title={query.data.title} prediction={query.data} showModelDetails={levelAtLeast(level, 'technique')} />
+          <PredictionContent prediction={query.data.global} showModelDetails={levelAtLeast(level, 'technique')} />
         )}
       </MetricState>
     </Card>
   )
 }
 
-function PredictionContent({
-  title,
+export function PredictionContent({
   prediction,
   showModelDetails,
 }: {
-  title: string
-  prediction: NonNullable<ReturnType<typeof usePrediction>['data']>
+  prediction: Prediction
   showModelDetails: boolean
 }) {
   const maxPoint = prediction.series.reduce((max, p) => (p.percent > max.percent ? p : max), prediction.series[0])
@@ -49,7 +50,7 @@ function PredictionContent({
     <>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-section-title font-semibold text-text-primary">{title}</h3>
+          <h3 className="text-section-title font-semibold text-text-primary">{prediction.title}</h3>
           <p className="mt-2 font-mono text-prediction-value font-semibold tabular-nums text-text-primary">
             {prediction.value}
             <span className="ml-1 text-sm font-medium text-text-secondary">{prediction.unit}</span>
@@ -65,7 +66,7 @@ function PredictionContent({
       </div>
 
       <div className="hidden sm:block">
-        <BarChart bars={bars} yTicks={yTicks} size="dashboard" yAxisLabel={prediction.yAxisUnit} xAxisLabel="jour" />
+        <BarChart bars={bars} yTicks={yTicks} size="dashboard" yAxisLabel={prediction.yAxisUnit} xAxisLabel="période" />
       </div>
       <div className="sm:hidden">
         <BarChart
@@ -73,7 +74,7 @@ function PredictionContent({
           yTicks={yTicks}
           size="dashboardMobile"
           yAxisLabel={prediction.yAxisUnit}
-          xAxisLabel="jour"
+          xAxisLabel="période"
         />
       </div>
 
