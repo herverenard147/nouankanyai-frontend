@@ -39,6 +39,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/consommation', label: 'Conso & coûts', icon: 'C' },
     { path: '/app/prediction', label: 'Prédiction', icon: 'P' },
     { path: '/app/conseils', label: 'Conseils', icon: 'I' },
+    { path: '/app/factures', label: 'Factures', icon: 'F' },
     { path: '/app/anomalies', label: 'Anomalies', icon: 'N' },
     { path: '/app/rapports', label: 'Facturation', icon: 'R' },
     { path: '/app/journal', label: 'Journal', icon: 'J' },

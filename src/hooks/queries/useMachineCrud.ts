@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { rawAddMachine, rawDeleteMachine, rawResetMachine, rawUpdateMachine } from '@/api/rawBackend'
+import { rawAddMachine, rawDeleteMachine, rawTestMachine, rawUpdateMachine } from '@/api/rawBackend'
 import type { BackendMachineUpdatePayload, BackendNewMachinePayload } from '@/types/backend'
 
 /**
@@ -46,12 +46,18 @@ export function useDeleteMachine() {
   })
 }
 
-/** Marque une machine comme résolue (remet ses relevés à un état normal côté
- * backend) — c'est ce qui fait disparaître l'alerte associée. */
+/**
+ * Reprend une lecture capteur fraîche sur la machine et relance l'analyse
+ * côté backend (mêmes seuils que ceux qui ont généré l'alerte) — ne marque
+ * résolu que si cette nouvelle lecture est effectivement normale. Le
+ * résultat (`resolved`) doit être lu par l'appelant : un `isSuccess` de la
+ * mutation ne veut PAS dire que l'alerte est levée, seulement que le test a
+ * bien été effectué (il peut conclure que le problème persiste encore).
+ */
 export function useResolveMachine() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (machineId: string) => rawResetMachine(machineId),
+    mutationFn: (machineId: string) => rawTestMachine(machineId),
     onSuccess: () => invalidateMachineQueries(queryClient),
   })
 }

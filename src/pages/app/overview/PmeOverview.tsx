@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 
 import { AdviceList } from '@/components/advice/AdviceList'
 import { AlertSection } from '@/components/alerts/AlertSection'
+import { DemoDataBanner } from '@/components/demo/DemoDataBanner'
 import { PredictionPanel } from '@/components/prediction/PredictionPanel'
 import { KpiGrid } from '@/components/kpi/KpiGrid'
 import { TariffSection } from '@/components/tariff/TariffSection'
@@ -37,6 +38,7 @@ export function PmeOverview() {
 
   return (
     <div className="flex flex-col gap-7">
+      <DemoDataBanner />
       <AlertSection profile="pme" level={level} maxActionAlerts={2} />
       <KpiGrid profile="pme" />
       <TariffSection profile="pme" />

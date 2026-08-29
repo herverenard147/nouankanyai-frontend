@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { AdviceList } from '@/components/advice/AdviceList'
 import { AlertSection } from '@/components/alerts/AlertSection'
 import { ResolutionsList } from '@/components/anomalies/ResolutionsList'
+import { DemoDataBanner } from '@/components/demo/DemoDataBanner'
 import { PredictionPanel } from '@/components/prediction/PredictionPanel'
 import { KpiGrid } from '@/components/kpi/KpiGrid'
 import { ActionPlanList } from '@/components/plan/ActionPlanList'
@@ -39,6 +40,7 @@ export function IndustrieOverview() {
 
   return (
     <div className="flex flex-col gap-7">
+      <DemoDataBanner />
       <AlertSection profile="industrie" level={level} maxActionAlerts={2} />
       <KpiGrid profile="industrie" />
       <TariffSection profile="industrie" />

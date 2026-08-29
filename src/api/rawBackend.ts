@@ -13,12 +13,14 @@ import type {
   BackendAuditRequestPayload,
   BackendContactMessage,
   BackendContactMessagePayload,
+  BackendDemoSeedResult,
   BackendElectricityBill,
   BackendEquipmentCatalog,
   BackendFacturation,
   BackendGeminiMetrics,
   BackendMachine,
   BackendMachineHistory,
+  BackendMachineTestResult,
   BackendMachineUpdatePayload,
   BackendMlAuditEntry,
   BackendMlHealth,
@@ -51,6 +53,8 @@ export const rawJoinWaitlist = (payload: BackendWaitlistPayload) =>
 export const rawSendContactMessage = (payload: BackendContactMessagePayload) =>
   api.post<BackendContactMessage>('/api/v1/contact', payload, false)
 
+export const rawSeedDemoData = () => api.post<BackendDemoSeedResult>('/api/v1/demo/seed')
+
 export const rawSites = () => api.get<BackendSite[]>('/api/sites')
 export const rawCreateSite = (payload: { nom: string; localisation: string }) =>
   api.post<BackendSite>('/api/sites', payload)
@@ -64,6 +68,7 @@ export const rawUpdateMachine = (machineId: string, payload: BackendMachineUpdat
 export const rawDeleteMachine = (machineId: string) => api.delete<null>(`/api/machines/${machineId}`)
 export const rawSimulateMachine = (machineId: string) => api.post<{ status: string }>(`/api/machines/${machineId}/simulate`)
 export const rawResetMachine = (machineId: string) => api.post<{ status: string }>(`/api/machines/${machineId}/reset`)
+export const rawTestMachine = (machineId: string) => api.post<BackendMachineTestResult>(`/api/machines/${machineId}/test`)
 export const rawMachineHistory = (machineId: string) => api.get<BackendMachineHistory>(`/api/machines/${machineId}/history`)
 
 export const rawAlertThresholds = () => api.get<BackendAlertThresholds>('/api/alert-thresholds')

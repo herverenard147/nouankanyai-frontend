@@ -107,6 +107,21 @@ export interface BackendWaitlistEntry {
   created_at: string
 }
 
+export interface BackendMachineTestResult {
+  resolved: boolean
+  temperature_c: number
+  vibration_hz: number
+  pressure_bar: number
+  power_kw: number
+}
+
+export interface BackendDemoSeedResult {
+  profile: string
+  sites_created: number
+  machines_created: number
+  bills_created: number
+}
+
 export interface BackendContactMessagePayload {
   nom: string
   email: string

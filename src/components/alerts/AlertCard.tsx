@@ -46,7 +46,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             onClick={() => resolveMutation.mutate(alert.machineId)}
             className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control border border-alert px-4 py-2 text-sm font-semibold text-alert transition-colors hover:bg-white disabled:opacity-60"
           >
-            {resolveMutation.isPending ? 'Résolution…' : 'Marquer comme résolu'}
+            {resolveMutation.isPending ? 'Test en cours…' : 'Marquer comme résolu'}
           </button>
           {alert.ctaTarget ? (
             <Link
@@ -64,7 +64,14 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             </button>
           )}
         </div>
-        {resolveMutation.isError && <p className="text-right text-sm text-alert">Échec de la résolution.</p>}
+        {resolveMutation.isError && <p className="text-right text-sm text-alert">Échec du test.</p>}
+        {resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
+          <p className="text-right text-sm text-alert">
+            Nouvelle mesure : température {resolveMutation.data.temperature_c}°C, vibration{' '}
+            {resolveMutation.data.vibration_hz} Hz — l&rsquo;anomalie persiste encore. Réessayez une fois
+            l&rsquo;intervention terminée.
+          </p>
+        )}
       </div>
     )
   }
