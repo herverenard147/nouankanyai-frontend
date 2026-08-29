@@ -18,5 +18,6 @@ export async function fetchAdvice(_profile: Profile): Promise<Advice[]> {
     impactLabel: rec.gain_fcfa > 0 ? `−${formatFcfaAmount(rec.gain_fcfa)}` : rec.severity,
     provenance: 'synthetique' as const,
     machineId: rec.machine_id,
+    troubleshooting: rec.troubleshooting,
   }))
 }

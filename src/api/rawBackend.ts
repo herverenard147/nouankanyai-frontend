@@ -40,8 +40,9 @@ import type {
 } from '@/types/backend'
 
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
-export const rawUpdateMe = (payload: { nom?: string; type_compte?: string }) =>
-  api.patch<BackendUser>('/api/auth/me', payload)
+export const rawUpdateMe = (payload: { nom: string }) => api.patch<BackendUser>('/api/auth/me', payload)
+export const rawChangePassword = (payload: { current_password: string; new_password: string }) =>
+  api.post<{ status: string }>('/api/auth/change-password', payload)
 
 export const rawTeamMembers = () => api.get<BackendTeamMember[]>('/api/v1/team/members')
 export const rawCreateTeamMember = (payload: BackendNewTeamMemberPayload) =>

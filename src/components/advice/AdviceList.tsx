@@ -2,13 +2,16 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import { adviceSectionTitle } from '@/api/advice'
+import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { levelAtLeast } from '@/lib/levelGating'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
 import { useAdvice } from '@/hooks/queries/useAdvice'
+import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
+import { ApiError } from '@/lib/apiClient'
 import { useNotificationStore } from '@/store/notificationStore'
-import type { Level, Profile } from '@/types/domain'
+import type { Advice, Level, Profile } from '@/types/domain'
 
 interface AdviceListProps {
   profile: Profile
@@ -23,6 +26,66 @@ interface AdviceListProps {
    * traitement que AlertSection.maxActionAlerts. Sans cette prop (page
    * /app/conseils elle-même), la liste complète s'affiche. */
   maxItems?: number
+}
+
+function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolean }) {
+  const resolveMutation = useResolveMachine()
+  // Le diagnostic réutilise la même vérification que "Marquer comme résolu" sur
+  // /app/alertes (POST /api/machines/{id}/test) : seuls les conseils de type alerte
+  // (anomalie/surchauffe/vibration) ont un machineId ET des étapes de dépannage —
+  // les conseils d'optimisation/efficacité n'ont rien à "diagnostiquer".
+  const canDiagnose = Boolean(advice.machineId) && Boolean(advice.troubleshooting?.length)
+
+  return (
+    <Card className="flex flex-col gap-3 p-5">
+      <div className="flex flex-wrap items-center gap-4">
+        <span className="font-mono text-lg font-semibold text-text-tertiary">{advice.rank}</span>
+        <div className="min-w-[200px] flex-1">
+          <p className="font-semibold text-text-primary">{advice.title}</p>
+          <p className="text-sm text-text-secondary">{advice.detail}</p>
+        </div>
+        {showImpact && <span className="font-mono text-lg font-semibold text-confirm">{advice.impactLabel}</span>}
+        <ProvenanceBadge value={advice.provenance} />
+      </div>
+
+      {advice.troubleshooting && advice.troubleshooting.length > 0 && (
+        <ul className="flex flex-col gap-1.5 border-t border-border pt-3 text-sm text-text-secondary">
+          {advice.troubleshooting.map((step, i) => (
+            <li key={i} className="flex gap-2">
+              <span aria-hidden="true">•</span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {canDiagnose && (
+        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-border pt-3">
+          <button
+            type="button"
+            disabled={resolveMutation.isPending}
+            onClick={() => resolveMutation.mutate(advice.machineId as string)}
+            className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover disabled:opacity-60"
+          >
+            {resolveMutation.isPending ? 'Diagnostic en cours…' : 'Lancer le diagnostic'}
+          </button>
+        </div>
+      )}
+      {resolveMutation.isError && (
+        <ApiErrorMessage
+          message={resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec du diagnostic.'}
+          className="text-right text-sm text-alert"
+        />
+      )}
+      {resolveMutation.isSuccess && resolveMutation.data && (
+        <p className={`text-right text-sm ${resolveMutation.data.resolved ? 'text-confirm' : 'text-alert'}`}>
+          {resolveMutation.data.resolved
+            ? `Nouvelle mesure : température ${resolveMutation.data.temperature_c}°C, vibration ${resolveMutation.data.vibration_hz} Hz — dans les seuils normaux.`
+            : `Nouvelle mesure : température ${resolveMutation.data.temperature_c}°C, vibration ${resolveMutation.data.vibration_hz} Hz — l’anomalie persiste. Suivez les étapes ci-dessus, puis réessayez.`}
+        </p>
+      )}
+    </Card>
+  )
 }
 
 export function AdviceList({ profile, level, markSeenOnView, maxItems }: AdviceListProps) {
@@ -48,15 +111,7 @@ export function AdviceList({ profile, level, markSeenOnView, maxItems }: AdviceL
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
         <div className="flex flex-col gap-3">
           {visibleAdvice?.map((advice) => (
-            <Card key={advice.rank} className="flex flex-wrap items-center gap-4 p-5">
-              <span className="font-mono text-lg font-semibold text-text-tertiary">{advice.rank}</span>
-              <div className="min-w-[200px] flex-1">
-                <p className="font-semibold text-text-primary">{advice.title}</p>
-                <p className="text-sm text-text-secondary">{advice.detail}</p>
-              </div>
-              {showImpact && <span className="font-mono text-lg font-semibold text-confirm">{advice.impactLabel}</span>}
-              <ProvenanceBadge value={advice.provenance} />
-            </Card>
+            <AdviceCard key={advice.rank} advice={advice} showImpact={showImpact} />
           ))}
         </div>
       </MetricState>

@@ -18,6 +18,8 @@ export interface BackendUser {
   platform_role: BackendPlatformRole
   owner_id: string | null
   is_trial: boolean
+  created_at: string
+  last_sign_in_at: string | null
 }
 
 export interface BackendTeamMember {
@@ -219,6 +221,10 @@ export interface BackendRecommendation {
   action: string
   gain_fcfa: number
   auto_resolu: boolean
+  /** Étapes de dépannage concrètes, adaptées à la catégorie de l'équipement — présent
+   * seulement sur les recommandations de type "alerte" (anomalie/surchauffe/vibration),
+   * absent pour optimisation/délestage/efficacité. */
+  troubleshooting?: string[]
 }
 
 export interface BackendPredictionPoint {

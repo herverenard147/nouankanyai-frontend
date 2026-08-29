@@ -121,6 +121,9 @@ export interface Advice {
   provenance: Provenance
   /** Identifiant de la machine concernée côté backend, pour lier une action à son équipement. */
   machineId?: string
+  /** Étapes de dépannage concrètes (voir backend/ml/troubleshooting_advice.py) — présent
+   * uniquement pour les conseils de type alerte (anomalie/surchauffe/vibration). */
+  troubleshooting?: string[]
 }
 
 export interface EquipmentRow {

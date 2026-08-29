@@ -35,6 +35,10 @@ interface SessionState {
   signup: (email: string, password: string, nom: string, typeCompte: string, isTrial?: boolean) => Promise<AuthResult>
   login: (email: string, password: string) => Promise<AuthResult>
   logout: () => void
+  /** Reflète immédiatement un changement de nom (voir useUpdateProfile) partout où
+   * `session.displayName` est lu (TopBar, SettingsPage), sans attendre un nouveau
+   * login. */
+  setDisplayName: (nom: string) => void
 }
 
 export const useSessionStore = create<SessionState>()(
@@ -64,6 +68,8 @@ export const useSessionStore = create<SessionState>()(
         }
       },
       logout: () => set({ session: null }),
+      setDisplayName: (nom) =>
+        set((state) => (state.session ? { session: { ...state.session, displayName: nom } } : state)),
     }),
     { name: 'nouankany-session' },
   ),
