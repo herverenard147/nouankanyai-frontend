@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 import { SensorDisclaimer } from '@/components/layout/SensorDisclaimer'
 import { NAV_BY_PROFILE } from '@/lib/navConfig'
@@ -17,12 +17,12 @@ export function SideRail({ onNavigate }: SideRailProps) {
 
   return (
     <div className="flex h-full flex-col gap-6 p-4">
-      <div className="flex items-center gap-2 px-2">
+      <Link to="/app/apercu" onClick={onNavigate} className="focus-ring flex items-center gap-2 rounded-control px-2 py-1">
         <img src="/logo.png" alt="Nouankany" className="h-8 w-8 object-contain" />
         <span className="text-sm font-bold text-text-primary" style={{ fontFamily: 'var(--font-heading)' }}>
           Nouankany
         </span>
-      </div>
+      </Link>
 
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto" aria-label="Navigation principale">
         {entries.map((entry) => (

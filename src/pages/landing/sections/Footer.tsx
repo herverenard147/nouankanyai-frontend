@@ -25,9 +25,9 @@ export function Footer() {
             </h4>
             <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
               <li>
-                <a href="#profils" className="hover:text-text-primary">
+                <Link to="/#profils" className="hover:text-text-primary">
                   Pour qui
-                </a>
+                </Link>
               </li>
               <li>
                 <Link to="/comment-ca-marche" className="hover:text-text-primary">
@@ -35,14 +35,14 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#formules" className="hover:text-text-primary">
+                <Link to="/#formules" className="hover:text-text-primary">
                   Formules
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#confiance" className="hover:text-text-primary">
+                <Link to="/#confiance" className="hover:text-text-primary">
                   Notre engagement
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -53,14 +53,19 @@ export function Footer() {
             </h4>
             <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
               <li>
-                <a href="#apropos" className="hover:text-text-primary">
+                <Link to="/#apropos" className="hover:text-text-primary">
                   Qui sommes-nous
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="mailto:contact@nouankany.demo" className="hover:text-text-primary">
+                <Link to="/contact" className="hover:text-text-primary">
                   Contact
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="hover:text-text-primary">
+                  FAQ
+                </Link>
               </li>
             </ul>
           </div>

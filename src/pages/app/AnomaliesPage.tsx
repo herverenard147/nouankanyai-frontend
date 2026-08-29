@@ -1,7 +1,6 @@
 import { ResolutionsList } from '@/components/anomalies/ResolutionsList'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
-import { Card } from '@/components/ui/Card'
 import { useOpenAnomalies } from '@/hooks/queries/useAnomalies'
 import { useLevel } from '@/store/levelStore'
 
@@ -16,15 +15,18 @@ export function AnomaliesPage() {
         <MetricState status={query.status} isEmpty={query.data?.length === 0}>
           <div className="flex flex-col gap-3">
             {query.data?.map((machine) => (
-              <Card key={machine.id} className="flex flex-wrap items-center gap-4 border-l-[5px] border-l-alert p-5">
+              <div
+                key={machine.id}
+                className="flex flex-wrap items-center gap-3 rounded-card border border-alert bg-alert-bg p-4"
+              >
                 <div className="min-w-[200px] flex-1">
-                  <p className="font-semibold text-text-primary">{machine.machine}</p>
+                  <p className="text-sm font-semibold text-text-primary">{machine.machine}</p>
                   <p className="text-sm text-text-secondary">
                     {machine.statut} · température {machine.temperature} · vibration {machine.vibration}
                   </p>
                 </div>
                 <ProvenanceBadge value={machine.provenance} />
-              </Card>
+              </div>
             ))}
           </div>
         </MetricState>

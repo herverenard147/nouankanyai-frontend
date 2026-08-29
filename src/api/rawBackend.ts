@@ -17,6 +17,7 @@ import type {
   BackendGeminiMetrics,
   BackendMachine,
   BackendMachineHistory,
+  BackendMachineUpdatePayload,
   BackendMlAuditEntry,
   BackendMlHealth,
   BackendMlModelInfo,
@@ -29,6 +30,8 @@ import type {
   BackendNewTeamMemberPayload,
   BackendTeamMember,
   BackendUser,
+  BackendWaitlistEntry,
+  BackendWaitlistPayload,
 } from '@/types/backend'
 
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
@@ -40,6 +43,9 @@ export const rawCreateTeamMember = (payload: BackendNewTeamMemberPayload) =>
   api.post<BackendTeamMember>('/api/v1/team/members', payload)
 export const rawDeleteTeamMember = (memberId: string) => api.delete<null>(`/api/v1/team/members/${memberId}`)
 
+export const rawJoinWaitlist = (payload: BackendWaitlistPayload) =>
+  api.post<BackendWaitlistEntry>('/api/v1/waitlist', payload, false)
+
 export const rawSites = () => api.get<BackendSite[]>('/api/sites')
 export const rawCreateSite = (payload: { nom: string; localisation: string }) =>
   api.post<BackendSite>('/api/sites', payload)
@@ -48,6 +54,9 @@ export const rawMachines = () => api.get<BackendMachine[]>('/api/machines')
 export const rawEquipmentCatalog = () => api.get<BackendEquipmentCatalog>('/api/equipment-catalog', false)
 export const rawAddMachine = (payload: BackendNewMachinePayload) =>
   api.post<{ status: string; machines: BackendMachine[] }>('/api/machines', payload)
+export const rawUpdateMachine = (machineId: string, payload: BackendMachineUpdatePayload) =>
+  api.patch<BackendMachine>(`/api/machines/${machineId}`, payload)
+export const rawDeleteMachine = (machineId: string) => api.delete<null>(`/api/machines/${machineId}`)
 export const rawSimulateMachine = (machineId: string) => api.post<{ status: string }>(`/api/machines/${machineId}/simulate`)
 export const rawResetMachine = (machineId: string) => api.post<{ status: string }>(`/api/machines/${machineId}/reset`)
 export const rawMachineHistory = (machineId: string) => api.get<BackendMachineHistory>(`/api/machines/${machineId}/history`)

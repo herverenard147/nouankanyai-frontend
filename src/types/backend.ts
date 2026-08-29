@@ -84,6 +84,29 @@ export interface BackendNewMachinePayload {
   site_id?: string
 }
 
+export interface BackendMachineUpdatePayload {
+  nom?: string
+  power_kw?: number
+  categorie?: string
+  marque?: string
+  modele?: string
+  numero_serie?: string
+  priority?: string
+  site_id?: string
+}
+
+export interface BackendWaitlistPayload {
+  email: string
+  telephone?: string
+}
+
+export interface BackendWaitlistEntry {
+  id: string
+  email: string
+  telephone: string | null
+  created_at: string
+}
+
 export interface BackendMachineHistoryPoint {
   recorded_at: string
   power_kw: number

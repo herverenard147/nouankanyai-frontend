@@ -25,9 +25,9 @@ export function NavBar() {
         <ul className="hidden items-center gap-5 lg:flex">
           {LINKS.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className="text-[0.92rem] text-text-secondary hover:text-text-primary">
+              <Link to={`/${link.href}`} className="text-[0.92rem] text-text-secondary hover:text-text-primary">
                 {link.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -63,9 +63,13 @@ export function NavBar() {
           <ul className="flex flex-col gap-3">
             {LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href} onClick={() => setOpen(false)} className="text-sm text-text-secondary hover:text-text-primary">
+                <Link
+                  to={`/${link.href}`}
+                  onClick={() => setOpen(false)}
+                  className="text-sm text-text-secondary hover:text-text-primary"
+                >
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

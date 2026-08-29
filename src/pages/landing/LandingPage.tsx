@@ -1,3 +1,4 @@
+import { useScrollToHash } from '@/lib/useScrollToHash'
 import { AboutSection } from '@/pages/landing/sections/AboutSection'
 import { ConstatSection } from '@/pages/landing/sections/ConstatSection'
 import { Footer } from '@/pages/landing/sections/Footer'
@@ -10,6 +11,8 @@ import { ProofSection } from '@/pages/landing/sections/ProofSection'
 import { TrustSection } from '@/pages/landing/sections/TrustSection'
 
 export function LandingPage() {
+  useScrollToHash()
+
   return (
     <div id="main-content">
       <NavBar />

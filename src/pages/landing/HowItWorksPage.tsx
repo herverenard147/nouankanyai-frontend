@@ -1,5 +1,10 @@
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
+import { TextField } from '@/components/ui/TextField'
+import { Button } from '@/components/ui/Button'
+import { useJoinWaitlist } from '@/hooks/queries/useWaitlist'
 import { Footer } from '@/pages/landing/sections/Footer'
 import { NavBar } from '@/pages/landing/sections/NavBar'
 
@@ -44,6 +49,54 @@ const REVENUE_LINES = [
     body: 'Accès mensuel à la plateforme : dashboards, alertes, recommandations et reporting.',
   },
 ]
+
+function WaitlistForm() {
+  const [email, setEmail] = useState('')
+  const [telephone, setTelephone] = useState('')
+  const mutation = useJoinWaitlist()
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+    mutation.mutate({ email, telephone: telephone.trim() || undefined })
+  }
+
+  if (mutation.isSuccess) {
+    return (
+      <p className="mt-5 text-sm font-semibold text-confirm">
+        Merci, vous êtes inscrit(e). Nous vous contacterons par email{telephone ? ' ou SMS' : ''} à
+        l&rsquo;ouverture.
+      </p>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:flex-wrap">
+      <TextField
+        label="Email"
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="vous@exemple.com"
+        className="sm:w-64"
+      />
+      <TextField
+        label="Téléphone (optionnel, pour un SMS)"
+        type="tel"
+        value={telephone}
+        onChange={(e) => setTelephone(e.target.value)}
+        placeholder="+225 01 02 03 04"
+        className="sm:w-64"
+      />
+      <Button type="submit" disabled={mutation.isPending}>
+        {mutation.isPending ? 'Envoi…' : 'Être informé à l’ouverture'}
+      </Button>
+      {mutation.isError && (
+        <p className="w-full text-sm text-alert">Échec de l&rsquo;inscription, réessayez.</p>
+      )}
+    </form>
+  )
+}
 
 export function HowItWorksPage() {
   return (
@@ -98,16 +151,16 @@ export function HowItWorksPage() {
 
             <div className="mt-10 flex flex-wrap gap-3.5">
               <Link
-                to="/demander-un-audit?type=pme"
+                to="/demander-un-audit?type=industrie"
                 className="focus-ring inline-flex min-h-11 items-center rounded-control bg-accent-cta px-5 py-3.5 text-sm font-semibold text-white hover:bg-accent-cta-hover"
               >
-                Demander un audit PME
+                Demander un audit Industrie
               </Link>
               <Link
-                to="/demander-un-audit?type=industrie"
+                to="/demander-un-audit?type=pme"
                 className="focus-ring inline-flex min-h-11 items-center rounded-control border border-border px-5 py-3.5 text-sm font-semibold text-text-primary hover:bg-bg-elevated"
               >
-                Demander un audit Industrie
+                Demander un audit PME
               </Link>
             </div>
           </div>
@@ -131,12 +184,7 @@ export function HowItWorksPage() {
                 Ce segment ouvre après le pilote PME/Industrie, une fois la plateforme consolidée sur des cas
                 industriels réels.
               </p>
-              <Link
-                to="/login?mode=signup&type=menage"
-                className="focus-ring mt-5 inline-flex min-h-11 items-center rounded-control border border-border px-5 py-3 text-sm font-semibold text-text-primary hover:bg-bg-elevated"
-              >
-                Être informé à l&rsquo;ouverture
-              </Link>
+              <WaitlistForm />
             </div>
           </div>
         </section>

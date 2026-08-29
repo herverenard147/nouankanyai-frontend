@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/Button'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { onEscape } from '@/lib/a11y'
 import type { Provenance } from '@/types/domain'
@@ -8,6 +9,9 @@ interface RowDetailDrawerProps<T extends { id: string; provenance: Provenance }>
   columns: TableColumn<T>[]
   title: string
   onClose: () => void
+  onEdit?: () => void
+  onDelete?: () => void
+  deletePending?: boolean
 }
 
 /** Fiche détail d'une ligne de table (équipement, machine), ouverte au clic sur la ligne. */
@@ -16,6 +20,9 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance }
   columns,
   title,
   onClose,
+  onEdit,
+  onDelete,
+  deletePending,
 }: RowDetailDrawerProps<T>) {
   if (!row) return null
 
@@ -49,6 +56,20 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance }
           ))}
         </dl>
         <ProvenanceBadge value={row.provenance} className="w-fit" />
+        {(onEdit || onDelete) && (
+          <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-4">
+            {onEdit && (
+              <Button type="button" variant="ghost" onClick={onEdit}>
+                Modifier
+              </Button>
+            )}
+            {onDelete && (
+              <Button type="button" variant="ghost" disabled={deletePending} onClick={onDelete} className="text-alert">
+                {deletePending ? 'Suppression…' : 'Supprimer'}
+              </Button>
+            )}
+          </div>
+        )}
       </aside>
     </div>
   )

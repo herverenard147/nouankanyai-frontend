@@ -17,22 +17,19 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
   if (props.variant === 'action') {
     const { alert } = props
     return (
-      <div className="flex flex-col gap-3 rounded-card border border-border border-l-[5px] border-l-alert bg-card p-6">
-        <div className="flex items-start gap-4">
+      <div className="flex flex-col gap-2 rounded-card border border-alert bg-alert-bg p-4">
+        <div className="flex items-center gap-2.5">
           <span
-            className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-alert font-mono text-lg font-bold text-white"
+            className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-alert font-mono text-xs font-bold text-white"
             aria-hidden="true"
           >
             !
           </span>
-          <div className="flex flex-col gap-1">
-            <p className="font-mono text-mono-badge font-semibold uppercase tracking-wide text-alert">
-              Action humaine requise
-            </p>
-            <p className="text-sm text-text-secondary">{alert.level}</p>
-          </div>
+          <p className="font-mono text-mono-badge font-semibold uppercase tracking-wide text-alert">
+            Action humaine requise · {alert.level}
+          </p>
         </div>
-        <h3 className="text-alert-title font-semibold text-text-primary">{alert.title}</h3>
+        <h3 className="text-sm font-semibold text-text-primary">{alert.title}</h3>
         <p className="text-sm text-text-secondary">{alert.detail}</p>
         <div className="flex flex-wrap items-center gap-2">
           <ProvenanceBadge value={alert.provenance} />
@@ -41,14 +38,14 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
         {alert.ctaTarget ? (
           <Link
             to={alert.ctaTarget}
-            className="focus-ring inline-flex min-h-11 w-fit items-center justify-center rounded-control bg-accent-cta px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
+            className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
           >
             {alert.ctaLabel}
           </Link>
         ) : (
           <button
             type="button"
-            className="focus-ring inline-flex min-h-11 w-fit items-center justify-center rounded-control bg-accent-cta px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
+            className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
           >
             {alert.ctaLabel}
           </button>
