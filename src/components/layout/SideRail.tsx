@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 
 import { SensorDisclaimer } from '@/components/layout/SensorDisclaimer'
+import { useAlertsBadgeCount, useAdviceBadgeCount } from '@/hooks/useNotificationBadges'
 import { NAV_BY_PROFILE } from '@/lib/navConfig'
 import { useSessionStore } from '@/store/sessionStore'
 
@@ -8,9 +9,20 @@ interface SideRailProps {
   onNavigate?: () => void
 }
 
+function NavBadge({ count }: { count: number }) {
+  if (count <= 0) return null
+  return (
+    <span className="ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-alert px-1.5 font-mono text-[0.65rem] font-bold text-white">
+      {count > 99 ? '99+' : count}
+    </span>
+  )
+}
+
 export function SideRail({ onNavigate }: SideRailProps) {
   const session = useSessionStore((s) => s.session)
   const logout = useSessionStore((s) => s.logout)
+  const alertsBadge = useAlertsBadgeCount(session?.profile ?? 'menage')
+  const adviceBadge = useAdviceBadgeCount(session?.profile ?? 'menage')
 
   if (!session) return null
   const entries = NAV_BY_PROFILE[session.profile]
@@ -40,6 +52,8 @@ export function SideRail({ onNavigate }: SideRailProps) {
               {entry.icon}
             </span>
             {entry.label}
+            {entry.path === '/app/alertes' && <NavBadge count={alertsBadge} />}
+            {entry.path === '/app/conseils' && <NavBadge count={adviceBadge} />}
           </NavLink>
         ))}
       </nav>

@@ -175,6 +175,9 @@ export interface InvoiceRecord {
   period: string
   status: 'traitee' | 'en_cours'
   fields: OcrField[]
+  /** true si cette facture vient d'une photo uploadée (source ocr/ocr-mock) —
+   * seul ce cas a une photo à montrer via le bouton "Voir plus". */
+  hasPhoto: boolean
 }
 
 export interface AdminPanel {

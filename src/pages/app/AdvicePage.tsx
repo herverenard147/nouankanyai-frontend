@@ -9,7 +9,7 @@ export function AdvicePage() {
 
   return (
     <div className="flex flex-col gap-7">
-      <AdviceList profile={profile} level={level} />
+      <AdviceList profile={profile} level={level} markSeenOnView />
     </div>
   )
 }

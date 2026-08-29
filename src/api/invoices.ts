@@ -1,4 +1,12 @@
-import { rawAddManualBill, rawBillForecast, rawBills, rawConfirmBillActual, rawDeleteBill } from '@/api/rawBackend'
+import {
+  rawAddManualBill,
+  rawBillForecast,
+  rawBillPhoto,
+  rawBills,
+  rawConfirmBillActual,
+  rawDeleteBill,
+  rawUploadBillPhoto,
+} from '@/api/rawBackend'
 import type { BackendElectricityBill } from '@/types/backend'
 import type { InvoiceRecord, OcrField, Profile } from '@/types/domain'
 
@@ -39,6 +47,7 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
     period: bill.month,
     status: bill.is_forecast && bill.actual_amount_xof === null ? 'en_cours' : 'traitee',
     fields,
+    hasPhoto: bill.has_photo,
   }
 }
 
@@ -52,12 +61,6 @@ export async function addManualInvoice(payload: { month: string; amountXof: numb
   return toInvoiceRecord(bill)
 }
 
-/**
- * L'upload de facture par photo (OCR Gemini) sera remplacé par le pipeline
- * ReceiptFlow, pas encore branché ici. En attendant, l'action "ajouter" génère
- * une vraie prévision statistique côté backend plutôt qu'un flux d'upload
- * factice.
- */
 export async function generateForecastInvoice(): Promise<InvoiceRecord> {
   const bill = await rawBillForecast()
   return toInvoiceRecord(bill)
@@ -70,4 +73,14 @@ export async function confirmInvoiceActual(billId: string, actualAmountXof: numb
 
 export function deleteInvoice(billId: string) {
   return rawDeleteBill(billId)
+}
+
+export async function uploadInvoicePhoto(file: File): Promise<InvoiceRecord> {
+  const { bill } = await rawUploadBillPhoto(file)
+  return toInvoiceRecord(bill)
+}
+
+export async function fetchInvoicePhoto(billId: string): Promise<string> {
+  const { photo_data_url } = await rawBillPhoto(billId)
+  return photo_data_url
 }

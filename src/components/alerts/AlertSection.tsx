@@ -1,8 +1,10 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AlertCard } from '@/components/alerts/AlertCard'
 import { useActionAlerts, useAutoAlerts } from '@/hooks/queries/useAlerts'
 import { levelAtLeast } from '@/lib/levelGating'
+import { useNotificationStore } from '@/store/notificationStore'
 import type { Level, Profile } from '@/types/domain'
 
 interface AlertSectionProps {
@@ -27,7 +29,17 @@ interface AlertSectionProps {
 export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionProps) {
   const actionQuery = useActionAlerts(profile)
   const autoQuery = useAutoAlerts(profile)
+  const markAlertsSeen = useNotificationStore((s) => s.markAlertsSeen)
   const allowAutoBlock = levelAtLeast(level, 'amateur') && maxActionAlerts === undefined
+
+  // Page dédiée /app/alertes (jamais l'aperçu plafonné de Vue d'ensemble) :
+  // visiter cette page marque tout ce qui est actuellement actif comme vu,
+  // ce qui remet le badge de la sidebar à 0 (voir useNotificationBadges).
+  useEffect(() => {
+    if (maxActionAlerts === undefined && actionQuery.status === 'success') {
+      markAlertsSeen(actionQuery.data.map((alert) => alert.id))
+    }
+  }, [maxActionAlerts, actionQuery.status, actionQuery.data, markAlertsSeen])
 
   const showAutoBlock = allowAutoBlock && (autoQuery.status !== 'success' || (autoQuery.data?.length ?? 0) > 0)
   const visibleActionAlerts =
@@ -37,7 +49,7 @@ export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionPr
   return (
     <section className="flex flex-col gap-4" aria-label="Alertes">
       {actionQuery.status === 'pending' && (
-        <div className="animate-pulse rounded-card border border-border bg-card p-6">
+        <div className={`animate-pulse rounded-card border border-border bg-card ${maxActionAlerts !== undefined ? 'p-3' : 'p-6'}`}>
           <div className="h-5 w-1/2 rounded bg-bg-elevated" />
         </div>
       )}
@@ -53,7 +65,9 @@ export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionPr
             Aucune alerte active nécessitant une action.
           </div>
         ) : (
-          visibleActionAlerts!.map((alert) => <AlertCard key={alert.id} variant="action" alert={alert} />)
+          visibleActionAlerts!.map((alert) => (
+            <AlertCard key={alert.id} variant="action" alert={alert} compact={maxActionAlerts !== undefined} />
+          ))
         ))}
 
       {hiddenActionAlertsCount > 0 && (

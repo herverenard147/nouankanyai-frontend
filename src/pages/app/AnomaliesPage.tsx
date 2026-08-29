@@ -1,4 +1,5 @@
 import { ResolutionsList } from '@/components/anomalies/ResolutionsList'
+import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { useOpenAnomalies } from '@/hooks/queries/useAnomalies'
@@ -30,9 +31,10 @@ function AnomalyRow({ machine }: { machine: MachineRow }) {
         </button>
       </div>
       {resolveMutation.isError && (
-        <p className="text-right text-sm text-alert">
-          {resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec du test.'}
-        </p>
+        <ApiErrorMessage
+          message={resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec du test.'}
+          className="text-right text-sm text-alert"
+        />
       )}
       {resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
         <p className="text-right text-sm text-alert">

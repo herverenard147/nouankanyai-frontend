@@ -188,12 +188,16 @@ export interface BackendElectricityBill {
   is_forecast: boolean
   actual_amount_xof: number | null
   kwh_consumed: number | null
+  has_photo: boolean
   created_at: string
 }
 export interface BackendNewManualBill {
   month: string
   amount_xof: number
   kwh_consumed?: number
+}
+export interface BackendBillPhoto {
+  photo_data_url: string
 }
 
 export type BackendRecommendationType = 'alerte' | 'optimisation' | 'délestage' | 'efficacite'

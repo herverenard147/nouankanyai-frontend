@@ -11,6 +11,7 @@ import type {
   BackendAnomalyResult,
   BackendAuditRequest,
   BackendAuditRequestPayload,
+  BackendBillPhoto,
   BackendContactMessage,
   BackendContactMessagePayload,
   BackendDemoSeedResult,
@@ -84,6 +85,12 @@ export const rawBillForecast = () => api.post<BackendElectricityBill>('/api/bill
 export const rawConfirmBillActual = (billId: string, actualAmountXof: number) =>
   api.patch<BackendElectricityBill>(`/api/bills/${billId}/actual`, { actual_amount_xof: actualAmountXof })
 export const rawDeleteBill = (billId: string) => api.delete<null>(`/api/bills/${billId}`)
+export const rawUploadBillPhoto = (file: File) => {
+  const form = new FormData()
+  form.append('file', file)
+  return api.postForm<{ status: string; bill: BackendElectricityBill }>('/api/bills/upload-photo', form)
+}
+export const rawBillPhoto = (billId: string) => api.get<BackendBillPhoto>(`/api/bills/${billId}/photo`)
 
 function toSensorReading(machine: BackendMachine) {
   return {

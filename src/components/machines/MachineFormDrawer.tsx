@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
+import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { Button } from '@/components/ui/Button'
 import { TextField } from '@/components/ui/TextField'
 import { useAddMachine, useUpdateMachine } from '@/hooks/queries/useMachineCrud'
@@ -182,9 +183,10 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
             {mutation.isPending ? 'Enregistrement…' : isEdit ? 'Enregistrer les modifications' : 'Ajouter'}
           </Button>
           {mutation.isError && (
-            <p className="text-sm text-alert">
-              {mutation.error instanceof ApiError ? mutation.error.message : "Échec de l'enregistrement."}
-            </p>
+            <ApiErrorMessage
+              message={mutation.error instanceof ApiError ? mutation.error.message : "Échec de l'enregistrement."}
+              className="text-sm text-alert"
+            />
           )}
         </form>
       </aside>

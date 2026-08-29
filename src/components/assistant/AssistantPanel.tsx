@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
+import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useAssistantContext, useAssistantReply } from '@/hooks/queries/useAssistantReply'
 import { ApiError } from '@/lib/apiClient'
@@ -75,7 +76,7 @@ export function AssistantPanel({ profile, onClose }: AssistantPanelProps) {
                 : 'self-end bg-accent-cta text-white'
             }`}
           >
-            {message.text}
+            <ApiErrorMessage message={message.text} />
           </div>
         ))}
         {replyMutation.isPending && <p className="text-sm text-text-tertiary">L'assistant écrit…</p>}

@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
+import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { TextField } from '@/components/ui/TextField'
+import { InvoicePhotoModal } from '@/components/upload/InvoicePhotoModal'
 import { OcrFieldList } from '@/components/upload/OcrFieldList'
 import { UploadCard } from '@/components/upload/UploadCard'
 import {
@@ -13,18 +15,22 @@ import {
   useDeleteInvoice,
   useGenerateForecastInvoice,
   useInvoices,
+  useUploadInvoicePhoto,
 } from '@/hooks/queries/useInvoices'
+import { ApiError } from '@/lib/apiClient'
 import { useSessionStore } from '@/store/sessionStore'
 
 export function InvoicesPage() {
   const profile = useSessionStore((s) => s.session?.profile)
   const invoicesQuery = useInvoices(profile!)
+  const uploadMutation = useUploadInvoicePhoto(profile!)
   const forecastMutation = useGenerateForecastInvoice(profile!)
   const manualMutation = useAddManualInvoice(profile!)
   const confirmMutation = useConfirmInvoiceActual(profile!)
   const deleteMutation = useDeleteInvoice(profile!)
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
   const [actualAmount, setActualAmount] = useState('')
+  const [viewingPhotoOf, setViewingPhotoOf] = useState<{ id: string; period: string } | null>(null)
 
   const [month, setMonth] = useState('')
   const [amount, setAmount] = useState('')
@@ -51,17 +57,30 @@ export function InvoicesPage() {
 
   return (
     <div className="flex flex-col gap-7">
-      {/*
-        L'upload de facture par photo (OCR Gemini) sera remplacé par le pipeline
-        ReceiptFlow, pas encore branché. En attendant : une vraie prévision
-        statistique côté backend, et une saisie manuelle.
-      */}
       <UploadCard
-        title="Générer une prévision de facture"
-        caption="Basée sur l'historique réel de vos factures (moyenne mobile, recalibrée à chaque écart mesuré)."
-        onUpload={() => forecastMutation.mutate()}
-        isUploading={forecastMutation.isPending}
+        title="Ajouter une facture par photo"
+        caption="Photographiez votre facture CIE : le mois, le montant et la consommation sont extraits automatiquement."
+        onFileSelected={(file) => uploadMutation.mutate(file)}
+        isUploading={uploadMutation.isPending}
       />
+      {uploadMutation.isError && (
+        <ApiErrorMessage
+          message={uploadMutation.error instanceof ApiError ? uploadMutation.error.message : "Échec de l'envoi de la photo."}
+          className="text-sm text-alert"
+        />
+      )}
+
+      <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
+        <div>
+          <h2 className="text-section-title font-semibold text-text-primary">Générer une prévision de facture</h2>
+          <p className="text-sm text-text-secondary">
+            Basée sur l&rsquo;historique réel de vos factures (moyenne mobile, recalibrée à chaque écart mesuré).
+          </p>
+        </div>
+        <Button type="button" variant="ghost" disabled={forecastMutation.isPending} onClick={() => forecastMutation.mutate()}>
+          {forecastMutation.isPending ? 'Génération…' : 'Générer'}
+        </Button>
+      </Card>
 
       <Card className="flex flex-col gap-3 p-5">
         <h2 className="text-section-title font-semibold text-text-primary">Ajouter une facture manuellement</h2>
@@ -87,6 +106,15 @@ export function InvoicesPage() {
                     <span className="text-xs font-semibold text-text-secondary">
                       {invoice.status === 'traitee' ? 'Confirmée' : 'Prévision en attente de confirmation'}
                     </span>
+                    {invoice.hasPhoto && (
+                      <button
+                        type="button"
+                        onClick={() => setViewingPhotoOf({ id: invoice.id, period: invoice.period })}
+                        className="focus-ring text-xs font-semibold text-accent-cta hover:underline"
+                      >
+                        Voir plus
+                      </button>
+                    )}
                     <button
                       type="button"
                       disabled={deleteMutation.isPending}
@@ -125,6 +153,14 @@ export function InvoicesPage() {
           </div>
         </MetricState>
       </section>
+
+      {viewingPhotoOf && (
+        <InvoicePhotoModal
+          billId={viewingPhotoOf.id}
+          period={viewingPhotoOf.period}
+          onClose={() => setViewingPhotoOf(null)}
+        />
+      )}
     </div>
   )
 }
