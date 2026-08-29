@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:#FAFAF9; color:#1C1F1B; font-family:'Inter',sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  a{color:#7a2c05; text-decoration:none;}
+  a:hover{color:#5c2104;}
+  img{max-width:100%; display:block;}
+  a:focus-visible, button:focus-visible, input:focus-visible{outline:2px solid #E8590C; outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important;}}
+  @media (max-width: 1100px){ [data-nav-links]{display:none !important;} }
+</style>
+</helmet>
+
+<div style="background:#FAFAF9; color:#1C1F1B; font-family:'Inter',sans-serif;">
+
+<header style="position:sticky; top:0; zIndex:20; background:rgba(250,250,249,0.92); backdropFilter:blur(8px); borderBottom:1px solid #E2E1DB;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px;">
+    <nav style="display:flex; alignItems:center; justifyContent:space-between; gap:24px; padding:16px 0;">
+      <div style="display:flex; alignItems:center; gap:10px; fontFamily:'Space Grotesk',sans-serif; fontWeight:700; fontSize:1.05rem;">
+        <img src="logo.png" alt="NouanKanyAI" style="width:34px; height:34px; objectFit:contain;" />
+        NouanKanyAI
+      </div>
+      <ul data-nav-links="true" style="display:flex; gap:20px; alignItems:center; listStyle:none; flexWrap:nowrap; minWidth:0; flexShrink:1; whiteSpace:nowrap;">
+        <li><a href="#probleme" style="fontSize:0.92rem; color:#55584f;" style-hover="color:#1C1F1B">Le problème</a></li>
+        <li><a href="#profils" style="fontSize:0.92rem; color:#55584f;" style-hover="color:#1C1F1B">Pour qui</a></li>
+        <li><a href="#apropos" style="fontSize:0.92rem; color:#55584f;" style-hover="color:#1C1F1B">Qui sommes-nous</a></li>
+        <li><a href="#confiance" style="fontSize:0.92rem; color:#55584f;" style-hover="color:#1C1F1B">Notre engagement</a></li>
+        <li><a href="#formules" style="fontSize:0.92rem; color:#55584f;" style-hover="color:#1C1F1B">Formules</a></li>
+      </ul>
+      <div style="display:flex; gap:10px; flexShrink:0;">
+        <a href="#" style="display:inline-flex; alignItems:center; justifyContent:center; padding:13px 20px; borderRadius:14px; fontSize:0.92rem; fontWeight:600; border:1px solid #E2E1DB; color:#1C1F1B;" style-hover="background:#F1F1EE">Se connecter</a>
+        <a href="#formules" style="display:inline-flex; alignItems:center; justifyContent:center; padding:13px 20px; borderRadius:14px; fontSize:0.92rem; fontWeight:600; border:1px solid transparent; background:#7a2c05; color:#fff;" style-hover="background:#5c2104; color:#fff">Essayer gratuitement</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section style="padding:64px 0 48px; borderBottom:1px solid #E2E1DB;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px; display:grid; gridTemplateColumns:repeat(auto-fit,minmax(320px,1fr)); gap:56px; alignItems:center;">
+    <div>
+      <h1 style="fontFamily:'Space Grotesk',sans-serif; letterSpacing:-0.01em; fontSize:2.7rem; fontWeight:700; lineHeight:1.08; maxWidth:12ch; marginBottom:20px; textWrap:pretty;">Prenez en photo votre facture CIE. On s'occupe du reste.</h1>
+      <p style="fontSize:1.08rem; color:#55584f; maxWidth:46ch; marginBottom:28px; textWrap:pretty;">NouanKanyAI lit votre facture, prédit votre prochaine consommation et vous dit précisément quoi éteindre ou décaler pour payer moins. Pas de capteur à acheter pour commencer, pas d'engagement.</p>
+      <div style="display:flex; gap:14px; marginBottom:28px; flexWrap:wrap;">
+        <a href="#formules" style="display:inline-flex; alignItems:center; justifyContent:center; padding:13px 20px; borderRadius:14px; fontSize:0.92rem; fontWeight:600; border:1px solid transparent; background:#7a2c05; color:#fff;" style-hover="background:#5c2104; color:#fff">Essayer gratuitement</a>
+        <a href="#profils" style="display:inline-flex; alignItems:center; justifyContent:center; padding:13px 20px; borderRadius:14px; fontSize:0.92rem; fontWeight:600; border:1px solid #E2E1DB; color:#1C1F1B;" style-hover="background:#F1F1EE">Voir comment ça marche</a>
+      </div>
+      <p style="fontSize:0.85rem; color:#55584f;"><strong style="color:#1C1F1B; fontWeight:600;">Zéro investissement de départ.</strong> Application logicielle dès aujourd'hui. Capteurs ajoutés au besoin, jamais imposés.</p>
+    </div>
+
+    <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:22px; boxShadow:0 1px 0 rgba(0,0,0,0.02);">
+      <div style="display:flex; justifyContent:space-between; alignItems:baseline; gap:12px; marginBottom:14px;">
+        <h3 style="fontFamily:'Space Grotesk',sans-serif; fontSize:0.85rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.03em;">Grille tarifaire CIE</h3>
+        <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:1.5rem; fontWeight:600;">87<span style="fontSize:0.9rem; color:#55584f;">&nbsp;FCFA/kWh</span></span>
+      </div>
+      <div style="display:flex; height:34px; borderRadius:6px; overflow:hidden; marginBottom:10px; border:1px solid #E2E1DB;">
+        <div style="flex:1.3; background:#e7efe9; display:flex; alignItems:center; justifyContent:center;"><span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; color:#55584f;">Creuses</span></div>
+        <div style="flex:1.6; background:#fbe6d3; display:flex; alignItems:center; justifyContent:center;"><span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; color:#55584f;">Pleines</span></div>
+        <div style="flex:1; background:#f7c9c9; display:flex; alignItems:center; justifyContent:center;"><span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; color:#55584f;">Pointe</span></div>
+      </div>
+      <div style="display:flex; justifyContent:space-between; gap:12px; fontSize:0.75rem; color:#55584f;">
+        <span>Nuit, tarif bas</span>
+        <span>Écart pointe/creuses : ×2</span>
+      </div>
+      <div style="marginTop:16px; paddingTop:14px; borderTop:1px dashed #E2E1DB; display:flex; justifyContent:space-between; alignItems:center; gap:12px;">
+        <span style="fontSize:0.82rem; color:#55584f;">Prédiction hebdomadaire</span>
+        <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#5b5f6e; background:#eceef2;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>synthétique</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:0 0 56px;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px; display:grid; gridTemplateColumns:repeat(auto-fit,minmax(260px,1fr)); gap:20px;">
+    <div style="position:relative; aspectRatio:4/3; background:repeating-linear-gradient(135deg,#EFEEE9,#EFEEE9 10px,#F5F4F0 10px,#F5F4F0 20px); border:1.5px dashed #C9C7BE; borderRadius:20px; display:flex; alignItems:center; justifyContent:center; textAlign:center; color:#8a8a80; fontSize:0.8rem; padding:16px;">
+      <span style="maxWidth:28ch; lineHeight:1.4;"><b style="display:block; color:#5b5a50; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; textTransform:uppercase; letterSpacing:0.04em; marginBottom:4px;">Photo à sourcer</b>Facture CIE photographiée au téléphone, gros plan</span>
+    </div>
+    <div style="position:relative; aspectRatio:4/3; background:repeating-linear-gradient(135deg,#EFEEE9,#EFEEE9 10px,#F5F4F0 10px,#F5F4F0 20px); border:1.5px dashed #C9C7BE; borderRadius:20px; display:flex; alignItems:center; justifyContent:center; textAlign:center; color:#8a8a80; fontSize:0.8rem; padding:16px;">
+      <span style="maxWidth:28ch; lineHeight:1.4;"><b style="display:block; color:#5b5a50; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; textTransform:uppercase; letterSpacing:0.04em; marginBottom:4px;">Photo à sourcer</b>Compteur électrique CIE, cadrage serré</span>
+    </div>
+    <div style="position:relative; aspectRatio:4/3; background:repeating-linear-gradient(135deg,#EFEEE9,#EFEEE9 10px,#F5F4F0 10px,#F5F4F0 20px); border:1.5px dashed #C9C7BE; borderRadius:20px; display:flex; alignItems:center; justifyContent:center; textAlign:center; color:#8a8a80; fontSize:0.8rem; padding:16px;">
+      <span style="maxWidth:28ch; lineHeight:1.4;"><b style="display:block; color:#5b5a50; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; textTransform:uppercase; letterSpacing:0.04em; marginBottom:4px;">Photo à sourcer</b>Devanture ou intérieur PME à Abidjan</span>
+    </div>
+  </div>
+</section>
+
+<section id="probleme" style="padding:64px 0;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px;">
+    <div style="maxWidth:60ch; marginBottom:40px;">
+      <span style="display:block; fontFamily:'IBM Plex Mono',monospace; fontSize:0.78rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.04em; marginBottom:10px;">Le constat</span>
+      <h2 style="fontFamily:'Space Grotesk',sans-serif; letterSpacing:-0.01em; fontSize:1.9rem; fontWeight:700; marginBottom:12px;">Une hausse structurelle, pas un accident</h2>
+      <p style="color:#55584f; fontSize:1.02rem; textWrap:pretty;">Le coût de revient de l'électricité dépasse déjà le tarif moyen facturé en Côte d'Ivoire. De nouvelles hausses sont probables. Sans outil de suivi, ménages et entreprises pilotent leur consommation à l'aveugle, sur la seule base de la facture mensuelle.</p>
+    </div>
+    <div style="display:grid; gridTemplateColumns:repeat(auto-fit,minmax(300px,1fr)); gap:16px;">
+      <sc-for list="{{ charts }}" as="chart" hint-placeholder-count="3">
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:22px 22px 18px;">
+          <div style="display:flex; alignItems:baseline; gap:8px; marginBottom:6px;">
+            <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:1.5rem; fontWeight:600; color:#1C1F1B; whiteSpace:nowrap; letterSpacing:-0.01em;">{{ chart.headline }}</span>
+            <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.72rem; color:#55584f; whiteSpace:nowrap;">{{ chart.axisY }}</span>
+          </div>
+          <div style="fontSize:0.86rem; color:#55584f; marginBottom:20px; minHeight:2.6em; textWrap:pretty;">{{ chart.label }}</div>
+
+          <div style="display:flex; gap:8px;">
+            <div style="display:flex; flexDirection:column; justifyContent:space-between; alignItems:flex-end; height:128px; paddingBottom:20px;">
+              <sc-for list="{{ chart.ticks }}" as="tick" hint-placeholder-count="3">
+                <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.64rem; color:#8a8a80; lineHeight:1;">{{ tick.label }}</span>
+              </sc-for>
+            </div>
+            <div style="flex:1; minWidth:0; height:128px; borderLeft:1px solid #E2E1DB; borderBottom:1px solid #E2E1DB; position:relative; display:flex; alignItems:flex-end; justifyContent:flex-start; gap:{{ chart.gap }}; padding:0 8px 20px 10px;">
+              <sc-for list="{{ chart.bars }}" as="bar" hint-placeholder-count="4">
+                <div onMouseEnter="{{ bar.enter }}" onMouseLeave="{{ bar.leave }}" onClick="{{ bar.enter }}" style="flex:0 1 32px; height:100%; display:flex; flexDirection:column; justifyContent:flex-end; alignItems:center; position:relative; cursor:pointer;">
+                  <div style="position:absolute; top:-4px; left:50%; transform:translateX(-50%); opacity:{{ bar.tipOpacity }}; background:#1C1F1B; color:#fff; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; padding:4px 8px; borderRadius:8px; whiteSpace:nowrap; pointerEvents:none; transition:opacity 0.12s ease;">{{ bar.tip }}</div>
+                  <div style="width:100%; height:{{ bar.h }}; background:{{ bar.color }}; borderRadius:4px 4px 0 0; transition:background 0.12s ease;"></div>
+                  <span style="position:absolute; bottom:-18px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.64rem; color:#55584f; whiteSpace:nowrap;">{{ bar.x }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; color:#8a8a80; marginTop:14px;">{{ chart.source }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="profils" style="padding:64px 0;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px;">
+    <div style="maxWidth:60ch; marginBottom:40px;">
+      <span style="display:block; fontFamily:'IBM Plex Mono',monospace; fontSize:0.78rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.04em; marginBottom:10px;">Un seul produit, trois réalités</span>
+      <h2 style="fontFamily:'Space Grotesk',sans-serif; letterSpacing:-0.01em; fontSize:1.9rem; fontWeight:700; marginBottom:12px;">Le dashboard s'adapte à qui l'utilise</h2>
+      <p style="color:#55584f; fontSize:1.02rem; textWrap:pretty;">Même identité, même logique de lecture. Le niveau de détail et l'ordre des priorités changent selon votre profil. Le niveau est suggéré automatiquement et reste modifiable à tout moment.</p>
+    </div>
+    <div style="display:grid; gridTemplateColumns:repeat(auto-fit,minmax(260px,1fr)); gap:20px;">
+      <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:24px; overflow:hidden; display:flex; flexDirection:column; transition:transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform:translateY(-3px); boxShadow:0 10px 24px rgba(28,31,27,0.08)">
+        <div style="height:150px; background:repeating-linear-gradient(135deg,#EFEEE9,#EFEEE9 10px,#F5F4F0 10px,#F5F4F0 20px); borderBottom:1px solid #E2E1DB; display:flex; alignItems:center; justifyContent:center; textAlign:center; color:#8a8a80; fontSize:0.8rem; padding:16px;">
+          <span style="maxWidth:28ch; lineHeight:1.4;"><b style="display:block; color:#5b5a50; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; textTransform:uppercase; letterSpacing:0.04em; marginBottom:4px;">Photo à sourcer</b>Intérieur de foyer, ambiance quotidienne</span>
+        </div>
+        <div style="padding:22px; display:flex; flexDirection:column; gap:12px; flex:1;">
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.72rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.03em;">Ménage</span>
+          <h3 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1.25rem; fontWeight:600;">Comprendre et anticiper</h3>
+          <p style="color:#55584f; fontSize:0.94rem;">Prédiction hebdomadaire, un seuil global simple, conseils directs pour éviter la mauvaise surprise en fin de mois.</p>
+          <div style="display:flex; gap:6px; marginTop:auto; paddingTop:14px; borderTop:1px solid #E2E1DB;">
+            <span style="fontSize:0.72rem; padding:4px 9px; borderRadius:99px; border:1px solid #1C1F1B; background:#1C1F1B; color:#fff;">Débutant</span>
+            <span style="fontSize:0.72rem; padding:4px 9px; borderRadius:99px; border:1px solid #E2E1DB; color:#55584f;">Amateur</span>
+            <span style="fontSize:0.72rem; padding:4px 9px; borderRadius:99px; border:1px solid #E2E1DB; color:#55584f;">Technique</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:24px; overflow:hidden; display:flex; flexDirection:column; transition:transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform:translateY(-3px); boxShadow:0 10px 24px rgba(28,31,27,0.08)">
+        <div style="height:150px; background:repeating-linear-gradient(135deg,#EFEEE9,#EFEEE9 10px,#F5F4F0 10px,#F5F4F0 20px); borderBottom:1px solid #E2E1DB; display:flex; alignItems:center; justifyContent:center; textAlign:center; color:#8a8a80; fontSize:0.8rem; padding:16px;">
+          <span style="maxWidth:28ch; lineHeight:1.4;"><b style="display:block; color:#5b5a50; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; textTransform:uppercase; letterSpacing:0.04em; marginBottom:4px;">Photo à sourcer</b>Gérant PME dans son commerce, en activité</span>
+        </div>
+        <div style="padding:22px; display:flex; flexDirection:column; gap:12px; flex:1;">
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.72rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.03em;">PME</span>
+          <h3 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1.25rem; fontWeight:600;">Arbitrer sans risque</h3>
+          <p style="color:#55584f; fontSize:0.94rem;">Seuils par appareil, conseils priorisés par impact sur la marge, rapport hebdomadaire exploitable sans expertise technique.</p>
+          <div style="display:flex; gap:6px; marginTop:auto; paddingTop:14px; borderTop:1px solid #E2E1DB;">
+            <span style="fontSize:0.72rem; padding:4px 9px; borderRadius:99px; border:1px solid #E2E1DB; color:#55584f;">Débutant</span>
+            <span style="fontSize:0.72rem; padding:4px 9px; borderRadius:99px; border:1px solid #1C1F1B; background:#1C1F1B; color:#fff;">Amateur</span>
+            <span style="fontSize:0.72rem; padding:4px 9px; borderRadius:99px; border:1px solid #E2E1DB; color:#55584f;">Technique</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:24px; overflow:hidden; display:flex; flexDirection:column; transition:transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform:translateY(-3px); boxShadow:0 10px 24px rgba(28,31,27,0.08)">
+        <div style="height:150px; background:repeating-linear-gradient(135deg,#EFEEE9,#EFEEE9 10px,#F5F4F0 10px,#F5F4F0 20px); borderBottom:1px solid #E2E1DB; display:flex; alignItems:center; justifyContent:center; textAlign:center; color:#8a8a80; fontSize:0.8rem; padding:16px;">
+          <span style="maxWidth:28ch; lineHeight:1.4;"><b style="display:block; color:#5b5a50; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; textTransform:uppercase; letterSpacing:0.04em; marginBottom:4px;">Photo à sourcer</b>Technicien devant un tableau électrique</span>
+        </div>
+        <div style="padding:22px; display:flex; flexDirection:column; gap:12px; flex:1;">
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.72rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.03em;">Industrie</span>
+          <h3 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1.25rem; fontWeight:600;">Piloter la charge</h3>
+          <p style="color:#55584f; fontSize:0.94rem;">Alertes multi-niveaux, détection d'anomalie machine, plan d'action chiffré. Pensé pour un usage technique quotidien.</p>
+          <div style="display:flex; gap:6px; marginTop:auto; paddingTop:14px; borderTop:1px solid #E2E1DB;">
+            <span style="fontSize:0.72rem; padding:4px 9px; borderRadius:99px; border:1px solid #E2E1DB; color:#55584f;">Débutant</span>
+            <span style="fontSize:0.72rem; padding:4px 9px; borderRadius:99px; border:1px solid #E2E1DB; color:#55584f;">Amateur</span>
+            <span style="fontSize:0.72rem; padding:4px 9px; borderRadius:99px; border:1px solid #1C1F1B; background:#1C1F1B; color:#fff;">Technique</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="apropos" style="padding:64px 0;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px; display:grid; gridTemplateColumns:repeat(auto-fit,minmax(300px,1fr)); gap:48px; alignItems:center;">
+    <div style="aspectRatio:4/3; background:repeating-linear-gradient(135deg,#EFEEE9,#EFEEE9 10px,#F5F4F0 10px,#F5F4F0 20px); border:1.5px dashed #C9C7BE; borderRadius:24px; display:flex; alignItems:center; justifyContent:center; textAlign:center; color:#8a8a80; fontSize:0.8rem; padding:16px;">
+      <span style="maxWidth:28ch; lineHeight:1.4;"><b style="display:block; color:#5b5a50; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; textTransform:uppercase; letterSpacing:0.04em; marginBottom:4px;">Photo à sourcer</b>Équipe au travail, ou photo du hackathon FORPRODE</span>
+    </div>
+    <div>
+      <span style="display:block; fontFamily:'IBM Plex Mono',monospace; fontSize:0.78rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.04em; marginBottom:10px;">Qui sommes-nous</span>
+      <h2 style="fontFamily:'Space Grotesk',sans-serif; letterSpacing:-0.01em; fontSize:1.7rem; fontWeight:700; marginBottom:14px;">Né d'un hackathon, construit pour durer.</h2>
+      <p style="color:#55584f; fontSize:0.98rem; marginBottom:14px; textWrap:pretty;">NouanKanyAI est parti du Global AI Hackathon 2026, sous blueprint ECOSIRA, porté par une équipe issue du programme FORPRODE IA (Tech Talent Accelerator, GIZ). Le produit est aujourd'hui en développement actif depuis Abidjan.</p>
+      <p style="color:#55584f; fontSize:0.98rem; textWrap:pretty;">Notre position face aux acteurs institutionnels de l'énergie : rester agiles, rester spécialisés en IA prédictive, et ne jamais faire payer le risque technologique à nos premiers utilisateurs.</p>
+    </div>
+  </div>
+</section>
+
+<section id="confiance" style="padding:64px 0; background:#F1F1EE; borderTop:1px solid #E2E1DB; borderBottom:1px solid #E2E1DB;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px; display:grid; gridTemplateColumns:repeat(auto-fit,minmax(300px,1fr)); gap:48px; alignItems:center;">
+    <div>
+      <span style="display:block; fontFamily:'IBM Plex Mono',monospace; fontSize:0.78rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.04em; marginBottom:10px;">Notre engagement</span>
+      <h2 style="fontFamily:'Space Grotesk',sans-serif; letterSpacing:-0.01em; fontSize:1.7rem; fontWeight:700; marginBottom:12px;">Une donnée est mesurée, estimée, ou synthétique. Jamais inventée.</h2>
+      <p style="color:#55584f; fontSize:0.98rem; textWrap:pretty;">Chaque chiffre affiché sur votre dashboard porte l'origine de son calcul. Pas de promesse d'IA gonflée. Si un capteur n'est pas encore installé chez vous, on vous le dit, et on chiffre quand même votre potentiel d'économie sur des hypothèses transparentes.</p>
+    </div>
+    <div style="display:flex; flexDirection:column; gap:12px;">
+      <div style="display:flex; alignItems:center; gap:12px; background:#fff; border:1px solid #E2E1DB; borderRadius:14px; padding:12px 14px;">
+        <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#1B7A43; background:#eaf4ee; flexShrink:0;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>mesuré</span>
+        <span style="fontSize:0.86rem; color:#55584f;">Donnée issue d'un capteur installé sur votre site.</span>
+      </div>
+      <div style="display:flex; alignItems:center; gap:12px; background:#fff; border:1px solid #E2E1DB; borderRadius:14px; padding:12px 14px;">
+        <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#7a5b0d; background:#f7efd8; flexShrink:0;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>estimé</span>
+        <span style="fontSize:0.86rem; color:#55584f;">Calculé à partir de votre facture CIE et de votre déclaration d'équipements.</span>
+      </div>
+      <div style="display:flex; alignItems:center; gap:12px; background:#fff; border:1px solid #E2E1DB; borderRadius:14px; padding:12px 14px;">
+        <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#5b5f6e; background:#eceef2; flexShrink:0;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>synthétique</span>
+        <span style="fontSize:0.86rem; color:#55584f;">Modèle entraîné sur un jeu de données de référence, en attendant vos données réelles.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="formules" style="padding:64px 0;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px;">
+    <div style="maxWidth:60ch; marginBottom:40px;">
+      <span style="display:block; fontFamily:'IBM Plex Mono',monospace; fontSize:0.78rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.04em; marginBottom:10px;">Formules</span>
+      <h2 style="fontFamily:'Space Grotesk',sans-serif; letterSpacing:-0.01em; fontSize:1.9rem; fontWeight:700; marginBottom:12px;">Un abonnement qui se rentabilise avant de vous coûter</h2>
+      <p style="color:#55584f; fontSize:1.02rem; textWrap:pretty;">Aucune formule n'exige d'investissement matériel initial. Le coût s'efface généralement dans les économies réalisées en moins de deux mois.</p>
+    </div>
+    <div style="display:grid; gridTemplateColumns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; alignItems:start;">
+
+      <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:26px; padding:28px; display:flex; flexDirection:column; position:relative;">
+        <div style="fontFamily:'Space Grotesk',sans-serif; fontWeight:600; fontSize:1.1rem; marginBottom:6px;">ECO Essentiel</div>
+        <div style="fontSize:0.82rem; color:#55584f; marginBottom:18px;">Ménages, faible à moyenne consommation</div>
+        <div style="display:flex; alignItems:baseline; gap:5px; margin:6px 0 4px;">
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:2.3rem; fontWeight:600;">5 000</span>
+          <span style="fontSize:0.85rem; color:#55584f;">FCFA / mois</span>
+        </div>
+        <ul style="listStyle:none; display:flex; flexDirection:column; gap:12px; margin:20px 0 24px; flex:1;">
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#1B7A43"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Prédiction hebdomadaire</li>
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#1B7A43"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>1 seuil global configurable</li>
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#1B7A43"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Conseils génériques</li>
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#1B7A43"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Historique 30 jours</li>
+        </ul>
+        <a href="#" style="display:inline-flex; alignItems:center; justifyContent:center; width:100%; padding:13px 20px; borderRadius:14px; fontSize:0.92rem; fontWeight:600; border:1px solid #E2E1DB; color:#1C1F1B;" style-hover="background:#F1F1EE">Commencer</a>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E8590C; borderRadius:26px; padding:28px; display:flex; flexDirection:column; position:relative; boxShadow:0 12px 28px rgba(232,89,12,0.12); transform:translateY(-6px);">
+        <span style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:#7a2c05; color:#fff; fontSize:0.7rem; fontWeight:700; padding:5px 14px; borderRadius:99px; letterSpacing:0.02em; whiteSpace:nowrap;">Le plus choisi</span>
+        <div style="fontFamily:'Space Grotesk',sans-serif; fontWeight:600; fontSize:1.1rem; marginBottom:6px;">ECO Intelligent</div>
+        <div style="fontSize:0.82rem; color:#55584f; marginBottom:18px;">Ménages forte conso, petites PME</div>
+        <div style="display:flex; alignItems:baseline; gap:5px; margin:6px 0 4px;">
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:2.3rem; fontWeight:600;">12 000</span>
+          <span style="fontSize:0.85rem; color:#55584f;">FCFA / mois</span>
+        </div>
+        <ul style="listStyle:none; display:flex; flexDirection:column; gap:12px; margin:20px 0 24px; flex:1;">
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#E8590C"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Prédiction quotidienne</li>
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#E8590C"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Seuils par appareil</li>
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#E8590C"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Conseils priorisés par impact</li>
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#E8590C"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Rapport hebdomadaire</li>
+        </ul>
+        <a href="#" style="display:inline-flex; alignItems:center; justifyContent:center; width:100%; padding:13px 20px; borderRadius:14px; fontSize:0.92rem; fontWeight:600; border:1px solid transparent; background:#7a2c05; color:#fff;" style-hover="background:#5c2104; color:#fff">Commencer</a>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:26px; padding:28px; display:flex; flexDirection:column; position:relative;">
+        <div style="fontFamily:'Space Grotesk',sans-serif; fontWeight:600; fontSize:1.1rem; marginBottom:6px;">ECO Premium</div>
+        <div style="fontSize:0.82rem; color:#55584f; marginBottom:18px;">PME critique, futurs sites industriels</div>
+        <div style="display:flex; alignItems:baseline; gap:5px; margin:6px 0 4px;">
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:2.3rem; fontWeight:600;">25 000</span>
+          <span style="fontSize:0.85rem; color:#55584f;">FCFA / mois</span>
+        </div>
+        <ul style="listStyle:none; display:flex; flexDirection:column; gap:12px; margin:20px 0 24px; flex:1;">
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#1B7A43"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Alertes multi-niveaux</li>
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#1B7A43"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Assistant conversationnel avancé</li>
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#1B7A43"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Plan d'action mensuel chiffré</li>
+          <li style="fontSize:0.9rem; display:flex; alignItems:flex-start; gap:9px;"><svg width="16" height="16" viewBox="0 0 16 16" style="flexShrink:0; marginTop:2px;"><circle cx="8" cy="8" r="8" fill="#1B7A43"></circle><path d="M4.5 8.2 L7 10.7 L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Accès anticipé aux fonctionnalités IoT</li>
+        </ul>
+        <a href="#" style="display:inline-flex; alignItems:center; justifyContent:center; width:100%; padding:13px 20px; borderRadius:14px; fontSize:0.92rem; fontWeight:600; border:1px solid #E2E1DB; color:#1C1F1B;" style-hover="background:#F1F1EE">Commencer</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:0 0 64px;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px;">
+    <div style="background:#1C1F1B; color:#fff; borderRadius:28px; padding:44px 40px;">
+      <span style="display:block; fontFamily:'IBM Plex Mono',monospace; fontSize:0.78rem; fontWeight:600; color:#c7c7c0; textTransform:uppercase; letterSpacing:0.04em; marginBottom:10px;">Bientôt disponible</span>
+      <h2 style="fontFamily:'Space Grotesk',sans-serif; letterSpacing:-0.01em; color:#fff; fontSize:1.6rem; fontWeight:700; marginBottom:8px;">Soyez parmi les premiers utilisateurs</h2>
+      <p style="color:#c7c7c0; fontSize:0.95rem; maxWidth:48ch; marginBottom:22px;">Le produit est en développement actif. Laissez votre email pour être informé à l'ouverture des inscriptions, sans spam.</p>
+      <form onSubmit="{{ blockSubmit }}" style="display:flex; gap:10px; maxWidth:420px; flexWrap:wrap;">
+        <input type="email" placeholder="vous@exemple.com" required="required" style="flex:1; minWidth:200px; padding:12px 14px; borderRadius:14px; border:1px solid #3a3d37; background:#262922; color:#fff; fontFamily:'Inter',sans-serif; fontSize:0.92rem;" />
+        <button type="submit" style="background:#E8590C; color:#fff; border:none; padding:13px 20px; borderRadius:14px; fontWeight:600; fontSize:0.92rem; cursor:pointer;" style-hover="background:#7a2c05">Me prévenir</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer style="borderTop:1px solid #E2E1DB; padding:56px 0 32px;">
+  <div style="maxWidth:1120px; margin:0 auto; padding:0 24px;">
+    <div style="display:grid; gridTemplateColumns:repeat(auto-fit,minmax(180px,1fr)); gap:32px; marginBottom:36px;">
+      <div>
+        <div style="display:flex; alignItems:center; gap:10px; fontFamily:'Space Grotesk',sans-serif; fontWeight:700; fontSize:0.95rem; marginBottom:12px;">
+          <img src="logo.png" alt="NouanKanyAI" style="width:26px; height:26px; objectFit:contain;" />
+          NouanKanyAI
+        </div>
+        <p style="fontSize:0.8rem; color:#55584f; maxWidth:56ch;">Plateforme logicielle en développement actif, sans dépendance matérielle initiale. Équipement IoT prévu en phase d'industrialisation.</p>
+      </div>
+      <div>
+        <h4 style="fontFamily:'Space Grotesk',sans-serif; fontSize:0.78rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.03em; color:#55584f; marginBottom:14px;">Produit</h4>
+        <ul style="listStyle:none; display:flex; flexDirection:column; gap:10px;">
+          <li><a href="#profils" style="fontSize:0.88rem; color:#55584f;" style-hover="color:#1C1F1B">Pour qui</a></li>
+          <li><a href="#formules" style="fontSize:0.88rem; color:#55584f;" style-hover="color:#1C1F1B">Formules</a></li>
+          <li><a href="#confiance" style="fontSize:0.88rem; color:#55584f;" style-hover="color:#1C1F1B">Notre engagement</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="fontFamily:'Space Grotesk',sans-serif; fontSize:0.78rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.03em; color:#55584f; marginBottom:14px;">Entreprise</h4>
+        <ul style="listStyle:none; display:flex; flexDirection:column; gap:10px;">
+          <li><a href="#apropos" style="fontSize:0.88rem; color:#55584f;" style-hover="color:#1C1F1B">Qui sommes-nous</a></li>
+          <li><a href="#" style="fontSize:0.88rem; color:#55584f;" style-hover="color:#1C1F1B">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="fontFamily:'Space Grotesk',sans-serif; fontSize:0.78rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.03em; color:#55584f; marginBottom:14px;">Légal</h4>
+        <ul style="listStyle:none; display:flex; flexDirection:column; gap:10px;">
+          <li><a href="#" style="fontSize:0.88rem; color:#55584f;" style-hover="color:#1C1F1B">Conditions Générales d'Utilisation</a></li>
+          <li><a href="#" style="fontSize:0.88rem; color:#55584f;" style-hover="color:#1C1F1B">Politique de confidentialité</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="borderTop:1px solid #E2E1DB; paddingTop:20px; display:flex; justifyContent:space-between; alignItems:center; flexWrap:wrap; gap:12px;">
+      <span style="fontSize:0.8rem; color:#55584f;">© 2026 NouanKanyAI. Projet issu du Global AI Hackathon 2026.</span>
+    </div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CHARTS = [
+  {
+    id: 'tarif',
+    headline: '79 → 87',
+    label: 'FCFA/kWh, tarif moyen 2023–2024',
+    axisY: 'FCFA/kWh',
+    axisX: 'axe des abscisses : année',
+    source: 'source : plan d’affaires',
+    ticks: ['100', '50', '0'],
+    max: 100,
+    gap: '30px',
+    bars: [['2023', 79, '79 FCFA/kWh'], ['2024', 87, '87 FCFA/kWh']]
+  },
+  {
+    id: 'ecart',
+    headline: '×2',
+    label: 'écart tarifaire entre heures creuses et heures de pointe',
+    axisY: 'indice de tarif',
+    axisX: 'axe des abscisses : palier horaire',
+    source: 'grille CIE',
+    ticks: ['2,0', '1,0', '0'],
+    max: 2,
+    gap: '26px',
+    bars: [['Creuses', 1, 'indice 1,0'], ['Pleines', 1.5, 'indice 1,5'], ['Pointe', 2, 'indice 2,0']]
+  },
+  {
+    id: 'demande',
+    headline: '6,5%',
+    label: 'croissance annuelle de la demande nationale, 2025–2030',
+    axisY: 'indice base 100',
+    axisX: 'axe des abscisses : année',
+    source: 'projection à 6,5 %/an',
+    ticks: ['140', '120', '100'],
+    min: 96,
+    max: 140,
+    gap: '12px',
+    bars: [['25', 100, 'indice 100'], ['26', 106.5, 'indice 106,5'], ['27', 113.4, 'indice 113,4'], ['28', 120.8, 'indice 120,8'], ['29', 128.6, 'indice 128,6'], ['30', 137, 'indice 137,0']]
+  }
+];
+
+class Component extends DCLogic {
+  state = { hover: null };
+
+  renderVals() {
+    const hover = this.state.hover;
+    const charts = CHARTS.map(c => {
+      const min = c.min || 0;
+      return {
+        headline: c.headline, label: c.label, axisY: c.axisY, axisX: c.axisX,
+        source: c.source, gap: c.gap,
+        ticks: c.ticks.map(label => ({ label })),
+        bars: c.bars.map(([x, v, tip], i) => {
+          const key = c.id + i;
+          const active = hover === key;
+          return {
+            x, tip,
+            h: Math.round(((v - min) / (c.max - min)) * 100) + '%',
+            color: active ? '#7a2c05' : '#E8590C',
+            tipOpacity: active ? 1 : 0,
+            enter: () => this.setState({ hover: key }),
+            leave: () => this.setState({ hover: null })
+          };
+        })
+      };
+    });
+    return { charts, blockSubmit: (e) => e.preventDefault() };
+  }
+}
+</script>
+</body>
+</html>

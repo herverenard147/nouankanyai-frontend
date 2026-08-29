@@ -1,0 +1,85 @@
+import { Link } from 'react-router-dom'
+
+export function Footer() {
+  return (
+    <footer className="border-t border-border py-14">
+      <div className="mx-auto max-w-[1120px] px-6">
+        <div className="mb-9 grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr))]">
+          <div>
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="Nouankany" className="h-[26px] w-[26px] object-contain" />
+              <span className="font-bold text-text-primary" style={{ fontFamily: 'var(--font-heading)' }}>
+                Nouankany
+              </span>
+            </div>
+            <p className="mt-2 text-[0.8rem] text-text-secondary">
+              Plateforme logicielle en développement actif, sans dépendance matérielle initiale. Équipement IoT
+              prévu en phase d&rsquo;industrialisation.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-primary">
+              Produit
+            </h4>
+            <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
+              <li>
+                <a href="#profils" className="hover:text-text-primary">
+                  Pour qui
+                </a>
+              </li>
+              <li>
+                <a href="#formules" className="hover:text-text-primary">
+                  Formules
+                </a>
+              </li>
+              <li>
+                <a href="#confiance" className="hover:text-text-primary">
+                  Notre engagement
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-primary">
+              Entreprise
+            </h4>
+            <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
+              <li>
+                <a href="#apropos" className="hover:text-text-primary">
+                  Qui sommes-nous
+                </a>
+              </li>
+              <li>
+                <a href="mailto:contact@nouankany.demo" className="hover:text-text-primary">
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-primary">Légal</h4>
+            <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
+              <li>
+                <Link to="/legal/cgu" className="hover:text-text-primary">
+                  Conditions Générales d&rsquo;Utilisation
+                </Link>
+              </li>
+              <li>
+                <Link to="/legal/confidentialite" className="hover:text-text-primary">
+                  Politique de confidentialité
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-5 text-sm text-text-secondary">
+          <span>© 2026 Nouankany. Tous droits réservés.</span>
+        </div>
+      </div>
+    </footer>
+  )
+}

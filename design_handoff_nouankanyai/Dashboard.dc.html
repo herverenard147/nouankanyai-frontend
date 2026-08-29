@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:#F1F1EE; color:#1C1F1B; font-family:'Inter',sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  a{color:#7a2c05; text-decoration:none;}
+  a:hover{color:#5c2104;}
+  button{font-family:'Inter',sans-serif;}
+  a:focus-visible, button:focus-visible{outline:2px solid #E8590C; outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important;}}
+</style>
+</helmet>
+
+<div style="minHeight:100vh; background:#F1F1EE; display:flex; flexDirection:column; alignItems:center; padding:20px; gap:20px;">
+
+<div style="width:100%; maxWidth:1440px; display:flex; alignItems:center; justifyContent:space-between; gap:16px; flexWrap:wrap;">
+  <div style="display:flex; alignItems:center; gap:10px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.72rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.06em;">Maquette dashboard NouanKanyAI</div>
+  <div style="display:flex; gap:6px; background:#FAFAF9; border:1px solid #E2E1DB; borderRadius:20px; padding:6px;">
+    <sc-for list="{{ views }}" as="v" hint-placeholder-count="5">
+      <button type="button" onClick="{{ v.select }}" style="padding:9px 14px; minHeight:40px; borderRadius:14px; border:1px solid {{ v.border }}; background:{{ v.bg }}; color:{{ v.fg }}; fontSize:0.85rem; fontWeight:600; cursor:pointer;">{{ v.label }}</button>
+    </sc-for>
+  </div>
+</div>
+
+<sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+<div style="width:100%; maxWidth:1440px; background:#FAFAF9; border:1px solid #E2E1DB; borderRadius:14px; overflow:hidden; display:flex; minHeight:900px; position:relative;">
+
+  <aside style="width:244px; flexShrink:0; background:#FAFAF9; borderRight:1px solid #E2E1DB; padding:22px 16px; display:flex; flexDirection:column; gap:24px;">
+    <div style="display:flex; alignItems:center; gap:10px; fontFamily:'Space Grotesk',sans-serif; fontWeight:700; fontSize:1rem; padding:0 6px;">
+      <img src="logo.png" alt="NouanKanyAI" style="width:32px; height:32px; objectFit:contain;" />
+      NouanKanyAI
+    </div>
+    <nav style="display:flex; flexDirection:column; gap:3px;">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="7">
+        <a href="#" style="display:flex; alignItems:center; gap:11px; padding:11px 10px; minHeight:44px; borderRadius:14px; fontSize:0.89rem; fontWeight:{{ n.weight }}; color:{{ n.fg }}; background:{{ n.bg }};" style-hover="background:#F1F1EE">
+          <span style="width:22px; height:22px; borderRadius:6px; border:1px solid #E2E1DB; background:#fff; display:flex; alignItems:center; justifyContent:center; fontFamily:'IBM Plex Mono',monospace; fontSize:0.65rem; fontWeight:600; color:#55584f; flexShrink:0;">{{ n.glyph }}</span>
+          {{ n.label }}
+        </a>
+      </sc-for>
+    </nav>
+    <div style="marginTop:auto; padding:14px; background:#F1F1EE; border:1px solid #E2E1DB; borderRadius:20px;">
+      <div style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.05em; color:#55584f; marginBottom:8px;">Capteurs IoT</div>
+      <p style="fontSize:0.79rem; color:#55584f;">Aucun capteur déployé. Les valeurs sont estimées depuis vos factures ou issues du modèle.</p>
+    </div>
+  </aside>
+
+  <div style="flex:1; minWidth:0; display:flex; flexDirection:column;">
+
+    <div style="borderBottom:1px solid #E2E1DB; background:#FAFAF9; padding:16px 28px; display:flex; alignItems:center; justifyContent:space-between; gap:20px; flexWrap:wrap;">
+      <div>
+        <h1 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1.22rem; fontWeight:700; letterSpacing:-0.01em;">{{ title }}</h1>
+        <div style="fontSize:0.8rem; color:#55584f;">{{ subtitle }}</div>
+      </div>
+      <div style="display:flex; alignItems:center; gap:18px; flexWrap:wrap;">
+        <div style="display:flex; alignItems:center; gap:9px;">
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.05em; color:#55584f;">Niveau</span>
+          <div style="display:flex; gap:5px;">
+            <sc-for list="{{ levels }}" as="l" hint-placeholder-count="3">
+              <button type="button" onClick="{{ l.select }}" style="fontSize:0.75rem; padding:7px 11px; minHeight:34px; borderRadius:99px; cursor:pointer; border:1px solid {{ l.border }}; background:{{ l.bg }}; color:{{ l.fg }};">{{ l.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="fontSize:0.78rem; color:#55584f; fontFamily:'IBM Plex Mono',monospace;">{{ lastRun }}</div>
+      </div>
+    </div>
+
+    <div style="flex:1; padding:28px 28px 120px; display:flex; flexDirection:column; gap:28px; background:#FAFAF9;">
+
+      <section>
+        <div style="display:flex; alignItems:baseline; justifyContent:space-between; gap:16px; marginBottom:12px;">
+          <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600;">Alerte active</h2>
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; color:#55584f;">{{ alertCount }}</span>
+        </div>
+
+        <sc-for list="{{ alertsAction }}" as="a" hint-placeholder-count="1">
+          <div style="background:#fdf3f4; border:1px solid #D6293E; borderRadius:20px; padding:22px 24px; marginBottom:12px; display:flex; gap:20px; alignItems:flex-start; flexWrap:wrap;">
+            <div style="width:34px; height:34px; borderRadius:50%; background:#D6293E; color:#fff; display:flex; alignItems:center; justifyContent:center; fontWeight:700; fontSize:1rem; flexShrink:0;">!</div>
+            <div style="flex:1; minWidth:260px;">
+              <div style="display:flex; alignItems:center; gap:10px; flexWrap:wrap; marginBottom:6px;">
+                <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.05em; color:#D6293E;">Action humaine requise</span>
+                <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; color:#55584f;">{{ a.level }}</span>
+              </div>
+              <h3 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1.16rem; fontWeight:600; marginBottom:6px; textWrap:pretty;">{{ a.title }}</h3>
+              <p style="fontSize:0.92rem; color:#55584f; maxWidth:72ch; textWrap:pretty;">{{ a.detail }}</p>
+              <div style="display:flex; alignItems:center; gap:10px; marginTop:12px; flexWrap:wrap;">
+                <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#7a5b0d; background:#fff;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>estimé</span>
+                <span style="fontSize:0.78rem; color:#55584f;">{{ a.basis }}</span>
+              </div>
+            </div>
+            <a href="#" style="display:inline-flex; alignItems:center; justifyContent:center; padding:13px 20px; borderRadius:14px; background:#7a2c05; color:#fff; fontSize:0.88rem; fontWeight:600; flexShrink:0;" style-hover="background:#5c2104; color:#fff">{{ a.cta }}</a>
+          </div>
+        </sc-for>
+
+        <sc-if value="{{ hasAuto }}" hint-placeholder-val="{{ true }}">
+          <div style="marginTop:6px;">
+            <div style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.05em; color:#55584f; marginBottom:8px;">Registre distinct : actions automatiques déjà exécutées</div>
+            <sc-for list="{{ alertsAuto }}" as="b" hint-placeholder-count="1">
+              <div style="background:#eaf4ee; border:1px solid #1B7A43; borderRadius:20px; padding:14px 18px; display:flex; alignItems:center; gap:14px; flexWrap:wrap;">
+                <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#1B7A43; background:#fff; flexShrink:0;">auto-exécutée</span>
+                <div style="flex:1; minWidth:220px;">
+                  <div style="fontSize:0.92rem; fontWeight:600;">{{ b.title }}</div>
+                  <div style="fontSize:0.8rem; color:#55584f;">{{ b.detail }}</div>
+                </div>
+                <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.76rem; color:#55584f;">{{ b.time }}</span>
+                <a href="#" style="fontSize:0.82rem; fontWeight:600;">Voir le journal</a>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </section>
+
+      <section>
+        <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600; marginBottom:12px;">{{ kpiTitle }}</h2>
+        <div style="display:grid; gridTemplateColumns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:18px 20px; display:flex; flexDirection:column; gap:8px;">
+              <div style="fontSize:0.82rem; color:#55584f; textWrap:pretty;">{{ k.label }}</div>
+              <div style="display:flex; alignItems:baseline; gap:6px;">
+                <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:1.62rem; fontWeight:600;">{{ k.value }}</span>
+                <span style="fontSize:0.82rem; color:#55584f;">{{ k.unit }}</span>
+              </div>
+              <div style="fontSize:0.79rem; color:#55584f;">{{ k.trend }}</div>
+              <div style="marginTop:auto; paddingTop:10px; borderTop:1px dashed #E2E1DB;">
+                <sc-if value="{{ k.isSynth }}" hint-placeholder-val="{{ false }}">
+                  <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#5b5f6e; background:#eceef2;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>synthétique</span>
+                </sc-if>
+                <sc-if value="{{ k.isEst }}" hint-placeholder-val="{{ true }}">
+                  <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#7a5b0d; background:#f7efd8;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>estimé</span>
+                </sc-if>
+                <sc-if value="{{ k.isNone }}" hint-placeholder-val="{{ false }}">
+                  <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#5b5f6e; background:#eceef2;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>{{ k.note }}</span>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ showTariff }}" hint-placeholder-val="{{ true }}">
+          <div style="marginTop:14px; background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:20px;">
+            <div style="display:flex; justifyContent:space-between; alignItems:baseline; gap:12px; marginBottom:12px;">
+              <h3 style="fontFamily:'Space Grotesk',sans-serif; fontSize:0.85rem; fontWeight:600; color:#55584f; textTransform:uppercase; letterSpacing:0.03em;">Paliers tarifaires CIE</h3>
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.78rem; color:#55584f;">{{ tariffNow }}</span>
+            </div>
+            <div style="display:flex; height:34px; borderRadius:6px; overflow:hidden; border:1px solid #E2E1DB;">
+              <div style="flex:1.3; background:#e7efe9; display:flex; alignItems:center; justifyContent:center;"><span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; color:#55584f;">Creuses</span></div>
+              <div style="flex:1.6; background:#fbe6d3; display:flex; alignItems:center; justifyContent:center;"><span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; color:#55584f;">Pleines</span></div>
+              <div style="flex:1; background:#f7c9c9; display:flex; alignItems:center; justifyContent:center;"><span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; color:#55584f;">Pointe</span></div>
+            </div>
+            <div style="display:flex; justifyContent:space-between; gap:12px; fontSize:0.75rem; color:#55584f; marginTop:8px;">
+              <span>87 FCFA/kWh en moyenne</span>
+              <span>Écart pointe/creuses : ×2</span>
+            </div>
+          </div>
+        </sc-if>
+      </section>
+
+      <section>
+        <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600; marginBottom:12px;">Prédiction IA</h2>
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:22px 24px;">
+          <div style="display:flex; justifyContent:space-between; alignItems:flex-start; gap:20px; flexWrap:wrap; marginBottom:18px;">
+            <div>
+              <div style="fontSize:0.85rem; color:#55584f; marginBottom:4px;">{{ predLabel }}</div>
+              <div style="display:flex; alignItems:baseline; gap:7px;">
+                <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:1.9rem; fontWeight:600;">{{ predValue }}</span>
+                <span style="fontSize:0.85rem; color:#55584f;">{{ predUnit }}</span>
+              </div>
+              <div style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.78rem; color:#55584f; marginTop:4px;">{{ predInterval }}</div>
+            </div>
+            <div style="display:flex; flexDirection:column; alignItems:flex-end; gap:7px;">
+              <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#5b5f6e; background:#eceef2;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>synthétique</span>
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.72rem; color:#55584f;">XGBoost · dataset: synthetic</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; paddingTop:14px; borderTop:1px solid #E2E1DB;">
+            <div style="display:flex; flexDirection:column; justifyContent:space-between; alignItems:flex-end; height:186px; paddingBottom:26px;">
+              <sc-for list="{{ predTicks }}" as="tick" hint-placeholder-count="3">
+                <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; color:#8a8a80; lineHeight:1;">{{ tick.label }}</span>
+              </sc-for>
+            </div>
+            <div style="flex:1; minWidth:0; height:186px; borderLeft:1px solid #E2E1DB; borderBottom:1px solid #E2E1DB; display:flex; alignItems:flex-end; gap:14px; padding:0 12px 26px 12px;">
+              <sc-for list="{{ predBars }}" as="p" hint-placeholder-count="7">
+                <div onMouseEnter="{{ p.enter }}" onMouseLeave="{{ p.leave }}" onClick="{{ p.toggle }}" style="flex:1; height:100%; display:flex; flexDirection:column; justifyContent:flex-end; alignItems:center; position:relative; cursor:pointer;">
+                  <div style="position:absolute; top:-8px; left:50%; transform:translateX(-50%); opacity:{{ p.tipOpacity }}; background:#1C1F1B; color:#fff; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; padding:5px 9px; borderRadius:20px; whiteSpace:nowrap; pointerEvents:none; transition:opacity 0.12s ease;">{{ p.tip }}</div>
+                  <div style="width:100%; height:{{ p.h }}; background:{{ p.color }}; borderRadius:12px 12px 0 0; transition:background 0.12s ease;"></div>
+                  <span style="position:absolute; bottom:-22px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; color:#55584f;">{{ p.day }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex; justifyContent:space-between; gap:14px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; color:#8a8a80; marginTop:12px;">
+            <span>axe des ordonnées : {{ predUnit }}</span>
+            <span>axe des abscisses : jour · survol pour la valeur</span>
+          </div>
+          <p style="fontSize:0.8rem; color:#55584f; marginTop:14px; maxWidth:80ch;">{{ predNote }}</p>
+        </div>
+      </section>
+
+      <sc-if value="{{ hasAdvice }}" hint-placeholder-val="{{ true }}">
+      <section>
+        <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600; marginBottom:12px;">{{ adviceTitle }}</h2>
+        <div style="display:flex; flexDirection:column; gap:10px;">
+          <sc-for list="{{ advice }}" as="c" hint-placeholder-count="3">
+            <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:16px 20px; display:flex; alignItems:center; gap:18px; flexWrap:wrap;">
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.78rem; fontWeight:600; color:#55584f; width:26px; flexShrink:0;">{{ c.rank }}</span>
+              <div style="flex:1; minWidth:240px;">
+                <div style="fontSize:0.94rem; fontWeight:600;">{{ c.title }}</div>
+                <div style="fontSize:0.82rem; color:#55584f;">{{ c.detail }}</div>
+              </div>
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:0.95rem; fontWeight:600; color:#1B7A43;">{{ c.impact }}</span>
+              <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#7a5b0d; background:#f7efd8;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>estimé</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ hasTable }}" hint-placeholder-val="{{ false }}">
+      <section>
+        <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600; marginBottom:12px;">{{ tableTitle }}</h2>
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; overflow:hidden;">
+          <div style="display:grid; gridTemplateColumns:{{ tableCols }}; gap:12px; padding:12px 20px; background:#F1F1EE; borderBottom:1px solid #E2E1DB;">
+            <sc-for list="{{ tableHead }}" as="col" hint-placeholder-count="6">
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.04em; color:#55584f;">{{ col.label }}</span>
+            </sc-for>
+          </div>
+          <sc-for list="{{ tableRows }}" as="r" hint-placeholder-count="4">
+            <div style="display:grid; gridTemplateColumns:{{ tableCols }}; gap:12px; padding:14px 20px; borderBottom:1px solid #E2E1DB; alignItems:center;">
+              <sc-for list="{{ r.cells }}" as="cell" hint-placeholder-count="6">
+                <span style="fontSize:0.86rem; color:{{ cell.color }}; fontFamily:{{ cell.font }}; fontVariantNumeric:tabular-nums;">{{ cell.text }}</span>
+              </sc-for>
+              <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#7a5b0d; background:#f7efd8; justifySelf:start;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>estimé</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ hasPlan }}" hint-placeholder-val="{{ false }}">
+      <section>
+        <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600; marginBottom:12px;">Plan d'action mensuel chiffré</h2>
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:8px 0;">
+          <sc-for list="{{ plan }}" as="p" hint-placeholder-count="3">
+            <div style="padding:14px 22px; borderBottom:1px solid #E2E1DB; display:flex; alignItems:center; gap:18px; flexWrap:wrap;">
+              <div style="flex:1; minWidth:260px;">
+                <div style="fontSize:0.94rem; fontWeight:600;">{{ p.title }}</div>
+                <div style="fontSize:0.82rem; color:#55584f;">{{ p.detail }}</div>
+              </div>
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:0.95rem; fontWeight:600; color:#1B7A43;">{{ p.gain }}</span>
+              <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#5b5f6e; background:#eceef2;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>synthétique</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ hasResolutions }}" hint-placeholder-val="{{ false }}">
+      <section>
+        <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600; marginBottom:12px;">Historique des résolutions d'anomalies</h2>
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:8px 0;">
+          <sc-for list="{{ resolutions }}" as="r" hint-placeholder-count="3">
+            <div style="padding:14px 22px; borderBottom:1px solid #E2E1DB; display:flex; alignItems:flex-start; gap:18px; flexWrap:wrap;">
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.76rem; color:#55584f; width:92px; flexShrink:0;">{{ r.date }}</span>
+              <div style="flex:1; minWidth:260px;">
+                <div style="fontSize:0.92rem; fontWeight:600;">{{ r.anomaly }}</div>
+                <div style="fontSize:0.82rem; color:#55584f;">Résolu par : {{ r.fix }}</div>
+              </div>
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.8rem; color:#55584f;">sévérité {{ r.score }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ hasUpload }}" hint-placeholder-val="{{ true }}">
+      <section>
+        <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600; marginBottom:12px;">Facture CIE, extraction OCR</h2>
+        <div style="display:grid; gridTemplateColumns:repeat(auto-fit,minmax(300px,1fr)); gap:14px;">
+          <div style="background:repeating-linear-gradient(135deg,#EFEEE9,#EFEEE9 10px,#F5F4F0 10px,#F5F4F0 20px); border:1.5px dashed #C9C7BE; borderRadius:20px; minHeight:220px; display:flex; alignItems:center; justifyContent:center; textAlign:center; padding:20px; color:#8a8a80; fontSize:0.82rem;">
+            <span style="maxWidth:30ch; lineHeight:1.4;"><b style="display:block; color:#5b5a50; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; textTransform:uppercase; letterSpacing:0.04em; marginBottom:4px;">Aperçu photo</b>Facture CIE photographiée, déposer ou prendre en photo</span>
+          </div>
+          <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:20px;">
+            <div style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.05em; color:#55584f; marginBottom:12px;">Champs extraits</div>
+            <sc-for list="{{ ocr }}" as="o" hint-placeholder-count="5">
+              <div style="display:flex; alignItems:center; justifyContent:space-between; gap:14px; padding:9px 0; borderBottom:1px solid #E2E1DB;">
+                <span style="fontSize:0.85rem; color:#55584f;">{{ o.field }}</span>
+                <span style="display:flex; alignItems:center; gap:9px;">
+                  <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:0.88rem; fontWeight:600;">{{ o.value }}</span>
+                  <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; padding:3px 8px; borderRadius:99px; color:#7a5b0d; background:#f7efd8;"><span style="width:5px; height:5px; borderRadius:50%; background:currentColor;"></span>estimé</span>
+                </span>
+              </div>
+            </sc-for>
+            <div style="display:flex; gap:10px; marginTop:16px; flexWrap:wrap;">
+              <a href="#" style="display:inline-flex; alignItems:center; justifyContent:center; padding:13px 18px; borderRadius:14px; background:#7a2c05; color:#fff; fontSize:0.86rem; fontWeight:600;" style-hover="background:#5c2104; color:#fff">Valider l'extraction</a>
+              <a href="#" style="display:inline-flex; alignItems:center; justifyContent:center; padding:13px 18px; borderRadius:14px; border:1px solid #E2E1DB; color:#1C1F1B; fontSize:0.86rem; fontWeight:600;" style-hover="background:#F1F1EE">Corriger un champ</a>
+            </div>
+          </div>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ hasAdmin }}" hint-placeholder-val="{{ false }}">
+      <section>
+        <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600; marginBottom:12px;">Modèles et observabilité</h2>
+        <div style="display:grid; gridTemplateColumns:repeat(auto-fit,minmax(300px,1fr)); gap:14px;">
+          <sc-for list="{{ adminPanels }}" as="ap" hint-placeholder-count="3">
+            <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:20px;">
+              <div style="display:flex; justifyContent:space-between; alignItems:baseline; gap:12px; marginBottom:12px;">
+                <h3 style="fontFamily:'Space Grotesk',sans-serif; fontSize:0.95rem; fontWeight:600;">{{ ap.title }}</h3>
+                <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; color:#55584f;">{{ ap.meta }}</span>
+              </div>
+              <sc-for list="{{ ap.rows }}" as="metric" hint-placeholder-count="4">
+                <div style="display:flex; alignItems:center; justifyContent:space-between; gap:14px; padding:8px 0; borderBottom:1px solid #E2E1DB;">
+                  <span style="fontSize:0.85rem; color:#55584f;">{{ metric.k }}</span>
+                  <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:0.88rem; fontWeight:600;">{{ metric.v }}</span>
+                </div>
+              </sc-for>
+              <div style="marginTop:12px;">
+                <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; fontWeight:600; padding:4px 9px; borderRadius:99px; color:#5b5f6e; background:#eceef2;"><span style="width:6px; height:6px; borderRadius:50%; background:currentColor;"></span>{{ ap.badge }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <section>
+        <h2 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1rem; fontWeight:600; marginBottom:12px;">Journal d'activité agrégé</h2>
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:8px 0;">
+          <sc-for list="{{ journal }}" as="j" hint-placeholder-count="6">
+            <div style="display:flex; alignItems:center; gap:16px; padding:11px 22px; borderBottom:1px solid #E2E1DB; flexWrap:wrap;">
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.76rem; color:#55584f; width:112px; flexShrink:0;">{{ j.time }}</span>
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.72rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.04em; color:#55584f; width:120px; flexShrink:0;">{{ j.type }}</span>
+              <span style="fontSize:0.86rem; flex:1; minWidth:220px;">{{ j.detail }}</span>
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:0.82rem; color:#55584f;">{{ j.count }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <sc-if value="{{ showAssistant }}" hint-placeholder-val="{{ true }}">
+    <div style="position:fixed; right:36px; bottom:28px; zIndex:30; display:flex; flexDirection:column; alignItems:flex-end; gap:12px;">
+      <div style="width:306px; display:{{ assistantDisplay }}; background:#fff; border:1px solid #E2E1DB; borderRadius:22px; boxShadow:0 14px 34px rgba(28,31,27,0.14); overflow:hidden;">
+        <div style="padding:12px 16px; borderBottom:1px solid #E2E1DB; background:#F1F1EE; display:flex; alignItems:center; justifyContent:space-between; gap:10px;">
+          <span style="fontFamily:'Space Grotesk',sans-serif; fontSize:0.88rem; fontWeight:600;">Assistant</span>
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; color:#55584f; flex:1; textAlign:right;">contexte : {{ assistantContext }}</span>
+          <button type="button" onClick="{{ toggleAssistant }}" aria-label="Fermer l'assistant" style="width:30px; height:30px; borderRadius:99px; border:1px solid #E2E1DB; background:#fff; color:#55584f; fontSize:0.9rem; lineHeight:1; cursor:pointer; flexShrink:0;" style-hover="background:#FAFAF9">×</button>
+        </div>
+        <div style="padding:14px 16px; display:flex; flexDirection:column; gap:10px;">
+          <div style="background:#F1F1EE; borderRadius:16px; padding:10px 12px; fontSize:0.84rem; color:#1C1F1B;">{{ assistantMsg }}</div>
+          <div style="display:flex; alignItems:center; gap:8px;">
+            <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; fontWeight:600; padding:3px 8px; borderRadius:99px; color:#5b5f6e; background:#eceef2;"><span style="width:5px; height:5px; borderRadius:50%; background:currentColor;"></span>synthétique</span>
+            <span style="fontSize:0.74rem; color:#55584f;">réponse basée sur le modèle</span>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" placeholder="Poser une question" style="flex:1; minWidth:0; padding:11px 12px; borderRadius:14px; border:1px solid #E2E1DB; fontSize:0.84rem; fontFamily:'Inter',sans-serif;" />
+            <button type="button" style="padding:11px 14px; minHeight:44px; borderRadius:14px; border:none; background:#7a2c05; color:#fff; fontSize:0.84rem; fontWeight:600; cursor:pointer;" style-hover="background:#5c2104">Envoyer</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" onClick="{{ toggleAssistant }}" style="display:flex; alignItems:center; gap:10px; padding:14px 20px; minHeight:48px; borderRadius:99px; border:none; background:#1C1F1B; color:#fff; fontSize:0.88rem; fontWeight:600; cursor:pointer; boxShadow:0 10px 26px rgba(28,31,27,0.18);" style-hover="background:#7a2c05">
+        <span style="width:9px; height:9px; borderRadius:50%; background:#E8590C;"></span>{{ assistantButton }}
+      </button>
+    </div>
+  </sc-if>
+
+</div>
+</sc-if>
+
+<sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex; justifyContent:center; padding:8px 0 40px;">
+  <div style="width:390px; background:#FAFAF9; border:1px solid #E2E1DB; borderRadius:26px; overflow:hidden; boxShadow:0 18px 40px rgba(28,31,27,0.12);">
+    <div style="padding:10px 20px; background:#FAFAF9; borderBottom:1px solid #E2E1DB; display:flex; justifyContent:space-between; fontFamily:'IBM Plex Mono',monospace; fontSize:0.7rem; color:#55584f;">
+      <span>09:41</span><span>Ménage · débutant</span>
+    </div>
+    <div style="padding:18px 18px 28px; display:flex; flexDirection:column; gap:20px;">
+      <div>
+        <div style="display:flex; alignItems:center; gap:9px; marginBottom:10px;">
+          <img src="logo.png" alt="NouanKanyAI" style="width:26px; height:26px; objectFit:contain;" />
+          <span style="fontFamily:'Space Grotesk',sans-serif; fontWeight:700; fontSize:0.95rem;">Ma consommation</span>
+        </div>
+        <div style="display:flex; gap:5px;">
+          <span style="fontSize:0.72rem; padding:6px 11px; borderRadius:99px; border:1px solid #1C1F1B; background:#1C1F1B; color:#fff;">Débutant</span>
+          <span style="fontSize:0.72rem; padding:6px 11px; borderRadius:99px; border:1px solid #E2E1DB; color:#55584f;">Amateur</span>
+          <span style="fontSize:0.72rem; padding:6px 11px; borderRadius:99px; border:1px solid #E2E1DB; color:#55584f;">Technique</span>
+        </div>
+      </div>
+
+      <div style="background:#fdf3f4; border:1px solid #D6293E; borderRadius:20px; padding:16px;">
+        <div style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.05em; color:#D6293E; marginBottom:6px;">Action requise</div>
+        <h3 style="fontFamily:'Space Grotesk',sans-serif; fontSize:1.02rem; fontWeight:600; marginBottom:6px; textWrap:pretty;">Votre seuil de 200 kWh sera dépassé avant le 28</h3>
+        <p style="fontSize:0.86rem; color:#55584f; marginBottom:10px;">La projection de fin de mois est à 216 kWh, soit 8 % au-dessus de votre seuil.</p>
+        <div style="display:flex; alignItems:center; gap:8px; marginBottom:12px;">
+          <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; padding:3px 8px; borderRadius:99px; color:#7a5b0d; background:#f7efd8;"><span style="width:5px; height:5px; borderRadius:50%; background:currentColor;"></span>estimé</span>
+          <span style="fontSize:0.75rem; color:#55584f;">facture CIE de juillet</span>
+        </div>
+        <a href="#" style="display:flex; alignItems:center; justifyContent:center; padding:13px 18px; borderRadius:14px; background:#7a2c05; color:#fff; fontSize:0.88rem; fontWeight:600;" style-hover="background:#5c2104; color:#fff">Voir les 3 conseils</a>
+      </div>
+
+      <div style="display:grid; gridTemplateColumns:1fr 1fr; gap:10px;">
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:14px;">
+          <div style="fontSize:0.78rem; color:#55584f; marginBottom:6px;">Consommation du mois</div>
+          <div style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:1.4rem; fontWeight:600;">142<span style="fontSize:0.78rem; color:#55584f;"> kWh</span></div>
+          <span style="display:inline-flex; alignItems:center; gap:6px; marginTop:8px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; fontWeight:600; padding:3px 8px; borderRadius:99px; color:#7a5b0d; background:#f7efd8;"><span style="width:5px; height:5px; borderRadius:50%; background:currentColor;"></span>estimé</span>
+        </div>
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:14px;">
+          <div style="fontSize:0.78rem; color:#55584f; marginBottom:6px;">Coût projeté</div>
+          <div style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:1.4rem; fontWeight:600;">18 800<span style="fontSize:0.78rem; color:#55584f;"> F</span></div>
+          <span style="display:inline-flex; alignItems:center; gap:6px; marginTop:8px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; fontWeight:600; padding:3px 8px; borderRadius:99px; color:#7a5b0d; background:#f7efd8;"><span style="width:5px; height:5px; borderRadius:50%; background:currentColor;"></span>estimé</span>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:16px;">
+        <div style="fontSize:0.78rem; color:#55584f; marginBottom:10px;">Paliers tarifaires CIE</div>
+        <div style="display:flex; height:28px; borderRadius:6px; overflow:hidden; border:1px solid #E2E1DB;">
+          <div style="flex:1.3; background:#e7efe9;"></div>
+          <div style="flex:1.6; background:#fbe6d3;"></div>
+          <div style="flex:1; background:#f7c9c9;"></div>
+        </div>
+        <div style="display:flex; justifyContent:space-between; fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; color:#55584f; marginTop:6px;">
+          <span>Creuses</span><span>Pleines</span><span>Pointe</span>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:16px;">
+        <div style="display:flex; justifyContent:space-between; alignItems:baseline; gap:10px; marginBottom:10px;">
+          <span style="fontSize:0.78rem; color:#55584f;">Semaine prochaine</span>
+          <span style="display:inline-flex; alignItems:center; gap:6px; fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; fontWeight:600; padding:3px 8px; borderRadius:99px; color:#5b5f6e; background:#eceef2;"><span style="width:5px; height:5px; borderRadius:50%; background:currentColor;"></span>synthétique</span>
+        </div>
+        <div style="fontFamily:'IBM Plex Mono',monospace; fontVariantNumeric:tabular-nums; fontSize:1.5rem; fontWeight:600;">38<span style="fontSize:0.8rem; color:#55584f;"> kWh</span></div>
+        <div style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.74rem; color:#55584f; marginBottom:12px;">intervalle 32 à 44 kWh</div>
+        <div style="display:flex; gap:9px;">
+          <div style="display:flex; flexDirection:column; justifyContent:space-between; alignItems:flex-end; height:126px; paddingBottom:24px;">
+            <sc-for list="{{ predTicks }}" as="tick" hint-placeholder-count="3">
+              <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.64rem; color:#8a8a80; lineHeight:1;">{{ tick.label }}</span>
+            </sc-for>
+          </div>
+          <div style="flex:1; minWidth:0; height:126px; borderLeft:1px solid #E2E1DB; borderBottom:1px solid #E2E1DB; display:flex; alignItems:flex-end; gap:7px; padding:0 7px 24px 7px;">
+            <sc-for list="{{ predBars }}" as="p" hint-placeholder-count="7">
+              <div onClick="{{ p.toggle }}" style="flex:1; height:100%; minWidth:0; display:flex; flexDirection:column; justifyContent:flex-end; position:relative; cursor:pointer;">
+                <div style="position:absolute; top:-6px; left:50%; transform:translateX(-50%); opacity:{{ p.tipOpacity }}; background:#1C1F1B; color:#fff; fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; padding:4px 8px; borderRadius:9px; whiteSpace:nowrap; pointerEvents:none; zIndex:2; transition:opacity 0.12s ease;">{{ p.tip }}</div>
+                <div style="width:100%; height:{{ p.h }}; background:{{ p.color }}; borderRadius:9px 9px 0 0;"></div>
+                <span style="position:absolute; bottom:-20px; left:50%; transform:translateX(-50%); fontFamily:'IBM Plex Mono',monospace; fontSize:0.62rem; color:#55584f;">{{ p.day }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.64rem; color:#8a8a80; marginTop:12px;">ordonnées : kWh · abscisses : jour · touchez une barre</div>
+        <div style="fontSize:0.76rem; color:#55584f; marginTop:8px;">Modèle XGBoost, dataset synthétique. Aucun capteur installé chez vous.</div>
+      </div>
+
+      <div style="display:flex; flexDirection:column; gap:9px;">
+        <div style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.68rem; fontWeight:600; textTransform:uppercase; letterSpacing:0.05em; color:#55584f;">Conseils classés par impact</div>
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:14px; display:flex; justifyContent:space-between; gap:12px; alignItems:center;">
+          <span style="fontSize:0.87rem;">Décaler le chauffe-eau après 22 h</span>
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.87rem; fontWeight:600; color:#1B7A43;">−9 %</span>
+        </div>
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:14px; display:flex; justifyContent:space-between; gap:12px; alignItems:center;">
+          <span style="fontSize:0.87rem;">Régler la climatisation à 24 °C</span>
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.87rem; fontWeight:600; color:#1B7A43;">−6 %</span>
+        </div>
+        <div style="background:#fff; border:1px solid #E2E1DB; borderRadius:20px; padding:14px; display:flex; justifyContent:space-between; gap:12px; alignItems:center;">
+          <span style="fontSize:0.87rem;">Débrancher les appareils en veille</span>
+          <span style="fontFamily:'IBM Plex Mono',monospace; fontSize:0.87rem; fontWeight:600; color:#1B7A43;">−2 %</span>
+        </div>
+      </div>
+
+      <div style="background:repeating-linear-gradient(135deg,#EFEEE9,#EFEEE9 10px,#F5F4F0 10px,#F5F4F0 20px); border:1.5px dashed #C9C7BE; borderRadius:20px; padding:20px; textAlign:center; color:#8a8a80; fontSize:0.82rem;">
+        <b style="display:block; color:#5b5a50; fontFamily:'IBM Plex Mono',monospace; fontSize:0.66rem; textTransform:uppercase; letterSpacing:0.04em; marginBottom:6px;">Envoyer ma facture</b>
+        Prendre la facture CIE en photo, extraction OCR puis vérification
+      </div>
+
+      <button type="button" style="display:flex; alignItems:center; justifyContent:center; gap:9px; padding:14px; minHeight:48px; borderRadius:99px; border:none; background:#1C1F1B; color:#fff; fontSize:0.9rem; fontWeight:600; cursor:pointer;">Assistant NouanKanyAI</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;menage&quot;,&quot;pme&quot;,&quot;industrie&quot;,&quot;admin&quot;,&quot;mobile&quot;],&quot;default&quot;:&quot;menage&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Maquette&quot;},&quot;showAssistant&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Maquette&quot;}}">
+const BADGE = { est: 'isEst', synth: 'isSynth' };
+
+const DATA = {
+  menage: {
+    title: 'Ménage · Aïcha K.',
+    subtitle: 'Cocody, abonnement domestique 5 kVA · formule ECO Intelligent',
+    level: 'Débutant',
+    lastRun: 'dernier calcul 09:41',
+    nav: [
+      ['V', "Vue d'ensemble", true], ['A', 'Alertes'], ['C', 'Conso & coûts'],
+      ['P', 'Prédiction'], ['F', 'Factures'], ['I', 'Conseils'], ['S', 'Paramètres']
+    ],
+    alertCount: '1 action requise · 0 automatique',
+    alertsAction: [{
+      level: 'seuil global unique',
+      title: 'Votre seuil de 200 kWh sera dépassé avant le 28',
+      detail: "La projection de fin de mois atteint 216 kWh. Trois conseils suffisent à revenir sous le seuil si vous agissez cette semaine.",
+      basis: 'projection depuis la facture CIE de juillet et vos équipements déclarés',
+      cta: 'Voir les conseils'
+    }],
+    alertsAuto: [],
+    kpiTitle: 'Consommation et coût',
+    kpis: [
+      ['Consommation du mois en cours', '142', 'kWh', '71 % du seuil de 200 kWh', 'est'],
+      ['Coût projeté fin de mois', '18 800', 'FCFA', '+2 400 FCFA vs juillet', 'est'],
+      ['Part consommée en heures de pointe', '29', '%', 'poste le plus coûteux du foyer', 'est']
+    ],
+    showTariff: true,
+    tariffNow: 'maintenant : heures pleines',
+    pred: ['Prédiction de la semaine prochaine', '38', 'kWh', 'intervalle 32 à 44 kWh', "Modèle XGBoost entraîné sur données synthétiques. Aucun capteur installé : la prédiction s'affine à chaque facture que vous envoyez."],
+    predBars: [['Lun','5,1',48],['Mar','5,8',62],['Mer','5,4',55],['Jeu','6,2',74],['Ven','6,9',88],['Sam','7,4',100],['Dim','5,9',66]],
+    adviceTitle: 'Conseils classés par impact',
+    advice: [
+      ['01', 'Décaler le chauffe-eau après 22 h', "Passage du poste en heures creuses, sans changer d'usage", '−9 %'],
+      ['02', 'Régler la climatisation à 24 °C', 'Deux degrés de consigne sur les trois pièces déclarées', '−6 %'],
+      ['03', 'Débrancher les appareils en veille', 'Box, téléviseur et micro-ondes la nuit', '−2 %']
+    ],
+    upload: true,
+    ocr: [['Période facturée', 'juil. 2026'], ['Index relevé', '4 812 kWh'], ['Consommation', '138 kWh'], ['Montant TTC', '17 240 FCFA'], ['Tarif appliqué', '87 FCFA/kWh']],
+    assistant: 'chauffe-eau, climatisation',
+    assistantMsg: "Votre chauffe-eau représente 31 % de la facture estimée. Le décaler après 22 h vous fait passer en heures creuses."
+  },
+
+  pme: {
+    title: 'PME · Boulangerie Awalé',
+    subtitle: 'Marcory, 2 sites · abonnement professionnel · formule ECO Premium',
+    level: 'Amateur',
+    lastRun: 'dernier calcul 08:15',
+    nav: [
+      ['V', "Vue d'ensemble", true], ['A', 'Alertes'], ['C', 'Conso & coûts'],
+      ['E', 'Équipements'], ['P', 'Prédiction'], ['F', 'Factures'], ['R', 'Rapports'], ['S', 'Paramètres']
+    ],
+    alertCount: '1 action requise · 1 automatique journalisée',
+    alertsAction: [{
+      level: 'seuil par appareil · vitrine réfrigérée',
+      title: 'La vitrine réfrigérée consomme 41 % au-dessus de son profil déclaré',
+      detail: "Écart constant depuis six jours. Un joint de porte défectueux ou un dégivrage incomplet explique généralement cet écart. Impact estimé sur la marge du mois : 1,4 point.",
+      basis: 'comparaison entre profil déclaré et répartition estimée de la facture',
+      cta: "Ouvrir la fiche équipement"
+    }],
+    alertsAuto: [{
+      title: 'Décalage automatique du préchauffage du four hors heures de pointe',
+      detail: "Action à faible risque, appliquée et journalisée. Aucune intervention de votre part n'est nécessaire.",
+      time: 'hier 21:42'
+    }],
+    kpiTitle: 'Consommation, coût et marge',
+    kpis: [
+      ['Consommation de la semaine', '1 240', 'kWh', '+7 % vs semaine précédente', 'est'],
+      ['Coût projeté du mois', '108 000', 'FCFA', 'dont 31 % en heures de pointe', 'est'],
+      ['Part heures de pointe', '34', '%', 'objectif interne : 25 %', 'est'],
+      ['Impact estimé sur la marge', '−2,1', 'points', 'principalement vitrine et four', 'est']
+    ],
+    showTariff: true,
+    tariffNow: 'maintenant : heures de pointe',
+    pred: ['Prédiction de la semaine prochaine', '1 305', 'kWh', 'intervalle 1 180 à 1 430 kWh', "Modèle XGBoost, dataset synthétique. Le rapport hebdomadaire reprend cette prédiction en langage non technique, sans jargon."],
+    predBars: [['Lun','192',72],['Mar','188',68],['Mer','196',76],['Jeu','204',84],['Ven','226',100],['Sam','218',94],['Dim','81',30]],
+    adviceTitle: 'Conseils priorisés par impact sur la marge',
+    advice: [
+      ['01', 'Remplacer le joint de la vitrine réfrigérée', 'Retour sur investissement estimé en trois semaines', '−11 %'],
+      ['02', 'Lancer la deuxième fournée avant 17 h', 'Sortie de la plage de pointe pour le four principal', '−7 %'],
+      ['03', 'Programmer l’arrêt de la chambre froide 2 la nuit', 'Site secondaire, faible rotation constatée', '−3 %']
+    ],
+    table: {
+      title: 'Équipements déclarés',
+      cols: '1.1fr 1fr 1.1fr 0.9fr 0.7fr 0.9fr 0.9fr',
+      head: ['Catégorie', 'Marque', 'Modèle', 'Site', 'Priorité', 'Statut', 'Provenance'],
+      rows: [
+        ['Vitrine réfrigérée', 'Frigelux', 'VR-320', 'Marcory', 'Haute', 'Écart détecté'],
+        ['Four à sole', 'Bongard', 'Soleo 4', 'Marcory', 'Haute', 'Opérationnel'],
+        ['Chambre froide', 'Carrier', 'CF-18', 'Koumassi', 'Moyenne', 'Opérationnel'],
+        ['Pétrin', 'Diosna', 'SP-80', 'Marcory', 'Basse', 'Opérationnel'],
+        ['Climatisation salle', 'LG', 'Dual Inverter', 'Marcory', 'Basse', 'Arrêté']
+      ]
+    },
+    upload: true,
+    ocr: [['Période facturée', 'juil. 2026'], ['Index relevé', '38 402 kWh'], ['Consommation', '4 910 kWh'], ['Montant TTC', '427 170 FCFA'], ['Analyse média', '1 vidéo vitrine']],
+    assistant: 'vitrine réfrigérée, four à sole',
+    assistantMsg: "La vitrine réfrigérée est le premier poste d'écart. Voulez-vous une comparaison avec le mois dernier à équipement constant ?"
+  },
+
+  industrie: {
+    title: 'Industrie · Site Yopougon Ligne 2',
+    subtitle: '3 lignes de production · contrat 630 kVA · formule ECO Premium',
+    level: 'Technique',
+    lastRun: 'dernier calcul 14:12 · fenêtre 15 min',
+    nav: [
+      ['V', "Vue d'ensemble", true], ['A', 'Alertes'], ['M', 'Machines'], ['C', 'Conso & coûts'],
+      ['P', 'Prédiction'], ['N', 'Anomalies'], ['R', 'Rapports'], ['J', 'Journal'], ['S', 'Paramètres']
+    ],
+    alertCount: '1 action requise · 1 automatique journalisée',
+    alertsAction: [{
+      level: 'palier critique 90 % franchi · score de sévérité 0,82',
+      title: 'Ligne 2 : appel de puissance à 92 % du contrat souscrit',
+      detail: "Isolation Forest classe l'épisode en anomalie majeure. Le palier urgence 100 % déclenche une pénalité de dépassement. Un opérateur doit valider le délestage du compresseur C-1 avant 15:00.",
+      basis: 'reconstitution de la courbe de charge depuis la facture et les plaques machine',
+      cta: 'Procédure de délestage'
+    }],
+    alertsAuto: [{
+      title: 'Délestage préventif du compresseur C-3',
+      detail: 'Action à faible risque, exécutée automatiquement et journalisée. Charge réduite de 34 kW.',
+      time: "aujourd'hui 14:07"
+    }],
+    kpiTitle: 'Charge, coût et disponibilité',
+    kpis: [
+      ['Appel de puissance actuel', '486', 'kW', '92 % du contrat 630 kVA', 'est'],
+      ['Coût du jour', '214 000', 'FCFA', '+18 % vs moyenne du mois', 'est'],
+      ['Pointe atteinte sur 24 h', '92', '%', 'palier critique franchi à 13:48', 'est'],
+      ['Anomalies détectées sur 24 h', '3', 'événements', 'Isolation Forest, sévérité max 0,82', 'synth'],
+      ['Disponibilité des lignes', '97,4', '%', 'Ligne 3 arrêtée 38 min', 'est']
+    ],
+    showTariff: true,
+    tariffNow: 'maintenant : heures de pointe',
+    pred: ['Prédiction de charge, 7 prochains jours', '3 420', 'kWh/jour', 'intervalle 3 180 à 3 690 kWh/jour', "Modèle XGBoost et détection Isolation Forest, tous deux entraînés sur données synthétiques. Aucun capteur physique installé sur le site à ce jour."],
+    predBars: [['Lun','3,3',78],['Mar','3,4',82],['Mer','3,6',90],['Jeu','3,7',96],['Ven','3,8',100],['Sam','2,9',64],['Dim','2,2',44]],
+    adviceTitle: 'Conseils priorisés par impact',
+    advice: [
+      ['01', 'Étaler le démarrage des compresseurs sur 20 min', "Réduction de l'appel de puissance simultané", '−12 %'],
+      ['02', 'Décaler le broyeur B-2 en heures creuses', 'Poste déplaçable sans effet sur la cadence', '−8 %'],
+      ['03', 'Corriger le déséquilibre de phase Ligne 3', 'Écart estimé à 11 % entre phases', '−4 %']
+    ],
+    table: {
+      title: 'Métadonnées machine',
+      cols: '1.1fr 0.9fr 0.9fr 0.9fr 1fr 0.7fr 0.9fr',
+      head: ['Machine', 'Température', 'Vibration', 'Pression', 'Statut', 'Priorité', 'Provenance'],
+      rows: [
+        ['Compresseur C-1', '78 °C', '4,2 mm/s', '7,1 bar', 'Anomalie majeure', 'Haute'],
+        ['Compresseur C-3', '61 °C', '2,1 mm/s', '6,8 bar', 'Délesté (auto)', 'Haute'],
+        ['Broyeur B-2', '54 °C', '3,4 mm/s', '—', 'Opérationnel', 'Moyenne'],
+        ['Convoyeur K-4', '39 °C', '1,2 mm/s', '—', 'Opérationnel', 'Basse'],
+        ['Ligne 3 (général)', '46 °C', '2,8 mm/s', '5,9 bar', 'Arrêt programmé', 'Moyenne']
+      ]
+    },
+    plan: [
+      ['Étalement du démarrage des compresseurs', 'Modification de séquence automate, sans investissement', '−1 340 000 FCFA / mois'],
+      ['Décalage du broyeur B-2 en heures creuses', 'Réorganisation de deux créneaux de production', '−820 000 FCFA / mois'],
+      ['Équilibrage des phases Ligne 3', 'Intervention électricien estimée à 350 000 FCFA', '−410 000 FCFA / mois']
+    ],
+    resolutions: [
+      ['12 août', 'Surchauffe compresseur C-1, sévérité 0,74', 'Nettoyage du condenseur et remplacement du filtre à air', '0,74'],
+      ['29 juil.', 'Pic de vibration broyeur B-2, sévérité 0,61', 'Resserrage des fixations et réalignement de la courroie', '0,61'],
+      ['18 juil.', 'Dépassement de pointe à 14:20, sévérité 0,58', 'Délestage manuel du convoyeur K-4 pendant 25 min', '0,58']
+    ],
+    upload: false,
+    assistant: 'compresseurs C-1 et C-3',
+    assistantMsg: "C-1 dépasse le seuil de vibration depuis 3 jours. Souhaitez-vous l'historique des résolutions d'anomalies similaires ?"
+  },
+
+  admin: {
+    title: 'Portail Admin · plateforme NouanKanyAI',
+    subtitle: 'MVP en développement · modèles entraînés sur données synthétiques',
+    level: 'Technique',
+    lastRun: 'rafraîchi il y a 40 s',
+    nav: [
+      ['V', "Vue d'ensemble", true], ['A', 'Alertes système'], ['M', 'Modèles'],
+      ['O', 'Observabilité'], ['U', 'Utilisateurs'], ['J', 'Journal'], ['S', 'Paramètres']
+    ],
+    alertCount: '1 action requise · aucune métrique dégradée',
+    alertsAction: [{
+      level: 'infrastructure · échéance datée',
+      title: "Le certificat de l'API expire dans 6 jours",
+      detail: "Renouvellement manuel requis avant le 3 septembre. Aucun service n'est actuellement dégradé, toutes les métriques répondent.",
+      basis: 'échéance lue sur le certificat en production',
+      cta: 'Ouvrir la procédure'
+    }],
+    alertsAuto: [],
+    kpiTitle: 'Santé de la plateforme',
+    kpis: [
+      ['Base de données', 'connectée', '', 'PostgreSQL · 4 pools actifs', 'none', 'télémétrie système'],
+      ['Uptime du processus', '14 j 06 h', '', 'dernier redémarrage le 14 août', 'none', 'télémétrie système'],
+      ['Latence API moyenne', '218', 'ms', 'fenêtre glissante 15 min · 1 842 échantillons', 'none', 'télémétrie système'],
+      ['Latence p95', '512', 'ms', 'même fenêtre · 1 842 échantillons', 'none', 'télémétrie système']
+    ],
+    showTariff: false,
+    pred: ['Charge prédite sur la plateforme, 7 jours', '2 940', 'requêtes/jour', 'intervalle 2 610 à 3 280 requêtes/jour', "Projection issue du même modèle que les prédictions utilisateur, entraîné sur dataset synthétique. À traiter comme un ordre de grandeur, pas comme un engagement de capacité."],
+    predBars: [['Lun','2,8',76],['Mar','2,9',80],['Mer','3,0',84],['Jeu','3,1',88],['Ven','3,3',100],['Sam','2,4',58],['Dim','2,1',48]],
+    advice: [],
+    adminPanels: [
+      { title: 'XGBoost · prédiction', meta: 'entraîné le 21 août', badge: 'dataset: synthetic',
+        rows: [['R²', '0,912'], ['MAE', '4,2 kWh'], ['MAPE', '6,8 %'], ['Échantillons de test', '18 400']] },
+      { title: 'Isolation Forest · anomalies', meta: 'fenêtre 7 jours', badge: 'dataset: synthetic',
+        rows: [['Anomalies détectées', '27'], ['Sévérité moyenne', '0,46'], ['Sévérité max', '0,82'], ['Faux positifs signalés', '3']] },
+      { title: 'Gemini · observabilité', meta: 'fenêtre 24 h', badge: 'mode mock : désactivé',
+        rows: [['Appels réels', '1 204'], ['Cache hits', '38 %'], ['Saturations (429)', '0'], ['Latence moyenne', '740 ms']] }
+    ],
+    journal: [
+      ['14:07:12', 'Délestage', 'Délestage préventif auto · site Yopougon, compresseur C-3', '1'],
+      ['13:48:03', 'Alerte', 'Palier critique 90 % franchi · Ligne 2', '1'],
+      ['11:22:40', 'Analyse média', 'Vidéo vitrine réfrigérée analysée · Boulangerie Awalé', '1'],
+      ['10:05:17', 'Upload', 'Factures CIE traitées par OCR', '14'],
+      ['09:41:58', 'Connexion', 'Sessions utilisateur ouvertes', '63'],
+      ['04:00:00', 'Reset', 'Réinitialisation des compteurs de quota journaliers', '1']
+    ],
+    upload: false,
+    assistant: null
+  }
+};
+
+const LEVELS = ['Débutant', 'Amateur', 'Technique'];
+const VIEWS = [['menage', 'Ménage'], ['pme', 'PME'], ['industrie', 'Industrie'], ['admin', 'Portail Admin'], ['mobile', 'Mobile ménage']];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const v = props.defaultView || 'menage';
+    this.state = { view: v, level: (DATA[v] || DATA.menage).level, hover: null, assistantOpen: false };
+  }
+
+  pick(view) {
+    const base = view === 'mobile' ? 'menage' : view;
+    this.setState({ view, level: DATA[base].level, hover: null });
+  }
+
+  renderVals() {
+    const view = this.state.view;
+    const d = DATA[view === 'mobile' ? 'menage' : view];
+
+    const views = VIEWS.map(([id, label]) => ({
+      label, select: () => this.pick(id),
+      bg: view === id ? '#1C1F1B' : 'transparent',
+      fg: view === id ? '#ffffff' : '#55584f',
+      border: view === id ? '#1C1F1B' : 'transparent'
+    }));
+
+    const levels = LEVELS.map(l => ({
+      label: l, select: () => this.setState({ level: l }),
+      bg: this.state.level === l ? '#1C1F1B' : 'transparent',
+      fg: this.state.level === l ? '#ffffff' : '#55584f',
+      border: this.state.level === l ? '#1C1F1B' : '#E2E1DB'
+    }));
+
+    const kpis = (d.kpis || []).map(k => ({
+      label: k[0], value: k[1], unit: k[2], trend: k[3],
+      isEst: k[4] === 'est', isSynth: k[4] === 'synth', isNone: k[4] === 'none', note: k[5] || ''
+    }));
+
+    const t = d.table;
+    const tableRows = t ? t.rows.map(row => ({
+      cells: row.map((text, i) => ({
+        text,
+        color: i === 0 ? '#1C1F1B' : '#55584f',
+        font: i === 0 ? "'Inter', sans-serif" : "'IBM Plex Mono', monospace"
+      }))
+    })) : [];
+
+    return {
+      views, levels,
+      isDesktop: view !== 'mobile',
+      isMobile: view === 'mobile',
+      title: d.title, subtitle: d.subtitle, lastRun: d.lastRun,
+      nav: (d.nav || []).map(([glyph, label, active]) => ({
+        glyph, label,
+        fg: active ? '#1C1F1B' : '#55584f',
+        bg: active ? '#F1F1EE' : 'transparent',
+        weight: active ? 600 : 400
+      })),
+      alertCount: d.alertCount,
+      alertsAction: d.alertsAction || [],
+      alertsAuto: d.alertsAuto || [],
+      hasAuto: (d.alertsAuto || []).length > 0,
+      kpiTitle: d.kpiTitle, kpis,
+      showTariff: !!d.showTariff, tariffNow: d.tariffNow || '',
+      predLabel: d.pred[0], predValue: d.pred[1], predUnit: d.pred[2],
+      predInterval: d.pred[3], predNote: d.pred[4],
+      predBars: d.predBars.map(([day, val, h], i) => {
+        const active = this.state.hover === i;
+        return {
+          day, val, h: h + '%',
+          color: active ? '#7a2c05' : '#E8590C',
+          tip: val + ' ' + d.pred[2],
+          tipOpacity: active ? 1 : 0,
+          enter: () => this.setState({ hover: i }),
+          leave: () => this.setState({ hover: null }),
+          toggle: () => this.setState({ hover: this.state.hover === i ? null : i })
+        };
+      }),
+      predTicks: (() => {
+        const nums = d.predBars.map(b => parseFloat(String(b[1]).replace(/\s/g, '').replace(',', '.')));
+        const max = Math.max.apply(null, nums) / (Math.max.apply(null, d.predBars.map(b => b[2])) / 100);
+        const fmt = (n) => (max < 10 ? n.toFixed(1).replace('.', ',') : Math.round(n).toLocaleString('fr-FR'));
+        return [{ label: fmt(max) }, { label: fmt(max / 2) }, { label: '0' }];
+      })(),
+      hasAdvice: (d.advice || []).length > 0,
+      adviceTitle: d.adviceTitle || 'Conseils',
+      advice: (d.advice || []).map(([rank, title, detail, impact]) => ({ rank, title, detail, impact })),
+      hasTable: !!t,
+      tableTitle: t ? t.title : '',
+      tableCols: t ? t.cols : '1fr',
+      tableHead: t ? t.head.map(label => ({ label })) : [],
+      tableRows,
+      hasPlan: !!d.plan,
+      plan: (d.plan || []).map(([title, detail, gain]) => ({ title, detail, gain })),
+      hasResolutions: !!d.resolutions,
+      resolutions: (d.resolutions || []).map(([date, anomaly, fix, score]) => ({ date, anomaly, fix, score })),
+      hasUpload: !!d.upload,
+      ocr: (d.ocr || []).map(([field, value]) => ({ field, value })),
+      hasAdmin: view === 'admin',
+      adminPanels: (d.adminPanels || []).map(p => ({
+        title: p.title, meta: p.meta, badge: p.badge,
+        rows: p.rows.map(([k, v]) => ({ k, v }))
+      })),
+      journal: (d.journal || []).map(([time, type, detail, count]) => ({ time, type, detail, count })),
+      showAssistant: (this.props.showAssistant ?? true) && view !== 'admin' && view !== 'mobile',
+      assistantDisplay: this.state.assistantOpen ? 'block' : 'none',
+      assistantButton: this.state.assistantOpen ? 'Masquer l’assistant' : 'Assistant NouanKanyAI',
+      toggleAssistant: () => this.setState({ assistantOpen: !this.state.assistantOpen }),
+      assistantContext: d.assistant || '',
+      assistantMsg: d.assistantMsg || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

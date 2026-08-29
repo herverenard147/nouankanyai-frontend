@@ -1,0 +1,57 @@
+import type { LandingChart } from '@/types/domain'
+
+export const LANDING_CHARTS: LandingChart[] = [
+  {
+    id: 'tarif',
+    headline: '79 → 87',
+    label: 'FCFA/kWh, tarif moyen 2023–2024',
+    axisY: 'FCFA/kWh',
+    axisX: 'année',
+    source: 'source : plan d’affaires',
+    ticks: ['100', '50', '0'],
+    min: 0,
+    max: 100,
+    gapPx: 30,
+    bars: [
+      { x: '2023', value: 79, tip: '79 FCFA/kWh' },
+      { x: '2024', value: 87, tip: '87 FCFA/kWh' },
+    ],
+  },
+  {
+    id: 'ecart',
+    headline: '×2',
+    label: 'écart tarifaire entre heures creuses et heures de pointe',
+    axisY: 'indice de tarif',
+    axisX: 'palier horaire',
+    source: 'grille CIE',
+    ticks: ['2,0', '1,0', '0'],
+    min: 0,
+    max: 2,
+    gapPx: 26,
+    bars: [
+      { x: 'Creuses', value: 1, tip: 'indice 1,0' },
+      { x: 'Pleines', value: 1.5, tip: 'indice 1,5' },
+      { x: 'Pointe', value: 2, tip: 'indice 2,0' },
+    ],
+  },
+  {
+    id: 'demande',
+    headline: '6,5%',
+    label: 'croissance annuelle de la demande nationale, 2025–2030',
+    axisY: 'indice base 100',
+    axisX: 'année',
+    source: 'projection à 6,5 %/an',
+    ticks: ['140', '120', '100'],
+    min: 96,
+    max: 140,
+    gapPx: 12,
+    bars: [
+      { x: '25', value: 100, tip: 'indice 100' },
+      { x: '26', value: 106.5, tip: 'indice 106,5' },
+      { x: '27', value: 113.4, tip: 'indice 113,4' },
+      { x: '28', value: 120.8, tip: 'indice 120,8' },
+      { x: '29', value: 128.6, tip: 'indice 128,6' },
+      { x: '30', value: 137, tip: 'indice 137,0' },
+    ],
+  },
+]
