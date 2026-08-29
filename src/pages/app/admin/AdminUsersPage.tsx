@@ -14,6 +14,7 @@ const COLUMNS: TableColumn<AdminUser>[] = [
   { key: 'name', label: 'Nom' },
   { key: 'email', label: 'Email' },
   { key: 'profile', label: 'Profil' },
+  { key: 'accountLabel', label: 'Compte' },
   { key: 'status', label: 'Statut' },
   { key: 'lastLogin', label: 'Dernière connexion' },
 ]

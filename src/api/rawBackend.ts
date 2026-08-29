@@ -26,12 +26,19 @@ import type {
   BackendPlatformRole,
   BackendRecommendation,
   BackendSite,
+  BackendNewTeamMemberPayload,
+  BackendTeamMember,
   BackendUser,
 } from '@/types/backend'
 
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
 export const rawUpdateMe = (payload: { nom?: string; type_compte?: string }) =>
   api.patch<BackendUser>('/api/auth/me', payload)
+
+export const rawTeamMembers = () => api.get<BackendTeamMember[]>('/api/v1/team/members')
+export const rawCreateTeamMember = (payload: BackendNewTeamMemberPayload) =>
+  api.post<BackendTeamMember>('/api/v1/team/members', payload)
+export const rawDeleteTeamMember = (memberId: string) => api.delete<null>(`/api/v1/team/members/${memberId}`)
 
 export const rawSites = () => api.get<BackendSite[]>('/api/sites')
 export const rawCreateSite = (payload: { nom: string; localisation: string }) =>

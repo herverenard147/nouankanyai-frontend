@@ -21,6 +21,22 @@ export interface Session {
   displayName: string
   subtitle: string
   formule: 'eco-essentiel' | 'eco-intelligent' | 'eco-premium' | null
+  /**
+   * Compte principal d'une équipe PME/Industrie (peut ajouter/retirer des
+   * membres) — toujours `false` pour un Ménage ou un Admin, et pour un
+   * membre d'équipe (voir `TeamMember.isOwner` pour distinguer les entrées
+   * dans la liste elle-même).
+   */
+  isTeamOwner: boolean
+}
+
+export interface TeamMember {
+  id: string
+  nom: string
+  email: string
+  isOwner: boolean
+  createdAt: string
+  lastSignInAt: string | null
 }
 
 export interface ActionAlert {
@@ -170,6 +186,11 @@ export interface AdminUser {
   lastLogin: string
   provenance: Provenance
   platformRole: 'admin' | 'superadmin' | null
+  /** Compte d'équipe (voir app/api/v1/team/, backend) : null si compte principal. */
+  ownerId: string | null
+  ownerName: string | null
+  /** Libellé affiché tel quel dans le tableau admin : "Compte principal", "Membre — {entreprise}", ou "—" (Ménage/Admin, non applicable). */
+  accountLabel: string
 }
 
 export interface JournalEntry {

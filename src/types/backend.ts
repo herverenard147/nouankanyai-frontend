@@ -16,6 +16,22 @@ export interface BackendUser {
   type_compte: string
   role: string
   platform_role: BackendPlatformRole
+  owner_id: string | null
+}
+
+export interface BackendTeamMember {
+  id: string
+  nom: string
+  email: string
+  is_owner: boolean
+  created_at: string
+  last_sign_in_at: string | null
+}
+
+export interface BackendNewTeamMemberPayload {
+  nom: string
+  email: string
+  password: string
 }
 
 export interface BackendAuthResult {
@@ -168,6 +184,8 @@ export interface BackendAdminUserRow {
   status: 'actif' | 'inactif'
   sites_count: number
   machines_count: number
+  owner_id: string | null
+  owner_name: string | null
 }
 export interface BackendRecentActivity {
   type: string

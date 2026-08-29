@@ -5,10 +5,112 @@ import { LevelSelector } from '@/components/level/LevelSelector'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
+import { useCreateTeamMember, useDeleteTeamMember, useTeamMembers } from '@/hooks/queries/useTeam'
 import { useThresholds, useUpdateThresholds } from '@/hooks/queries/useThresholds'
 import { useLevel, useLevelStore } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
+
+const MAX_TEAM_MEMBERS = 4
+
+function TeamCard({ isOwner }: { isOwner: boolean }) {
+  const query = useTeamMembers()
+  const createMutation = useCreateTeamMember()
+  const deleteMutation = useDeleteTeamMember()
+  const [form, setForm] = useState({ nom: '', email: '', password: '' })
+
+  const memberCount = (query.data?.length ?? 1) - 1 // exclut le propriétaire lui-même
+  const atCap = memberCount >= MAX_TEAM_MEMBERS
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+    createMutation.mutate(form, { onSuccess: () => setForm({ nom: '', email: '', password: '' }) })
+  }
+
+  return (
+    <Card className="flex flex-col gap-3 p-6">
+      <h2 className="text-section-title font-semibold text-text-primary">Équipe</h2>
+      <p className="text-sm text-text-secondary">
+        {isOwner
+          ? `Jusqu'à ${MAX_TEAM_MEMBERS} comptes membres peuvent utiliser ce dashboard avec vous — mêmes machines, mêmes factures, mêmes alertes. Vous seul pouvez en ajouter ou en retirer.`
+          : 'Vous faites partie de cette équipe. Le compte principal de l’entreprise gère les membres.'}
+      </p>
+      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+        <ul className="flex flex-col gap-2">
+          {query.data?.map((member) => (
+            <li
+              key={member.id}
+              className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2 last:border-b-0 last:pb-0"
+            >
+              <div>
+                <p className="text-sm font-semibold text-text-primary">
+                  {member.nom} {member.isOwner && <span className="text-text-tertiary">— Propriétaire</span>}
+                </p>
+                <p className="text-sm text-text-secondary">{member.email}</p>
+              </div>
+              {isOwner && !member.isOwner && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={deleteMutation.isPending}
+                  onClick={() => deleteMutation.mutate(member.id)}
+                >
+                  Retirer
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      </MetricState>
+      {deleteMutation.isError && <p className="text-sm text-alert">Échec du retrait du membre.</p>}
+
+      {isOwner && (
+        <div className="mt-2 flex flex-col gap-3 border-t border-border pt-4">
+          <p className="text-sm font-medium text-text-primary">
+            {memberCount}/{MAX_TEAM_MEMBERS} comptes membres utilisés
+          </p>
+          {atCap ? (
+            <p className="text-sm text-text-secondary">
+              Plafond atteint — retirez un membre pour pouvoir en ajouter un nouveau.
+            </p>
+          ) : (
+            <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-3">
+              <TextField
+                label="Nom"
+                value={form.nom}
+                onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))}
+                required
+              />
+              <TextField
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                required
+              />
+              <PasswordField
+                label="Mot de passe initial"
+                value={form.password}
+                onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                minLength={6}
+                required
+              />
+              <Button type="submit" disabled={createMutation.isPending} className="sm:col-span-3 sm:w-fit">
+                {createMutation.isPending ? 'Ajout…' : 'Ajouter un membre'}
+              </Button>
+              {createMutation.isError && (
+                <p className="text-sm text-alert sm:col-span-3">
+                  Échec de l&rsquo;ajout — vérifiez que l&rsquo;email n&rsquo;est pas déjà utilisé.
+                </p>
+              )}
+            </form>
+          )}
+        </div>
+      )}
+    </Card>
+  )
+}
 
 function ThresholdsCard() {
   const query = useThresholds()
@@ -91,6 +193,10 @@ export function SettingsPage() {
           </p>
           <LevelSelector value={level} onChange={(l) => setLevel(session.profile, l)} />
         </Card>
+      )}
+
+      {(session.profile === 'pme' || session.profile === 'industrie') && (
+        <TeamCard isOwner={session.isTeamOwner} />
       )}
 
       {session.profile !== 'admin' && <ThresholdsCard />}

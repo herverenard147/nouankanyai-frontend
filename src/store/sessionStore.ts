@@ -9,14 +9,18 @@ import type { Session } from '@/types/domain'
 type AuthResult = { ok: true } | { ok: false; message: string }
 
 function toSession(result: BackendAuthResult): Session {
+  const profile = deriveProfile(result.user.type_compte, result.user.platform_role)
   return {
     userId: result.user.id,
     token: result.token,
-    profile: deriveProfile(result.user.type_compte, result.user.platform_role),
+    profile,
     platformRole: result.user.platform_role,
     displayName: result.user.nom,
     subtitle: result.user.type_compte,
     formule: null,
+    // Seuls les PME/Industrie sans owner_id (compte principal, pas membre d'une
+    // équipe) peuvent gérer des membres — voir app/api/v1/team/ côté backend.
+    isTeamOwner: (profile === 'pme' || profile === 'industrie') && !result.user.owner_id,
   }
 }
 
