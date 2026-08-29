@@ -23,7 +23,7 @@ export function MenageOverview() {
       <KpiGrid profile="menage" />
       <TariffSection profile="menage" />
       <PredictionPanel profile="menage" level="debutant" />
-      <AdviceList profile="menage" level="debutant" />
+      <AdviceList profile="menage" level="debutant" maxItems={2} />
 
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">

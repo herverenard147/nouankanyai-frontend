@@ -45,7 +45,7 @@ export function IndustrieOverview() {
       <KpiGrid profile="industrie" />
       <TariffSection profile="industrie" />
       <PredictionPanel profile="industrie" level={level} />
-      <AdviceList profile="industrie" level={level} />
+      <AdviceList profile="industrie" level={level} maxItems={2} />
 
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">

@@ -43,7 +43,7 @@ export function PmeOverview() {
       <KpiGrid profile="pme" />
       <TariffSection profile="pme" />
       <PredictionPanel profile="pme" level={level} />
-      <AdviceList profile="pme" level={level} />
+      <AdviceList profile="pme" level={level} maxItems={2} />
 
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
