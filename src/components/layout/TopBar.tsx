@@ -18,6 +18,12 @@ export function TopBar() {
   const entries = NAV_BY_PROFILE[session.profile]
   const currentEntry = entries.find((e) => location.pathname === e.path || location.pathname.startsWith(`${e.path}/`))
   const level = getLevel(session.profile)
+  // Niveau d'affichage réservé aux profils PME/Industrie (et Admin) — un
+  // ménage n'a qu'une seule densité d'info, pas de raison de lui proposer ce
+  // choix. Sur mobile/tablette, le choix reste accessible uniquement depuis
+  // /app/parametres (pas ici, pour ne pas surcharger l'en-tête) — voir
+  // SettingsPage.
+  const showLevelSelector = session.profile !== 'menage'
 
   return (
     <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-7 py-4">
@@ -37,10 +43,12 @@ export function TopBar() {
           </p>
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-mono-axis uppercase tracking-wide text-text-tertiary">Niveau</span>
-        <LevelSelector value={level} onChange={(l) => setLevel(session.profile, l)} />
-      </div>
+      {showLevelSelector && (
+        <div className="hidden items-center gap-2 lg:flex">
+          <span className="font-mono text-mono-axis uppercase tracking-wide text-text-tertiary">Niveau</span>
+          <LevelSelector value={level} onChange={(l) => setLevel(session.profile, l)} />
+        </div>
+      )}
     </header>
   )
 }

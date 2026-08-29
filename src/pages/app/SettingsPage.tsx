@@ -82,10 +82,16 @@ export function SettingsPage() {
         </dl>
       </Card>
 
-      <Card className="flex flex-col gap-3 p-6">
-        <h2 className="text-section-title font-semibold text-text-primary">Niveau d&rsquo;affichage</h2>
-        <LevelSelector value={getLevel(session.profile)} onChange={(l) => setLevel(session.profile, l)} />
-      </Card>
+      {session.profile !== 'menage' && (
+        <Card className="flex flex-col gap-3 p-6">
+          <h2 className="text-section-title font-semibold text-text-primary">Niveau d&rsquo;affichage</h2>
+          <p className="text-sm text-text-secondary">
+            Contrôle la densité d&rsquo;information affichée sur le dashboard. Accessible ici sur mobile ; en haut de
+            l&rsquo;écran sur desktop.
+          </p>
+          <LevelSelector value={getLevel(session.profile)} onChange={(l) => setLevel(session.profile, l)} />
+        </Card>
+      )}
 
       {session.profile !== 'admin' && <ThresholdsCard />}
 
