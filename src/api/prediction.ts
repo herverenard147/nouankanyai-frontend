@@ -23,7 +23,7 @@ const GRANULARITY_INTERVAL_LABEL: Record<PredictionGranularity, string> = {
   semaine: 'sur 4 semaines',
 }
 
-function bucketLabel(granularity: PredictionGranularity, bucketIndex: number): string {
+export function bucketLabel(granularity: PredictionGranularity, bucketIndex: number): string {
   if (granularity === 'heure') return `+${bucketIndex + 1} h`
   if (granularity === 'jour') {
     const date = new Date(Date.now() + bucketIndex * 24 * 3600 * 1000)
@@ -32,7 +32,7 @@ function bucketLabel(granularity: PredictionGranularity, bucketIndex: number): s
   return `Sem. +${bucketIndex + 1}`
 }
 
-function bucketize(
+export function bucketize(
   points: { predicted_kw: number; cost_fcfa: number }[],
   granularity: PredictionGranularity,
 ): { series: PredictionSeriesPoint[]; totalCostFcfa: number } {
