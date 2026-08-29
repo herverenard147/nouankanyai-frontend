@@ -39,7 +39,7 @@ export function IndustrieOverview() {
 
   return (
     <div className="flex flex-col gap-7">
-      <AlertSection profile="industrie" level={level} />
+      <AlertSection profile="industrie" level={level} maxActionAlerts={2} />
       <KpiGrid profile="industrie" />
       <TariffSection profile="industrie" />
       <PredictionPanel profile="industrie" level={level} />

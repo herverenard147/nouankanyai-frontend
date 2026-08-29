@@ -2,11 +2,13 @@ import { ResolutionsList } from '@/components/anomalies/ResolutionsList'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { useOpenAnomalies } from '@/hooks/queries/useAnomalies'
+import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
 import { useLevel } from '@/store/levelStore'
 
 export function AnomaliesPage() {
   const query = useOpenAnomalies('industrie')
   const level = useLevel('industrie')
+  const resolveMutation = useResolveMachine()
 
   return (
     <div className="flex flex-col gap-7">
@@ -26,6 +28,14 @@ export function AnomaliesPage() {
                   </p>
                 </div>
                 <ProvenanceBadge value={machine.provenance} />
+                <button
+                  type="button"
+                  disabled={resolveMutation.isPending}
+                  onClick={() => resolveMutation.mutate(machine.id)}
+                  className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control border border-alert px-4 py-2 text-sm font-semibold text-alert transition-colors hover:bg-white disabled:opacity-60"
+                >
+                  {resolveMutation.isPending ? 'Résolution…' : 'Marquer comme résolu'}
+                </button>
               </div>
             ))}
           </div>

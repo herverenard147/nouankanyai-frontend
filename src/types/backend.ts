@@ -107,6 +107,20 @@ export interface BackendWaitlistEntry {
   created_at: string
 }
 
+export interface BackendContactMessagePayload {
+  nom: string
+  email: string
+  message: string
+}
+
+export interface BackendContactMessage {
+  id: string
+  nom: string
+  email: string
+  message: string
+  created_at: string
+}
+
 export interface BackendMachineHistoryPoint {
   recorded_at: string
   power_kw: number

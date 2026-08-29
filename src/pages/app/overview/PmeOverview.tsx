@@ -37,7 +37,7 @@ export function PmeOverview() {
 
   return (
     <div className="flex flex-col gap-7">
-      <AlertSection profile="pme" level={level} />
+      <AlertSection profile="pme" level={level} maxActionAlerts={2} />
       <KpiGrid profile="pme" />
       <TariffSection profile="pme" />
       <PredictionPanel profile="pme" level={level} />

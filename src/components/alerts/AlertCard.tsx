@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
+import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
 
 interface ActionAlertCardProps {
@@ -14,8 +15,11 @@ interface AutoAlertCardProps {
 }
 
 export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
+  const resolveMutation = useResolveMachine()
+
   if (props.variant === 'action') {
     const { alert } = props
+
     return (
       <div className="flex flex-col gap-2 rounded-card border border-alert bg-alert-bg p-4">
         <div className="flex items-center gap-2.5">
@@ -35,21 +39,32 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
           <ProvenanceBadge value={alert.provenance} />
           <span className="text-sm text-text-tertiary">{alert.basis}</span>
         </div>
-        {alert.ctaTarget ? (
-          <Link
-            to={alert.ctaTarget}
-            className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
-          >
-            {alert.ctaLabel}
-          </Link>
-        ) : (
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <button
             type="button"
-            className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
+            disabled={resolveMutation.isPending}
+            onClick={() => resolveMutation.mutate(alert.machineId)}
+            className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control border border-alert px-4 py-2 text-sm font-semibold text-alert transition-colors hover:bg-white disabled:opacity-60"
           >
-            {alert.ctaLabel}
+            {resolveMutation.isPending ? 'Résolution…' : 'Marquer comme résolu'}
           </button>
-        )}
+          {alert.ctaTarget ? (
+            <Link
+              to={alert.ctaTarget}
+              className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
+            >
+              {alert.ctaLabel}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
+            >
+              {alert.ctaLabel}
+            </button>
+          )}
+        </div>
+        {resolveMutation.isError && <p className="text-right text-sm text-alert">Échec de la résolution.</p>}
       </div>
     )
   }

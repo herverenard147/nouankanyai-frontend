@@ -23,6 +23,7 @@ export async function fetchActionAlerts(_profile: Profile): Promise<ActionAlert[
     .map((rec, i) => ({
       kind: 'action' as const,
       id: `${rec.machine_id}-${rec.type}-${i}`,
+      machineId: rec.machine_id,
       level: `sévérité ${rec.severity}`,
       title: rec.title,
       detail: rec.description,

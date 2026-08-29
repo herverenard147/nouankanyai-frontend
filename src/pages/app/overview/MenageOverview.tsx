@@ -17,7 +17,7 @@ export function MenageOverview() {
   return (
     <div className="flex flex-col gap-7">
       {/* Ménage n'a pas de sélecteur de niveau (voir TopBar) : toujours "debutant". */}
-      <AlertSection profile="menage" level="debutant" />
+      <AlertSection profile="menage" level="debutant" maxActionAlerts={2} />
       <KpiGrid profile="menage" />
       <TariffSection profile="menage" />
       <PredictionPanel profile="menage" level="debutant" />

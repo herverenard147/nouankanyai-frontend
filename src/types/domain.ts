@@ -42,6 +42,7 @@ export interface TeamMember {
 export interface ActionAlert {
   kind: 'action'
   id: string
+  machineId: string
   level: string
   title: string
   detail: string

@@ -18,7 +18,7 @@ export function AdminOverview() {
 
   return (
     <div className="flex flex-col gap-7">
-      <AlertSection profile="admin" level={level} />
+      <AlertSection profile="admin" level={level} maxActionAlerts={2} />
       <KpiGrid profile="admin" />
       <PredictionPanel profile="admin" level={level} />
 

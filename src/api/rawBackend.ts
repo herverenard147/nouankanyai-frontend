@@ -11,6 +11,8 @@ import type {
   BackendAnomalyResult,
   BackendAuditRequest,
   BackendAuditRequestPayload,
+  BackendContactMessage,
+  BackendContactMessagePayload,
   BackendElectricityBill,
   BackendEquipmentCatalog,
   BackendFacturation,
@@ -45,6 +47,9 @@ export const rawDeleteTeamMember = (memberId: string) => api.delete<null>(`/api/
 
 export const rawJoinWaitlist = (payload: BackendWaitlistPayload) =>
   api.post<BackendWaitlistEntry>('/api/v1/waitlist', payload, false)
+
+export const rawSendContactMessage = (payload: BackendContactMessagePayload) =>
+  api.post<BackendContactMessage>('/api/v1/contact', payload, false)
 
 export const rawSites = () => api.get<BackendSite[]>('/api/sites')
 export const rawCreateSite = (payload: { nom: string; localisation: string }) =>

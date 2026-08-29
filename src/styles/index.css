@@ -4,8 +4,8 @@
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
-@import "@fontsource/ibm-plex-mono/500.css";
-@import "@fontsource/ibm-plex-mono/600.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/600.css";
 @import "tailwindcss";
 
 @theme {
@@ -60,7 +60,7 @@
   /* Fonts — README §Typographie */
   --font-heading: "Space Grotesk", sans-serif;
   --font-body: "Inter", sans-serif;
-  --font-mono: "IBM Plex Mono", monospace;
+  --font-mono: "JetBrains Mono", monospace;
 
   /* Font sizes — README §Typographie (landing + dashboard scales) */
   --text-h1: 2.7rem;

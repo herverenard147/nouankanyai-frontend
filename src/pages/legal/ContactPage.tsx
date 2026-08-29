@@ -1,4 +1,62 @@
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+
+import { Button } from '@/components/ui/Button'
+import { TextField } from '@/components/ui/TextField'
+import { useSendContactMessage } from '@/hooks/queries/useContact'
+
+function MessageForm() {
+  const [nom, setNom] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const mutation = useSendContactMessage()
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+    mutation.mutate({ nom, email, message })
+  }
+
+  if (mutation.isSuccess) {
+    return (
+      <p className="text-sm font-semibold text-confirm">
+        Merci, votre message a bien été envoyé. Nous vous répondrons par email sous 48h ouvrées.
+      </p>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <TextField label="Nom" required value={nom} onChange={(e) => setNom(e.target.value)} />
+      <TextField
+        label="Email"
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="vous@exemple.com"
+      />
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="contact-message" className="text-sm font-medium text-text-primary">
+          Message
+        </label>
+        <textarea
+          id="contact-message"
+          required
+          rows={5}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="focus-ring rounded-control border border-border bg-card px-3.5 py-3 text-sm text-text-primary placeholder:text-text-tertiary"
+          placeholder="Écrivez-nous ce que vous voulez"
+        />
+      </div>
+      <Button type="submit" disabled={mutation.isPending} className="mt-1 w-fit">
+        {mutation.isPending ? 'Envoi…' : 'Envoyer'}
+      </Button>
+      {mutation.isError && <p className="text-sm text-alert">Échec de l&rsquo;envoi. Réessayez.</p>}
+    </form>
+  )
+}
 
 export function ContactPage() {
   return (
@@ -12,6 +70,14 @@ export function ContactPage() {
       </p>
 
       <div className="mt-6 rounded-card border border-border bg-card p-6">
+        <h2 className="text-sm font-semibold text-text-primary">Écrivez-nous</h2>
+        <p className="mt-1 text-sm text-text-secondary">Dites-nous ce dont vous avez besoin, nous vous répondons par email.</p>
+        <div className="mt-4">
+          <MessageForm />
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-card border border-border bg-card p-6">
         <h2 className="text-sm font-semibold text-text-primary">Par email</h2>
         <p className="mt-1 text-sm text-text-secondary">
           <a href="mailto:contact@nouankany.demo" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
