@@ -18,8 +18,12 @@ async function fetchRecommendations() {
 
 export async function fetchActionAlerts(_profile: Profile): Promise<ActionAlert[]> {
   const { recommendations } = await fetchRecommendations()
+  // Alertes = uniquement de vrais problèmes détectés (anomalie/surchauffe/
+  // vibration), jamais optimisation/efficacité (des suggestions, pas des
+  // défauts — "Marquer comme résolu" n'a aucun sens pour elles, voir
+  // src/api/recommendations.ts) ni délestage (déjà dans le Journal).
   return recommendations
-    .filter((rec) => !rec.auto_resolu)
+    .filter((rec) => rec.type === 'alerte')
     .map((rec, i) => ({
       kind: 'action' as const,
       id: `${rec.machine_id}-${rec.type}-${i}`,

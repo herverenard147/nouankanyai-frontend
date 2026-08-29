@@ -20,6 +20,7 @@ import { JournalPage } from '@/pages/app/JournalPage'
 import { MachinesPage } from '@/pages/app/MachinesPage'
 import { OverviewPage } from '@/pages/app/OverviewPage'
 import { PredictionPage } from '@/pages/app/PredictionPage'
+import { RecommendationsPage } from '@/pages/app/RecommendationsPage'
 import { ReportsPage } from '@/pages/app/ReportsPage'
 import { SettingsPage } from '@/pages/app/SettingsPage'
 import { AdminHealthPage } from '@/pages/app/admin/AdminHealthPage'
@@ -62,6 +63,7 @@ export const router = createBrowserRouter([
               { path: 'prediction', element: <PredictionPage /> },
               { path: 'factures', element: <InvoicesPage /> },
               { path: 'conseils', element: <AdvicePage /> },
+              { path: 'recommandations', element: <RecommendationsPage /> },
               { path: 'equipements', element: <EquipmentPage /> },
               { path: 'machines', element: <MachinesPage /> },
               { path: 'anomalies', element: <AnomaliesPage /> },

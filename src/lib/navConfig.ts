@@ -19,6 +19,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/prediction', label: 'Prédiction', icon: 'P' },
     { path: '/app/factures', label: 'Factures', icon: 'F' },
     { path: '/app/conseils', label: 'Conseils', icon: 'I' },
+    { path: '/app/recommandations', label: 'Recommandations', icon: 'O' },
     { path: '/app/parametres', label: 'Paramètres', icon: 'S' },
   ],
   pme: [
@@ -28,6 +29,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/equipements', label: 'Équipements', icon: 'E' },
     { path: '/app/prediction', label: 'Prédiction', icon: 'P' },
     { path: '/app/conseils', label: 'Conseils', icon: 'I' },
+    { path: '/app/recommandations', label: 'Recommandations', icon: 'O' },
     { path: '/app/factures', label: 'Factures', icon: 'F' },
     { path: '/app/rapports', label: 'Facturation', icon: 'R' },
     { path: '/app/parametres', label: 'Paramètres', icon: 'S' },
@@ -39,6 +41,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/consommation', label: 'Conso & coûts', icon: 'C' },
     { path: '/app/prediction', label: 'Prédiction', icon: 'P' },
     { path: '/app/conseils', label: 'Conseils', icon: 'I' },
+    { path: '/app/recommandations', label: 'Recommandations', icon: 'O' },
     { path: '/app/factures', label: 'Factures', icon: 'F' },
     { path: '/app/anomalies', label: 'Anomalies', icon: 'N' },
     { path: '/app/rapports', label: 'Facturation', icon: 'R' },
