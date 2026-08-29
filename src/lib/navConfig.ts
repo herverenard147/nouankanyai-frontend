@@ -43,7 +43,6 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/conseils', label: 'Conseils', icon: 'I' },
     { path: '/app/recommandations', label: 'Recommandations', icon: 'O' },
     { path: '/app/factures', label: 'Factures', icon: 'F' },
-    { path: '/app/anomalies', label: 'Anomalies', icon: 'N' },
     { path: '/app/rapports', label: 'Facturation', icon: 'R' },
     { path: '/app/journal', label: 'Journal', icon: 'J' },
     { path: '/app/parametres', label: 'Paramètres', icon: 'S' },

@@ -12,7 +12,6 @@ import { HowItWorksPage } from '@/pages/landing/HowItWorksPage'
 import { LandingPage } from '@/pages/landing/LandingPage'
 import { AdvicePage } from '@/pages/app/AdvicePage'
 import { AlertsPage } from '@/pages/app/AlertsPage'
-import { AnomaliesPage } from '@/pages/app/AnomaliesPage'
 import { ConsumptionPage } from '@/pages/app/ConsumptionPage'
 import { EquipmentPage } from '@/pages/app/EquipmentPage'
 import { InvoicesPage } from '@/pages/app/InvoicesPage'
@@ -66,7 +65,6 @@ export const router = createBrowserRouter([
               { path: 'recommandations', element: <RecommendationsPage /> },
               { path: 'equipements', element: <EquipmentPage /> },
               { path: 'machines', element: <MachinesPage /> },
-              { path: 'anomalies', element: <AnomaliesPage /> },
               { path: 'rapports', element: <ReportsPage /> },
               { path: 'journal', element: <JournalPage /> },
               { path: 'parametres', element: <SettingsPage /> },

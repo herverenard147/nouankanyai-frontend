@@ -111,18 +111,41 @@ endpoint contre `/docs`) ; les autres modules (`alerts.ts`, `kpis.ts`,
 
 Mappings notables (le detail exact est commenté dans chaque fichier) :
 
-- **Alertes à deux registres** : `POST /api/recommend` classe déjà ses
-  recommandations en `auto_resolu` (délestage exécuté par l'IA) vs le reste
-  (action humaine requise) — un mapping direct vers `ActionAlert`/`AutoAlert`.
+- **Alertes / Conseils / Recommandations** : les trois pages lisent
+  `POST /api/recommend`, qui renvoie des recommandations typées
+  (`alerte`/`optimisation`/`efficacite`/`délestage`). `/app/alertes` et
+  `/app/conseils` (`alerts.ts`/`advice.ts`) filtrent toutes deux sur
+  `type === 'alerte'` uniquement — un vrai problème détecté
+  (anomalie/surchauffe/vibration), en stricte correspondance : les deux pages
+  montrent exactement les mêmes éléments, la première avec un bouton
+  « Marquer comme résolu » (re-mesure réelle, `POST
+  /api/machines/{id}/test`), la seconde avec les étapes de dépannage
+  détaillées et un bouton « Lancer le diagnostic » (même endpoint). Le
+  délestage auto-exécuté (`auto_resolu`) vit exclusivement dans le Journal
+  (`AutoAlertCard`). `optimisation`/`efficacite` (des suggestions, pas des
+  problèmes — pas de sens à les « résoudre ») sont filtrées à part par
+  `recommendations.ts` vers la page dédiée `/app/recommandations`, sans
+  bouton de résolution.
 - **KPI** : dérivés de `/api/machines` + `/api/facturation` (client), ou de
   `/api/admin/metrics.system` (admin).
-- **Prédiction** : `/api/predict` est par machine — la machine la plus
-  significative du compte est utilisée.
-- **Anomalie** : `POST /api/v1/ml/detect-anomaly` (ML v1), pas
-  `POST /api/anomaly` (legacy) — ce dernier a un bug de sérialisation
-  `numpy.bool_` côté backend, repéré pendant l'intégration, non corrigé (hors
-  périmètre : voir CLAUDE.md du backend, deux seules raisons légitimes d'y
-  toucher — CORS et endpoint manquant).
+- **Prédiction** : `/api/predict` (XGBoost) est par machine — `prediction.ts`
+  interroge chaque équipement du compte séparément puis agrège en une
+  prédiction globale (somme point par point). `/app/prediction` affiche les
+  deux, avec un sélecteur Heure (24 barres, kW) / Jour (7 barres, kWh) /
+  Semaine (4 barres, kWh) — même horizon backend, juste agrégé différemment
+  côté frontend (`predict_next_hours()` fait déjà varier heure-du-jour et
+  jour-de-semaine sur tout l'horizon demandé). L'aperçu compact des pages Vue
+  d'ensemble (`PredictionPanel`) n'affiche que la prédiction globale, à
+  l'heure.
+- **Anomalies** : la page dédiée `/app/anomalies` (Industrie) a été retirée —
+  elle lisait `machine.status` (un champ persisté, mis à jour seulement par
+  `/simulate`/`/reset`/`/test`), une source différente et pas forcément
+  synchronisée avec le score Isolation Forest recalculé par `/api/recommend`
+  à chaque affichage sur Alertes/Conseils, ce qui pouvait les contredire.
+  `ResolutionsList` (« Historique des résolutions d'anomalies », affichée sur
+  Vue d'ensemble Industrie) reste en place — elle dépend de `fetchResolutions`
+  (backend n'a aucun mécanisme pour marquer une résolution, renvoie toujours
+  `[]`), inchangée par ce retrait.
 - **Seuils** (`/app/parametres`) : le backend n'a qu'un seul jeu de seuils par
   compte (`temperature_max_c`, `vibration_max_hz`, `surconsommation_ratio`),
   affiché et édité dans sa forme réelle plutôt que forcé dans l'ancienne union
@@ -144,6 +167,12 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   modèles » (`POST /api/v1/ml/reload`) ; `/app/factures` a une action « la vraie
   facture est arrivée » pour confirmer le montant réel d'une prévision (`PATCH
   /api/bills/{id}/actual`).
+- **Profil** (`/app/parametres`) : `useAuthMe`/`GET /api/auth/me` affiche
+  email, type de compte, membre depuis, dernière connexion ; le nom est
+  modifiable (`PATCH /api/auth/me`, restreint au nom — `type_compte`
+  n'est volontairement pas éditable en self-service, il détermine tout le
+  profil produit) et le mot de passe se change via `POST
+  /api/auth/change-password`.
 
 Chaque bloc d'UI (une carte KPI, un panneau admin, un registre d'alerte…) reste
 alimenté par sa **propre requête** (`src/hooks/queries/`), jamais un appel
@@ -152,13 +181,20 @@ requête en erreur) sans casser le reste de la page (voir
 `src/components/state/MetricState.tsx`). Ce n'est plus une simulation : c'est
 le comportement réel face à une vraie panne réseau ou backend.
 
-## OCR factures — hors périmètre pour l'instant
+## OCR factures — extraction NouankanyAI
 
-L'upload de facture par photo (`POST /api/bills/upload-photo`, OCR Gemini côté
-backend) n'est volontairement pas branché : il sera remplacé par le pipeline
-ReceiptFlow. `/app/factures` propose en attendant une vraie prévision
-statistique (`POST /api/bills/forecast`) et une saisie manuelle
-(`POST /api/bills/manual`).
+`/app/factures` a un vrai bouton d'upload photo (`POST
+/api/bills/upload-photo`), branché sur l'extraction NouankanyAI côté backend
+(`backend/app/ai/nouankany_vision.py` — vision Gemini, pas le pipeline
+ReceiptFlow/Donut, écarté car fine-tuné sur un domaine sans rapport, voir le
+README backend). Un seul et même bouton couvre deux types de documents,
+détectés automatiquement par le modèle : une facture CIE papier
+(mois/montant/kWh) ou un reçu de paiement numérique (Wave, Orange Money, MTN
+Money, Moov Money, application CIE — montant/opérateur/référence). Les
+champs optionnels correspondants (`document_type`, `payment_operator`,
+`payment_reference`) s'affichent via `OcrFieldList` sur la fiche facture. La
+prévision statistique (`POST /api/bills/forecast`) et la saisie manuelle
+(`POST /api/bills/manual`) restent disponibles en complément.
 
 ## Provenance des données
 
