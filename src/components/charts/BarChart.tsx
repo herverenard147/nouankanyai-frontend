@@ -31,7 +31,7 @@ const SIZE_CONFIG: Record<
     plotHeightPx: 140,
     xLabelBandPx: 22,
     defaultGapPx: 24,
-    barWidthClass: 'flex-none w-8',
+    barWidthClass: 'flex-1 min-w-0 max-w-8',
     radiusClass: 'rounded-t-bar-landing',
     tooltipRadiusClass: 'rounded-tooltip-landing',
   },

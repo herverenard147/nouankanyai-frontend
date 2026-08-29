@@ -58,6 +58,32 @@ OS, et le `computer` tool peut cliquer/scroller dedans normalement puisqu'il
 opère en coordonnées écran réelles. Ne pas reperdre de temps à retenter
 `resize_window` seul sur cette machine.
 
+## Déploiement Render : le scroll de scroll via `computer` ne marche pas dans un iframe, et `_redirects` est ignoré
+
+Deux pièges rencontrés en déployant `nouankany-staging-frontend` (static site
+Render, repo `herverenard147/nouankanyai-frontend`) :
+
+1. Le `computer` tool (`scroll`) n'arrive pas à faire défiler le contenu d'un
+   iframe injecté (technique ci-dessus) — l'événement wheel ne se propage pas
+   dedans. Utiliser `f.contentWindow.scrollTo(0, y)` via `javascript_tool` à
+   la place ; ça déclenche correctement les breakpoints/lazy-render, seul le
+   *comportement* de scroll natif (smooth-scroll, sticky header au scroll)
+   n'est pas testé par ce biais-là.
+2. Un fichier `public/_redirects` (convention Netlify, `/*  /index.html  200`)
+   **est bien déployé tel quel** par Render (accessible à `/​_redirects`) mais
+   **n'est pas interprété** — Render ignore ce fichier. Sans rewrite
+   explicite, toute route client-side (`/demander-un-audit`, `/app/...`) qui
+   n'est pas `/` renvoie 404 en accès direct/refresh. Il faut configurer la
+   règle manuellement : Dashboard Render → service static site → onglet
+   **Redirects/Rewrites** → Source `/*`, Destination `/index.html`, Action
+   **Rewrite** (pas *Redirect*, qui changerait l'URL vers `/`). Le `<select>`
+   de cet écran ne répond pas de façon fiable à un clic simulé
+   (`computer.left_click`) sur l'option visible — utiliser
+   `form_input(ref, "Rewrite")` après `find` sur le combobox, plus fiable.
+   Le fichier `public/_redirects` reste inoffensif à garder dans le repo
+   (utile si migration vers Netlify) mais ne dispense pas de cette règle côté
+   Render.
+
 ## Autres pièges déjà documentés dans README.md (rappel, pas de détail ici)
 
 - Ne pas brancher `POST /api/anomaly` (legacy, bug `numpy.bool_` connu côté

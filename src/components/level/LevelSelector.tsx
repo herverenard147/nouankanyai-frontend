@@ -17,7 +17,7 @@ interface LevelSelectorProps {
 /** Sélecteur de niveau : le seul sélecteur qui reste dans l'interface, modifiable à tout moment. */
 export function LevelSelector({ value, onChange, readOnly, className }: LevelSelectorProps) {
   return (
-    <div className={`flex items-center gap-1.5 ${className ?? ''}`} role="group" aria-label="Niveau d'affichage">
+    <div className={`flex flex-wrap items-center gap-1.5 ${className ?? ''}`} role="group" aria-label="Niveau d'affichage">
       {LEVELS.map((level) => (
         <Pill
           key={level.id}
