@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { TextField } from '@/components/ui/TextField'
 import { useThresholds, useUpdateThresholds } from '@/hooks/queries/useThresholds'
-import { useLevelStore } from '@/store/levelStore'
+import { useLevel, useLevelStore } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 
 function ThresholdsCard() {
@@ -61,7 +61,7 @@ function ThresholdsCard() {
 export function SettingsPage() {
   const session = useSessionStore((s) => s.session)
   const logout = useSessionStore((s) => s.logout)
-  const getLevel = useLevelStore((s) => s.getLevel)
+  const level = useLevel(session?.profile ?? 'menage')
   const setLevel = useLevelStore((s) => s.setLevel)
 
   if (!session) return null
@@ -89,7 +89,7 @@ export function SettingsPage() {
             Contrôle la densité d&rsquo;information affichée sur le dashboard. Accessible ici sur mobile ; en haut de
             l&rsquo;écran sur desktop.
           </p>
-          <LevelSelector value={getLevel(session.profile)} onChange={(l) => setLevel(session.profile, l)} />
+          <LevelSelector value={level} onChange={(l) => setLevel(session.profile, l)} />
         </Card>
       )}
 

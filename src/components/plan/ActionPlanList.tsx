@@ -1,15 +1,21 @@
+import { levelAtLeast } from '@/lib/levelGating'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
 import { useActionPlan } from '@/hooks/queries/useActionPlan'
-import type { Profile } from '@/types/domain'
+import type { Level, Profile } from '@/types/domain'
 
 interface ActionPlanListProps {
   profile: Profile
+  level: Level
 }
 
-export function ActionPlanList({ profile }: ActionPlanListProps) {
+/** Contenu réservé au niveau "technique" (voir levelGating.ts) — un plan
+ * d'action chiffré mensuel suppose déjà une lecture assidue du dashboard. */
+export function ActionPlanList({ profile, level }: ActionPlanListProps) {
   const query = useActionPlan(profile)
+
+  if (!levelAtLeast(level, 'technique')) return null
 
   return (
     <section className="flex flex-col gap-3">

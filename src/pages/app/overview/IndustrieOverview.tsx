@@ -11,9 +11,19 @@ import { MetricState } from '@/components/state/MetricState'
 import { DataTable } from '@/components/table/DataTable'
 import type { TableColumn } from '@/components/table/DataTable'
 import { useMachinesTable } from '@/hooks/queries/useMachinesTable'
+import { levelAtLeast } from '@/lib/levelGating'
+import { useLevel } from '@/store/levelStore'
 import type { MachineRow } from '@/types/domain'
 
-const COLUMNS: TableColumn<MachineRow>[] = [
+// Température/vibration/pression sont des relevés capteur bruts — réservés
+// au niveau "technique", niveau par défaut Industrie (voir
+// DEFAULT_LEVEL_BY_PROFILE) : aucun changement pour qui n'y touche pas.
+const COLUMNS_BASE: TableColumn<MachineRow>[] = [
+  { key: 'machine', label: 'Machine' },
+  { key: 'statut', label: 'Statut' },
+  { key: 'priorite', label: 'Priorité' },
+]
+const COLUMNS_FULL: TableColumn<MachineRow>[] = [
   { key: 'machine', label: 'Machine' },
   { key: 'temperature', label: 'Température' },
   { key: 'vibration', label: 'Vibration' },
@@ -24,14 +34,16 @@ const COLUMNS: TableColumn<MachineRow>[] = [
 
 export function IndustrieOverview() {
   const machinesQuery = useMachinesTable('industrie')
+  const level = useLevel('industrie')
+  const columns = levelAtLeast(level, 'technique') ? COLUMNS_FULL : COLUMNS_BASE
 
   return (
     <div className="flex flex-col gap-7">
-      <AlertSection profile="industrie" />
+      <AlertSection profile="industrie" level={level} />
       <KpiGrid profile="industrie" />
       <TariffSection profile="industrie" />
-      <PredictionPanel profile="industrie" />
-      <AdviceList profile="industrie" />
+      <PredictionPanel profile="industrie" level={level} />
+      <AdviceList profile="industrie" level={level} />
 
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -41,12 +53,12 @@ export function IndustrieOverview() {
           </Link>
         </div>
         <MetricState status={machinesQuery.status} isEmpty={machinesQuery.data?.rows.length === 0}>
-          {machinesQuery.data && <DataTable columns={COLUMNS} rows={machinesQuery.data.rows} />}
+          {machinesQuery.data && <DataTable columns={columns} rows={machinesQuery.data.rows} />}
         </MetricState>
       </section>
 
-      <ActionPlanList profile="industrie" />
-      <ResolutionsList profile="industrie" />
+      <ActionPlanList profile="industrie" level={level} />
+      <ResolutionsList profile="industrie" level={level} />
     </div>
   )
 }

@@ -58,6 +58,23 @@ OS, et le `computer` tool peut cliquer/scroller dedans normalement puisqu'il
 opère en coordonnées écran réelles. Ne pas reperdre de temps à retenter
 `resize_window` seul sur cette machine.
 
+## zustand : ne jamais sélectionner une méthode du store pour en dériver une valeur
+
+Piège trouvé dans `levelStore.ts` (déjà présent avant l'introduction du
+niveau réellement fonctionnel le 2026-08-29, donc ancien) :
+`useLevelStore((s) => s.getLevel)` puis `getLevel(profile)` **ne re-render
+jamais** quand `levelByProfile` change — `getLevel` est une référence de
+fonction stable définie une fois dans le store, zustand ne voit "aucun
+changement" à cette sélection même quand l'état sous-jacent change. Le clic
+sur une pastille de niveau persistait bien en localStorage mais rien ne se
+mettait à jour à l'écran avant un rechargement complet de la page (repéré en
+cliquant via `computer` sur un vrai bouton et en comparant l'état avant/après
+sans reload — `aria-pressed` ne bougeait pas, mais `localStorage` si).
+Utiliser `useLevel(profile)` (exporté par `levelStore.ts`) à la place, qui
+sélectionne la valeur résolue elle-même. Règle générale : dans un sélecteur
+zustand, toujours retourner la donnée dont dépend le rendu, jamais une
+fonction qu'il faudra encore appeler après coup.
+
 ## Déploiement Render : le scroll de scroll via `computer` ne marche pas dans un iframe, et `_redirects` est ignoré
 
 Deux pièges rencontrés en déployant `nouankany-staging-frontend` (static site

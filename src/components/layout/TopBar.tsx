@@ -2,14 +2,14 @@ import { useLocation } from 'react-router-dom'
 
 import { LevelSelector } from '@/components/level/LevelSelector'
 import { NAV_BY_PROFILE } from '@/lib/navConfig'
-import { useLevelStore } from '@/store/levelStore'
+import { useLevel, useLevelStore } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 import { useUiStore } from '@/store/uiStore'
 
 export function TopBar() {
   const session = useSessionStore((s) => s.session)
   const location = useLocation()
-  const getLevel = useLevelStore((s) => s.getLevel)
+  const level = useLevel(session?.profile ?? 'menage')
   const setLevel = useLevelStore((s) => s.setLevel)
   const toggleMobileDrawer = useUiStore((s) => s.toggleMobileDrawer)
 
@@ -17,7 +17,6 @@ export function TopBar() {
 
   const entries = NAV_BY_PROFILE[session.profile]
   const currentEntry = entries.find((e) => location.pathname === e.path || location.pathname.startsWith(`${e.path}/`))
-  const level = getLevel(session.profile)
   // Niveau d'affichage réservé aux profils PME/Industrie (et Admin) — un
   // ménage n'a qu'une seule densité d'info, pas de raison de lui proposer ce
   // choix. Sur mobile/tablette, le choix reste accessible uniquement depuis

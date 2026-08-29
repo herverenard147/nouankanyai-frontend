@@ -3,9 +3,11 @@ import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
 import { useOpenAnomalies } from '@/hooks/queries/useAnomalies'
+import { useLevel } from '@/store/levelStore'
 
 export function AnomaliesPage() {
   const query = useOpenAnomalies('industrie')
+  const level = useLevel('industrie')
 
   return (
     <div className="flex flex-col gap-7">
@@ -28,7 +30,7 @@ export function AnomaliesPage() {
         </MetricState>
       </section>
 
-      <ResolutionsList profile="industrie" />
+      <ResolutionsList profile="industrie" level={level} />
     </div>
   )
 }

@@ -9,9 +9,19 @@ import { MetricState } from '@/components/state/MetricState'
 import { DataTable } from '@/components/table/DataTable'
 import type { TableColumn } from '@/components/table/DataTable'
 import { useEquipmentTable } from '@/hooks/queries/useEquipmentTable'
+import { levelAtLeast } from '@/lib/levelGating'
+import { useLevel } from '@/store/levelStore'
 import type { EquipmentRow } from '@/types/domain'
 
-const COLUMNS: TableColumn<EquipmentRow>[] = [
+// Au niveau "débutant" : l'essentiel (quoi, où, état). Marque/modèle/priorité
+// (détail d'inventaire, utile une fois qu'on gère plusieurs appareils) —
+// dès "amateur", niveau par défaut PME (voir DEFAULT_LEVEL_BY_PROFILE).
+const COLUMNS_BASE: TableColumn<EquipmentRow>[] = [
+  { key: 'categorie', label: 'Catégorie' },
+  { key: 'site', label: 'Site' },
+  { key: 'statut', label: 'Statut' },
+]
+const COLUMNS_FULL: TableColumn<EquipmentRow>[] = [
   { key: 'categorie', label: 'Catégorie' },
   { key: 'marque', label: 'Marque' },
   { key: 'modele', label: 'Modèle' },
@@ -22,14 +32,16 @@ const COLUMNS: TableColumn<EquipmentRow>[] = [
 
 export function PmeOverview() {
   const equipmentQuery = useEquipmentTable('pme')
+  const level = useLevel('pme')
+  const columns = levelAtLeast(level, 'amateur') ? COLUMNS_FULL : COLUMNS_BASE
 
   return (
     <div className="flex flex-col gap-7">
-      <AlertSection profile="pme" />
+      <AlertSection profile="pme" level={level} />
       <KpiGrid profile="pme" />
       <TariffSection profile="pme" />
-      <PredictionPanel profile="pme" />
-      <AdviceList profile="pme" />
+      <PredictionPanel profile="pme" level={level} />
+      <AdviceList profile="pme" level={level} />
 
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -39,7 +51,7 @@ export function PmeOverview() {
           </Link>
         </div>
         <MetricState status={equipmentQuery.status} isEmpty={equipmentQuery.data?.rows.length === 0}>
-          {equipmentQuery.data && <DataTable columns={COLUMNS} rows={equipmentQuery.data.rows} />}
+          {equipmentQuery.data && <DataTable columns={columns} rows={equipmentQuery.data.rows} />}
         </MetricState>
       </section>
     </div>

@@ -33,3 +33,17 @@ export const useLevelStore = create<LevelState>()(
     { name: 'nouankany-level' },
   ),
 )
+
+/**
+ * À utiliser à la place de `useLevelStore((s) => s.getLevel)` partout où le
+ * niveau résolu doit réagir à un changement : `getLevel` est une référence de
+ * fonction stable (définie une seule fois dans le store), donc la sélectionner
+ * ne déclenche jamais de re-render quand `levelByProfile` change — le clic sur
+ * une pastille de niveau persistait bien en localStorage mais rien ne se
+ * mettait à jour à l'écran avant un rechargement complet de la page. Ce hook
+ * sélectionne la valeur elle-même, qui est comparée par égalité à chaque
+ * changement du store.
+ */
+export function useLevel(profile: Profile): Level {
+  return useLevelStore((s) => s.levelByProfile[profile] ?? DEFAULT_LEVEL_BY_PROFILE[profile])
+}

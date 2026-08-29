@@ -2,17 +2,19 @@ import { AlertSection } from '@/components/alerts/AlertSection'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
 import { useAlertHistory } from '@/hooks/queries/useAlerts'
+import { useLevel } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 
 export function AlertsPage() {
   const profile = useSessionStore((s) => s.session?.profile)
   const historyQuery = useAlertHistory(profile!)
+  const level = useLevel(profile ?? 'menage')
 
   if (!profile) return null
 
   return (
     <div className="flex flex-col gap-7">
-      <AlertSection profile={profile} />
+      <AlertSection profile={profile} level={level} />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-section-title font-semibold text-text-primary">Historique des alertes passées</h2>

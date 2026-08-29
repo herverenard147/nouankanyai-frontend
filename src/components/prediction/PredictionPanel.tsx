@@ -1,23 +1,25 @@
 import { computeYTicks } from '@/lib/formatters'
+import { levelAtLeast } from '@/lib/levelGating'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
 import { BarChart, type ChartBar } from '@/components/charts/BarChart'
 import { usePrediction } from '@/hooks/queries/usePrediction'
-import type { Profile } from '@/types/domain'
+import type { Level, Profile } from '@/types/domain'
 
 interface PredictionPanelProps {
   profile: Profile
+  level: Level
 }
 
-export function PredictionPanel({ profile }: PredictionPanelProps) {
+export function PredictionPanel({ profile, level }: PredictionPanelProps) {
   const query = usePrediction(profile)
 
   return (
     <Card className="flex flex-col gap-4 p-6" aria-label="Prédiction IA">
       <MetricState status={query.status}>
         {query.data && (
-          <PredictionContent title={query.data.title} prediction={query.data} />
+          <PredictionContent title={query.data.title} prediction={query.data} showModelDetails={levelAtLeast(level, 'technique')} />
         )}
       </MetricState>
     </Card>
@@ -27,9 +29,11 @@ export function PredictionPanel({ profile }: PredictionPanelProps) {
 function PredictionContent({
   title,
   prediction,
+  showModelDetails,
 }: {
   title: string
   prediction: NonNullable<ReturnType<typeof usePrediction>['data']>
+  showModelDetails: boolean
 }) {
   const maxPoint = prediction.series.reduce((max, p) => (p.percent > max.percent ? p : max), prediction.series[0])
   const yTicks = maxPoint ? computeYTicks(maxPoint.value, maxPoint.percent) : ['0', '0', '0']
@@ -54,7 +58,9 @@ function PredictionContent({
         </div>
         <div className="flex flex-col items-end gap-1">
           <ProvenanceBadge value={prediction.provenance} />
-          <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName} · dataset: synthetic</p>
+          {showModelDetails && (
+            <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName} · dataset: synthetic</p>
+          )}
         </div>
       </div>
 
@@ -71,7 +77,7 @@ function PredictionContent({
         />
       </div>
 
-      <p className="text-sm text-text-secondary">{prediction.modelNote}</p>
+      {showModelDetails && <p className="text-sm text-text-secondary">{prediction.modelNote}</p>}
     </>
   )
 }

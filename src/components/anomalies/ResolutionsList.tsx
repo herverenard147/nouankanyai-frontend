@@ -1,15 +1,20 @@
+import { levelAtLeast } from '@/lib/levelGating'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
 import { useResolutions } from '@/hooks/queries/useAnomalies'
-import type { Profile } from '@/types/domain'
+import type { Level, Profile } from '@/types/domain'
 
 interface ResolutionsListProps {
   profile: Profile
+  level: Level
 }
 
-export function ResolutionsList({ profile }: ResolutionsListProps) {
+/** Contenu réservé au niveau "technique" (voir levelGating.ts). */
+export function ResolutionsList({ profile, level }: ResolutionsListProps) {
   const query = useResolutions(profile)
+
+  if (!levelAtLeast(level, 'technique')) return null
 
   return (
     <section className="flex flex-col gap-3">

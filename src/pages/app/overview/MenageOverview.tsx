@@ -16,11 +16,12 @@ export function MenageOverview() {
 
   return (
     <div className="flex flex-col gap-7">
-      <AlertSection profile="menage" />
+      {/* Ménage n'a pas de sélecteur de niveau (voir TopBar) : toujours "debutant". */}
+      <AlertSection profile="menage" level="debutant" />
       <KpiGrid profile="menage" />
       <TariffSection profile="menage" />
-      <PredictionPanel profile="menage" />
-      <AdviceList profile="menage" />
+      <PredictionPanel profile="menage" level="debutant" />
+      <AdviceList profile="menage" level="debutant" />
 
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">

@@ -1,17 +1,22 @@
 import { adviceSectionTitle } from '@/api/advice'
+import { levelAtLeast } from '@/lib/levelGating'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
 import { useAdvice } from '@/hooks/queries/useAdvice'
-import type { Profile } from '@/types/domain'
+import type { Level, Profile } from '@/types/domain'
 
 interface AdviceListProps {
   profile: Profile
+  level: Level
 }
 
-export function AdviceList({ profile }: AdviceListProps) {
+export function AdviceList({ profile, level }: AdviceListProps) {
   const query = useAdvice(profile)
   const title = adviceSectionTitle(profile)
+  // Le chiffrage d'impact (FCFA) est un raisonnement business, pas un
+  // "conseil direct" — masqué au niveau débutant (voir levelGating.ts).
+  const showImpact = levelAtLeast(level, 'amateur')
 
   return (
     <section className="flex flex-col gap-3">
@@ -25,7 +30,7 @@ export function AdviceList({ profile }: AdviceListProps) {
                 <p className="font-semibold text-text-primary">{advice.title}</p>
                 <p className="text-sm text-text-secondary">{advice.detail}</p>
               </div>
-              <span className="font-mono text-lg font-semibold text-confirm">{advice.impactLabel}</span>
+              {showImpact && <span className="font-mono text-lg font-semibold text-confirm">{advice.impactLabel}</span>}
               <ProvenanceBadge value={advice.provenance} />
             </Card>
           ))}

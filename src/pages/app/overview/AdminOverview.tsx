@@ -4,6 +4,7 @@ import { AlertSection } from '@/components/alerts/AlertSection'
 import { PredictionPanel } from '@/components/prediction/PredictionPanel'
 import { KpiGrid } from '@/components/kpi/KpiGrid'
 import { Card } from '@/components/ui/Card'
+import { useLevel } from '@/store/levelStore'
 
 const QUICK_LINKS = [
   { to: '/app/admin/sante', label: 'Santé plateforme' },
@@ -13,11 +14,13 @@ const QUICK_LINKS = [
 ]
 
 export function AdminOverview() {
+  const level = useLevel('admin')
+
   return (
     <div className="flex flex-col gap-7">
-      <AlertSection profile="admin" />
+      <AlertSection profile="admin" level={level} />
       <KpiGrid profile="admin" />
-      <PredictionPanel profile="admin" />
+      <PredictionPanel profile="admin" level={level} />
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {QUICK_LINKS.map((link) => (
