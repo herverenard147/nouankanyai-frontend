@@ -29,6 +29,7 @@ export function LoginPage() {
   const [accountType, setAccountType] = useState<Exclude<Profile, 'admin'>>(
     typeParam === 'pme' || typeParam === 'industrie' ? typeParam : 'menage',
   )
+  const isTrialSignup = searchParams.get('trial') === '1'
   const [emailError, setEmailError] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [nomError, setNomError] = useState<string | null>(null)
@@ -57,7 +58,7 @@ export function LoginPage() {
     const result =
       mode === 'login'
         ? await login(email, password)
-        : await signup(email, password, nom, ACCOUNT_TYPE_LABELS[accountType])
+        : await signup(email, password, nom, ACCOUNT_TYPE_LABELS[accountType], isTrialSignup)
     setStatus('idle')
 
     if (!result.ok) {
@@ -74,6 +75,13 @@ export function LoginPage() {
           <h1 className="text-h2-secondary font-bold text-text-primary">{mode === 'login' ? 'Connexion' : 'Créer un compte'}</h1>
           <p className="text-sm text-text-secondary">Accédez à votre dashboard Nouankany.</p>
         </div>
+
+        {isTrialSignup && mode === 'signup' && (
+          <p className="mt-4 rounded-control border border-border bg-bg-elevated p-3 text-center text-sm text-text-secondary">
+            Essai gratuit : vous pourrez charger des données fictives pour explorer le tableau de bord, et les
+            supprimer à tout moment.
+          </p>
+        )}
 
         <div className="mt-6 flex justify-center gap-1.5 rounded-control bg-bg-elevated p-1">
           <button

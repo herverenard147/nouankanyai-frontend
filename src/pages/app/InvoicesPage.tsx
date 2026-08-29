@@ -7,7 +7,13 @@ import { Card } from '@/components/ui/Card'
 import { TextField } from '@/components/ui/TextField'
 import { OcrFieldList } from '@/components/upload/OcrFieldList'
 import { UploadCard } from '@/components/upload/UploadCard'
-import { useAddManualInvoice, useConfirmInvoiceActual, useGenerateForecastInvoice, useInvoices } from '@/hooks/queries/useInvoices'
+import {
+  useAddManualInvoice,
+  useConfirmInvoiceActual,
+  useDeleteInvoice,
+  useGenerateForecastInvoice,
+  useInvoices,
+} from '@/hooks/queries/useInvoices'
 import { useSessionStore } from '@/store/sessionStore'
 
 export function InvoicesPage() {
@@ -16,6 +22,7 @@ export function InvoicesPage() {
   const forecastMutation = useGenerateForecastInvoice(profile!)
   const manualMutation = useAddManualInvoice(profile!)
   const confirmMutation = useConfirmInvoiceActual(profile!)
+  const deleteMutation = useDeleteInvoice(profile!)
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
   const [actualAmount, setActualAmount] = useState('')
 
@@ -74,11 +81,21 @@ export function InvoicesPage() {
           <div className="flex flex-col gap-4">
             {invoicesQuery.data?.map((invoice) => (
               <Card key={invoice.id} className="flex flex-col gap-3 p-5">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <h3 className="font-semibold text-text-primary">{invoice.period}</h3>
-                  <span className="text-xs font-semibold text-text-secondary">
-                    {invoice.status === 'traitee' ? 'Confirmée' : 'Prévision en attente de confirmation'}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-semibold text-text-secondary">
+                      {invoice.status === 'traitee' ? 'Confirmée' : 'Prévision en attente de confirmation'}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={deleteMutation.isPending}
+                      onClick={() => deleteMutation.mutate(invoice.id)}
+                      className="focus-ring text-xs font-semibold text-alert hover:underline disabled:opacity-60"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
                 </div>
                 <OcrFieldList fields={invoice.fields} />
                 {invoice.status === 'en_cours' && (

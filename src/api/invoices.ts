@@ -1,4 +1,4 @@
-import { rawAddManualBill, rawBillForecast, rawBills, rawConfirmBillActual } from '@/api/rawBackend'
+import { rawAddManualBill, rawBillForecast, rawBills, rawConfirmBillActual, rawDeleteBill } from '@/api/rawBackend'
 import type { BackendElectricityBill } from '@/types/backend'
 import type { InvoiceRecord, OcrField, Profile } from '@/types/domain'
 
@@ -66,4 +66,8 @@ export async function generateForecastInvoice(): Promise<InvoiceRecord> {
 export async function confirmInvoiceActual(billId: string, actualAmountXof: number): Promise<InvoiceRecord> {
   const bill = await rawConfirmBillActual(billId, actualAmountXof)
   return toInvoiceRecord(bill)
+}
+
+export function deleteInvoice(billId: string) {
+  return rawDeleteBill(billId)
 }

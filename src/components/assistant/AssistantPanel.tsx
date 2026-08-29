@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useAssistantContext, useAssistantReply } from '@/hooks/queries/useAssistantReply'
+import { ApiError } from '@/lib/apiClient'
 import type { Profile } from '@/types/domain'
 
 interface AssistantPanelProps {
@@ -33,6 +34,10 @@ export function AssistantPanel({ profile, onClose }: AssistantPanelProps) {
     replyMutation.mutate(text, {
       onSuccess: (reply) => {
         setMessages((prev) => [...prev, { id: crypto.randomUUID(), from: 'assistant', text: reply }])
+      },
+      onError: (error) => {
+        const text = error instanceof ApiError ? error.message : "Désolé, une erreur est survenue."
+        setMessages((prev) => [...prev, { id: crypto.randomUUID(), from: 'assistant', text }])
       },
     })
   }

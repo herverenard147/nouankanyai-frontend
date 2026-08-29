@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
+import { ApiError } from '@/lib/apiClient'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
 
 interface ActionAlertCardProps {
@@ -64,7 +65,11 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             </button>
           )}
         </div>
-        {resolveMutation.isError && <p className="text-right text-sm text-alert">Échec du test.</p>}
+        {resolveMutation.isError && (
+          <p className="text-right text-sm text-alert">
+            {resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec du test.'}
+          </p>
+        )}
         {resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
           <p className="text-right text-sm text-alert">
             Nouvelle mesure : température {resolveMutation.data.temperature_c}°C, vibration{' '}

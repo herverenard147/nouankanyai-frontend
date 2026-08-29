@@ -17,6 +17,7 @@ export interface BackendUser {
   role: string
   platform_role: BackendPlatformRole
   owner_id: string | null
+  is_trial: boolean
 }
 
 export interface BackendTeamMember {

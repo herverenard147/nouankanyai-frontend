@@ -28,6 +28,13 @@ export interface Session {
    * dans la liste elle-même).
    */
   isTeamOwner: boolean
+  /**
+   * Compte créé via le bouton "Essayer gratuitement" (landing, PricingSection),
+   * jamais pour une inscription normale ou une demande d'audit — seul un
+   * compte essai voit la bannière "Charger des données de démonstration"
+   * (voir DemoDataBanner) sur un dashboard vide.
+   */
+  isTrial: boolean
 }
 
 export interface TeamMember {

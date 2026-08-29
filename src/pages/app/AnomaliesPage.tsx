@@ -3,6 +3,7 @@ import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { useOpenAnomalies } from '@/hooks/queries/useAnomalies'
 import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
+import { ApiError } from '@/lib/apiClient'
 import { useLevel } from '@/store/levelStore'
 import type { MachineRow } from '@/types/domain'
 
@@ -28,7 +29,11 @@ function AnomalyRow({ machine }: { machine: MachineRow }) {
           {resolveMutation.isPending ? 'Test en cours…' : 'Marquer comme résolu'}
         </button>
       </div>
-      {resolveMutation.isError && <p className="text-right text-sm text-alert">Échec du test.</p>}
+      {resolveMutation.isError && (
+        <p className="text-right text-sm text-alert">
+          {resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec du test.'}
+        </p>
+      )}
       {resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
         <p className="text-right text-sm text-alert">
           Nouvelle mesure : température {resolveMutation.data.temperature_c}°C, vibration{' '}

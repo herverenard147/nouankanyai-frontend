@@ -1,18 +1,26 @@
 import { Link } from 'react-router-dom'
 
+interface TierCta {
+  label: string
+  href: string
+  primary: boolean
+}
+
 interface Tier {
   name: string
   audience: string
   priceLabel: string
   badge: string
   features: string[]
-  cta: string
   /**
-   * Ménage : self-service, direct vers l'inscription. PME/Industrie : la vente
-   * est consultative (voir Business Plan §9) — pas de compte instantané, un
-   * formulaire de demande d'audit traité par l'équipe.
+   * Ménage : un seul CTA, self-service direct vers l'inscription (déjà un
+   * essai gratuit). PME/Industrie : deux CTA — "Demander un audit" reste le
+   * parcours commercial réel (vente consultative, voir Business Plan §9),
+   * "Essayer gratuitement" ouvre en plus un compte self-service marqué
+   * essai (`is_trial`) pour explorer le produit avec des données simulées
+   * avant de s'engager dans un audit.
    */
-  ctaHref: string
+  ctas: TierCta[]
   featured?: boolean
 }
 
@@ -28,8 +36,7 @@ const TIERS: Tier[] = [
       'Conseils génériques classés par impact',
       'Formule complète à venir, une fois ce segment activé',
     ],
-    cta: 'Essayer gratuitement',
-    ctaHref: '/login?mode=signup&type=menage',
+    ctas: [{ label: 'Essayer gratuitement', href: '/login?mode=signup&type=menage&trial=1', primary: true }],
   },
   {
     name: 'Pilote PME',
@@ -43,8 +50,10 @@ const TIERS: Tier[] = [
       'Part sur les économies réellement mesurées, pas un forfait figé',
       'Contrat pilote de 6 à 9 mois avant généralisation',
     ],
-    cta: 'Demander un audit',
-    ctaHref: '/demander-un-audit?type=pme',
+    ctas: [
+      { label: 'Demander un audit', href: '/demander-un-audit?type=pme', primary: true },
+      { label: 'Essayer gratuitement', href: '/login?mode=signup&type=pme&trial=1', primary: false },
+    ],
   },
   {
     name: 'Pilote Industrie',
@@ -58,8 +67,10 @@ const TIERS: Tier[] = [
       'Part sur les économies réellement mesurées, pas un forfait figé',
       'Contrat pilote de 6 à 9 mois avant généralisation',
     ],
-    cta: 'Demander un audit',
-    ctaHref: '/demander-un-audit?type=industrie',
+    ctas: [
+      { label: 'Demander un audit', href: '/demander-un-audit?type=industrie', primary: true },
+      { label: 'Essayer gratuitement', href: '/login?mode=signup&type=industrie&trial=1', primary: false },
+    ],
   },
 ]
 
@@ -133,16 +144,21 @@ export function PricingSection() {
                   </li>
                 ))}
               </ul>
-              <Link
-                to={tier.ctaHref}
-                className={`focus-ring mt-auto inline-flex min-h-11 items-center justify-center rounded-control px-5 py-3 text-sm font-semibold ${
-                  tier.featured
-                    ? 'bg-accent-cta text-white hover:bg-accent-cta-hover'
-                    : 'border border-border text-text-primary hover:bg-bg-elevated'
-                }`}
-              >
-                {tier.cta}
-              </Link>
+              <div className="mt-auto flex flex-col gap-2">
+                {tier.ctas.map((cta) => (
+                  <Link
+                    key={cta.label}
+                    to={cta.href}
+                    className={`focus-ring inline-flex min-h-11 items-center justify-center rounded-control px-5 py-3 text-sm font-semibold ${
+                      cta.primary
+                        ? 'bg-accent-cta text-white hover:bg-accent-cta-hover'
+                        : 'border border-border text-text-primary hover:bg-bg-elevated'
+                    }`}
+                  >
+                    {cta.label}
+                  </Link>
+                ))}
+              </div>
             </div>
           ))}
         </div>

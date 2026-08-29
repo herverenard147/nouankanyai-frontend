@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { addManualInvoice, confirmInvoiceActual, fetchInvoices, generateForecastInvoice } from '@/api/invoices'
+import { addManualInvoice, confirmInvoiceActual, deleteInvoice, fetchInvoices, generateForecastInvoice } from '@/api/invoices'
 import type { Profile } from '@/types/domain'
 
 export function useInvoices(profile: Profile) {
@@ -28,6 +28,14 @@ export function useConfirmInvoiceActual(profile: Profile) {
   return useMutation({
     mutationFn: ({ billId, actualAmountXof }: { billId: string; actualAmountXof: number }) =>
       confirmInvoiceActual(billId, actualAmountXof),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['invoices', profile] }),
+  })
+}
+
+export function useDeleteInvoice(profile: Profile) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: deleteInvoice,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['invoices', profile] }),
   })
 }

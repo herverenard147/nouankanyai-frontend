@@ -21,6 +21,7 @@ function toSession(result: BackendAuthResult): Session {
     // Seuls les PME/Industrie sans owner_id (compte principal, pas membre d'une
     // équipe) peuvent gérer des membres — voir app/api/v1/team/ côté backend.
     isTeamOwner: (profile === 'pme' || profile === 'industrie') && !result.user.owner_id,
+    isTrial: result.user.is_trial,
   }
 }
 
@@ -31,7 +32,7 @@ function friendlyAuthError(error: unknown): string {
 
 interface SessionState {
   session: Session | null
-  signup: (email: string, password: string, nom: string, typeCompte: string) => Promise<AuthResult>
+  signup: (email: string, password: string, nom: string, typeCompte: string, isTrial?: boolean) => Promise<AuthResult>
   login: (email: string, password: string) => Promise<AuthResult>
   logout: () => void
 }
@@ -40,11 +41,11 @@ export const useSessionStore = create<SessionState>()(
   persist(
     (set) => ({
       session: null,
-      signup: async (email, password, nom, typeCompte) => {
+      signup: async (email, password, nom, typeCompte, isTrial = false) => {
         try {
           const result = await api.post<BackendAuthResult>(
             '/api/auth/signup',
-            { email, password, nom, type_compte: typeCompte },
+            { email, password, nom, type_compte: typeCompte, is_trial: isTrial },
             false,
           )
           set({ session: toSession(result) })

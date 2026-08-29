@@ -83,6 +83,7 @@ export const rawAddManualBill = (payload: BackendNewManualBill) =>
 export const rawBillForecast = () => api.post<BackendElectricityBill>('/api/bills/forecast')
 export const rawConfirmBillActual = (billId: string, actualAmountXof: number) =>
   api.patch<BackendElectricityBill>(`/api/bills/${billId}/actual`, { actual_amount_xof: actualAmountXof })
+export const rawDeleteBill = (billId: string) => api.delete<null>(`/api/bills/${billId}`)
 
 function toSensorReading(machine: BackendMachine) {
   return {
@@ -128,7 +129,7 @@ export const rawMlAudit = () => api.get<BackendMlAuditEntry[]>('/api/v1/ml/audit
 export const rawMlReload = () => api.post<BackendMlReloadResult>('/api/v1/ml/reload')
 
 export const rawChat = (message: string, context: BackendMachine[]) =>
-  api.post<{ response: string }>('/api/chat', { message, context }, false)
+  api.post<{ response: string }>('/api/chat', { message, context })
 
 export const rawAdminMetrics = () => api.get<BackendAdminMetrics>('/api/admin/metrics')
 export const rawGeminiMetrics = () => api.get<BackendGeminiMetrics>('/api/admin/gemini-metrics')

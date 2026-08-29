@@ -1,18 +1,24 @@
 import { useRawMachines } from '@/hooks/queries/useRawMachines'
 import { useSeedDemoData } from '@/hooks/queries/useDemo'
 import { Button } from '@/components/ui/Button'
+import { useSessionStore } from '@/store/sessionStore'
 
 /**
- * Essai gratuit (PME/Industrie/Ménage) : un compte fraîchement créé n'a ni
- * site, ni équipement, ni facture — le dashboard est vide et ne montre rien
- * du produit. Ce bandeau ne s'affiche que dans ce cas précis (0 machine) et
- * disparaît dès que le compte a des données, qu'elles viennent de ce bouton
- * ou d'un ajout manuel réel.
+ * Essai gratuit (PME/Industrie/Ménage) : un compte créé via le bouton
+ * "Essayer gratuitement" (landing, PricingSection) n'a ni site, ni
+ * équipement, ni facture — le dashboard est vide et ne montre rien du
+ * produit. Ce bandeau ne s'affiche que pour CES comptes précisément
+ * (`session.isTrial`, jamais pour une inscription ou une connexion
+ * normale) et seulement tant qu'ils sont vides — il disparaît dès que le
+ * compte a des données, qu'elles viennent de ce bouton ou d'un ajout
+ * manuel réel.
  */
 export function DemoDataBanner() {
+  const isTrial = useSessionStore((s) => s.session?.isTrial)
   const rawQuery = useRawMachines()
   const seedMutation = useSeedDemoData()
 
+  if (!isTrial) return null
   if (rawQuery.status !== 'success' || rawQuery.data.length > 0) return null
 
   return (
