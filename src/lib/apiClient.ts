@@ -58,6 +58,15 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     // HTTPException standard) et `{"error": {"code","message",...}}` (routes
     // /api/v1/ml/*, StandardErrorResponse — voir app/api/handlers.py).
     const message = data?.detail ?? data?.error?.message ?? data?.error ?? `Erreur ${response.status}`
+
+    // Token expiré/révoqué : sans ça, l'utilisateur reste sur les pages
+    // protégées avec un état d'erreur par widget au lieu d'être renvoyé vers
+    // /login pour se reconnecter (ProtectedRoute redirige dès que le store
+    // repasse à session=null, pas besoin de navigation explicite ici).
+    if (response.status === 401 && auth) {
+      useSessionStore.getState().logout()
+    }
+
     throw new ApiError(typeof message === 'string' ? message : JSON.stringify(message), response.status)
   }
 

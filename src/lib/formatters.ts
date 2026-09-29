@@ -33,7 +33,9 @@ export function formatPercent(value: number, decimals: 0 | 1 = 0): string {
  * "100%" implicite à partir d'un point connu, puis renvoie [max, max/2, "0"].
  */
 export function computeYTicks(maxValue: number, maxPercent: number): string[] {
-  const impliedMax = maxValue / (maxPercent / 100)
+  // maxPercent à 0 (aucune consommation sur la période, ex: compte neuf) :
+  // la division par (0/100) donnerait NaN sur les 3 graduations affichées.
+  const impliedMax = maxPercent === 0 ? 0 : maxValue / (maxPercent / 100)
   const fmt = (v: number) => (impliedMax < 10 ? formatNumberFr(v, 1) : formatNumberFr(v, 0))
   return [fmt(impliedMax), fmt(impliedMax / 2), '0']
 }

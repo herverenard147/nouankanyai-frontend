@@ -16,6 +16,11 @@ interface NotificationState {
   seenAdviceIds: string[]
   markAlertsSeen: (ids: string[]) => void
   markAdviceSeen: (ids: string[]) => void
+  /** À appeler depuis sessionStore.logout() — sans ça, le "vu" d'un compte
+   * reste en localStorage et s'applique au compte suivant qui se connecte
+   * sur le même appareil (démo/poste partagé), masquant potentiellement de
+   * vraies nouvelles alertes du compte B comme si elles avaient déjà été vues. */
+  resetSeen: () => void
 }
 
 export const useNotificationStore = create<NotificationState>()(
@@ -25,6 +30,7 @@ export const useNotificationStore = create<NotificationState>()(
       seenAdviceIds: [],
       markAlertsSeen: (ids) => set({ seenAlertIds: ids }),
       markAdviceSeen: (ids) => set({ seenAdviceIds: ids }),
+      resetSeen: () => set({ seenAlertIds: [], seenAdviceIds: [] }),
     }),
     { name: 'nouankany-notifications' },
   ),

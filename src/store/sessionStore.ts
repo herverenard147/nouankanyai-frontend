@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 
 import { api, ApiError } from '@/lib/apiClient'
 import { deriveProfile } from '@/lib/profileMapping'
+import { useNotificationStore } from '@/store/notificationStore'
 import type { BackendAuthResult } from '@/types/backend'
 import type { Session } from '@/types/domain'
 
@@ -67,7 +68,13 @@ export const useSessionStore = create<SessionState>()(
           return { ok: false, message: friendlyAuthError(error) }
         }
       },
-      logout: () => set({ session: null }),
+      logout: () => {
+        set({ session: null })
+        // Le "vu" des alertes/conseils est par appareil (localStorage), pas par
+        // compte — sans ce reset, le compte suivant sur un poste partagé/démo
+        // hérite du "vu" du précédent (voir notificationStore.resetSeen).
+        useNotificationStore.getState().resetSeen()
+      },
       setDisplayName: (nom) =>
         set((state) => (state.session ? { session: { ...state.session, displayName: nom } } : state)),
     }),
