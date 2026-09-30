@@ -123,6 +123,18 @@
     font-family: var(--font-heading);
     letter-spacing: -0.01em;
   }
+
+  /* Le curseur par défaut du navigateur sur <button> est "default" (flèche),
+     pas "pointer" — contrairement à <a href>, qui a déjà pointer nativement.
+     Sans cette règle, tous les boutons du site (CTA, filtres, fermeture de
+     modale...) gardent la flèche au survol. select/summary/[role=button]
+     ont le même souci. */
+  button:not(:disabled),
+  [role='button'],
+  select,
+  summary {
+    cursor: pointer;
+  }
 }
 
 @layer utilities {
