@@ -1,3 +1,4 @@
+import { impactClassName } from '@/lib/severity'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
@@ -32,7 +33,7 @@ export function RecommendationList({ profile, level }: RecommendationListProps) 
                 <p className="font-semibold text-text-primary">{reco.title}</p>
                 <p className="text-sm text-text-secondary">{reco.detail}</p>
               </div>
-              {showImpact && <span className="font-mono text-lg font-semibold text-confirm">{reco.impactLabel}</span>}
+              {showImpact && <span className={`font-mono text-lg font-semibold ${impactClassName(reco.impactKind, reco.impactLabel)}`}>{reco.impactLabel}</span>}
               <ProvenanceBadge value={reco.provenance} />
             </Card>
           ))}

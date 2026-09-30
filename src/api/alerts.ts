@@ -1,4 +1,5 @@
 import { rawMachineHistory, rawMachines, rawRecommend } from '@/api/rawBackend'
+import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { BackendMachine } from '@/types/backend'
 import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types/domain'
 
@@ -30,8 +31,8 @@ export async function fetchActionAlerts(_profile: Profile): Promise<ActionAlert[
       machineId: rec.machine_id,
       level: `sévérité ${rec.severity}`,
       title: rec.title,
-      detail: rec.description,
-      basis: rec.action,
+      detail: frenchNumbersWithUnits(rec.description),
+      basis: frenchNumbersWithUnits(rec.action),
       provenance: 'synthetique' as const,
       ctaLabel: 'Voir les conseils',
       ctaTarget: '/app/conseils',

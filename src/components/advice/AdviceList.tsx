@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import { adviceSectionTitle } from '@/api/advice'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { levelAtLeast } from '@/lib/levelGating'
+import { formatNumberFr } from '@/lib/formatters'
+import { impactClassName } from '@/lib/severity'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Card } from '@/components/ui/Card'
@@ -30,7 +32,7 @@ interface AdviceListProps {
 
 function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolean }) {
   const resolveMutation = useResolveMachine()
-  // Le diagnostic réutilise la même vérification que "Marquer comme résolu" sur
+  // Le diagnostic réutilise la même vérification que "Vérifier et résoudre" sur
   // /app/alertes (POST /api/machines/{id}/test) : seuls les conseils de type alerte
   // (anomalie/surchauffe/vibration) ont un machineId ET des étapes de dépannage —
   // les conseils d'optimisation/efficacité n'ont rien à "diagnostiquer".
@@ -44,7 +46,7 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
           <p className="font-semibold text-text-primary">{advice.title}</p>
           <p className="text-sm text-text-secondary">{advice.detail}</p>
         </div>
-        {showImpact && <span className="font-mono text-lg font-semibold text-confirm">{advice.impactLabel}</span>}
+        {showImpact && <span className={`font-mono text-lg font-semibold ${impactClassName(advice.impactKind, advice.impactLabel)}`}>{advice.impactLabel}</span>}
         <ProvenanceBadge value={advice.provenance} />
       </div>
 
@@ -80,8 +82,8 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
       {resolveMutation.isSuccess && resolveMutation.data && (
         <p className={`text-right text-sm ${resolveMutation.data.resolved ? 'text-confirm' : 'text-alert'}`}>
           {resolveMutation.data.resolved
-            ? `Nouvelle mesure : température ${resolveMutation.data.temperature_c}°C, vibration ${resolveMutation.data.vibration_hz} Hz — dans les seuils normaux.`
-            : `Nouvelle mesure : température ${resolveMutation.data.temperature_c}°C, vibration ${resolveMutation.data.vibration_hz} Hz — l’anomalie persiste. Suivez les étapes ci-dessus, puis réessayez.`}
+            ? `Nouvelle mesure : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz — dans les seuils normaux.`
+            : `Nouvelle mesure : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz — l’anomalie persiste. Suivez les étapes ci-dessus, puis réessayez.`}
         </p>
       )}
     </Card>

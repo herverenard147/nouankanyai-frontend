@@ -1,20 +1,23 @@
 import { priorityLabel, statusLabel } from '@/api/backendHelpers'
 import { rawMachines } from '@/api/rawBackend'
+import { formatNumberFr } from '@/lib/formatters'
 import type { MachineRow, Profile } from '@/types/domain'
 
 export async function fetchMachinesTable(_profile: Profile): Promise<{ title: string; rows: MachineRow[] }> {
   const machines = await rawMachines()
   return {
-    title: 'Métadonnées machine',
+    title: 'Machines suivies',
     rows: machines.map((m) => ({
       id: m.machine_id,
       machine: m.nom,
-      temperature: `${m.temperature_c} °C`,
-      vibration: `${m.vibration_hz} Hz`,
-      pression: `${m.pressure_bar} bar`,
+      temperature: `${formatNumberFr(m.temperature_c, 1)} °C`,
+      vibration: `${formatNumberFr(m.vibration_hz, 1)} Hz`,
+      pression: `${formatNumberFr(m.pressure_bar, 1)} bar`,
       statut: statusLabel(m.status),
       priorite: priorityLabel(m.priority),
-      provenance: 'estime' as const,
+      // Les relevés température/vibration/pression sont simulés côté backend
+      // (aucun capteur branché) : jamais présentés comme "estimés".
+      provenance: 'synthetique' as const,
     })),
   }
 }

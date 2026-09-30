@@ -53,7 +53,7 @@ export function IndustrieOverview() {
 
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-section-title font-semibold text-text-primary">{machinesQuery.data?.title ?? 'Métadonnées machine'}</h2>
+          <h2 className="text-section-title font-semibold text-text-primary">{machinesQuery.data?.title ?? 'Machines suivies'}</h2>
           <Link to="/app/machines" className="text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
             Voir toutes les machines
           </Link>

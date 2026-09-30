@@ -17,7 +17,7 @@ export function NewsletterSection() {
 
   return (
     <section className="bg-accent py-16 text-text-primary lg:py-20">
-      <div className="mx-auto grid max-w-[1200px] items-end gap-8 px-6 lg:grid-cols-[6fr_5fr] lg:gap-16">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-end gap-8 px-6 lg:grid-cols-[6fr_5fr] lg:gap-16">
         <div>
           <p className="font-mono text-sm font-semibold">Bientôt disponible</p>
           <h2 className="mt-2.5 text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em]">

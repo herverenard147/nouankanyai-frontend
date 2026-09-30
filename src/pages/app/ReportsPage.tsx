@@ -5,14 +5,14 @@ import { Card } from '@/components/ui/Card'
 import { useFacturation } from '@/hooks/queries/useFacturation'
 import { formatFcfa, formatNumberFr } from '@/lib/formatters'
 
-/** Facturation Gain-Share : Nouankany prend 10 % des économies réellement journalisées ce mois. */
+/** Commission sur les économies : Nouankany prend 10 % des économies réellement journalisées ce mois. */
 export function ReportsPage() {
   const query = useFacturation()
 
   return (
     <div className="flex flex-col gap-7">
       <p className="text-sm text-text-secondary">
-        Détail du calcul de la commission Nouankany (Gain-Share) et piste d&rsquo;audit des économies enregistrées ce
+        Détail du calcul de la commission Nouankany sur les économies et piste d&rsquo;audit des économies enregistrées ce
         mois.
       </p>
       <MetricState status={query.status}>
@@ -37,7 +37,9 @@ export function ReportsPage() {
 
             <Card className="flex flex-col gap-4 p-6">
               <h3 className="text-section-title font-semibold text-text-primary">Économies par semaine</h3>
-              <BarChartFromFacturation bars={query.data.barData} />
+              <MetricState status="success" isEmpty={query.data.barData.every((bar) => bar.savings === 0)}>
+                <BarChartFromFacturation bars={query.data.barData} />
+              </MetricState>
             </Card>
 
             <Card className="flex flex-col gap-3 p-6">

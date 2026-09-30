@@ -4,6 +4,7 @@ import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
 import { ApiError } from '@/lib/apiClient'
+import { formatNumberFr } from '@/lib/formatters'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
 
 interface ActionAlertCardProps {
@@ -72,7 +73,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             onClick={() => resolveMutation.mutate(alert.machineId)}
             className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control border border-alert px-4 py-2 text-sm font-semibold text-alert transition-colors hover:bg-white disabled:opacity-60"
           >
-            {resolveMutation.isPending ? 'Test en cours…' : 'Marquer comme résolu'}
+            {resolveMutation.isPending ? 'Vérification en cours…' : 'Vérifier et résoudre'}
           </button>
           {alert.ctaTarget ? (
             <Link
@@ -92,14 +93,14 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
         </div>
         {resolveMutation.isError && (
           <ApiErrorMessage
-            message={resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec du test.'}
+            message={resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec de la vérification.'}
             className="text-right text-sm text-alert"
           />
         )}
         {resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
           <p className="text-right text-sm text-alert">
-            Nouvelle mesure : température {resolveMutation.data.temperature_c}°C, vibration{' '}
-            {resolveMutation.data.vibration_hz} Hz — l&rsquo;anomalie persiste encore. Réessayez une fois
+            Nouvelle mesure : température {formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration{' '}
+            {formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz — l&rsquo;anomalie persiste encore. Réessayez une fois
             l&rsquo;intervention terminée.
           </p>
         )}

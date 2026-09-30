@@ -130,6 +130,8 @@ export interface Advice {
   title: string
   detail: string
   impactLabel: string
+  /** 'gain' : montant en FCFA ; 'severity' : repli sur la sévérité quand le backend ne chiffre aucun gain. */
+  impactKind: 'gain' | 'severity'
   provenance: Provenance
   /** Identifiant de la machine concernée côté backend, pour lier une action à son équipement. */
   machineId?: string

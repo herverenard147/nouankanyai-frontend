@@ -49,7 +49,7 @@ export function MachinesPage() {
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-section-title font-semibold text-text-primary">{query.data?.title ?? 'Métadonnées machine'}</h1>
+        <h1 className="text-section-title font-semibold text-text-primary">{query.data?.title ?? 'Machines suivies'}</h1>
         <Button type="button" onClick={() => setFormOpen('add')}>
           Ajouter une machine
         </Button>

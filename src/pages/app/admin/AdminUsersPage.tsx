@@ -65,7 +65,7 @@ function UserDetail({ user, canManageRoles }: { user: AdminUser; canManageRoles:
           </MetricState>
         </div>
         <div className="flex flex-col gap-2">
-          <h4 className="text-sm font-medium text-text-secondary">Facturation (mois en cours)</h4>
+          <h4 className="text-sm font-medium text-text-secondary">Commission (mois en cours)</h4>
           <MetricState status={facturationQuery.status}>
             {facturationQuery.data && (
               <ul className="flex flex-col gap-1.5 text-sm text-text-primary">
