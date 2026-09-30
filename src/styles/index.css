@@ -1,6 +1,6 @@
-@import "@fontsource/ibm-plex-sans/500.css";
-@import "@fontsource/ibm-plex-sans/600.css";
-@import "@fontsource/ibm-plex-sans/700.css";
+@import "@fontsource/hanken-grotesk/500.css";
+@import "@fontsource/hanken-grotesk/600.css";
+@import "@fontsource/hanken-grotesk/700.css";
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
@@ -58,7 +58,7 @@
   --radius-tooltip-mobile: 9px;
 
   /* Fonts — README §Typographie */
-  --font-heading: "IBM Plex Sans", sans-serif;
+  --font-heading: "Hanken Grotesk", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
