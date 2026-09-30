@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { Minus, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
@@ -60,6 +62,9 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
 ]
 
 export function FaqSection() {
+  // Une seule réponse ouverte à la fois ; la première l'est au chargement.
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
+
   return (
     <section id="faq" className="py-20 lg:py-28">
       <div className="mx-auto grid max-w-[1200px] gap-10 px-6 lg:grid-cols-[4fr_8fr] lg:gap-[72px]">
@@ -77,12 +82,38 @@ export function FaqSection() {
         </div>
 
         <div className="border-b border-border">
-          {FAQ_ITEMS.map((item) => (
-            <div key={item.question} className="border-t border-border py-6">
-              <h3 className="text-xl font-bold leading-snug tracking-[-0.01em] text-text-primary">{item.question}</h3>
-              <p className="mt-2 text-text-secondary">{item.answer}</p>
-            </div>
-          ))}
+          {FAQ_ITEMS.map((item, index) => {
+            const isOpen = openIndex === index
+            const panelId = `faq-panel-${index}`
+            const Icon = isOpen ? Minus : Plus
+            return (
+              <div key={item.question} className="border-t border-border">
+                <h3>
+                  <button
+                    type="button"
+                    id={`faq-button-${index}`}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    onClick={() => setOpenIndex(isOpen ? null : index)}
+                    className="focus-ring flex w-full items-center justify-between gap-6 py-6 text-left text-xl font-bold leading-snug tracking-[-0.01em] text-text-primary hover:text-accent-cta"
+                  >
+                    {item.question}
+                    <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                  </button>
+                </h3>
+                <div
+                  id={panelId}
+                  className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+                    isOpen ? 'grid-rows-[1fr]' : 'invisible grid-rows-[0fr]'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <p className="pb-6 text-text-secondary">{item.answer}</p>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>
