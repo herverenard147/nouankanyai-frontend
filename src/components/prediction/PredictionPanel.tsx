@@ -60,7 +60,7 @@ export function PredictionContent({
         <div className="flex flex-col items-end gap-1">
           <ProvenanceBadge value={prediction.provenance} />
           {showModelDetails && (
-            <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName} · dataset: synthetic</p>
+            <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName} · jeu de données : synthétique</p>
           )}
         </div>
       </div>

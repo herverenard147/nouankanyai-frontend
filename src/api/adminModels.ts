@@ -2,6 +2,11 @@ import { rawAdminMetrics, rawGeminiMetrics, rawMlModels, rawMlReload } from '@/a
 import { formatNumberFr } from '@/lib/formatters'
 import type { AdminPanel } from '@/types/domain'
 
+/** Le backend nomme le jeu de données en anglais ("synthetic") ; l'interface est en français. */
+function datasetLabel(dataset: string | null): string {
+  return !dataset || dataset.toLowerCase() === 'synthetic' ? 'synthétique' : dataset
+}
+
 export function adminPanelIds(): string[] {
   return ['xgboost', 'isolation-forest', 'gemini']
 }
@@ -14,7 +19,7 @@ async function xgboostPanel(): Promise<AdminPanel> {
     id: 'xgboost',
     title: 'XGBoost · prédiction',
     meta: model?.trained_at ? `entraîné le ${model.trained_at}` : 'entraînement inconnu',
-    badge: `dataset: ${xgb.dataset ?? 'synthetic'}`,
+    badge: `jeu de données : ${datasetLabel(xgb.dataset)}`,
     rows: [
       { label: 'R²', value: xgb.r2 !== null ? formatNumberFr(xgb.r2, 1) : (model?.metrics.r2?.toFixed(3) ?? '—') },
       { label: 'MAE', value: xgb.mae_kw !== null ? `${formatNumberFr(xgb.mae_kw, 1)} kW` : '—' },
@@ -31,7 +36,7 @@ async function isolationForestPanel(): Promise<AdminPanel> {
     id: 'isolation-forest',
     title: 'Isolation Forest · anomalies',
     meta: model?.trained_at ? `entraîné le ${model.trained_at}` : 'entraînement inconnu',
-    badge: 'dataset: synthetic',
+    badge: 'jeu de données : synthétique',
     rows: [
       { label: 'Anomalies détectées', value: String(adminMetrics.ml_health.isolation_forest_anomalies_detected) },
       { label: 'F1-score', value: model?.metrics.f1_score !== undefined ? model.metrics.f1_score.toFixed(3) : '—' },
