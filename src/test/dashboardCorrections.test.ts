@@ -12,6 +12,12 @@ describe('frenchNumbersWithUnits', () => {
     expect(frenchNumbersWithUnits('vibration de 50.0Hz, seuil 45.0Hz')).toBe('vibration de 50,0 Hz, seuil 45,0 Hz')
   })
 
+  it('met aussi le score du détecteur d’anomalie à la française', () => {
+    expect(frenchNumbersWithUnits('comportement anormal (score: -0.1264). Température: 47.0°C')).toBe(
+      'comportement anormal (score: −0,1264). Température: 47,0 °C',
+    )
+  })
+
   it('ne touche ni aux nombres sans unité ni aux identifiants', () => {
     expect(frenchNumbersWithUnits('NEW-F2558C version 1.2 machine 3')).toBe('NEW-F2558C version 1.2 machine 3')
   })
