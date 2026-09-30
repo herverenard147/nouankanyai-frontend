@@ -1,10 +1,21 @@
-import { PhotoPlaceholder } from '@/components/ui/PhotoPlaceholder'
+const REPERES = [
+  { label: 'Zone d’intervention', value: 'Abidjan, Côte d’Ivoire' },
+  { label: 'Secteurs pilotes', value: 'Industrie, distribution, hôtellerie, santé' },
+  { label: 'Approche', value: 'Audit → pilote 6-9 mois → généralisation' },
+]
 
 export function AboutSection() {
   return (
     <section id="apropos" className="py-16">
       <div className="mx-auto grid max-w-[1120px] items-center gap-12 px-6 [grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))]">
-        <PhotoPlaceholder caption="Équipe Nouankany au travail, Abidjan" />
+        <dl className="flex flex-col divide-y divide-border rounded-card border border-border bg-card p-6">
+          {REPERES.map((repere) => (
+            <div key={repere.label} className="flex flex-wrap items-baseline justify-between gap-2 py-3 first:pt-0 last:pb-0">
+              <dt className="text-sm text-text-secondary">{repere.label}</dt>
+              <dd className="text-right font-heading text-sm font-semibold text-text-primary">{repere.value}</dd>
+            </div>
+          ))}
+        </dl>
         <div className="flex flex-col gap-3">
           <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
             Qui sommes-nous
