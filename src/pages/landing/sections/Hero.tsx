@@ -32,7 +32,7 @@ export function Hero() {
             </Link>
           </div>
           <p className="mt-6 text-[0.9rem] text-white">
-            <span className="font-semibold text-white">Ménages :</span> la formule arrive dans les prochains
+            <span className="font-semibold text-white">Ménages :</span> la formule arrive d&rsquo;ici 12 à 24
             mois.{' '}
             <Link to="/comment-ca-marche" className="font-semibold text-white underline underline-offset-4">
               Être informé à l&rsquo;ouverture

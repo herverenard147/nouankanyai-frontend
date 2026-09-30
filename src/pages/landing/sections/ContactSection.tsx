@@ -83,10 +83,10 @@ export function ContactSection() {
               <h3 className="text-xl font-bold tracking-[-0.01em] text-text-primary">Par email</h3>
               <p className="mt-1.5">
                 <a
-                  href="mailto:contact@nouankany.demo"
+                  href="mailto:contact@nouankany.com"
                   className="font-semibold text-accent-cta hover:text-accent-cta-hover"
                 >
-                  contact@nouankany.demo
+                  contact@nouankany.com
                 </a>
               </p>
             </div>

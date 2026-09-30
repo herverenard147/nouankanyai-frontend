@@ -90,8 +90,8 @@ export function CguContent() {
         <h3 className="text-sm font-semibold text-text-primary">10. Contact</h3>
         <p className="mt-2">
           Pour toute question sur ces CGU :{' '}
-          <a href="mailto:contact@nouankany.demo" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
-            contact@nouankany.demo
+          <a href="mailto:contact@nouankany.com" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+            contact@nouankany.com
           </a>
           .
         </p>

@@ -40,7 +40,7 @@ export const LANDING_CHARTS: LandingChart[] = [
     label: 'croissance annuelle de la demande nationale, 2025–2030',
     axisY: 'indice base 100',
     axisX: 'année',
-    source: 'projection à 6,5 %/an',
+    source: 'projection à 6,5%/an',
     ticks: ['140', '120', '100'],
     min: 96,
     max: 140,
