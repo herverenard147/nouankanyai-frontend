@@ -39,7 +39,11 @@ const SIZE_CONFIG: Record<
     plotHeightPx: 186,
     xLabelBandPx: 26,
     defaultGapPx: 14,
-    barWidthClass: 'flex-1',
+    // max-w ajouté (30 sept) : sans plafond, une barre unique (peu de relevés,
+    // ex. un compte tout juste créé) s'étire sur toute la largeur du graphique
+    // et écrase visuellement les graduations — même principe déjà appliqué
+    // côté landing (max-w-8).
+    barWidthClass: 'flex-1 min-w-0 max-w-16',
     radiusClass: 'rounded-t-bar-dashboard',
     tooltipRadiusClass: 'rounded-tooltip-dashboard',
   },
@@ -47,7 +51,7 @@ const SIZE_CONFIG: Record<
     plotHeightPx: 126,
     xLabelBandPx: 22,
     defaultGapPx: 7,
-    barWidthClass: 'flex-1',
+    barWidthClass: 'flex-1 min-w-0 max-w-12',
     radiusClass: 'rounded-t-bar-mobile',
     tooltipRadiusClass: 'rounded-tooltip-mobile',
   },
@@ -80,7 +84,7 @@ export function BarChart({ bars, yTicks, size, yAxisLabel, xAxisLabel, sourceLab
           ))}
         </div>
         <div
-          className="flex flex-1 items-end border-b border-l border-border px-3"
+          className="flex flex-1 items-end justify-evenly border-b border-l border-border px-3"
           style={{ height: config.plotHeightPx, paddingBottom: config.xLabelBandPx, gap }}
         >
           {bars.map((bar) => {
@@ -106,8 +110,8 @@ export function BarChart({ bars, yTicks, size, yAxisLabel, xAxisLabel, sourceLab
                   }}
                 />
                 <span
-                  className="absolute font-mono text-mono-axis text-text-tertiary"
-                  style={{ bottom: -config.xLabelBandPx + 4 }}
+                  className="absolute left-1/2 whitespace-nowrap font-mono text-mono-axis text-text-tertiary"
+                  style={{ bottom: -config.xLabelBandPx + 4, transform: 'translateX(-50%)' }}
                 >
                   {bar.x}
                 </span>

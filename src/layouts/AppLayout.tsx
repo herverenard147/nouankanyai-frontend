@@ -18,7 +18,7 @@ export function AppLayout() {
       >
         Aller au contenu
       </a>
-      <aside className="hidden w-[244px] shrink-0 border-r border-border lg:block">
+      <aside className="sticky top-0 hidden h-screen w-[244px] shrink-0 overflow-y-auto border-r border-border lg:block">
         <SideRail />
       </aside>
       <div className="flex min-h-screen min-w-0 flex-1 flex-col">
