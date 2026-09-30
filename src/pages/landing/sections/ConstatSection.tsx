@@ -7,13 +7,16 @@ export function ConstatSection() {
       <div className="mx-auto max-w-[1120px] px-6">
         <div className="mb-10 flex max-w-[60ch] flex-col gap-2">
           <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
-            Le constat
+            Le constat économique
           </p>
-          <h2 className="text-h2-section font-bold text-text-primary">Une hausse structurelle, pas un accident</h2>
+          <h2 className="text-h2-section font-bold text-text-primary">
+            Un poste de coût qui pèse plus lourd, rarement piloté avec la même rigueur
+          </h2>
           <p className="text-small-body text-text-secondary">
-            Le coût de revient de l&rsquo;électricité dépasse déjà le tarif moyen facturé en Côte d&rsquo;Ivoire. De
-            nouvelles hausses sont probables. Sans outil de suivi, entreprises et ménages pilotent leur consommation
-            à l&rsquo;aveugle, sur la seule base de la facture mensuelle.
+            Ménage, commerce ou site industriel : l&rsquo;électricité prend une part croissante des charges, le plus
+            souvent sans vision claire de qui consomme quoi, ni de ce qui peut réellement être évité. Nouankany donne
+            à chaque acteur une lecture structurée de sa consommation, pour décider avec des chiffres plutôt qu&rsquo;à
+            l&rsquo;aveugle sur la seule facture mensuelle.
           </p>
         </div>
 

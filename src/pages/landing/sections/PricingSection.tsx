@@ -74,24 +74,6 @@ const TIERS: Tier[] = [
   },
 ]
 
-const PROCESS_STEPS = [
-  {
-    step: '01',
-    title: 'Audit',
-    body: 'Diagnostic initial et ligne de base de votre consommation, avant tout engagement contractuel.',
-  },
-  {
-    step: '02',
-    title: 'Pilote, 6 à 9 mois',
-    body: 'Installation ciblée sur vos équipements prioritaires, calibration des modèles sur vos données réelles, premières alertes et recommandations.',
-  },
-  {
-    step: '03',
-    title: 'Généralisation',
-    body: 'Résultats mesurés et consolidés, proposition de déploiement élargi ou de renouvellement.',
-  },
-]
-
 function CheckIcon({ color }: { color: string }) {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0">
@@ -161,19 +143,6 @@ export function PricingSection() {
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="mt-10 flex flex-col gap-4">
-          <h3 className="text-sm font-semibold text-text-primary">Comment fonctionne un pilote PME ou Industrie</h3>
-          <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))]">
-            {PROCESS_STEPS.map((item) => (
-              <div key={item.step} className="rounded-card border border-border bg-card p-5">
-                <span className="font-mono text-lg font-semibold text-text-tertiary">{item.step}</span>
-                <h4 className="mt-1 text-sm font-semibold text-text-primary">{item.title}</h4>
-                <p className="mt-1 text-sm text-text-secondary">{item.body}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>

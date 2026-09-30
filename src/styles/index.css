@@ -185,24 +185,51 @@
 }
 
 /* Diaporama en fondu-enchaîné des cartes ProfilesSection ayant plusieurs
-   photos (ex. PME : commerce, tech, grande distribution) — chaque image
-   reste affichée en entier à tour de rôle (jamais réduite en mosaïque), pour
-   rester "bien visible". 3 images, cycle de 9s = 3s chacune : chaque <img>
-   utilise le même keyframe avec un animation-delay positif de 3s/6s, plus
-   fill-mode backwards pour rester invisible avant son tour. Le plateau
-   "visible" (2%-31%) occupe la quasi-totalité de son tiers de cycle — un
-   premier essai avec un plateau plus court (4%-27%) laissait ~1s de blanc
-   total à chaque tour, aucune des 3 images n'étant visible entre deux
-   tiers (voir prefers-reduced-motion plus bas pour le repli statique). */
-.profile-photo-cycle {
-  animation: profile-photo-cycle 9s ease-in-out infinite backwards;
+   photos (ex. Industrie : 4 sous-secteurs) — chaque image reste affichée en
+   entier à tour de rôle (jamais réduite en mosaïque), pour rester "bien
+   visible". Chaque image a un budget fixe de 3s d'affichage ; le cycle dure
+   donc 3s × nombre d'images, avec un animation-delay positif de 3s par rang
+   (0s, 3s, 6s...) et fill-mode backwards pour rester invisible avant son
+   tour. Une variante par nombre d'images (2, 3, 4) car les repères en % des
+   keyframes sont relatifs à la durée totale du cycle, donc pas les mêmes
+   selon combien d'images se partagent ces 3s chacune — même ratio
+   plateau/fondu/creux dans les 3 variantes (un premier essai avec un
+   plateau trop court laissait ~1s de blanc total par cycle, voir le
+   commentaire equivalent conservé dans l'historique git). Repli statique
+   sous prefers-reduced-motion plus bas. */
+.profile-photo-cycle-2 {
+  animation: profile-photo-cycle-2 6s ease-in-out infinite backwards;
+}
+.profile-photo-cycle-3 {
+  animation: profile-photo-cycle-3 9s ease-in-out infinite backwards;
+}
+.profile-photo-cycle-4 {
+  animation: profile-photo-cycle-4 12s ease-in-out infinite backwards;
+}
+.profile-dot-cycle-2 {
+  animation: profile-dot-cycle-2 6s ease-in-out infinite backwards;
+}
+.profile-dot-cycle-3 {
+  animation: profile-dot-cycle-3 9s ease-in-out infinite backwards;
+}
+.profile-dot-cycle-4 {
+  animation: profile-dot-cycle-4 12s ease-in-out infinite backwards;
 }
 
-.profile-dot-cycle {
-  animation: profile-dot-cycle 9s ease-in-out infinite backwards;
+@keyframes profile-photo-cycle-2 {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  3%,
+  47% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
-
-@keyframes profile-photo-cycle {
+@keyframes profile-photo-cycle-3 {
   0%,
   100% {
     opacity: 0;
@@ -215,8 +242,37 @@
     opacity: 0;
   }
 }
+@keyframes profile-photo-cycle-4 {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  1.5%,
+  23.5% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0;
+  }
+}
 
-@keyframes profile-dot-cycle {
+@keyframes profile-dot-cycle-2 {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  3%,
+  47% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+@keyframes profile-dot-cycle-3 {
   0%,
   100% {
     opacity: 0.4;
@@ -228,6 +284,22 @@
     transform: scale(1.3);
   }
   33% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+@keyframes profile-dot-cycle-4 {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  1.5%,
+  23.5% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+  25% {
     opacity: 0.4;
     transform: scale(1);
   }
@@ -244,17 +316,26 @@
   }
 
   /* La règle globale ci-dessus force chaque animation à se terminer
-     instantanément sur son état à 100% — pour profile-photo-cycle/
-     profile-dot-cycle, ce serait "éteint" pour les 3 images. Repli
-     explicite : la première photo/pastille reste visible, statique. */
-  .profile-photo-cycle,
-  .profile-dot-cycle {
+     instantanément sur son état à 100% — pour les variantes
+     profile-photo-cycle-*/profile-dot-cycle-*, ce serait "éteint" pour
+     toutes les images. Repli explicite : la première photo/pastille reste
+     visible, statique. */
+  .profile-photo-cycle-2,
+  .profile-photo-cycle-3,
+  .profile-photo-cycle-4,
+  .profile-dot-cycle-2,
+  .profile-dot-cycle-3,
+  .profile-dot-cycle-4 {
     animation: none !important;
     opacity: 0 !important;
   }
 
-  .profile-photo-cycle:first-of-type,
-  .profile-dot-cycle:first-of-type {
+  .profile-photo-cycle-2:first-of-type,
+  .profile-photo-cycle-3:first-of-type,
+  .profile-photo-cycle-4:first-of-type,
+  .profile-dot-cycle-2:first-of-type,
+  .profile-dot-cycle-3:first-of-type,
+  .profile-dot-cycle-4:first-of-type {
     opacity: 1 !important;
   }
 }
