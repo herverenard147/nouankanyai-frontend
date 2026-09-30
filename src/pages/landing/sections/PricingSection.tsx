@@ -116,11 +116,11 @@ export function PricingSection() {
           </p>
         </div>
 
-        <div className="grid items-start gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))]">
+        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))]">
           {TIERS.map((tier) => (
             <div
               key={tier.name}
-              className={`flex flex-col gap-4 rounded-pricing border bg-card p-6 ${
+              className={`flex h-full flex-col gap-4 rounded-pricing border bg-card p-6 ${
                 tier.featured ? 'border-accent' : 'border-border'
               }`}
             >
