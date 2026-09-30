@@ -1,63 +1,43 @@
 import { Link } from 'react-router-dom'
 
-import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
-import { TariffBar } from '@/components/tariff/TariffBar'
-
 export function Hero() {
   return (
-    <section className="border-b border-border py-16">
-      <div className="mx-auto grid max-w-[1120px] gap-14 px-6 [grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))] lg:items-center">
-        <div className="flex flex-col gap-5">
-          <h1 className="max-w-[16ch] text-h1 font-bold text-text-primary">
-            Pilotez la consommation électrique de votre site, avant qu&rsquo;elle ne pilote vos coûts.
+    <section className="relative isolate overflow-hidden bg-dark-bg text-white">
+      <img
+        src="/images/profiles/industrie-hotellerie-clim.jpg"
+        alt=""
+        className="absolute inset-0 -z-10 h-full w-full object-cover opacity-40"
+      />
+      <div className="mx-auto flex min-h-[560px] max-w-[1200px] flex-col justify-end px-6 pb-16 pt-28 lg:min-h-[680px] lg:pb-20">
+        <div className="max-w-[880px]">
+          <h1 className="text-[clamp(2.5rem,7vw,5.25rem)] font-bold leading-[1.02] tracking-[-0.025em]">
+            Pilotez la consommation électrique de votre site.
           </h1>
-          <p className="max-w-[46ch] text-lede text-text-secondary">
-            Nouankany détecte les dérives, priorise les équipements à surveiller et chiffre vos économies
-            potentielles, mesures à l&rsquo;appui. Un audit initial, un pilote de 6 à 9 mois sur vos équipements
-            prioritaires, une généralisation si les résultats sont concluants.
+          <p className="mt-6 max-w-[40ch] text-[1.2rem] leading-snug lg:text-[1.375rem]">
+            Avant qu&rsquo;elle ne pilote vos coûts. Un audit initial, un pilote de 6 à 9 mois sur vos
+            équipements prioritaires, une généralisation si les résultats sont concluants.
           </p>
-          <div className="flex flex-wrap gap-3.5">
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link
               to="/demander-un-audit"
-              className="focus-ring inline-flex min-h-11 items-center rounded-control bg-accent-cta px-5 py-3.5 text-sm font-semibold text-white hover:bg-accent-cta-hover"
+              className="focus-ring inline-flex min-h-12 items-center bg-accent px-6 py-3.5 text-base font-semibold text-text-primary hover:brightness-110"
             >
               Demander un audit
             </Link>
             <Link
               to="/comment-ca-marche"
-              className="focus-ring inline-flex min-h-11 items-center rounded-control border border-border px-5 py-3.5 text-sm font-semibold text-text-primary hover:bg-bg-elevated"
+              className="focus-ring text-base font-semibold underline underline-offset-4 hover:opacity-80"
             >
               Voir comment ça marche
             </Link>
           </div>
-          <p className="text-[0.85rem] text-text-secondary">
-            <span className="font-semibold text-text-primary">Ménages :</span> la formule arrive dans les
-            prochains mois.{' '}
-            <Link to="/comment-ca-marche" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+          <p className="mt-6 text-[0.9rem] text-white">
+            <span className="font-semibold text-white">Ménages :</span> la formule arrive dans les prochains
+            mois.{' '}
+            <Link to="/comment-ca-marche" className="font-semibold text-white underline underline-offset-4">
               Être informé à l&rsquo;ouverture
             </Link>
           </p>
-        </div>
-
-        <div className="rounded-card border border-border bg-card p-5 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="font-mono text-[0.85rem] font-semibold uppercase tracking-wide text-text-secondary">
-              Grille tarifaire CIE
-            </p>
-            <p className="font-mono tabular-nums text-text-primary">
-              <span className="text-2xl font-semibold">87</span>{' '}
-              <span className="text-sm text-text-secondary">FCFA/kWh</span>
-            </p>
-          </div>
-          <TariffBar />
-          <div className="mt-2 flex justify-between text-xs text-text-secondary">
-            <span>Nuit, tarif bas</span>
-            <span>Écart pointe/creuses : ×2</span>
-          </div>
-          <div className="mt-4 flex items-center justify-between border-t border-dashed border-border pt-3">
-            <span className="text-[0.82rem] text-text-secondary">Prédiction hebdomadaire</span>
-            <ProvenanceBadge value="synthetique" />
-          </div>
         </div>
       </div>
     </section>
