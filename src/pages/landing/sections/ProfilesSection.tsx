@@ -1,11 +1,11 @@
 import { LevelSelector } from '@/components/level/LevelSelector'
-import { PhotoPlaceholder } from '@/components/ui/PhotoPlaceholder'
 import type { Level } from '@/types/domain'
 
-const PROFILES: { tag: string; caption: string; title: string; body: string; level: Level; badge?: string }[] = [
+const PROFILES: { tag: string; caption: string; image: string; title: string; body: string; level: Level; badge?: string }[] = [
   {
     tag: 'PME',
     caption: 'Gérant PME dans son commerce, en activité',
+    image: '/images/profiles/pme-commerce.jpg',
     title: 'Arbitrer sans risque',
     body: 'Seuils par appareil, conseils priorisés par impact sur la marge, rapport hebdomadaire exploitable sans expertise technique.',
     level: 'amateur',
@@ -13,6 +13,7 @@ const PROFILES: { tag: string; caption: string; title: string; body: string; lev
   {
     tag: 'Industrie',
     caption: 'Technicien devant un tableau électrique',
+    image: '/images/profiles/industrie-technicien.jpg',
     title: 'Piloter la charge',
     body: 'Alertes multi-niveaux, détection d’anomalie machine, plan d’action chiffré. Pensé pour un usage technique quotidien.',
     level: 'technique',
@@ -20,6 +21,7 @@ const PROFILES: { tag: string; caption: string; title: string; body: string; lev
   {
     tag: 'Ménage',
     caption: 'Intérieur de foyer, ambiance quotidienne',
+    image: '/images/profiles/menage-foyer.jpg',
     title: 'Comprendre et anticiper',
     body: 'Prédiction hebdomadaire, un seuil global simple, conseils directs pour éviter la mauvaise surprise en fin de mois.',
     level: 'debutant',
@@ -49,7 +51,11 @@ export function ProfilesSection() {
               key={profile.tag}
               className="flex flex-col rounded-segment border border-border bg-card transition-colors duration-150 ease-out hover:border-text-tertiary"
             >
-              <PhotoPlaceholder caption={profile.caption} aspect="4/3" className="rounded-b-none" />
+              <img
+                src={profile.image}
+                alt={profile.caption}
+                className="aspect-[4/3] w-full rounded-t-segment object-cover"
+              />
               <div className="flex flex-1 flex-col gap-2 p-5.5">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-mono text-caption font-semibold uppercase tracking-wide text-text-secondary">
