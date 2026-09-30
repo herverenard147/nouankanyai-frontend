@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { X } from 'lucide-react'
 
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
@@ -62,7 +63,7 @@ export function AssistantPanel({ profile, onClose }: AssistantPanelProps) {
           aria-label="Fermer l'assistant"
           className="focus-ring rounded-control p-1 text-text-secondary hover:text-text-primary"
         >
-          ✕
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
 

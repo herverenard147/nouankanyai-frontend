@@ -20,7 +20,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-primary">
+            <h4 className="font-mono text-label font-semibold uppercase tracking-wide text-text-primary">
               Produit
             </h4>
             <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
@@ -48,7 +48,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-primary">
+            <h4 className="font-mono text-label font-semibold uppercase tracking-wide text-text-primary">
               Entreprise
             </h4>
             <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
@@ -71,7 +71,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-primary">Légal</h4>
+            <h4 className="font-mono text-label font-semibold uppercase tracking-wide text-text-primary">Légal</h4>
             <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
               <li>
                 <Link to="/legal/cgu" className="hover:text-text-primary">

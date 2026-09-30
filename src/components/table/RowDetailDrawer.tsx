@@ -1,3 +1,5 @@
+import { X } from 'lucide-react'
+
 import { Button } from '@/components/ui/Button'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { onEscape } from '@/lib/a11y'
@@ -44,7 +46,7 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance }
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-section-title font-semibold text-text-primary">{title}</h3>
           <button type="button" onClick={onClose} className="focus-ring rounded-control p-1 text-text-secondary hover:text-text-primary" aria-label="Fermer">
-            ✕
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
         <dl className="flex flex-col gap-3 text-sm">

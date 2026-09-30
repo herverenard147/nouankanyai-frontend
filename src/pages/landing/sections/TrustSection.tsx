@@ -15,13 +15,13 @@ export function TrustSection() {
     <section id="confiance" className="border-y border-border bg-bg-elevated py-16">
       <div className="mx-auto grid max-w-[1120px] items-center gap-12 px-6 [grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))]">
         <div className="flex flex-col gap-3">
-          <p className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-secondary">
+          <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
             Notre engagement
           </p>
           <h2 className="text-h2-secondary font-bold text-text-primary">
             Une donnée est mesurée, estimée, ou synthétique. Jamais inventée.
           </h2>
-          <p className="text-[0.98rem] text-text-secondary">
+          <p className="text-small-body text-text-secondary">
             Chaque chiffre affiché sur votre dashboard porte l&rsquo;origine de son calcul. Pas de promesse
             d&rsquo;IA gonflée. Si un capteur n&rsquo;est pas encore installé chez vous, on vous le dit, et on chiffre
             quand même votre potentiel d&rsquo;économie sur des hypothèses transparentes.

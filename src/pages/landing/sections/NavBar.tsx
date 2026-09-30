@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Menu } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const LINKS = [
@@ -54,7 +55,7 @@ export function NavBar() {
           aria-label="Ouvrir le menu"
           className="focus-ring rounded-control border border-border p-2 lg:hidden"
         >
-          ☰
+          <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
 

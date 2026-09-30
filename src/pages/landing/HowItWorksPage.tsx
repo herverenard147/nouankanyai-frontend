@@ -105,7 +105,7 @@ export function HowItWorksPage() {
       <main id="main-content">
         <section className="border-b border-border py-16">
           <div className="mx-auto max-w-[760px] px-6">
-            <p className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-secondary">
+            <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
               Comment ça marche
             </p>
             <h1 className="mt-2 text-h1 font-bold text-text-primary">Deux parcours, un seul produit</h1>
@@ -175,12 +175,12 @@ export function HowItWorksPage() {
               <h2 className="text-h2-section font-bold text-text-primary">Pour les Ménages</h2>
             </div>
             <div className="max-w-[640px] rounded-card border border-border bg-card p-6">
-              <p className="text-[0.98rem] text-text-secondary">
+              <p className="text-small-body text-text-secondary">
                 Vous prenez en photo votre facture CIE. Nouankany prédit votre prochaine consommation et vous dit
                 précisément quoi éteindre ou décaler pour payer moins. Sans capteur pour commencer : ce parcours
                 repose sur votre facture et votre déclaration d&rsquo;équipements, pas sur une installation IoT.
               </p>
-              <p className="mt-3 text-[0.98rem] text-text-secondary">
+              <p className="mt-3 text-small-body text-text-secondary">
                 Ce segment ouvre après le pilote PME/Industrie, une fois la plateforme consolidée sur des cas
                 industriels réels.
               </p>

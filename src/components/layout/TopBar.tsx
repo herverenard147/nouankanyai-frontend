@@ -1,3 +1,4 @@
+import { Menu } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 
 import { LevelSelector } from '@/components/level/LevelSelector'
@@ -33,7 +34,7 @@ export function TopBar() {
           className="focus-ring rounded-control border border-border p-2 lg:hidden"
           aria-label="Ouvrir la navigation"
         >
-          ☰
+          <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
         <div>
           <h1 className="text-view-title font-semibold text-text-primary">{currentEntry?.label ?? 'Nouankany'}</h1>

@@ -6,11 +6,11 @@ export function ConstatSection() {
     <section id="probleme" className="py-16">
       <div className="mx-auto max-w-[1120px] px-6">
         <div className="mb-10 flex max-w-[60ch] flex-col gap-2">
-          <p className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-secondary">
+          <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
             Le constat
           </p>
           <h2 className="text-h2-section font-bold text-text-primary">Une hausse structurelle, pas un accident</h2>
-          <p className="text-[1.02rem] text-text-secondary">
+          <p className="text-small-body text-text-secondary">
             Le coût de revient de l&rsquo;électricité dépasse déjà le tarif moyen facturé en Côte d&rsquo;Ivoire. De
             nouvelles hausses sont probables. Sans outil de suivi, entreprises et ménages pilotent leur consommation
             à l&rsquo;aveugle, sur la seule base de la facture mensuelle.
@@ -29,7 +29,7 @@ export function ConstatSection() {
               <div key={chart.id} className="rounded-card border border-border bg-card p-5">
                 <div className="mb-1 flex items-baseline justify-between gap-2">
                   <p className="font-mono text-[1.5rem] font-semibold text-text-primary">{chart.headline}</p>
-                  <p className="text-right font-mono text-[0.72rem] text-text-secondary">{chart.axisY}</p>
+                  <p className="text-right font-mono text-caption text-text-secondary">{chart.axisY}</p>
                 </div>
                 <p className="mb-3 text-sm text-text-secondary">{chart.label}</p>
                 <BarChart

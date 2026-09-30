@@ -19,7 +19,7 @@ export function NewsletterSection() {
     <section className="py-16">
       <div className="mx-auto max-w-[1120px] px-6">
         <div className="rounded-newsletter bg-dark-bg p-6 sm:p-11">
-          <p className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-dark-text">
+          <p className="font-mono text-label font-semibold uppercase tracking-wide text-dark-text">
             Bientôt disponible
           </p>
           <h2 className="mt-2 text-[1.6rem] font-bold text-white">Soyez parmi les premiers utilisateurs</h2>

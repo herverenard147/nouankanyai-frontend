@@ -106,11 +106,11 @@ export function PricingSection() {
     <section id="formules" className="py-16">
       <div className="mx-auto max-w-[1120px] px-6">
         <div className="mb-10 flex flex-col gap-2">
-          <p className="font-mono text-[0.78rem] font-semibold uppercase tracking-wide text-text-secondary">Formules</p>
+          <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">Formules</p>
           <h2 className="text-h2-section font-bold text-text-primary">
             Un modèle qui se rentabilise avant de vous coûter
           </h2>
-          <p className="max-w-[60ch] text-[1.02rem] text-text-secondary">
+          <p className="max-w-[60ch] text-small-body text-text-secondary">
             Pour les entreprises, le logiciel démarre sans capteur à acheter. L&rsquo;instrumentation IoT ciblée
             s&rsquo;ajoute progressivement sur vos équipements prioritaires, à mesure que le pilote avance.
           </p>
@@ -121,12 +121,12 @@ export function PricingSection() {
             <div
               key={tier.name}
               className={`flex flex-col gap-4 rounded-pricing border bg-card p-6 ${
-                tier.featured ? 'border-accent shadow-pricing-featured lg:-translate-y-1.5' : 'border-border'
+                tier.featured ? 'border-accent' : 'border-border'
               }`}
             >
               <span
-                className={`w-fit rounded-pill px-3 py-1 text-xs font-semibold ${
-                  tier.featured ? 'bg-accent-cta text-white' : 'bg-bg-elevated text-text-secondary'
+                className={`w-fit font-mono text-label font-semibold uppercase tracking-wide ${
+                  tier.featured ? 'text-accent-cta' : 'text-text-tertiary'
                 }`}
               >
                 {tier.badge}

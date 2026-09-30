@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { X } from 'lucide-react'
 
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { Button } from '@/components/ui/Button'
@@ -95,7 +96,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
             {isEdit ? `Modifier ${itemLabel}` : `Ajouter ${itemLabel}`}
           </h3>
           <button type="button" onClick={onClose} className="focus-ring rounded-control p-1 text-text-secondary hover:text-text-primary" aria-label="Fermer">
-            ✕
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
 
