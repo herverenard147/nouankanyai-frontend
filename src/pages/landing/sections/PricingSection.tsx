@@ -36,7 +36,7 @@ const TIERS: Tier[] = [
       'Conseils génériques classés par impact',
       'Formule complète à venir, une fois ce segment activé',
     ],
-    ctas: [{ label: 'Être informé à l’ouverture', href: '/comment-ca-marche', primary: true }],
+    ctas: [{ label: 'Être informé à l’ouverture', href: '/#contact', primary: true }],
   },
   {
     name: 'Pilote PME',

@@ -52,7 +52,7 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
     answer: (
       <>
         D&rsquo;ici 12 à 24 mois, une fois le pilote PME/Industrie consolidé.{' '}
-        <Link to="/comment-ca-marche" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+        <Link to="/#contact" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
           Inscrivez-vous pour être informé(e) à l&rsquo;ouverture
         </Link>
         .
