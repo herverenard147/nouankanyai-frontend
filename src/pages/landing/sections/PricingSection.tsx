@@ -74,72 +74,52 @@ const TIERS: Tier[] = [
   },
 ]
 
-function CheckIcon({ color }: { color: string }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0">
-      <circle cx="8" cy="8" r="8" fill={color} />
-      <path d="M4.5 8.2 6.8 10.5 11.5 5.5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 export function PricingSection() {
   return (
-    <section id="formules" className="py-16">
-      <div className="mx-auto max-w-[1120px] px-6">
-        <div className="mb-10 flex flex-col gap-2">
-          <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">Formules</p>
-          <h2 className="text-h2-section font-bold text-text-primary">
-            Un modèle qui se rentabilise avant de vous coûter
-          </h2>
-          <p className="max-w-[60ch] text-small-body text-text-secondary">
-            Pour les entreprises, le logiciel démarre sans capteur à acheter. L&rsquo;instrumentation IoT ciblée
-            s&rsquo;ajoute progressivement sur vos équipements prioritaires, à mesure que le pilote avance.
-          </p>
-        </div>
+    <section id="formules" className="bg-dark-bg py-20 text-white lg:py-28">
+      <div className="mx-auto max-w-[1200px] px-6">
+        <h2 className="max-w-[20ch] text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em]">
+          Un modèle qui se rentabilise avant de vous coûter
+        </h2>
+        <p className="mt-4 max-w-[62ch] text-dark-text">
+          Pour les entreprises, le logiciel démarre sans capteur à acheter. L&rsquo;instrumentation IoT ciblée
+          s&rsquo;ajoute progressivement sur vos équipements prioritaires, à mesure que le pilote avance.
+        </p>
 
-        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))]">
+        <div className="mt-14 grid gap-12 lg:mt-16 lg:grid-cols-3 lg:gap-0">
           {TIERS.map((tier) => (
-            <div
-              key={tier.name}
-              className={`flex h-full flex-col gap-4 rounded-pricing border bg-card p-6 ${
-                tier.featured ? 'border-accent' : 'border-border'
-              }`}
-            >
-              <span
-                className={`w-fit font-mono text-label font-semibold uppercase tracking-wide ${
-                  tier.featured ? 'text-accent-cta' : 'text-text-tertiary'
+            <div key={tier.name} className="flex flex-col lg:px-9 lg:first:pl-0 lg:last:pr-0">
+              <div
+                className={`flex h-full flex-col border-t-4 pt-6 ${
+                  tier.featured ? 'border-accent' : 'border-dark-field-border'
                 }`}
               >
-                {tier.badge}
-              </span>
-              <div>
-                <h3 className="text-h3-card font-semibold text-text-primary">{tier.name}</h3>
-                <p className="text-sm text-text-secondary">{tier.audience}</p>
-              </div>
-              <p className="text-sm font-semibold text-text-primary">{tier.priceLabel}</p>
-              <ul className="flex flex-col gap-2.5">
-                {tier.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm text-text-secondary">
-                    <CheckIcon color={tier.featured ? 'var(--color-accent)' : 'var(--color-confirm)'} />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-auto flex flex-col gap-2">
-                {tier.ctas.map((cta) => (
-                  <Link
-                    key={cta.label}
-                    to={cta.href}
-                    className={`focus-ring inline-flex min-h-11 items-center justify-center rounded-control px-5 py-3 text-sm font-semibold ${
-                      cta.primary
-                        ? 'bg-accent-cta text-white hover:bg-accent-cta-hover'
-                        : 'border border-border text-text-primary hover:bg-bg-elevated'
-                    }`}
-                  >
-                    {cta.label}
-                  </Link>
-                ))}
+                <p className={`font-mono text-[0.8rem] font-semibold ${tier.featured ? 'text-[#f59e6b]' : 'text-dark-text'}`}>
+                  {tier.badge}
+                </p>
+                <h3 className="mt-2 text-[1.75rem] font-bold leading-tight tracking-[-0.02em]">{tier.name}</h3>
+                <p className="mt-1 text-dark-text">{tier.audience}</p>
+                <p className="mt-4 font-semibold">{tier.priceLabel}</p>
+                <ul className="mt-5 flex flex-col gap-3 text-[0.95rem] text-dark-text">
+                  {tier.features.map((feature) => (
+                    <li key={feature}>{feature}</li>
+                  ))}
+                </ul>
+                <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-3 pt-7">
+                  {tier.ctas.map((cta) => (
+                    <Link
+                      key={cta.label}
+                      to={cta.href}
+                      className={
+                        cta.primary
+                          ? 'focus-ring inline-flex min-h-12 items-center bg-accent px-6 py-3.5 text-base font-semibold text-text-primary hover:brightness-110'
+                          : 'focus-ring text-[0.95rem] font-semibold underline underline-offset-4 hover:opacity-80'
+                      }
+                    >
+                      {cta.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           ))}

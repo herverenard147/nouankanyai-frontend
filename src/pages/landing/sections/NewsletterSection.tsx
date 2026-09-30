@@ -16,24 +16,26 @@ export function NewsletterSection() {
   const errorMessage = mutation.data && !mutation.data.ok ? mutation.data.message : null
 
   return (
-    <section className="py-16">
-      <div className="mx-auto max-w-[1120px] px-6">
-        <div className="rounded-newsletter bg-dark-bg p-6 sm:p-11">
-          <p className="font-mono text-label font-semibold uppercase tracking-wide text-dark-text">
-            Bientôt disponible
-          </p>
-          <h2 className="mt-2 text-[1.6rem] font-bold text-white">Soyez parmi les premiers utilisateurs</h2>
-          <p className="mt-2 max-w-[48ch] text-dark-text">
+    <section className="bg-accent py-16 text-text-primary lg:py-20">
+      <div className="mx-auto grid max-w-[1200px] items-end gap-8 px-6 lg:grid-cols-[6fr_5fr] lg:gap-16">
+        <div>
+          <p className="font-mono text-sm font-semibold">Bientôt disponible</p>
+          <h2 className="mt-2.5 text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em]">
+            Soyez parmi les premiers utilisateurs
+          </h2>
+          <p className="mt-3.5 max-w-[48ch]">
             Le produit est en développement actif. Laissez votre email pour être informé à l&rsquo;ouverture des
             inscriptions, sans spam.
           </p>
+        </div>
 
+        <div>
           {success ? (
-            <p className="mt-5 max-w-[420px] text-sm font-semibold text-white">
+            <p className="font-semibold">
               Merci, votre email est enregistré. Nous vous préviendrons à l&rsquo;ouverture des inscriptions.
             </p>
           ) : (
-            <form onSubmit={handleSubmit} className="mt-5 flex max-w-[420px] flex-wrap gap-2.5">
+            <form onSubmit={handleSubmit} className="flex">
               <input
                 type="email"
                 required
@@ -41,18 +43,18 @@ export function NewsletterSection() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="vous@exemple.com"
                 aria-label="Adresse email"
-                className="focus-ring min-h-11 min-w-0 flex-1 rounded-control border border-dark-field-border bg-dark-field px-3.5 py-3 text-sm text-white placeholder:text-dark-text"
+                className="focus-ring min-h-12 min-w-0 flex-1 border-0 bg-white px-4 text-base text-text-primary placeholder:text-text-tertiary"
               />
               <button
                 type="submit"
                 disabled={mutation.isPending}
-                className="focus-ring min-h-11 rounded-control bg-accent px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-cta disabled:opacity-60"
+                className="focus-ring min-h-12 bg-dark-bg px-6 text-base font-semibold text-white hover:bg-dark-field disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {mutation.isPending ? 'Envoi…' : 'Me prévenir'}
               </button>
             </form>
           )}
-          {errorMessage && <p className="mt-2 text-sm text-alert">{errorMessage}</p>}
+          {errorMessage && <p className="mt-2 font-semibold">{errorMessage}</p>}
         </div>
       </div>
     </section>

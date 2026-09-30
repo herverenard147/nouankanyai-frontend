@@ -14,11 +14,11 @@ export function NavBar() {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-bg/92 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-[1120px] items-center justify-between px-6 py-4">
+    <header className="sticky top-0 z-20 bg-dark-bg/95 text-white backdrop-blur-sm">
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-center gap-2">
           <img src="/logo.png" alt="Nouankany" className="h-[34px] w-[34px] object-contain" />
-          <span className="text-[1.05rem] font-bold text-text-primary" style={{ fontFamily: 'var(--font-heading)' }}>
+          <span className="text-[1.05rem] font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
             Nouankany
           </span>
         </Link>
@@ -26,7 +26,7 @@ export function NavBar() {
         <ul className="hidden items-center gap-5 lg:flex">
           {LINKS.map((link) => (
             <li key={link.href}>
-              <Link to={`/${link.href}`} className="text-[0.92rem] text-text-secondary hover:text-text-primary">
+              <Link to={`/${link.href}`} className="text-[0.92rem] text-white/85 hover:text-white">
                 {link.label}
               </Link>
             </li>
@@ -36,13 +36,13 @@ export function NavBar() {
         <div className="hidden items-center gap-2 lg:flex">
           <Link
             to="/login"
-            className="focus-ring inline-flex min-h-11 items-center rounded-control border border-border px-5 py-3.5 text-sm font-semibold text-text-primary hover:bg-bg-elevated"
+            className="focus-ring inline-flex min-h-11 items-center border border-white/60 px-5 py-3.5 text-sm font-semibold text-white hover:bg-white/10"
           >
             Se connecter
           </Link>
           <Link
             to="/demander-un-audit"
-            className="focus-ring inline-flex min-h-11 items-center rounded-control bg-accent-cta px-5 py-3.5 text-sm font-semibold text-white hover:bg-accent-cta-hover"
+            className="focus-ring inline-flex min-h-11 items-center bg-accent px-5 py-3.5 text-sm font-semibold text-text-primary hover:brightness-110"
           >
             Demander un audit
           </Link>
@@ -53,21 +53,21 @@ export function NavBar() {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label="Ouvrir le menu"
-          className="focus-ring rounded-control border border-border p-2 lg:hidden"
+          className="focus-ring border border-white/60 p-2 lg:hidden"
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
 
       {open && (
-        <div className="border-t border-border px-6 py-4 lg:hidden">
+        <div className="border-t border-white/20 bg-dark-bg px-6 py-4 lg:hidden">
           <ul className="flex flex-col gap-3">
             {LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   to={`/${link.href}`}
                   onClick={() => setOpen(false)}
-                  className="text-sm text-text-secondary hover:text-text-primary"
+                  className="text-sm text-white/85 hover:text-white"
                 >
                   {link.label}
                 </Link>
@@ -77,14 +77,14 @@ export function NavBar() {
           <div className="mt-4 flex flex-col gap-2">
             <Link
               to="/login"
-              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-control border border-border px-5 py-3 text-sm font-semibold text-text-primary hover:bg-bg-elevated"
+              className="focus-ring inline-flex min-h-11 items-center justify-center border border-white/60 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10"
             >
               Se connecter
             </Link>
             <Link
               to="/demander-un-audit"
               onClick={() => setOpen(false)}
-              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-control bg-accent-cta px-5 py-3 text-sm font-semibold text-white hover:bg-accent-cta-hover"
+              className="focus-ring inline-flex min-h-11 items-center justify-center bg-accent px-5 py-3 text-sm font-semibold text-text-primary hover:brightness-110"
             >
               Demander un audit
             </Link>

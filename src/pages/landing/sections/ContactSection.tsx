@@ -19,14 +19,14 @@ function MessageForm() {
 
   if (mutation.isSuccess) {
     return (
-      <p className="text-sm font-semibold text-confirm">
+      <p className="font-semibold text-confirm">
         Merci, votre message a bien été envoyé. Nous vous répondrons par email sous 48h ouvrées.
       </p>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <TextField label="Nom" required value={nom} onChange={(e) => setNom(e.target.value)} />
       <TextField
         label="Email"
@@ -50,9 +50,11 @@ function MessageForm() {
           placeholder="Écrivez-nous ce que vous voulez"
         />
       </div>
-      <Button type="submit" disabled={mutation.isPending} className="mt-1 w-fit">
-        {mutation.isPending ? 'Envoi…' : 'Envoyer'}
-      </Button>
+      <div>
+        <Button type="submit" disabled={mutation.isPending}>
+          {mutation.isPending ? 'Envoi…' : 'Envoyer'}
+        </Button>
+      </div>
       {mutation.isError && <p className="text-sm text-alert">Échec de l&rsquo;envoi. Réessayez.</p>}
     </form>
   )
@@ -60,52 +62,54 @@ function MessageForm() {
 
 export function ContactSection() {
   return (
-    <section id="contact" className="border-t border-border py-16">
-      <div className="mx-auto max-w-[1120px] px-6">
-        <div className="mb-10 flex max-w-[60ch] flex-col gap-2">
-          <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">Contact</p>
-          <h2 className="text-h2-section font-bold text-text-primary">Une question, un projet ? Écrivez-nous</h2>
-          <p className="text-small-body text-text-secondary">Nous répondons habituellement sous 48h ouvrées.</p>
-        </div>
+    <section id="contact" className="bg-bg-elevated py-20 lg:py-28">
+      <div className="mx-auto max-w-[1200px] px-6">
+        <h2 className="max-w-[20ch] text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
+          Une question, un projet ? Écrivez-nous
+        </h2>
+        <p className="mt-3.5 text-text-secondary">Nous répondons habituellement sous 48h ouvrées.</p>
 
-        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))]">
-          <div className="rounded-card border border-border bg-card p-6">
-            <h3 className="text-sm font-semibold text-text-primary">Écrivez-nous</h3>
-            <p className="mt-1 text-sm text-text-secondary">
+        <div className="mt-12 grid gap-12 lg:grid-cols-[6fr_5fr] lg:gap-[72px]">
+          <div>
+            <h3 className="text-2xl font-bold tracking-[-0.015em] text-text-primary">Écrivez-nous</h3>
+            <p className="mb-6 mt-2 text-text-secondary">
               Dites-nous ce dont vous avez besoin, nous vous répondons par email.
             </p>
-            <div className="mt-4">
-              <MessageForm />
-            </div>
+            <MessageForm />
           </div>
 
-          <div className="flex flex-col gap-5">
-            <div className="rounded-card border border-border bg-card p-6">
-              <h3 className="text-sm font-semibold text-text-primary">Par email</h3>
-              <p className="mt-1 text-sm text-text-secondary">
-                <a href="mailto:contact@nouankany.demo" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+          <div className="flex flex-col gap-8 lg:pt-1.5">
+            <div>
+              <h3 className="text-xl font-bold tracking-[-0.01em] text-text-primary">Par email</h3>
+              <p className="mt-1.5">
+                <a
+                  href="mailto:contact@nouankany.demo"
+                  className="font-semibold text-accent-cta hover:text-accent-cta-hover"
+                >
                   contact@nouankany.demo
                 </a>
               </p>
             </div>
 
-            <div className="rounded-card border border-border bg-card p-6">
-              <h3 className="text-sm font-semibold text-text-primary">Vous êtes une PME ou une Industrie ?</h3>
-              <p className="mt-1 text-sm text-text-secondary">
+            <div className="border-t border-border pt-7">
+              <h3 className="text-xl font-bold tracking-[-0.01em] text-text-primary">
+                Vous êtes une PME ou une Industrie ?
+              </h3>
+              <p className="mt-1.5 text-text-secondary">
                 Pour une demande d&rsquo;audit énergétique, passez directement par le formulaire dédié, votre
                 demande est traitée par l&rsquo;équipe commerciale.
               </p>
               <Link
                 to="/demander-un-audit"
-                className="focus-ring mt-4 inline-flex min-h-11 items-center rounded-control bg-accent-cta px-5 py-3 text-sm font-semibold text-white hover:bg-accent-cta-hover"
+                className="focus-ring mt-4 inline-flex min-h-12 items-center bg-accent px-6 py-3.5 text-base font-semibold text-text-primary hover:brightness-110"
               >
                 Demander un audit
               </Link>
             </div>
 
-            <div className="rounded-card border border-border bg-card p-6">
-              <h3 className="text-sm font-semibold text-text-primary">Une question sur le produit ?</h3>
-              <p className="mt-1 text-sm text-text-secondary">
+            <div className="border-t border-border pt-7">
+              <h3 className="text-xl font-bold tracking-[-0.01em] text-text-primary">Une question sur le produit ?</h3>
+              <p className="mt-1.5 text-text-secondary">
                 Consultez d&rsquo;abord la{' '}
                 <Link to="/#faq" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
                   FAQ

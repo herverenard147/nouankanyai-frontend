@@ -61,31 +61,29 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
 
 export function FaqSection() {
   return (
-    <section id="faq" className="border-t border-border bg-bg-elevated py-16">
-      <div className="mx-auto max-w-[1120px] px-6">
-        <div className="mb-10 flex max-w-[60ch] flex-col gap-2">
-          <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
-            Questions fréquentes
+    <section id="faq" className="py-20 lg:py-28">
+      <div className="mx-auto grid max-w-[1200px] gap-10 px-6 lg:grid-cols-[4fr_8fr] lg:gap-[72px]">
+        <div>
+          <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
+            Avant de nous écrire, la réponse est peut-être ici
+          </h2>
+          <p className="mt-6 text-text-secondary">
+            Une autre question ?{' '}
+            <Link to="/#contact" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+              Contactez-nous
+            </Link>
+            .
           </p>
-          <h2 className="text-h2-section font-bold text-text-primary">Avant de nous écrire, la réponse est peut-être ici</h2>
         </div>
 
-        <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))]">
+        <div className="border-b border-border">
           {FAQ_ITEMS.map((item) => (
-            <div key={item.question} className="rounded-card border border-border bg-card p-5">
-              <h3 className="text-sm font-semibold text-text-primary">{item.question}</h3>
-              <p className="mt-2 text-sm text-text-secondary">{item.answer}</p>
+            <div key={item.question} className="border-t border-border py-6">
+              <h3 className="text-xl font-bold leading-snug tracking-[-0.01em] text-text-primary">{item.question}</h3>
+              <p className="mt-2 text-text-secondary">{item.answer}</p>
             </div>
           ))}
         </div>
-
-        <p className="mt-8 text-sm text-text-secondary">
-          Une autre question ?{' '}
-          <Link to="/#contact" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
-            Contactez-nous
-          </Link>
-          .
-        </p>
       </div>
     </section>
   )
