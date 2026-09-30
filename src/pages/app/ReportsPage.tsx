@@ -17,14 +17,14 @@ export function ReportsPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <Card className="flex flex-col gap-2 p-5">
                 <h3 className="text-sm font-medium text-text-secondary">Économies brutes ce mois</h3>
-                <p className="font-mono text-kpi-value font-semibold tabular-nums text-text-primary">
+                <p className="font-heading text-kpi-value font-semibold tabular-nums text-text-primary">
                   {formatFcfa(query.data.grossSavings)}
                 </p>
                 <ProvenanceBadge value="estime" className="w-fit" />
               </Card>
               <Card className="flex flex-col gap-2 p-5">
                 <h3 className="text-sm font-medium text-text-secondary">Commission Nouankany (10 %)</h3>
-                <p className="font-mono text-kpi-value font-semibold tabular-nums text-text-primary">
+                <p className="font-heading text-kpi-value font-semibold tabular-nums text-text-primary">
                   {formatFcfa(query.data.gainShare)}
                 </p>
                 <ProvenanceBadge value="estime" className="w-fit" />

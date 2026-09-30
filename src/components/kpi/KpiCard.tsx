@@ -29,7 +29,7 @@ export function KpiCard({ profile, kpiId }: KpiCardProps) {
       <MetricState status={query.status}>
         {query.data && (
           <>
-            <p className="font-mono text-kpi-value font-semibold tabular-nums text-text-primary">
+            <p className="font-heading text-kpi-value font-semibold tabular-nums text-text-primary">
               {query.data.value}
               {query.data.unit && <span className="ml-1 text-sm font-medium text-text-secondary">{query.data.unit}</span>}
             </p>

@@ -51,7 +51,7 @@ export function PredictionContent({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-section-title font-semibold text-text-primary">{prediction.title}</h3>
-          <p className="mt-2 font-mono text-prediction-value font-semibold tabular-nums text-text-primary">
+          <p className="mt-2 font-heading text-prediction-value font-semibold tabular-nums text-text-primary">
             {prediction.value}
             <span className="ml-1 text-sm font-medium text-text-secondary">{prediction.unit}</span>
           </p>
