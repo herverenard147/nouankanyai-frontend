@@ -4,8 +4,9 @@ import type { Level } from '@/types/domain'
 const PROFILES: { tag: string; caption: string; images: string[]; title: string; body: string; level: Level; badge?: string }[] = [
   {
     tag: 'PME',
-    caption: 'Pressing : machines à laver et séchoirs professionnels, forte consommation électrique',
-    images: ['/images/profiles/pme-pressing.jpg'],
+    caption:
+      'Pressing (machines à laver, séchoirs) et bureau informatique (postes, serveur), les deux gros postes de consommation PME',
+    images: ['/images/profiles/pme-pressing.jpg', '/images/profiles/pme-informatique.jpg'],
     title: 'Arbitrer sans risque',
     body: 'Seuils par appareil, conseils priorisés par impact sur la marge, rapport hebdomadaire exploitable sans expertise technique.',
     level: 'amateur',
@@ -26,8 +27,12 @@ const PROFILES: { tag: string; caption: string; images: string[]; title: string;
   },
   {
     tag: 'Ménage',
-    caption: 'Le climatiseur, équipement domestique le plus énergivore',
-    images: ['/images/profiles/menage-climatiseur.jpg'],
+    caption: 'Climatiseur, réfrigérateur, téléviseur : les équipements domestiques les plus énergivores',
+    images: [
+      '/images/profiles/menage-climatiseur.jpg',
+      '/images/profiles/menage-frigo.jpg',
+      '/images/profiles/menage-televiseur.jpg',
+    ],
     title: 'Comprendre et anticiper',
     body: 'Prédiction hebdomadaire, un seuil global simple, conseils directs pour éviter la mauvaise surprise en fin de mois.',
     level: 'debutant',
