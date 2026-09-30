@@ -1,6 +1,13 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { CguContent } from '@/components/legal/CguContent'
+import { LegalModal } from '@/components/legal/LegalModal'
+import { PrivacyContent } from '@/components/legal/PrivacyContent'
+
 export function Footer() {
+  const [openDoc, setOpenDoc] = useState<'cgu' | 'confidentialite' | null>(null)
+
   return (
     <footer className="border-t border-border py-14">
       <div className="mx-auto max-w-[1120px] px-6">
@@ -58,12 +65,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-text-primary">
+                <Link to="/#contact" className="hover:text-text-primary">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="hover:text-text-primary">
+                <Link to="/#faq" className="hover:text-text-primary">
                   FAQ
                 </Link>
               </li>
@@ -74,14 +81,18 @@ export function Footer() {
             <h4 className="font-mono text-label font-semibold uppercase tracking-wide text-text-primary">Légal</h4>
             <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
               <li>
-                <Link to="/legal/cgu" className="hover:text-text-primary">
+                <button type="button" onClick={() => setOpenDoc('cgu')} className="text-left hover:text-text-primary">
                   Conditions Générales d&rsquo;Utilisation
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/legal/confidentialite" className="hover:text-text-primary">
+                <button
+                  type="button"
+                  onClick={() => setOpenDoc('confidentialite')}
+                  className="text-left hover:text-text-primary"
+                >
                   Politique de confidentialité
-                </Link>
+                </button>
               </li>
             </ul>
           </div>
@@ -91,6 +102,17 @@ export function Footer() {
           <span>© 2026 Nouankany. Tous droits réservés.</span>
         </div>
       </div>
+
+      {openDoc === 'cgu' && (
+        <LegalModal title="Conditions Générales d’Utilisation" onClose={() => setOpenDoc(null)}>
+          <CguContent />
+        </LegalModal>
+      )}
+      {openDoc === 'confidentialite' && (
+        <LegalModal title="Politique de confidentialité" onClose={() => setOpenDoc(null)}>
+          <PrivacyContent />
+        </LegalModal>
+      )}
     </footer>
   )
 }

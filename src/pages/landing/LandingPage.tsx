@@ -1,6 +1,8 @@
 import { useScrollToHash } from '@/lib/useScrollToHash'
 import { AboutSection } from '@/pages/landing/sections/AboutSection'
 import { ConstatSection } from '@/pages/landing/sections/ConstatSection'
+import { ContactSection } from '@/pages/landing/sections/ContactSection'
+import { FaqSection } from '@/pages/landing/sections/FaqSection'
 import { Footer } from '@/pages/landing/sections/Footer'
 import { Hero } from '@/pages/landing/sections/Hero'
 import { NavBar } from '@/pages/landing/sections/NavBar'
@@ -23,6 +25,8 @@ export function LandingPage() {
       <AboutSection />
       <TrustSection />
       <PricingSection />
+      <FaqSection />
+      <ContactSection />
       <NewsletterSection />
       <Footer />
     </div>

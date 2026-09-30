@@ -4,10 +4,6 @@ import { AppLayout } from '@/layouts/AppLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { AuditRequestPage } from '@/pages/audit/AuditRequestPage'
 import { LoginPage } from '@/pages/auth/LoginPage'
-import { TermsPage } from '@/pages/legal/TermsPage'
-import { PrivacyPage } from '@/pages/legal/PrivacyPage'
-import { ContactPage } from '@/pages/legal/ContactPage'
-import { FaqPage } from '@/pages/legal/FaqPage'
 import { HowItWorksPage } from '@/pages/landing/HowItWorksPage'
 import { LandingPage } from '@/pages/landing/LandingPage'
 import { AdvicePage } from '@/pages/app/AdvicePage'
@@ -39,10 +35,6 @@ export const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> },
       { path: 'comment-ca-marche', element: <HowItWorksPage /> },
       { path: 'demander-un-audit', element: <AuditRequestPage /> },
-      { path: 'legal/cgu', element: <TermsPage /> },
-      { path: 'legal/confidentialite', element: <PrivacyPage /> },
-      { path: 'contact', element: <ContactPage /> },
-      { path: 'faq', element: <FaqPage /> },
     ],
   },
   {
