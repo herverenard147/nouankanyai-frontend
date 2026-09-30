@@ -27,6 +27,9 @@ export function PredictionPage() {
 
   return (
     <div className="flex flex-col gap-7">
+      <p className="text-sm text-text-secondary">
+        Projection de votre consommation à venir, recalibrée à chaque écart mesuré entre prévision et réalité.
+      </p>
       <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Granularité de la prédiction">
         {GRANULARITIES.map((g) => (
           <Pill key={g.id} active={granularity === g.id} onClick={() => setGranularity(g.id)}>

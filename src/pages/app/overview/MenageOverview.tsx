@@ -18,6 +18,9 @@ export function MenageOverview() {
   return (
     <div className="flex flex-col gap-7">
       <DemoDataBanner />
+      <p className="text-sm text-text-secondary">
+        Vue d&rsquo;ensemble de votre foyer : consommation, prédiction et dernière facture CIE en un coup d&rsquo;œil.
+      </p>
       {/* Ménage n'a pas de sélecteur de niveau (voir TopBar) : toujours "debutant". */}
       <AlertSection profile="menage" level="debutant" maxActionAlerts={2} />
       <KpiGrid profile="menage" />

@@ -7,6 +7,9 @@ export function AdminHealthPage() {
 
   return (
     <div className="flex flex-col gap-7">
+      <p className="text-sm text-text-secondary">
+        État de la plateforme : alertes actives tous profils confondus et indicateurs de charge système.
+      </p>
       <AlertSection profile="admin" level={level} />
       <KpiGrid profile="admin" />
     </div>

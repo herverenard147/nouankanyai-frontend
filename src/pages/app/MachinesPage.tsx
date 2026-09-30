@@ -54,6 +54,9 @@ export function MachinesPage() {
           Ajouter une machine
         </Button>
       </div>
+      <p className="text-sm text-text-secondary">
+        Fiche technique de chaque machine suivie : statut, priorité et relevés capteur quand ils sont disponibles.
+      </p>
       <MetricState status={query.status} isEmpty={query.data?.rows.length === 0}>
         {query.data && <DataTable columns={columns} rows={query.data.rows} onRowClick={setSelected} />}
       </MetricState>

@@ -41,6 +41,10 @@ export function IndustrieOverview() {
   return (
     <div className="flex flex-col gap-7">
       <DemoDataBanner />
+      <p className="text-sm text-text-secondary">
+        Vue d&rsquo;ensemble de votre site industriel : consommation, prédiction, machines suivies et plan d&rsquo;action
+        en cours.
+      </p>
       <AlertSection profile="industrie" level={level} maxActionAlerts={2} />
       <KpiGrid profile="industrie" />
       <TariffSection profile="industrie" />

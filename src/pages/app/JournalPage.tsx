@@ -16,6 +16,9 @@ export function JournalPage() {
 
   return (
     <div className="flex flex-col gap-5">
+      <p className="text-sm text-text-secondary">
+        Historique horodaté de chaque événement système : alerte, résolution automatique, mise à jour de compteur.
+      </p>
       <div className="flex flex-wrap items-center gap-2">
         {types.map((type) => (
           <button

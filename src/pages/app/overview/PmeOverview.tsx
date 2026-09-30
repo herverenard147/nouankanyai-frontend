@@ -39,6 +39,9 @@ export function PmeOverview() {
   return (
     <div className="flex flex-col gap-7">
       <DemoDataBanner />
+      <p className="text-sm text-text-secondary">
+        Vue d&rsquo;ensemble de votre activité : consommation, prédiction et équipements déclarés sur vos sites.
+      </p>
       <AlertSection profile="pme" level={level} maxActionAlerts={2} />
       <KpiGrid profile="pme" />
       <TariffSection profile="pme" />

@@ -11,6 +11,10 @@ export function ReportsPage() {
 
   return (
     <div className="flex flex-col gap-7">
+      <p className="text-sm text-text-secondary">
+        Détail du calcul de la commission Nouankany (Gain-Share) et piste d&rsquo;audit des économies enregistrées ce
+        mois.
+      </p>
       <MetricState status={query.status}>
         {query.data && (
           <>

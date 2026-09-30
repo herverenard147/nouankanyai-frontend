@@ -41,6 +41,9 @@ export function AdminModelsPage() {
 
   return (
     <div className="flex flex-col gap-5">
+      <p className="text-sm text-text-secondary">
+        Modèles de prédiction et de détection actifs, avec leurs métriques d&rsquo;entraînement les plus récentes.
+      </p>
       <div className="flex items-center justify-between">
         <Button type="button" variant="ghost" disabled={reloadMutation.isPending} onClick={() => reloadMutation.mutate()}>
           {reloadMutation.isPending ? 'Rechargement…' : 'Recharger les modèles'}

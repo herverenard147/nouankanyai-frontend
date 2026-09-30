@@ -15,6 +15,9 @@ export function ConsumptionPage() {
 
   return (
     <div className="flex flex-col gap-7">
+      <p className="text-sm text-text-secondary">
+        Répartition de votre consommation par période et par poste, à partir de vos données mesurées ou estimées.
+      </p>
       <TariffSection profile={profile} />
 
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>

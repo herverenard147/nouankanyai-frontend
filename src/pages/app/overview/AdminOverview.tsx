@@ -18,6 +18,10 @@ export function AdminOverview() {
 
   return (
     <div className="flex flex-col gap-7">
+      <p className="text-sm text-text-secondary">
+        Vue d&rsquo;ensemble de la plateforme : alertes tous profils confondus et accès rapide aux outils
+        d&rsquo;administration.
+      </p>
       <AlertSection profile="admin" level={level} maxActionAlerts={2} />
       <KpiGrid profile="admin" />
       <PredictionPanel profile="admin" level={level} />

@@ -98,6 +98,10 @@ export function AdminUsersPage() {
 
   return (
     <div className="flex flex-col gap-5">
+      <p className="text-sm text-text-secondary">
+        Comptes utilisateurs de la plateforme, tous profils confondus. Cliquez une ligne pour voir machines et
+        facturation.
+      </p>
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
         {query.data && <DataTable columns={COLUMNS} rows={query.data} onRowClick={setSelected} searchPlaceholder="Rechercher un utilisateur…" />}
       </MetricState>
