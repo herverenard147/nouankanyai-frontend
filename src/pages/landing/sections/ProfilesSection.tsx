@@ -4,8 +4,8 @@ import type { Level } from '@/types/domain'
 const PROFILES: { tag: string; caption: string; images: string[]; title: string; body: string; level: Level; badge?: string }[] = [
   {
     tag: 'PME',
-    caption: 'Équipements de commerce de proximité : comptoir café, vitrine réfrigérée',
-    images: ['/images/profiles/pme-commerce.jpg', '/images/profiles/pme-vitrine.jpg'],
+    caption: 'Pressing : machines à laver et séchoirs professionnels, forte consommation électrique',
+    images: ['/images/profiles/pme-pressing.jpg'],
     title: 'Arbitrer sans risque',
     body: 'Seuils par appareil, conseils priorisés par impact sur la marge, rapport hebdomadaire exploitable sans expertise technique.',
     level: 'amateur',
@@ -26,8 +26,8 @@ const PROFILES: { tag: string; caption: string; images: string[]; title: string;
   },
   {
     tag: 'Ménage',
-    caption: 'Intérieur de foyer et équipement le plus énergivore : le climatiseur',
-    images: ['/images/profiles/menage-foyer.jpg', '/images/profiles/menage-climatiseur.jpg'],
+    caption: 'Le climatiseur, équipement domestique le plus énergivore',
+    images: ['/images/profiles/menage-climatiseur.jpg'],
     title: 'Comprendre et anticiper',
     body: 'Prédiction hebdomadaire, un seuil global simple, conseils directs pour éviter la mauvaise surprise en fin de mois.',
     level: 'debutant',
