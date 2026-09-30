@@ -59,7 +59,7 @@ export function PrivacyContent() {
         <h3 className="text-sm font-semibold text-text-primary">6. Destinataires</h3>
         <p className="mt-2">
           Vos données sont accessibles à l&rsquo;équipe Nouankany dans le cadre du service, et, pour un compte membre
-          PME/Industrie, aux autres comptes de la même équipe (mêmes équipements, mêmes données opérationnelles — voir
+          PME/Industrie, aux autres comptes de la même équipe (mêmes équipements, mêmes données opérationnelles, voir
           les CGU). Elles ne sont ni vendues, ni transmises à des tiers à des fins publicitaires.
         </p>
       </section>
@@ -68,7 +68,7 @@ export function PrivacyContent() {
         <h3 className="text-sm font-semibold text-text-primary">7. Stockage technique local</h3>
         <p className="mt-2">
           La plateforme conserve votre session de connexion et vos préférences d&rsquo;affichage dans le stockage
-          local de votre navigateur (localStorage), propre à votre appareil — pas de cookie tiers de suivi
+          local de votre navigateur (localStorage), propre à votre appareil, pas de cookie tiers de suivi
           publicitaire.
         </p>
       </section>

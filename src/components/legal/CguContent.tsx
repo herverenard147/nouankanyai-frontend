@@ -63,7 +63,7 @@ export function CguContent() {
         <h3 className="text-sm font-semibold text-text-primary">7. Niveau de maturité et limites</h3>
         <p className="mt-2">
           Le produit est en développement actif. Les prédictions et recommandations reposent sur des modèles
-          statistiques et, en l&rsquo;absence de capteur installé, sur des données estimées ou synthétiques — elles
+          statistiques et, en l&rsquo;absence de capteur installé, sur des données estimées ou synthétiques : elles
           constituent une aide à la décision, pas une garantie de résultat. Les économies annoncées pendant un pilote
           sont mesurées, pas garanties avant validation.
         </p>

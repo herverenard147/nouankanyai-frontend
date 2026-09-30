@@ -92,7 +92,7 @@ export function ContactSection() {
             <div className="rounded-card border border-border bg-card p-6">
               <h3 className="text-sm font-semibold text-text-primary">Vous êtes une PME ou une Industrie ?</h3>
               <p className="mt-1 text-sm text-text-secondary">
-                Pour une demande d&rsquo;audit énergétique, passez directement par le formulaire dédié — votre
+                Pour une demande d&rsquo;audit énergétique, passez directement par le formulaire dédié, votre
                 demande est traitée par l&rsquo;équipe commerciale.
               </p>
               <Link
@@ -109,8 +109,8 @@ export function ContactSection() {
                 Consultez d&rsquo;abord la{' '}
                 <Link to="/#faq" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
                   FAQ
-                </Link>{' '}
-                — la réponse s&rsquo;y trouve peut-être déjà.
+                </Link>
+                , la réponse s&rsquo;y trouve peut-être déjà.
               </p>
             </div>
           </div>

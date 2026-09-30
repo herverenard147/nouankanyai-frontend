@@ -9,7 +9,7 @@ interface LegalModalProps {
   children: ReactNode
 }
 
-/** Modale générique pour un document légal (CGU, confidentialité) — évite
+/** Modale générique pour un document légal (CGU, confidentialité) : évite
  * d'en faire une page à part entière tout en gardant le texte complet. */
 export function LegalModal({ title, onClose, children }: LegalModalProps) {
   return (

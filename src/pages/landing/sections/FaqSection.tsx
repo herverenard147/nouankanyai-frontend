@@ -28,12 +28,12 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
   {
     question: 'Est-ce que je choisis moi-même quels équipements instrumenter ?',
     answer:
-      'Le choix est fait conjointement lors de l’audit initial, selon le poids énergétique et la criticité de chaque équipement — pas une instrumentation de l’ensemble du site dès le départ.',
+      'Le choix est fait conjointement lors de l’audit initial, selon le poids énergétique et la criticité de chaque équipement, pas une instrumentation de l’ensemble du site dès le départ.',
   },
   {
     question: 'Comment les économies sont-elles mesurées ?',
     answer:
-      'Une ligne de base est établie lors de l’audit initial. Pendant le pilote, la consommation réelle est comparée à cette ligne de base pour objectiver les économies — pas une estimation a priori.',
+      'Une ligne de base est établie lors de l’audit initial. Pendant le pilote, la consommation réelle est comparée à cette ligne de base pour objectiver les économies, pas une estimation a priori.',
   },
   {
     question: 'Que se passe-t-il à la fin du pilote de 6 à 9 mois ?',
