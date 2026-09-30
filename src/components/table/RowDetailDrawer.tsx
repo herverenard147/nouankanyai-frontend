@@ -29,7 +29,7 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance }
   if (!row) return null
 
   return (
-    <div className="fixed inset-0 z-40 flex justify-end bg-dark-bg/40">
+    <div className="fixed inset-0 z-40 flex justify-end bg-dark-bg/40 overlay-backdrop">
       <button
         type="button"
         aria-label="Fermer la fiche détail"
@@ -37,7 +37,7 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance }
         onClick={onClose}
       />
       <aside
-        className="relative flex h-full w-full max-w-sm flex-col gap-4 overflow-y-auto bg-card p-6 shadow-assistant-panel"
+        className="relative flex h-full w-full max-w-sm flex-col gap-4 overflow-y-auto bg-card p-6 shadow-assistant-panel overlay-panel-right"
         role="dialog"
         aria-modal="true"
         aria-label={title}

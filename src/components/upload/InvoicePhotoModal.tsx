@@ -15,10 +15,10 @@ export function InvoicePhotoModal({ billId, period, onClose }: InvoicePhotoModal
   const photoQuery = useInvoicePhoto(billId)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-bg/60 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-bg/60 p-4 overlay-backdrop">
       <button type="button" aria-label="Fermer" className="absolute inset-0 cursor-default" onClick={onClose} />
       <div
-        className="relative flex max-h-[90vh] w-full max-w-lg flex-col gap-3 overflow-y-auto rounded-card bg-card p-5 shadow-assistant-panel"
+        className="relative flex max-h-[90vh] w-full max-w-lg flex-col gap-3 overflow-y-auto rounded-card bg-card p-5 shadow-assistant-panel overlay-panel-center"
         role="dialog"
         aria-modal="true"
         aria-label={`Facture ${period}`}

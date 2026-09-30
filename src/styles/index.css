@@ -134,6 +134,42 @@
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
+
+  /* Traitement "Level 2" (overlays réels : drawers, modales, navigation
+     mobile) — voir la note shadow-assistant-panel plus haut. Flou de
+     rétention de contexte + entrée douce, sans dépendance externe. */
+  .overlay-backdrop {
+    backdrop-filter: blur(6px);
+    animation: overlay-fade-in 150ms ease-out;
+  }
+
+  .overlay-panel-right {
+    animation: overlay-slide-in-right 180ms ease-out;
+  }
+
+  .overlay-panel-center {
+    animation: overlay-scale-in 150ms ease-out;
+  }
+}
+
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes overlay-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@keyframes overlay-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
