@@ -172,6 +172,55 @@
   }
 }
 
+/* Diaporama en fondu-enchaîné des cartes ProfilesSection ayant plusieurs
+   photos (ex. PME : commerce, tech, grande distribution) — chaque image
+   reste affichée en entier à tour de rôle (jamais réduite en mosaïque), pour
+   rester "bien visible". 3 images, cycle de 9s = 3s chacune : chaque <img>
+   utilise le même keyframe avec un animation-delay positif de 3s/6s, plus
+   fill-mode backwards pour rester invisible avant son tour. Le plateau
+   "visible" (2%-31%) occupe la quasi-totalité de son tiers de cycle — un
+   premier essai avec un plateau plus court (4%-27%) laissait ~1s de blanc
+   total à chaque tour, aucune des 3 images n'étant visible entre deux
+   tiers (voir prefers-reduced-motion plus bas pour le repli statique). */
+.profile-photo-cycle {
+  animation: profile-photo-cycle 9s ease-in-out infinite backwards;
+}
+
+.profile-dot-cycle {
+  animation: profile-dot-cycle 9s ease-in-out infinite backwards;
+}
+
+@keyframes profile-photo-cycle {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  2%,
+  31% {
+    opacity: 1;
+  }
+  33% {
+    opacity: 0;
+  }
+}
+
+@keyframes profile-dot-cycle {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  2%,
+  31% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+  33% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -180,5 +229,20 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* La règle globale ci-dessus force chaque animation à se terminer
+     instantanément sur son état à 100% — pour profile-photo-cycle/
+     profile-dot-cycle, ce serait "éteint" pour les 3 images. Repli
+     explicite : la première photo/pastille reste visible, statique. */
+  .profile-photo-cycle,
+  .profile-dot-cycle {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .profile-photo-cycle:first-of-type,
+  .profile-dot-cycle:first-of-type {
+    opacity: 1 !important;
   }
 }
