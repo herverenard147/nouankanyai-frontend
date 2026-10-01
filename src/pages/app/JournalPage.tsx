@@ -12,12 +12,14 @@ export function JournalPage() {
   const types = useMemo(() => ['Tous', ...new Set((query.data ?? []).map((e) => e.type))], [query.data])
   const filtered = (query.data ?? []).filter((e) => typeFilter === 'Tous' || e.type === typeFilter)
 
+  const showAccount = (query.data ?? []).some((entry) => entry.account)
+
   if (!profile) return null
 
   return (
     <div className="flex flex-col gap-5">
       <p className="text-sm text-text-secondary">
-        Historique horodaté de chaque événement système : alerte, résolution automatique, mise à jour de compteur.
+        Ce que le système a constaté ou fait : alertes, résultat de chaque vérification, réinitialisations, délestages automatiques, analyses média, factures importées. Les connexions et les actions des utilisateurs sont dans l’Audit.
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {types.map((type) => (
@@ -40,18 +42,18 @@ export function JournalPage() {
             <thead className="bg-bg-elevated">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">Heure</th>
+                {showAccount && <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">Compte</th>}
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">Type</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">Détail</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">Compteur</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((entry) => (
                 <tr key={entry.id} className="border-t border-border">
                   <td className="px-4 py-3 tabular-nums text-text-secondary">{entry.time}</td>
+                  {showAccount && <td className="px-4 py-3 text-text-secondary">{entry.account ?? '—'}</td>}
                   <td className="px-4 py-3 text-text-primary">{entry.type}</td>
                   <td className="px-4 py-3 text-text-secondary">{entry.detail}</td>
-                  <td className="px-4 py-3 tabular-nums text-text-secondary">{entry.count}</td>
                 </tr>
               ))}
             </tbody>

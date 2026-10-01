@@ -378,6 +378,20 @@ export interface BackendAuditRequest {
   created_at: string
 }
 
+export interface BackendJournalEvent {
+  id: string
+  created_at: string
+  type: string
+  label: string
+  detail: string
+  account: string | null
+}
+
+export interface BackendJournalPage {
+  total: number
+  items: BackendJournalEvent[]
+}
+
 // --- Piste d'audit, plan d'action, historique des résolutions (PR NouanKanyAI#2) ---
 export interface BackendAuditEvent {
   id: string

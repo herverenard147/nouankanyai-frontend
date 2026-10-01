@@ -45,6 +45,14 @@ compte, même risque d'épuisement de crédit).
 3. **Débrancher** le projet Vercel `nouankanyai-frontend` du dépôt backend (§1).
 4. Contrôler l'URL publique (§5).
 
+### Journal réel (PR backend `herverenard147/NouanKanyAI#3` + PR frontend de la branche `claude/nouankany-design-propositions-5o9kyw`)
+
+Le Journal ne montre plus de connexions (elles sont dans l'Audit) ni de relevés reconstitués côté frontend : il lit
+`GET /api/v1/journal/events`, qui ne renvoie que des **faits enregistrés par le backend** (résultat de chaque vérification,
+alertes simulées, réinitialisations, délestages, analyses média, factures importées). **Déployer le backend (PR #3) avant le
+frontend**, sinon la page Journal est en erreur. L'Audit affiche « Compte Ménage » au lieu de « Compte menage ». Les données
+de démonstration restent possibles, mais le backend ne doit jamais fabriquer d'événement.
+
 ## 3. Créer les données (comptes et historique)
 
 Tout passe par l'API : **aucun accès direct à la base**, aucun dump (il contient des empreintes de mots de passe).
