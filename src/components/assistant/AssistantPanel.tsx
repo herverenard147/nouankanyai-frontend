@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { X } from 'lucide-react'
 
+import { AssistantMessageText } from '@/components/assistant/AssistantMessageText'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useAssistantContext, useAssistantReply } from '@/hooks/queries/useAssistantReply'
@@ -17,6 +18,10 @@ interface ChatMessage {
   id: string
   from: 'assistant' | 'user'
   text: string
+  /** Erreur de mutation (quota, réseau...) : rendu via ApiErrorMessage pour garder
+   * le lien cliquable qu'un message de quota peut contenir, pas via
+   * AssistantMessageText (pensé pour une réponse normale du modèle). */
+  isError?: boolean
 }
 
 const INITIAL_MESSAGE = 'Bonjour, je suis l’assistant Nouankany. Posez-moi une question sur vos équipements.'
@@ -39,7 +44,7 @@ export function AssistantPanel({ profile, onClose }: AssistantPanelProps) {
       },
       onError: (error) => {
         const text = error instanceof ApiError ? error.message : "Désolé, une erreur est survenue."
-        setMessages((prev) => [...prev, { id: crypto.randomUUID(), from: 'assistant', text }])
+        setMessages((prev) => [...prev, { id: crypto.randomUUID(), from: 'assistant', text, isError: true }])
       },
     })
   }
@@ -77,7 +82,13 @@ export function AssistantPanel({ profile, onClose }: AssistantPanelProps) {
                 : 'self-end bg-accent-cta text-white'
             }`}
           >
-            <ApiErrorMessage message={message.text} />
+            {message.isError ? (
+              <ApiErrorMessage message={message.text} />
+            ) : message.from === 'assistant' ? (
+              <AssistantMessageText text={message.text} />
+            ) : (
+              <p>{message.text}</p>
+            )}
           </div>
         ))}
         {replyMutation.isPending && <p className="text-sm text-text-tertiary">L'assistant écrit…</p>}
