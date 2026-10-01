@@ -3,11 +3,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchAdminUsers, promoteUser } from '@/api/adminUsers'
 import {
   deleteUser,
+  fetchPlatformConsumption,
+  fetchPlatformPredictions,
   fetchUserAlerts,
   fetchUserPredictions,
+  resetUserMachine,
   resetUserPassword,
   suspendUser,
   updateUserProfile,
+  verifyUserMachine,
 } from '@/api/adminUserDetail'
 import { rawUserFacturation, rawUserMachines } from '@/api/rawBackend'
 
@@ -56,6 +60,32 @@ export function useUserAlerts(targetUserId: string | null) {
     queryFn: () => fetchUserAlerts(targetUserId as string),
     enabled: Boolean(targetUserId),
   })
+}
+
+export function useAdminPlatformPredictions() {
+  return useQuery({ queryKey: ['admin-platform-predictions'], queryFn: fetchPlatformPredictions })
+}
+
+export function useAdminPlatformConsumption() {
+  return useQuery({ queryKey: ['admin-platform-consumption'], queryFn: fetchPlatformConsumption })
+}
+
+/** Action support sur l'équipement d'un utilisateur (vérifier/réinitialiser, depuis une alerte
+ * remontée côté Admin) : rafraîchit tout ce qui en dérive, y compris côté plateforme et côté
+ * compte du client lui-même si l'admin y navigue ensuite. */
+export function useAdminMachineActions() {
+  const client = useQueryClient()
+  const refresh = () => {
+    void client.invalidateQueries({ queryKey: ['admin-platform-predictions'] })
+    void client.invalidateQueries({ queryKey: ['admin-platform-consumption'] })
+    void client.invalidateQueries({ queryKey: ['alerts-action', 'admin'] })
+    void client.invalidateQueries({ queryKey: ['admin-user-predictions'] })
+    void client.invalidateQueries({ queryKey: ['admin-user-alerts'] })
+  }
+  return {
+    verify: useMutation({ mutationFn: (machineId: string) => verifyUserMachine(machineId), onSuccess: refresh }),
+    reset: useMutation({ mutationFn: (machineId: string) => resetUserMachine(machineId), onSuccess: refresh }),
+  }
 }
 
 /** Suspendre/réactiver, réinitialiser le mot de passe, modifier le nom, supprimer : les 4

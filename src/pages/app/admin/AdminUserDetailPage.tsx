@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineButton'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
@@ -386,6 +387,7 @@ export function AdminUserDetailPage() {
                 </div>
                 <span className="text-sm font-semibold text-text-secondary">{a.severityOrGain}</span>
                 <ProvenanceBadge value={a.provenance} />
+                {a.actionable && <AdminVerifyMachineButton machineId={a.machineId} subject={a.title} />}
               </li>
             ))}
           </ul>

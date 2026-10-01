@@ -7,10 +7,13 @@
 import { api } from '@/lib/apiClient'
 import { queryClient } from '@/lib/queryClient'
 import type {
+  BackendAdminMachineActionResult,
   BackendAdminMetrics,
   BackendAdminUserAlerts,
   BackendAdminUserPredictions,
   BackendPlatformAlerts,
+  BackendPlatformConsumption,
+  BackendPlatformPredictions,
   BackendAuditEvent,
   BackendAuditPage,
   BackendBillUpdatePayload,
@@ -196,6 +199,11 @@ export const rawUserPredictions = (targetUserId: string) =>
 export const rawUserAlerts = (targetUserId: string) =>
   api.get<BackendAdminUserAlerts>(`/api/admin/users/${targetUserId}/alerts`)
 export const rawPlatformAlerts = () => api.get<BackendPlatformAlerts>('/api/admin/alerts')
+export const rawPlatformPredictions = (hoursAhead = 24) =>
+  api.get<BackendPlatformPredictions>(`/api/admin/predictions?hours_ahead=${hoursAhead}`)
+export const rawPlatformConsumption = () => api.get<BackendPlatformConsumption>('/api/admin/consumption')
+export const rawAdminTestMachine = (machineId: string) =>
+  api.post<BackendAdminMachineActionResult>(`/api/admin/machines/${machineId}/test`)
 
 /** Formulaire public "Demander un audit" — aucune authentification requise. */
 export const rawCreateAuditRequest = (payload: BackendAuditRequestPayload) =>

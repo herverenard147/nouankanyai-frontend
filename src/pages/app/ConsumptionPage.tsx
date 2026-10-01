@@ -1,3 +1,4 @@
+import { AdminPlatformConsumption } from '@/components/consumption/AdminPlatformConsumption'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { TariffSection } from '@/components/tariff/TariffSection'
@@ -9,9 +10,20 @@ import { useSessionStore } from '@/store/sessionStore'
 
 export function ConsumptionPage() {
   const profile = useSessionStore((s) => s.session?.profile)
-  const query = useConsumptionSeries(profile!)
+  // L'Admin n'a pas d'équipement en propre (voir fetchConsumptionSeries) : sa page Conso & coûts
+  // appelait /api/machines sur son propre compte, toujours vide (bug trouvé par audit, 2026-10-01).
+  const query = useConsumptionSeries(profile!, { enabled: profile !== 'admin' })
 
   if (!profile) return null
+
+  if (profile === 'admin') {
+    return (
+      <div className="flex flex-col gap-7">
+        <p className="text-sm text-text-secondary">Répartition de la puissance active, pour tous les comptes de la plateforme.</p>
+        <AdminPlatformConsumption />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-7">

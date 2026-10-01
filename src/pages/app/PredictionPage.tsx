@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { AdminPlatformPrediction } from '@/components/prediction/AdminPlatformPrediction'
 import { PredictionContent } from '@/components/prediction/PredictionPanel'
 import { MetricState } from '@/components/state/MetricState'
 import { Pill } from '@/components/ui/Pill'
@@ -19,10 +20,25 @@ export function PredictionPage() {
   const profile = useSessionStore((s) => s.session?.profile)
   const level = useLevel(profile ?? 'menage')
   const [granularity, setGranularity] = useState<PredictionGranularity>('heure')
-  const query = usePredictionsBundle(profile ?? 'menage', granularity)
+  // L'Admin n'utilise pas la plateforme comme un compte des 3 autres profils (pas d'équipement
+  // en propre) : sa page Prédiction appelait /api/predict sur son propre compte, toujours vide
+  // (bug trouvé par audit, 2026-10-01) — hook conditionnel plutôt qu'appelé puis ignoré, pour
+  // ne jamais lancer la requête par compte en plus de la requête plateforme.
+  const query = usePredictionsBundle(profile ?? 'menage', granularity, { enabled: profile !== 'admin' })
   const showModelDetails = levelAtLeast(level, 'technique')
 
   if (!profile) return null
+
+  if (profile === 'admin') {
+    return (
+      <div className="flex flex-col gap-7">
+        <p className="text-sm text-text-secondary">
+          Prédiction de consommation par équipement, pour tous les comptes de la plateforme.
+        </p>
+        <AdminPlatformPrediction />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-7">

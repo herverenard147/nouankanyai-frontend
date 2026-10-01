@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineButton'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
@@ -15,10 +16,12 @@ interface ActionAlertCardProps {
    * complète et les actions vivant sur /app/alertes. */
   compact?: boolean
   /** Admin (alertes plateforme, tous comptes confondus) : l'alerte porte sur l'équipement
-   * d'un AUTRE compte — "Vérifier et résoudre" appellerait /api/machines/{id}/test scopé
-   * sur le compte Admin lui-même (qui n'a pas cet équipement), pas sur le vrai propriétaire.
-   * Masque le bouton plutôt que de le laisser échouer silencieusement. */
-  readOnly?: boolean
+   * d'un AUTRE compte. "Vérifier et résoudre" appelle alors l'action support dédiée
+   * (/api/admin/machines/{id}/test), jamais /api/machines/{id}/test (scopé sur le compte
+   * Admin lui-même, qui n'a pas cet équipement) — avec une modale de confirmation avant
+   * d'agir sur les données d'un autre compte (RGPD : jamais un clic accidentel, l'action
+   * reste de toute façon tracée dans l'Audit du client qu'elle soit confirmée ou non). */
+  admin?: boolean
 }
 
 interface AutoAlertCardProps {
@@ -30,7 +33,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
   const resolveMutation = useResolveMachine()
 
   if (props.variant === 'action') {
-    const { alert, compact, readOnly } = props
+    const { alert, compact, admin } = props
 
     if (compact) {
       return (
@@ -60,13 +63,13 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             Source : <ProvenanceBadge value={alert.provenance} className="lowercase" />
             {alert.basis && <span>· {alert.basis}</span>}
           </p>
-          {!readOnly && resolveMutation.isError && (
+          {!admin && resolveMutation.isError && (
             <ApiErrorMessage
               message={resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec de la vérification.'}
               className="mt-2 text-sm text-alert"
             />
           )}
-          {!readOnly && resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
+          {!admin && resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
             <p className="mt-2 text-sm text-alert">
               Nouvelle mesure : température {formatNumberFr(resolveMutation.data.temperature_c, 1)}
               {NARROW_NBSP}°C, vibration {formatNumberFr(resolveMutation.data.vibration_hz, 1)}
@@ -80,7 +83,9 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
               {alert.ctaLabel}
             </Link>
           )}
-          {!readOnly && (
+          {admin ? (
+            <AdminVerifyMachineButton machineId={alert.machineId} subject={alert.title} />
+          ) : (
             <button
               type="button"
               disabled={resolveMutation.isPending}

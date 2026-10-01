@@ -73,7 +73,7 @@ export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionPr
               variant="action"
               alert={alert}
               compact={maxActionAlerts !== undefined}
-              readOnly={profile === 'admin'}
+              admin={profile === 'admin'}
             />
           ))
         ))}

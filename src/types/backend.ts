@@ -280,6 +280,33 @@ export interface BackendPlatformAlerts {
   recommendations: BackendPlatformAlertItem[]
   count: number
 }
+export interface BackendPlatformPredictionUser {
+  owner_id: string
+  owner_nom: string
+  machines: BackendAdminMachinePrediction[]
+}
+export interface BackendPlatformPredictions {
+  users: BackendPlatformPredictionUser[]
+}
+export interface BackendPlatformConsumptionUser {
+  owner_id: string
+  owner_nom: string
+  power_kw: number
+  machines_count: number
+  percent: number
+}
+export interface BackendPlatformConsumption {
+  total_power_kw: number
+  users: BackendPlatformConsumptionUser[]
+}
+export interface BackendAdminMachineActionResult {
+  resolved: boolean
+  temperature_c: number
+  vibration_hz: number
+  pressure_bar: number
+  power_kw: number
+  owner_id: string
+}
 
 export interface BackendRecentActivity {
   type: string
