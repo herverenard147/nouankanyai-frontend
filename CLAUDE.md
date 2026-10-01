@@ -128,3 +128,7 @@ Render, repo `herverenard147/nouankanyai-frontend`) :
 - `backend/.env` (dans l'autre dépôt) contient des clés déjà commitées avant
   `.gitignore` — hors périmètre de ce dépôt, ne pas tenter de les faire
   tourner depuis ici.
+
+## Fusion du boîtier : lire d'abord
+
+`docs/FUSION_BOITIER_LIRE_EN_PREMIER.md` (copie de celui du dépôt backend) est **prioritaire** : ordre de fusion des PR du boîtier (backend d'abord), erreurs rencontrées, vérifications à faire **avant** d'agir. Il a été écrit par une session cloud sans accès à cette machine : le valider avant de s'y fier. Hébergement actuel : Render ; `MISE_EN_LIGNE.md` mentionne encore Fly.io et est périmé sur ce point.
