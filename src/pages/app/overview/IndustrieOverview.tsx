@@ -58,7 +58,7 @@ export function IndustrieOverview() {
       <KpiStrip profile="industrie" targets={KPI_TARGETS} />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.55fr_1fr] lg:gap-9">
-        <PredictionSummary profile="industrie" showModelDetails={blocks.showModelDetails} />
+        <PredictionSummary profile="industrie" />
         <AlertsSummary profile="industrie" max={2} />
       </div>
 

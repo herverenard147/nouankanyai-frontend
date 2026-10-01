@@ -8,7 +8,7 @@ Les maquettes sont dans le canvas « Nouankany — Propositions de design »
 (https://claude.ai/artifact/WnHgKLuo5DF81qHQ7XucGe) :
 - **validées** : `E` (landing complète), `F2` (section « problème »), `G1` (vue d'ensemble Industrie, bureau
   1440×900, niveau technique) et `G2` (même vue, mobile) ;
-- **à valider** : 116 planches `H-*` (une page du canvas par type de compte, une ligne par écran, une colonne par
+- **validées** (le propriétaire les a approuvées) : 116 planches `H-*` (une page du canvas par type de compte, une ligne par écran, une colonne par
   variante de niveau ; les niveaux qui donnent le même écran partagent une planche) : tous les écrans de
   chaque profil, l'onglet **Audit**, la page **Plan d'action** et les **modales** (§8).
   Les chiffres de ces planches viennent d'une base **locale de test** alimentée par `seed_demo.py` et par de vraies
@@ -92,7 +92,7 @@ conservé après rechargement. Sélecteur : `TopBar` (bureau), `Paramètres` (mo
 | Bloc | Débutant | Amateur | Technique |
 |---|---|---|---|
 | Sous-titre, indicateurs clés, alertes, prédiction (valeur + graphique) | oui | oui | oui |
-| Ligne « modèle · jeu de données » sous la prédiction | non | non | **retirée** (règle 9) — `PredictionSummary` et `PredictionPanel` affichent encore `modelName · jeu de données`, à supprimer |
+| Ligne « modèle · jeu de données » sous la prédiction | non | non | **retirée** (règle 9, faite dans `PredictionSummary` et `PredictionPanel`) |
 | Machines : colonnes | Machine, Statut, Priorité | idem | **+ Température, Vibration, Pression** |
 | Raccourcis | Conseils, Paliers tarifaires | idem | **Plan d'action, Historique des résolutions**, Paliers |
 
@@ -164,12 +164,13 @@ ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des 
    d'abord sur les maquettes. Les raccourcis pointent provisoirement vers `/app/recommandations` et `/app/journal`.
 3. **KPI « Part sur les économies » pour le Ménage** (formule gratuite, pas de commission).
 4. **Libellé « Gratuit pour commencer »** de la formule Découverte (Ménages) alors que le segment n'est pas ouvert.
-5. **Textes générés par le backend** (« Éteignez Compresseur d'air » : article manquant ; « Les capteurs de … montrent
-   un comportement anormal » : contredit la règle 9) : correction côté backend.
-6. **Encadré « Vos appareils » de la barre latérale** : remplace « Capteurs IoT : aucun capteur déployé… ». Il dit
-   d'où vient chaque valeur sans prononcer « capteur ». Vérifier avec le propriétaire que cela suffit sur le plan de
-   l'honnêteté (la provenance « synthétique » reste visible partout).
-7. **« Modèles & observabilité » (Admin)** parle de modèles : conservé (outil d'administration, pas un écran client).
+5. **Textes générés par le backend** (« Éteignez Compresseur d'air » : article manquant) : correction côté backend.
+   « Les capteurs de … montrent un comportement anormal » est **conservé** : le mot « capteur » reste permis quand il
+   désigne un élément précis (décision du propriétaire).
+
+**Décidé par le propriétaire :** encadré « Vos appareils » dans la barre latérale (validé) ; page Admin « Modèles &
+observabilité » conservée ; aucune mention du modèle (nom, jeu de données) dans la Prédiction à aucun niveau ; planches `H-*`
+validées. Le câblage frontend et la mise en ligne (Vercel, Railway) sont faits par Claude Code en local.
 
 ## 7. Tester en local, avec le vrai backend
 
@@ -234,7 +235,7 @@ heures sont en UTC.
 3. Composant `Modal` (+ variantes `ConfirmEditModal`, `ConfirmDeleteModal`) et branchement sur machines/équipements,
    factures, équipe, seuils, profil, plan, rôle utilisateur ; colonne « Actions » (Modifier / Supprimer) dans les tableaux.
 4. Restyler `ProvenanceBadge` (règle 2), carte d'alerte sobre (filet rouge à gauche, « Sévérité critique · une personne doit
-   intervenir », « Source : synthétique » en pied), supprimer « modèle · jeu de données » (règle 9), graphique horaire à
+   intervenir », « Source : synthétique » en pied), graphique horaire à
    une barre (règle 11), bouton « Assistant Nouankany » en bas à droite sans recouvrir le contenu.
 5. `formatters.ts` : passer à l'espace fine insécable U+202F (milliers et avant l'unité) et mettre à jour les tests
    (`dashboardCorrections.test.ts` attend l'espace normale).

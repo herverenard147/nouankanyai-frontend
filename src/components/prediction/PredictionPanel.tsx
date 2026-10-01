@@ -59,9 +59,6 @@ export function PredictionContent({
         </div>
         <div className="flex flex-col items-end gap-1">
           <ProvenanceBadge value={prediction.provenance} />
-          {showModelDetails && (
-            <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName} · jeu de données : synthétique</p>
-          )}
         </div>
       </div>
 
@@ -78,7 +75,12 @@ export function PredictionContent({
         />
       </div>
 
-      {showModelDetails && <p className="text-sm text-text-secondary">{prediction.modelNote}</p>}
+      {showModelDetails && (
+        <p className="text-sm text-text-secondary">
+          Pour chaque appareil, la puissance attendue heure par heure. Un appareil dont la température, la vibration ou la pression
+          dépasse vos seuils d’alerte est signalé dans Alertes ; la courbe se recale à chaque nouveau relevé.
+        </p>
+      )}
     </>
   )
 }

@@ -17,7 +17,7 @@ export type ShortcutId = 'conseils' | 'plan-action' | 'resolutions' | 'paliers'
 export interface IndustrieOverviewBlocks {
   /** "full" ajoute température, vibration et pression (relevés capteur bruts). */
   machineColumns: 'base' | 'full'
-  /** Ligne « modèle · jeu de données » et note du modèle sous la prédiction. */
+  /** Plus de ligne « modèle · jeu de données » (retirée) ; le drapeau ne pilote que la phrase explicative sur les appareils. */
   showModelDetails: boolean
   shortcuts: ShortcutId[]
 }

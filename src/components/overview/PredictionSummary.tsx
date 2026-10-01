@@ -9,33 +9,25 @@ import type { Profile } from '@/types/domain'
 
 interface PredictionSummaryProps {
   profile: Profile
-  /** Ligne « modèle · jeu de données » (niveau technique, voir lib/overviewLevels.ts). */
-  showModelDetails: boolean
 }
 
 /**
  * Prédiction globale à l'heure, en aperçu : valeur, coût estimé, un graphique compact et le
- * raccourci vers la page Prédiction. La note longue du modèle vit sur /app/prediction.
+ * raccourci vers la page Prédiction.
  */
-export function PredictionSummary({ profile, showModelDetails }: PredictionSummaryProps) {
+export function PredictionSummary({ profile }: PredictionSummaryProps) {
   const query = usePredictionsBundle(profile, 'heure')
 
   return (
     <section aria-label="Prédiction IA" className="flex min-w-0 flex-col gap-2">
       <MetricState status={query.status}>
-        {query.data && <PredictionBody prediction={query.data.global} showModelDetails={showModelDetails} />}
+        {query.data && <PredictionBody prediction={query.data.global} />}
       </MetricState>
     </section>
   )
 }
 
-function PredictionBody({
-  prediction,
-  showModelDetails,
-}: {
-  prediction: NonNullable<ReturnType<typeof usePredictionsBundle>['data']>['global']
-  showModelDetails: boolean
-}) {
+function PredictionBody({ prediction }: { prediction: NonNullable<ReturnType<typeof usePredictionsBundle>['data']>['global'] }) {
   const maxPoint = prediction.series.reduce((max, p) => (p.percent > max.percent ? p : max), prediction.series[0])
   const yTicks = maxPoint ? computeYTicks(maxPoint.value, maxPoint.percent) : ['0', '0', '0']
   const bars: ChartBar[] = prediction.series.map((point, i) => ({
@@ -61,9 +53,6 @@ function PredictionBody({
         <p className="text-[0.8125rem] text-text-secondary">{prediction.intervalLabel}</p>
         <ProvenanceBadge value={prediction.provenance} className="ml-auto" />
       </div>
-      {showModelDetails && (
-        <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName} · jeu de données : synthétique</p>
-      )}
       <BarChart bars={bars} yTicks={yTicks} size="compact" xLabelEvery={6} />
     </>
   )
