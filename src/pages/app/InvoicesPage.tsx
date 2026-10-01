@@ -189,7 +189,7 @@ export function InvoicesPage() {
                       </form>
                     ) : (
                       <Button type="button" variant="outline" onClick={() => setConfirmingId(invoice.id)}>
-                        La vraie facture est arrivée — confirmer le montant
+                        La vraie facture est arrivée, confirmer le montant
                       </Button>
                     )}
                   </div>

@@ -200,7 +200,7 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
       <h2 className="text-section-title font-semibold text-text-primary">Équipe</h2>
       <p className="text-sm text-text-secondary">
         {isOwner
-          ? `Jusqu'à ${MAX_TEAM_MEMBERS} comptes membres peuvent utiliser ce dashboard avec vous — mêmes machines, mêmes factures, mêmes alertes. Vous seul pouvez en ajouter ou en retirer.`
+          ? `Jusqu'à ${MAX_TEAM_MEMBERS} comptes membres peuvent utiliser ce dashboard avec vous, mêmes machines, mêmes factures, mêmes alertes. Vous seul pouvez en ajouter ou en retirer.`
           : 'Vous faites partie de cette équipe. Le compte principal de l’entreprise gère les membres.'}
       </p>
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
@@ -237,7 +237,7 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
             {memberCount}/{MAX_TEAM_MEMBERS} comptes membres utilisés
           </p>
           {atCap ? (
-            <p className="text-sm text-text-secondary">Plafond atteint — retirez un membre pour pouvoir en ajouter un nouveau.</p>
+            <p className="text-sm text-text-secondary">Plafond atteint, retirez un membre pour pouvoir en ajouter un nouveau.</p>
           ) : (
             <Button type="button" className="w-fit" onClick={() => { createMutation.reset(); setAdding(true) }}>
               Ajouter un membre

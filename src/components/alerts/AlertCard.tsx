@@ -65,7 +65,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             <p className="mt-2 text-sm text-alert">
               Nouvelle mesure : température {formatNumberFr(resolveMutation.data.temperature_c, 1)}
               {NARROW_NBSP}°C, vibration {formatNumberFr(resolveMutation.data.vibration_hz, 1)}
-              {NARROW_NBSP}Hz — l&rsquo;anomalie persiste encore. Réessayez une fois l&rsquo;intervention terminée.
+              {NARROW_NBSP}Hz, l&rsquo;anomalie persiste encore. Réessayez une fois l&rsquo;intervention terminée.
             </p>
           )}
         </div>

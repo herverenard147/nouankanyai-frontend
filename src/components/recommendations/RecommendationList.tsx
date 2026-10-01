@@ -20,7 +20,7 @@ export function RecommendationList({ profile, level }: RecommendationListProps) 
     <section className="flex flex-col gap-3">
       <h2 className="text-section-title font-semibold text-text-primary">Recommandations d&rsquo;optimisation</h2>
       <p className="text-sm text-text-secondary">
-        Des suggestions pour réduire votre consommation — pas des problèmes à résoudre, juste de bonnes pratiques
+        Des suggestions pour réduire votre consommation, pas des problèmes à résoudre, juste de bonnes pratiques
         pour chaque équipement.
       </p>
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
