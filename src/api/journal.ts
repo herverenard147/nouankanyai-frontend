@@ -1,5 +1,5 @@
-import { rawAdminMetrics, rawMachineHistory, rawMachines } from '@/api/rawBackend'
-import { formatNumberFr } from '@/lib/formatters'
+import { fetchAudit } from '@/api/audit'
+import { getCachedAdminMetrics } from '@/api/rawBackend'
 import type { BackendRecentActivity } from '@/types/backend'
 import type { JournalEntry, Profile } from '@/types/domain'
 
@@ -22,34 +22,35 @@ function toEntry(activity: BackendRecentActivity, index: number): JournalEntry {
   }
 }
 
+/** Catégories de la piste d'audit (voir api/audit.ts) qui correspondent à ce que cette page annonce :
+ * vérifications (résolution automatique/manuelle d'une anomalie) et factures (mise à jour de compteur).
+ * Pas de catégorie "alerte" distincte côté backend (une détection n'est pas un événement persisté avec
+ * horodatage tant qu'elle n'a pas été vérifiée) : on ne prétend donc pas en afficher ici. */
+const JOURNAL_AUDIT_CATEGORIES = new Set(['resolutions', 'factures'])
+
 /**
  * Journal agrégé côté plateforme (admin uniquement, `recent_activities` de
- * `/api/admin/metrics`). Pour l'industrie, pas d'équivalent "journal
- * d'activité" par compte côté backend : on affiche à la place les relevés
- * capteurs récents de ses machines, l'historique réel le plus proche de ce
- * que la page annonce.
+ * `/api/admin/metrics`). Pour les autres profils : même piste d'audit réelle
+ * que la page Audit (`/api/v1/audit/trail`, append-only côté backend), filtrée
+ * aux catégories que cette page annonce — jamais une donnée capteur simulée
+ * présentée comme un événement système (bug corrigé le 2026-10-01 : la page
+ * affichait avant les derniers relevés capteurs sous un libellé "Relevé
+ * simulé", qui ne correspondait à aucune des 3 choses promises en sous-titre).
  */
 export async function fetchJournal(profile: Profile): Promise<JournalEntry[]> {
   if (profile === 'admin') {
-    const metrics = await rawAdminMetrics()
+    const metrics = await getCachedAdminMetrics()
     return metrics.recent_activities.map(toEntry)
   }
 
-  const machines = await rawMachines()
-  const histories = await Promise.all(machines.map((m) => rawMachineHistory(m.machine_id).catch(() => null)))
-  const entries: JournalEntry[] = []
-  histories.forEach((history, idx) => {
-    if (!history) return
-    const machine = machines[idx]
-    history.history.slice(0, 5).forEach((point, i) => {
-      entries.push({
-        id: `${machine.machine_id}-${i}`,
-        time: new Date(point.recorded_at).toLocaleString('fr-FR'),
-        type: 'Relevé simulé',
-        detail: `${machine.nom} · ${formatNumberFr(point.power_kw, 1)} kW, ${formatNumberFr(point.temperature_c, 1)} °C`,
-        count: 1,
-      })
-    })
-  })
-  return entries.sort((a, b) => b.time.localeCompare(a.time))
+  const audit = await fetchAudit(profile, { limit: 100 })
+  return audit.events
+    .filter((event) => JOURNAL_AUDIT_CATEGORIES.has(event.category))
+    .map((event) => ({
+      id: event.id,
+      time: event.time,
+      type: event.categoryLabel,
+      detail: event.detail || event.action,
+      count: 1,
+    }))
 }

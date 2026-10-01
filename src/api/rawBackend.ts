@@ -5,6 +5,7 @@
  * seulement ici, que vit la connaissance du contrat HTTP réel.
  */
 import { api } from '@/lib/apiClient'
+import { queryClient } from '@/lib/queryClient'
 import type {
   BackendAdminMetrics,
   BackendAdminUserAlerts,
@@ -74,6 +75,25 @@ export const rawCreateSite = (payload: { nom: string; localisation: string }) =>
   api.post<BackendSite>('/api/sites', payload)
 
 export const rawMachines = () => api.get<BackendMachine[]>('/api/machines')
+
+/**
+ * Même donnée que `rawMachines()`, mais passée par le cache react-query
+ * (`['machines']`, `staleTime` par défaut du client) : plusieurs widgets
+ * indépendants (KPI, prédiction, alertes, machines suivies) en ont besoin sur
+ * le même écran sans se parler entre eux — sans ce partage, chacun relance
+ * son propre GET /api/machines et l'Aperçu Industrie en déclenche jusqu'à 4
+ * en parallèle pour une donnée identique.
+ */
+export const getCachedMachines = () => queryClient.fetchQuery({ queryKey: ['machines'], queryFn: rawMachines })
+
+/**
+ * Même partage que `getCachedMachines()`, pour `/api/admin/metrics` et
+ * `/api/ml/models` : le Portail Admin (KPI, Journal, Utilisateurs) et la page
+ * Modèles & observabilité (panneaux XGBoost + Isolation Forest) les
+ * interrogent chacun de leur côté, doublant les appels sur un même écran.
+ */
+export const getCachedAdminMetrics = () => queryClient.fetchQuery({ queryKey: ['admin-metrics'], queryFn: rawAdminMetrics })
+export const getCachedMlModels = () => queryClient.fetchQuery({ queryKey: ['ml-models'], queryFn: rawMlModels })
 export const rawEquipmentCatalog = () => api.get<BackendEquipmentCatalog>('/api/equipment-catalog', false)
 export const rawAddMachine = (payload: BackendNewMachinePayload) =>
   api.post<{ status: string; machines: BackendMachine[] }>('/api/machines', payload)

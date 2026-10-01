@@ -11,6 +11,11 @@ export function useReloadModels() {
   return useMutation({
     mutationFn: reloadModels,
     onSuccess: () => {
+      // ['ml-models']/['admin-metrics'] sont les caches partagés sous-jacents (voir
+      // getCachedMlModels/getCachedAdminMetrics) : à invalider aussi, sinon les panneaux
+      // rejouent une donnée pré-rechargement malgré l'invalidation de ['admin-panel', id].
+      void queryClient.invalidateQueries({ queryKey: ['ml-models'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin-metrics'] })
       for (const id of adminPanelIds()) queryClient.invalidateQueries({ queryKey: ['admin-panel', id] })
     },
   })

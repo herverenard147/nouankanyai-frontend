@@ -300,7 +300,7 @@ export interface ConsumptionPost {
 }
 
 export interface ConsumptionSeries {
-  granularity: '30j' | 'quotidien'
+  granularity: 'quotidien'
   points: PredictionSeriesPoint[]
   yAxisUnit: string
   provenance: Provenance

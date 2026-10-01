@@ -1,9 +1,9 @@
 import { priorityLabel, statusLabel } from '@/api/backendHelpers'
-import { rawMachines } from '@/api/rawBackend'
+import { getCachedMachines } from '@/api/rawBackend'
 import type { EquipmentRow, Profile } from '@/types/domain'
 
 export async function fetchEquipmentTable(_profile: Profile): Promise<{ title: string; rows: EquipmentRow[] }> {
-  const machines = await rawMachines()
+  const machines = await getCachedMachines()
   return {
     title: 'Équipements déclarés',
     rows: machines.map((m) => ({

@@ -1,10 +1,10 @@
 import { priorityLabel, statusLabel } from '@/api/backendHelpers'
-import { rawMachines } from '@/api/rawBackend'
+import { getCachedMachines } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { MachineRow, Profile } from '@/types/domain'
 
 export async function fetchMachinesTable(_profile: Profile): Promise<{ title: string; rows: MachineRow[] }> {
-  const machines = await rawMachines()
+  const machines = await getCachedMachines()
   return {
     title: 'Machines suivies',
     rows: machines.map((m) => ({

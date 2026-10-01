@@ -12,9 +12,14 @@ import type { BackendMachineUpdatePayload, BackendNewMachinePayload } from '@/ty
  * sinon l'alerte résolue reste affichée jusqu'au prochain remount.
  */
 function invalidateMachineQueries(queryClient: ReturnType<typeof useQueryClient>) {
+  // ['machines'] est le cache partagé sous-jacent (voir getCachedMachines dans rawBackend.ts) :
+  // sans l'invalider, equipment/machines-table/machines-raw/kpi-set rejoueraient une donnée
+  // périmée (staleTime global) malgré leur propre invalidation ci-dessous.
+  queryClient.invalidateQueries({ queryKey: ['machines'] })
   queryClient.invalidateQueries({ queryKey: ['equipment'] })
   queryClient.invalidateQueries({ queryKey: ['machines-table'] })
   queryClient.invalidateQueries({ queryKey: ['machines-raw'] })
+  queryClient.invalidateQueries({ queryKey: ['kpi-set'] })
   queryClient.invalidateQueries({ queryKey: ['alerts-action'] })
   queryClient.invalidateQueries({ queryKey: ['alerts-auto'] })
   queryClient.invalidateQueries({ queryKey: ['alerts-history'] })

@@ -1,4 +1,4 @@
-import { rawMachines, rawRecommend } from '@/api/rawBackend'
+import { getCachedMachines, rawRecommend } from '@/api/rawBackend'
 import { formatFcfaAmount } from '@/api/backendHelpers'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { Advice, Profile } from '@/types/domain'
@@ -8,7 +8,7 @@ export function adviceSectionTitle(_profile: Profile): string {
 }
 
 export async function fetchAdvice(_profile: Profile): Promise<Advice[]> {
-  const machines = await rawMachines()
+  const machines = await getCachedMachines()
   if (machines.length === 0) return []
   const { recommendations } = await rawRecommend(machines)
 

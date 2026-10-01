@@ -1,4 +1,4 @@
-import { rawMachineHistory, rawMachines, rawPlatformAlerts, rawRecommend } from '@/api/rawBackend'
+import { rawMachineHistory, getCachedMachines, rawPlatformAlerts, rawRecommend } from '@/api/rawBackend'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { BackendMachine } from '@/types/backend'
 import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types/domain'
@@ -11,7 +11,7 @@ import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types
  * action humaine) — un mapping direct, pas une invention.
  */
 async function fetchRecommendations() {
-  const machines = await rawMachines()
+  const machines = await getCachedMachines()
   if (machines.length === 0) return { machines, recommendations: [] as Awaited<ReturnType<typeof rawRecommend>>['recommendations'] }
   const { recommendations } = await rawRecommend(machines)
   return { machines, recommendations }
@@ -83,7 +83,7 @@ export async function fetchAutoAlerts(profile: Profile): Promise<AutoAlert[]> {
  * "action" — pas de fausse case "auto" pour ces entrées-là.
  */
 export async function fetchAlertHistory(_profile: Profile): Promise<AlertHistoryEntry[]> {
-  const machines = await rawMachines()
+  const machines = await getCachedMachines()
   const histories = await Promise.all(machines.map((m) => rawMachineHistory(m.machine_id).catch(() => null)))
   const entries: AlertHistoryEntry[] = []
   histories.forEach((history, idx) => {

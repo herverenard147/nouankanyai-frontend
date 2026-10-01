@@ -1,4 +1,4 @@
-import { rawAdminMetrics, rawUpdateUserRole } from '@/api/rawBackend'
+import { getCachedAdminMetrics, rawUpdateUserRole } from '@/api/rawBackend'
 import { deriveProfile } from '@/lib/profileMapping'
 import type { AdminUser } from '@/types/domain'
 
@@ -9,7 +9,7 @@ function accountLabel(profile: ReturnType<typeof deriveProfile>, ownerName: stri
 }
 
 export async function fetchAdminUsers(): Promise<AdminUser[]> {
-  const metrics = await rawAdminMetrics()
+  const metrics = await getCachedAdminMetrics()
   return metrics.users.map((u) => {
     const profile = deriveProfile(u.role, u.platform_role)
     return {

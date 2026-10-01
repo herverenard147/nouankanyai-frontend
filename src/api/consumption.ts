@@ -1,4 +1,4 @@
-import { rawMachineHistory, rawMachines } from '@/api/rawBackend'
+import { rawMachineHistory, getCachedMachines } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { ConsumptionSeries, Profile } from '@/types/domain'
 
@@ -10,7 +10,7 @@ import type { ConsumptionSeries, Profile } from '@/types/domain'
  * pas d'une série recalculée après coup.
  */
 export async function fetchConsumptionSeries(_profile: Profile): Promise<ConsumptionSeries[]> {
-  const machines = await rawMachines()
+  const machines = await getCachedMachines()
   if (machines.length === 0) return []
 
   const target = [...machines].sort((a, b) => b.power_kw - a.power_kw)[0]

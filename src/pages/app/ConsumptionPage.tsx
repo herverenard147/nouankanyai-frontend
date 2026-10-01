@@ -34,12 +34,10 @@ export function ConsumptionPage() {
           return (
             <section key={series.granularity} className="flex flex-col gap-4 border-t-2 border-text-primary pt-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-section-title font-semibold text-text-primary">
-                  Consommation ({series.granularity === '30j' ? '30 derniers jours' : 'suivi quotidien'})
-                </h2>
+                <h2 className="text-section-title font-semibold text-text-primary">Consommation (suivi quotidien)</h2>
                 <ProvenanceBadge value={series.provenance} />
               </div>
-              {series.points.length === 1 && series.granularity !== '30j' ? (
+              {series.points.length === 1 ? (
                 <SingleMeasureChart label={series.points[0].label} percent={series.points[0].percent} tip={`${series.points[0].displayValue} ${series.yAxisUnit}`} />
               ) : (
                 <>

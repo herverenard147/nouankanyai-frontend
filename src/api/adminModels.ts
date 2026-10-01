@@ -1,4 +1,4 @@
-import { rawAdminMetrics, rawGeminiMetrics, rawMlModels, rawMlReload } from '@/api/rawBackend'
+import { getCachedAdminMetrics, getCachedMlModels, rawGeminiMetrics, rawMlReload } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { AdminPanel } from '@/types/domain'
 
@@ -12,7 +12,7 @@ export function adminPanelIds(): string[] {
 }
 
 async function xgboostPanel(): Promise<AdminPanel> {
-  const [models, adminMetrics] = await Promise.all([rawMlModels(), rawAdminMetrics()])
+  const [models, adminMetrics] = await Promise.all([getCachedMlModels(), getCachedAdminMetrics()])
   const model = models.find((m) => m.model_type === 'XGBoost')
   const xgb = adminMetrics.model_metrics.xgboost
   return {
@@ -30,7 +30,7 @@ async function xgboostPanel(): Promise<AdminPanel> {
 }
 
 async function isolationForestPanel(): Promise<AdminPanel> {
-  const [models, adminMetrics] = await Promise.all([rawMlModels(), rawAdminMetrics()])
+  const [models, adminMetrics] = await Promise.all([getCachedMlModels(), getCachedAdminMetrics()])
   const model = models.find((m) => m.model_type === 'IsolationForest')
   return {
     id: 'isolation-forest',

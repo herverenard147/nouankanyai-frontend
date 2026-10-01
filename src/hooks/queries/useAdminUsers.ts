@@ -19,7 +19,10 @@ export function usePromoteUser() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ userId, makeAdmin }: { userId: string; makeAdmin: boolean }) => promoteUser(userId, makeAdmin),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-users'] }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['admin-metrics'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+    },
   })
 }
 
@@ -61,6 +64,10 @@ export function useUserAlerts(targetUserId: string | null) {
 export function useUserManagementMutations() {
   const client = useQueryClient()
   const refresh = (targetUserId: string) => {
+    // ['admin-metrics'] est le cache partagé sous-jacent (voir getCachedAdminMetrics) : sans
+    // l'invalider aussi, fetchAdminUsers() rejouerait une donnée périmée (staleTime global) malgré
+    // l'invalidation de ['admin-users'], et le statut affiché resterait faux jusqu'à 20 s.
+    void client.invalidateQueries({ queryKey: ['admin-metrics'] })
     void client.invalidateQueries({ queryKey: ['admin-users'] })
     void client.invalidateQueries({ queryKey: ['admin-user-machines', targetUserId] })
   }
