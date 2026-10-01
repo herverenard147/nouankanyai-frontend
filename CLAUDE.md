@@ -23,6 +23,12 @@ décisions en attente et la procédure de test en local avec le vrai backend. Le
 niveau d'affichage doit changer réellement chaque écran, pour chaque type de
 compte : ne pas contourner `src/lib/overviewLevels.ts`.
 
+## Mise en ligne : lire `MISE_EN_LIGNE.md`
+
+`MISE_EN_LIGNE.md` (racine) dit quel projet Vercel (`nouankany-staging-frontend`) et quel service Railway
+(`nouankany-staging-backend`) sont les bons, le projet Vercel relié par erreur au dépôt backend (`nouankanyai-frontend`), l'ordre
+de déploiement (backend d'abord), CORS, la création des données de démonstration et les tests à faire.
+
 ## Faire tourner les deux en local
 
 - Frontend : `npm run dev` → `http://localhost:5173`, lit

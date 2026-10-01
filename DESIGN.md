@@ -172,6 +172,8 @@ ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des 
 observabilité » conservée ; aucune mention du modèle (nom, jeu de données) dans la Prédiction **côté client** à aucun niveau — les mentions de modèles restent dans le volet **Admin** (page « Modèles & observabilité » et, pour l'Admin seulement, nom du modèle sur la page Prédiction) ; planches `H-*`
 validées. Le câblage frontend et la mise en ligne (Vercel, Railway) sont faits par Claude Code en local.
 
+> Mise en ligne (Vercel, Railway), données et tests après déploiement : voir `MISE_EN_LIGNE.md`.
+
 ## 7. Tester en local, avec le vrai backend
 
 ```bash
