@@ -12,8 +12,16 @@ de différence avec ce que tu vois dans Vercel / Railway, **corrige ce tableau**
 | Élément | Repère |
 |---|---|
 | Frontend (`herverenard147/nouankanyai-frontend`) | projet Vercel `nouankany-staging-frontend`, racine du dépôt |
-| Backend (`herverenard147/NouanKanyAI`) | service Railway `nouankany-staging-backend` ; le frontend l'appelle via `VITE_API_BASE_URL` (`.env.production`) |
+| Backend (`herverenard147/NouanKanyAI`) | **app Fly.io `nouankany-staging-backend`** (`nouankany-staging-backend.fly.dev`, région `cdg`), `backend/Dockerfile` + `backend/fly.toml`. Le frontend l'appelle via `VITE_API_BASE_URL` (`.env.production`) |
+| Base de données | **Neon** (projet `neondb`, région `eu-central-1`), `DATABASE_URL` réglée comme secret Fly |
 | À débrancher | le projet Vercel `nouankanyai-frontend` (répertoire racine `frontend`) est relié **par erreur au dépôt backend** : il est rouge sur chaque PR backend |
+
+**Migration du 2026-10-01 (Railway → Fly.io + Neon)** : le crédit d'essai Railway (compte `hervegeorges002@gmail.com`, projet
+`nouankanyai`) a été épuisé pendant cette session — passerelle publique en 502 sur les deux services (`nouankanyai-backend` ET
+`nouankany-staging-backend`), confirmé non lié à une panne Railway (statut officiel UP) via accès direct par proxy TCP. Le
+staging a été recréé sur Fly.io (DB Neon neuve, vide — pas de reprise des données Railway). Le backend `main` (prod,
+`nouankanyai-backend`) reste sur Railway et n'a pas été vérifié/migré (hors périmètre de cette session, à surveiller : même
+compte, même risque d'épuisement de crédit).
 
 `vercel.json` réécrit toutes les routes vers `/index.html`. Aucun secret dans le dépôt.
 
