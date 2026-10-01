@@ -49,9 +49,7 @@ export function AlertsSummary({ profile, max = 2 }: AlertsSummaryProps) {
                     {alert.title}
                   </span>
                   <span
-                    className={`shrink-0 font-mono text-mono-badge font-semibold uppercase ${
-                      critical ? 'text-alert' : 'text-text-secondary'
-                    }`}
+                    className={`shrink-0 text-xs font-semibold capitalize ${critical ? 'text-alert' : 'text-text-secondary'}`}
                   >
                     {alert.level}
                   </span>

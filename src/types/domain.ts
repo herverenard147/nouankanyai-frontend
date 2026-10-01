@@ -162,21 +162,59 @@ export interface MachineRow {
   provenance: Provenance
 }
 
+/** Résultat d'un « Vérifier et résoudre » (relevé refait puis comparé aux seuils d'alerte). */
 export interface AnomalyResolution {
   id: string
+  /** Horodatage UTC déjà formaté (jj/mm/aaaa hh:mm:ss). */
   date: string
-  anomalyLabel: string
-  severity: number
-  resolutionAction: string
+  machineLabel: string
+  resolved: boolean
+  /** « Résolue : 24,9 °C · 45,8 Hz, sous les seuils » ou « L’anomalie persiste : … ». */
+  resultLabel: string
   provenance: Provenance
 }
+
+export type PlanStatus = 'a_faire' | 'en_cours' | 'fait' | 'abandonne'
 
 export interface ActionPlanItem {
   id: string
   title: string
   detail: string
+  /** Gain estimé (FCFA) tel que calculé par le moteur de recommandation : une estimation, jamais une mesure. */
+  gain: number
   amountLabel: string
+  status: PlanStatus
+  statusLabel: string
   provenance: Provenance
+}
+
+export interface ActionPlanSummary {
+  potentialLabel: string
+  doneLabel: string
+  openCount: number
+  doneCount: number
+  totalCount: number
+}
+
+export interface AuditEvent {
+  id: string
+  /** Horodatage UTC déjà formaté. */
+  time: string
+  actor: string
+  action: string
+  /** Détail avec nombres à la française. */
+  detail: string
+  category: string
+  categoryLabel: string
+  /** Compte concerné (vue Admin uniquement). */
+  account?: string
+  provenance: Provenance
+}
+
+export interface AuditPageData {
+  total: number
+  events: AuditEvent[]
+  categories: { id: string; label: string; count: number }[]
 }
 
 export interface OcrField {
@@ -195,6 +233,10 @@ export interface InvoiceRecord {
   /** true si cette facture vient d'une photo uploadée (source ocr/ocr-mock) —
    * seul ce cas a une photo à montrer via le bouton "Voir plus". */
   hasPhoto: boolean
+  /** Valeurs brutes pour pré-remplir la modale « Modifier ». */
+  raw: { month: string; amountXof: number | null; kwhConsumed: number | null }
+  /** Prévision statistique (non saisie par l'utilisateur). */
+  isForecast: boolean
 }
 
 export interface AdminPanel {

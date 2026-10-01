@@ -4,6 +4,8 @@
  * ("255,0 kW"). On ne corrige que les nombres suivis d'une unité connue, pour
  * ne jamais altérer autre chose (identifiants, versions...).
  */
+import { NARROW_NBSP } from '@/lib/formatters'
+
 const NUMBER_WITH_UNIT = /(\d+)(?:\.(\d+))?\s?(°C|Hz|bar|kW|kWh|FCFA)/g
 // Score du détecteur d'anomalie : "score: -0.1264" (nombre signé, sans unité).
 const SCORE = /(score\s?:\s?)(-?)(\d+)\.(\d+)/gi
@@ -12,6 +14,6 @@ export function frenchNumbersWithUnits(text: string): string {
   return text
     .replace(SCORE, (_match, label: string, sign: string, integer: string, decimals: string) => `${label}${sign ? '−' : ''}${integer},${decimals}`)
     .replace(NUMBER_WITH_UNIT, (_match, integer: string, decimals: string | undefined, unit: string) =>
-    `${integer}${decimals ? `,${decimals}` : ''} ${unit}`,
+    `${integer}${decimals ? `,${decimals}` : ''}${NARROW_NBSP}${unit}`,
   )
 }

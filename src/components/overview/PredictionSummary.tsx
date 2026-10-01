@@ -9,25 +9,33 @@ import type { Profile } from '@/types/domain'
 
 interface PredictionSummaryProps {
   profile: Profile
+  /** Admin, niveau technique : nom du modèle et jeu de données (il suit le comportement des modèles). */
+  showModelName?: boolean
 }
 
 /**
  * Prédiction globale à l'heure, en aperçu : valeur, coût estimé, un graphique compact et le
  * raccourci vers la page Prédiction.
  */
-export function PredictionSummary({ profile }: PredictionSummaryProps) {
+export function PredictionSummary({ profile, showModelName = false }: PredictionSummaryProps) {
   const query = usePredictionsBundle(profile, 'heure')
 
   return (
     <section aria-label="Prédiction IA" className="flex min-w-0 flex-col gap-2">
       <MetricState status={query.status}>
-        {query.data && <PredictionBody prediction={query.data.global} />}
+        {query.data && <PredictionBody prediction={query.data.global} showModelName={showModelName} />}
       </MetricState>
     </section>
   )
 }
 
-function PredictionBody({ prediction }: { prediction: NonNullable<ReturnType<typeof usePredictionsBundle>['data']>['global'] }) {
+function PredictionBody({
+  prediction,
+  showModelName,
+}: {
+  prediction: NonNullable<ReturnType<typeof usePredictionsBundle>['data']>['global']
+  showModelName: boolean
+}) {
   const maxPoint = prediction.series.reduce((max, p) => (p.percent > max.percent ? p : max), prediction.series[0])
   const yTicks = maxPoint ? computeYTicks(maxPoint.value, maxPoint.percent) : ['0', '0', '0']
   const bars: ChartBar[] = prediction.series.map((point, i) => ({
@@ -53,6 +61,7 @@ function PredictionBody({ prediction }: { prediction: NonNullable<ReturnType<typ
         <p className="text-[0.8125rem] text-text-secondary">{prediction.intervalLabel}</p>
         <ProvenanceBadge value={prediction.provenance} className="ml-auto" />
       </div>
+      {showModelName && <p className="text-xs text-text-tertiary">{prediction.modelName} · jeu de données : synthétique</p>}
       <BarChart bars={bars} yTicks={yTicks} size="compact" xLabelEvery={6} />
     </>
   )

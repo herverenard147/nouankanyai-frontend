@@ -7,14 +7,14 @@ import { impactClassName } from '@/lib/severity'
 describe('frenchNumbersWithUnits', () => {
   it('passe les décimales à la virgule et sépare l’unité', () => {
     expect(frenchNumbersWithUnits('La température est de 75.0°C (seuil critique: 60.0°C)')).toBe(
-      'La température est de 75,0 °C (seuil critique: 60,0 °C)',
+      'La température est de 75,0\u202f°C (seuil critique: 60,0\u202f°C)',
     )
-    expect(frenchNumbersWithUnits('vibration de 50.0Hz, seuil 45.0Hz')).toBe('vibration de 50,0 Hz, seuil 45,0 Hz')
+    expect(frenchNumbersWithUnits('vibration de 50.0Hz, seuil 45.0Hz')).toBe('vibration de 50,0\u202fHz, seuil 45,0\u202fHz')
   })
 
   it('met aussi le score du détecteur d’anomalie à la française', () => {
     expect(frenchNumbersWithUnits('comportement anormal (score: -0.1264). Température: 47.0°C')).toBe(
-      'comportement anormal (score: −0,1264). Température: 47,0 °C',
+      'comportement anormal (score: −0,1264). Température: 47,0\u202f°C',
     )
   })
 

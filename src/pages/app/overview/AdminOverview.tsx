@@ -1,40 +1,32 @@
-import { Link } from 'react-router-dom'
-
-import { AlertSection } from '@/components/alerts/AlertSection'
-import { PredictionPanel } from '@/components/prediction/PredictionPanel'
-import { KpiGrid } from '@/components/kpi/KpiGrid'
-import { Card } from '@/components/ui/Card'
+import { AlertsSummary } from '@/components/overview/AlertsSummary'
+import { KpiStrip } from '@/components/overview/KpiStrip'
+import { PredictionSummary } from '@/components/overview/PredictionSummary'
+import { ShortcutList } from '@/components/overview/ShortcutList'
+import { useShortcutCatalog } from '@/components/overview/useShortcutCatalog'
+import { adminOverviewBlocks, kpiTargets } from '@/lib/overviewLevels'
 import { useLevel } from '@/store/levelStore'
 
-const QUICK_LINKS = [
-  { to: '/app/admin/sante', label: 'Santé plateforme' },
-  { to: '/app/admin/modeles', label: 'Modèles & observabilité' },
-  { to: '/app/admin/utilisateurs', label: 'Utilisateurs' },
-  { to: '/app/journal', label: 'Journal d’activité' },
-]
-
+/** Vue d'ensemble Admin : télémétrie de la plateforme, alertes tous profils, outils d'administration en raccourcis. */
 export function AdminOverview() {
   const level = useLevel('admin')
+  const blocks = adminOverviewBlocks(level)
+  const catalog = useShortcutCatalog('admin')
 
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-5">
       <p className="text-sm text-text-secondary">
         Vue d&rsquo;ensemble de la plateforme : alertes tous profils confondus et accès rapide aux outils
         d&rsquo;administration.
       </p>
-      <AlertSection profile="admin" level={level} maxActionAlerts={2} />
-      <KpiGrid profile="admin" />
-      <PredictionPanel profile="admin" level={level} />
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {QUICK_LINKS.map((link) => (
-          <Link key={link.to} to={link.to}>
-            <Card className="p-5 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-elevated">
-              {link.label} →
-            </Card>
-          </Link>
-        ))}
-      </section>
+      <KpiStrip profile="admin" targets={kpiTargets('admin')} />
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.55fr_1fr] lg:gap-9">
+        <PredictionSummary profile="admin" showModelName={blocks.showModelName} />
+        <AlertsSummary profile="admin" max={2} />
+      </div>
+
+      <ShortcutList items={blocks.shortcuts.map((id) => catalog[id])} />
     </div>
   )
 }

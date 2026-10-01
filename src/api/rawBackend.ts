@@ -7,6 +7,15 @@
 import { api } from '@/lib/apiClient'
 import type {
   BackendAdminMetrics,
+  BackendAuditEvent,
+  BackendAuditPage,
+  BackendBillUpdatePayload,
+  BackendPlanItem,
+  BackendPlanItemPayload,
+  BackendPlanItemUpdate,
+  BackendPlanStatus,
+  BackendPlanSummary,
+  BackendResolution,
   BackendAlertThresholds,
   BackendAnomalyResult,
   BackendAuditRequest,
@@ -159,3 +168,55 @@ export const rawCreateAuditRequest = (payload: BackendAuditRequestPayload) =>
 
 /** Réservé aux administrateurs de la plateforme. */
 export const rawAuditRequests = () => api.get<BackendAuditRequest[]>('/api/v1/leads')
+
+export const rawUpdateBill = (billId: string, payload: BackendBillUpdatePayload) =>
+  api.patch<BackendElectricityBill>(`/api/bills/${billId}`, payload)
+
+// --- Audit, plan d'action, historique des résolutions ---
+export interface AuditQuery {
+  category?: string
+  q?: string
+  limit?: number
+  offset?: number
+}
+
+function toQueryString(params: Record<string, string | number | undefined>): string {
+  const search = new URLSearchParams()
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== '') search.set(key, String(value))
+  }
+  const text = search.toString()
+  return text ? `?${text}` : ''
+}
+
+export const rawAuditEvents = (query: AuditQuery = {}) =>
+  api.get<BackendAuditPage>(`/api/v1/audit/events${toQueryString({ ...query })}`)
+export const rawAdminAuditEvents = (query: AuditQuery = {}) =>
+  api.get<BackendAuditPage>(`/api/v1/audit/admin/events${toQueryString({ ...query })}`)
+
+export const rawPlanItems = () => api.get<BackendPlanItem[]>('/api/v1/plan/items')
+export const rawPlanSummary = () => api.get<BackendPlanSummary>('/api/v1/plan/summary')
+export const rawCreatePlanItem = (payload: BackendPlanItemPayload) => api.post<BackendPlanItem>('/api/v1/plan/items', payload)
+export const rawImportPlanItems = (items: { source_ref: string; title: string; description?: string; gain_estime_fcfa?: number }[]) =>
+  api.post<BackendPlanItem[]>('/api/v1/plan/items/import', { items })
+export const rawUpdatePlanItem = (itemId: string, payload: BackendPlanItemUpdate) =>
+  api.patch<BackendPlanItem>(`/api/v1/plan/items/${itemId}`, payload)
+export const rawDeletePlanItem = (itemId: string) => api.delete<null>(`/api/v1/plan/items/${itemId}`)
+export const rawResolutions = () => api.get<BackendResolution[]>('/api/v1/plan/resolutions')
+
+export type { BackendAuditEvent, BackendPlanStatus }
+
+/** Export CSV de la piste d'audit : le navigateur doit envoyer le jeton, donc fetch + Blob (pas un simple lien). */
+export async function downloadAuditCsv(): Promise<void> {
+  const { useSessionStore } = await import('@/store/sessionStore')
+  const base = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8001').replace(/\/$/, '')
+  const token = useSessionStore.getState().session?.token
+  const response = await fetch(`${base}/api/v1/audit/events.csv`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+  if (!response.ok) throw new Error(`Export impossible (erreur ${response.status})`)
+  const url = URL.createObjectURL(await response.blob())
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'audit-nouankany.csv'
+  link.click()
+  URL.revokeObjectURL(url)
+}

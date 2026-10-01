@@ -3,6 +3,7 @@ import { MetricState } from '@/components/state/MetricState'
 import { TariffSection } from '@/components/tariff/TariffSection'
 import { Card } from '@/components/ui/Card'
 import { BarChart, type ChartBar } from '@/components/charts/BarChart'
+import { SingleMeasureChart } from '@/components/charts/SingleMeasureChart'
 import { useConsumptionSeries } from '@/hooks/queries/useConsumptionSeries'
 import { computeYTicks } from '@/lib/formatters'
 import { useSessionStore } from '@/store/sessionStore'
@@ -39,12 +40,18 @@ export function ConsumptionPage() {
                 </h2>
                 <ProvenanceBadge value={series.provenance} />
               </div>
-              <div className="hidden sm:block">
-                <BarChart bars={bars} yTicks={yTicks} size="dashboard" yAxisLabel={series.yAxisUnit} xAxisLabel="jour" />
-              </div>
-              <div className="sm:hidden">
-                <BarChart bars={bars} yTicks={yTicks} size="dashboardMobile" yAxisLabel={series.yAxisUnit} xAxisLabel="jour" />
-              </div>
+              {series.points.length === 1 && series.granularity !== '30j' ? (
+                <SingleMeasureChart label={series.points[0].label} percent={series.points[0].percent} tip={`${series.points[0].displayValue} ${series.yAxisUnit}`} />
+              ) : (
+                <>
+                  <div className="hidden sm:block">
+                    <BarChart bars={bars} yTicks={yTicks} size="dashboard" yAxisLabel={series.yAxisUnit} xAxisLabel="jour" />
+                  </div>
+                  <div className="sm:hidden">
+                    <BarChart bars={bars} yTicks={yTicks} size="dashboardMobile" yAxisLabel={series.yAxisUnit} xAxisLabel="jour" />
+                  </div>
+                </>
+              )}
 
               <div className="flex flex-col gap-2 border-t border-border pt-4">
                 <h3 className="text-sm font-medium text-text-secondary">Répartition</h3>

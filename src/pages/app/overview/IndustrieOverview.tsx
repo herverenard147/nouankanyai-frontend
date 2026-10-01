@@ -2,20 +2,11 @@ import { AlertsSummary } from '@/components/overview/AlertsSummary'
 import { KpiStrip } from '@/components/overview/KpiStrip'
 import { MachinesSummary } from '@/components/overview/MachinesSummary'
 import { PredictionSummary } from '@/components/overview/PredictionSummary'
-import { ShortcutList, TariffMini, type Shortcut } from '@/components/overview/ShortcutList'
+import { ShortcutList } from '@/components/overview/ShortcutList'
+import { useShortcutCatalog } from '@/components/overview/useShortcutCatalog'
 import { DemoDataBanner } from '@/components/demo/DemoDataBanner'
-import { useActionPlan } from '@/hooks/queries/useActionPlan'
-import { useResolutions } from '@/hooks/queries/useAnomalies'
-import { industrieOverviewBlocks, type ShortcutId } from '@/lib/overviewLevels'
+import { industrieOverviewBlocks, kpiTargets } from '@/lib/overviewLevels'
 import { useLevel } from '@/store/levelStore'
-
-// Page ouverte au clic sur chaque indicateur clé.
-const KPI_TARGETS: Record<string, string> = {
-  'puissance-totale': '/app/machines',
-  'machines-actives': '/app/machines',
-  'economies-mois': '/app/rapports',
-  'anomalies-actives': '/app/alertes',
-}
 
 /**
  * Vue d'ensemble INDUSTRIE : tient sur un écran (voir DESIGN.md, maquettes G1/G2). Elle ne montre que
@@ -25,27 +16,7 @@ const KPI_TARGETS: Record<string, string> = {
 export function IndustrieOverview() {
   const level = useLevel('industrie')
   const blocks = industrieOverviewBlocks(level)
-  const planQuery = useActionPlan('industrie')
-  const resolutionsQuery = useResolutions('industrie')
-
-  const countLabel = (status: 'pending' | 'error' | 'success', length?: number) =>
-    status === 'pending' ? '…' : status === 'error' ? 'Indisponible' : length ? String(length) : 'Aucune donnée'
-
-  // Le plan d'action et l'historique n'ont pas (encore) de page dédiée : ils pointent vers la page la plus proche.
-  const SHORTCUTS: Record<ShortcutId, Shortcut> = {
-    conseils: { to: '/app/conseils', label: 'Conseils' },
-    'plan-action': {
-      to: '/app/recommandations',
-      label: 'Plan d’action mensuel chiffré',
-      status: countLabel(planQuery.status, planQuery.data?.length),
-    },
-    resolutions: {
-      to: '/app/journal',
-      label: 'Historique des résolutions',
-      status: countLabel(resolutionsQuery.status, resolutionsQuery.data?.length),
-    },
-    paliers: { to: '/app/consommation', label: 'Paliers tarifaires CIE', status: <TariffMini /> },
-  }
+  const catalog = useShortcutCatalog('industrie')
 
   return (
     <div className="flex flex-col gap-5">
@@ -55,7 +26,7 @@ export function IndustrieOverview() {
         en cours.
       </p>
 
-      <KpiStrip profile="industrie" targets={KPI_TARGETS} />
+      <KpiStrip profile="industrie" targets={kpiTargets('industrie')} />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.55fr_1fr] lg:gap-9">
         <PredictionSummary profile="industrie" />
@@ -64,7 +35,7 @@ export function IndustrieOverview() {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.55fr_1fr] lg:gap-9">
         <MachinesSummary columns={blocks.machineColumns} max={5} />
-        <ShortcutList items={blocks.shortcuts.map((id) => SHORTCUTS[id])} />
+        <ShortcutList items={blocks.shortcuts.map((id) => catalog[id])} />
       </div>
     </div>
   )

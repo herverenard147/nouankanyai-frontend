@@ -18,6 +18,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/consommation', label: 'Conso & coûts', icon: 'C' },
     { path: '/app/prediction', label: 'Prédiction', icon: 'P' },
     { path: '/app/factures', label: 'Factures', icon: 'F' },
+    { path: '/app/rapports', label: 'Commission', icon: 'R' },
     { path: '/app/conseils', label: 'Conseils', icon: 'I' },
     { path: '/app/recommandations', label: 'Recommandations', icon: 'O' },
     { path: '/app/parametres', label: 'Paramètres', icon: 'S' },
@@ -30,8 +31,10 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/prediction', label: 'Prédiction', icon: 'P' },
     { path: '/app/conseils', label: 'Conseils', icon: 'I' },
     { path: '/app/recommandations', label: 'Recommandations', icon: 'O' },
+    { path: '/app/plan-action', label: "Plan d'action", icon: 'P' },
     { path: '/app/factures', label: 'Factures CIE', icon: 'F' },
     { path: '/app/rapports', label: 'Commission', icon: 'R' },
+    { path: '/app/audit', label: 'Audit', icon: 'U' },
     { path: '/app/parametres', label: 'Paramètres', icon: 'S' },
   ],
   industrie: [
@@ -42,9 +45,11 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/prediction', label: 'Prédiction', icon: 'P' },
     { path: '/app/conseils', label: 'Conseils', icon: 'I' },
     { path: '/app/recommandations', label: 'Recommandations', icon: 'O' },
+    { path: '/app/plan-action', label: "Plan d'action", icon: 'P' },
     { path: '/app/factures', label: 'Factures CIE', icon: 'F' },
     { path: '/app/rapports', label: 'Commission', icon: 'R' },
     { path: '/app/journal', label: 'Journal', icon: 'J' },
+    { path: '/app/audit', label: 'Audit', icon: 'U' },
     { path: '/app/parametres', label: 'Paramètres', icon: 'S' },
   ],
   admin: [
@@ -57,6 +62,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/admin/utilisateurs', label: 'Utilisateurs', icon: 'U' },
     { path: '/app/admin/leads', label: "Demandes d'audit", icon: 'D' },
     { path: '/app/journal', label: 'Journal', icon: 'J' },
+    { path: '/app/audit', label: 'Audit', icon: 'U' },
     { path: '/app/parametres', label: 'Paramètres', icon: 'S' },
   ],
 }

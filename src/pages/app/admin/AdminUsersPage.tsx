@@ -5,6 +5,7 @@ import { DataTable } from '@/components/table/DataTable'
 import type { TableColumn } from '@/components/table/DataTable'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { ConfirmEditModal, Modal, SelectField } from '@/components/ui/Modal'
 import { useAdminUsers, usePromoteUser, useUserFacturation, useUserMachines } from '@/hooks/queries/useAdminUsers'
 import { formatFcfa } from '@/lib/formatters'
 import { useSessionStore } from '@/store/sessionStore'
@@ -26,6 +27,8 @@ function UserDetail({ user, canManageRoles }: { user: AdminUser; canManageRoles:
 
   const isSuperadmin = user.platformRole === 'superadmin'
   const isAdmin = user.platformRole === 'admin'
+  const [step, setStep] = useState<'form' | 'confirm' | null>(null)
+  const [target, setTarget] = useState<'client' | 'admin'>(isAdmin ? 'admin' : 'client')
 
   return (
     <Card className="flex flex-col gap-5 p-6">
@@ -37,17 +40,61 @@ function UserDetail({ user, canManageRoles }: { user: AdminUser; canManageRoles:
         {canManageRoles && !isSuperadmin && (
           <Button
             type="button"
-            variant={isAdmin ? 'ghost' : 'primary'}
-            disabled={promoteMutation.isPending}
-            onClick={() => promoteMutation.mutate({ userId: user.id, makeAdmin: !isAdmin })}
+            variant="outline"
+            onClick={() => {
+              promoteMutation.reset()
+              setTarget(isAdmin ? 'client' : 'admin')
+              setStep('form')
+            }}
           >
-            {promoteMutation.isPending ? 'Mise à jour…' : isAdmin ? "Retirer l'accès admin" : 'Promouvoir admin'}
+            Changer le rôle
           </Button>
         )}
         {isSuperadmin && <span className="text-sm font-semibold text-text-tertiary">Superadmin — rôle non modifiable</span>}
       </div>
-      {promoteMutation.isError && (
-        <p className="text-sm text-alert">Échec de la mise à jour du rôle. Réservé au superadmin.</p>
+      {step === 'form' && (
+        <Modal
+          title={`Changer le rôle de ${user.name}`}
+          description={user.email}
+          onClose={() => setStep(null)}
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={() => setStep(null)}>
+                Annuler
+              </Button>
+              <Button type="button" onClick={() => setStep('confirm')}>
+                Enregistrer
+              </Button>
+            </>
+          }
+        >
+          <SelectField
+            label="Rôle plateforme"
+            value={target}
+            onChange={(value) => setTarget(value as 'client' | 'admin')}
+            options={[
+              { value: 'client', label: 'Client (aucun accès à l’administration)' },
+              { value: 'admin', label: 'Administrateur' },
+            ]}
+          />
+          <p className="text-xs text-text-secondary">
+            Un administrateur voit tous les comptes et la piste d’audit de la plateforme. Le rôle superadmin ne peut pas être modifié ici.
+          </p>
+        </Modal>
+      )}
+      {step === 'confirm' && (
+        <ConfirmEditModal
+          subject={`Vous allez modifier les droits de ${user.name}.`}
+          changes={
+            target === (isAdmin ? 'admin' : 'client')
+              ? []
+              : [{ label: 'Rôle plateforme', before: isAdmin ? 'Administrateur' : 'Client', after: target === 'admin' ? 'Administrateur' : 'Client' }]
+          }
+          pending={promoteMutation.isPending}
+          error={promoteMutation.error}
+          onBack={() => setStep('form')}
+          onConfirm={() => promoteMutation.mutate({ userId: user.id, makeAdmin: target === 'admin' }, { onSuccess: () => setStep(null) })}
+        />
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">

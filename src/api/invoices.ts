@@ -5,8 +5,10 @@ import {
   rawBills,
   rawConfirmBillActual,
   rawDeleteBill,
+  rawUpdateBill,
   rawUploadBillPhoto,
 } from '@/api/rawBackend'
+import { formatFcfa, formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 import type { BackendElectricityBill } from '@/types/backend'
 import type { InvoiceRecord, OcrField, Profile } from '@/types/domain'
 
@@ -29,13 +31,13 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
     },
   ]
   if (bill.kwh_consumed !== null) {
-    fields.push({ key: 'kwh', label: 'Consommation', value: `${bill.kwh_consumed} kWh`, provenance: 'estime', editable: false })
+    fields.push({ key: 'kwh', label: 'Consommation', value: `${formatNumberFr(bill.kwh_consumed)}${NARROW_NBSP}kWh`, provenance: 'estime', editable: false })
   }
   if (bill.actual_amount_xof !== null) {
     fields.push({
       key: 'reel',
       label: 'Montant réel confirmé',
-      value: `${bill.actual_amount_xof.toLocaleString('fr-FR')} FCFA`,
+      value: formatFcfa(bill.actual_amount_xof),
       provenance: 'estime',
       editable: false,
     })
@@ -63,6 +65,8 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
     status: bill.is_forecast && bill.actual_amount_xof === null ? 'en_cours' : 'traitee',
     fields,
     hasPhoto: bill.has_photo,
+    raw: { month: bill.month, amountXof: bill.amount_xof, kwhConsumed: bill.kwh_consumed },
+    isForecast: bill.is_forecast,
   }
 }
 
@@ -83,6 +87,11 @@ export async function generateForecastInvoice(): Promise<InvoiceRecord> {
 
 export async function confirmInvoiceActual(billId: string, actualAmountXof: number): Promise<InvoiceRecord> {
   const bill = await rawConfirmBillActual(billId, actualAmountXof)
+  return toInvoiceRecord(bill)
+}
+
+export async function updateInvoice(billId: string, payload: { month?: string; amountXof?: number; kwhConsumed?: number }): Promise<InvoiceRecord> {
+  const bill = await rawUpdateBill(billId, { month: payload.month, amount_xof: payload.amountXof, kwh_consumed: payload.kwhConsumed })
   return toInvoiceRecord(bill)
 }
 

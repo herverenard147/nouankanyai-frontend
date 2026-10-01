@@ -6,6 +6,7 @@ import {
   deleteInvoice,
   fetchInvoicePhoto,
   fetchInvoices,
+  updateInvoice,
   generateForecastInvoice,
   uploadInvoicePhoto,
 } from '@/api/invoices'
@@ -37,6 +38,18 @@ export function useConfirmInvoiceActual(profile: Profile) {
     mutationFn: ({ billId, actualAmountXof }: { billId: string; actualAmountXof: number }) =>
       confirmInvoiceActual(billId, actualAmountXof),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['invoices', profile] }),
+  })
+}
+
+export function useUpdateInvoice(profile: Profile) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ billId, payload }: { billId: string; payload: { month?: string; amountXof?: number; kwhConsumed?: number } }) =>
+      updateInvoice(billId, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['invoices', profile] })
+      void queryClient.invalidateQueries({ queryKey: ['audit'] })
+    },
   })
 }
 

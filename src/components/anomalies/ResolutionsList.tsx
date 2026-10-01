@@ -25,10 +25,9 @@ export function ResolutionsList({ profile, level }: ResolutionsListProps) {
             <Card key={res.id} className="flex flex-wrap items-center gap-4 p-5">
               <span className="font-mono text-sm text-text-tertiary">{res.date}</span>
               <div className="min-w-[200px] flex-1">
-                <p className="font-semibold text-text-primary">{res.anomalyLabel}</p>
-                <p className="text-sm text-text-secondary">Résolu par : {res.resolutionAction}</p>
+                <p className="font-semibold text-text-primary">{res.machineLabel}</p>
+                <p className="text-sm text-text-secondary">{res.resultLabel}</p>
               </div>
-              <span className="font-mono text-sm font-semibold text-text-secondary">sévérité {res.severity.toFixed(2).replace('.', ',')}</span>
               <ProvenanceBadge value={res.provenance} />
             </Card>
           ))}
