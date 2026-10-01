@@ -30,7 +30,9 @@ export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionPr
   const actionQuery = useActionAlerts(profile)
   const autoQuery = useAutoAlerts(profile)
   const markAlertsSeen = useNotificationStore((s) => s.markAlertsSeen)
-  const allowAutoBlock = levelAtLeast(level, 'amateur') && maxActionAlerts === undefined
+  // Le registre "actions automatiques" n'a de sens que pour un compte précis (délestage sur
+  // SES machines) : pour l'Admin (alertes plateforme, tous comptes), pas de registre distinct.
+  const allowAutoBlock = profile !== 'admin' && levelAtLeast(level, 'amateur') && maxActionAlerts === undefined
 
   // Page dédiée /app/alertes (jamais l'aperçu plafonné de Vue d'ensemble) :
   // visiter cette page marque tout ce qui est actuellement actif comme vu,
@@ -66,7 +68,13 @@ export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionPr
           </div>
         ) : (
           visibleActionAlerts!.map((alert) => (
-            <AlertCard key={alert.id} variant="action" alert={alert} compact={maxActionAlerts !== undefined} />
+            <AlertCard
+              key={alert.id}
+              variant="action"
+              alert={alert}
+              compact={maxActionAlerts !== undefined}
+              readOnly={profile === 'admin'}
+            />
           ))
         ))}
 

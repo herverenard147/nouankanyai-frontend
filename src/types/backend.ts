@@ -252,12 +252,35 @@ export interface BackendAdminUserRow {
   role: string
   platform_role: BackendPlatformRole
   last_active: string
-  status: 'actif' | 'inactif'
+  status: 'actif' | 'suspendu' | 'supprime'
+  is_suspended: boolean
+  is_deleted: boolean
   sites_count: number
   machines_count: number
   owner_id: string | null
   owner_name: string | null
 }
+export interface BackendAdminMachinePrediction {
+  machine_id: string
+  nom: string
+  predictions?: BackendPredictionPoint[]
+  error?: string
+}
+export interface BackendAdminUserPredictions {
+  machines: BackendAdminMachinePrediction[]
+}
+export interface BackendAdminUserAlerts {
+  recommendations: BackendRecommendation[]
+}
+export interface BackendPlatformAlertItem extends BackendRecommendation {
+  owner_id: string
+  owner_nom: string
+}
+export interface BackendPlatformAlerts {
+  recommendations: BackendPlatformAlertItem[]
+  count: number
+}
+
 export interface BackendRecentActivity {
   type: string
   timestamp: string | null

@@ -7,6 +7,9 @@
 import { api } from '@/lib/apiClient'
 import type {
   BackendAdminMetrics,
+  BackendAdminUserAlerts,
+  BackendAdminUserPredictions,
+  BackendPlatformAlerts,
   BackendAuditEvent,
   BackendAuditPage,
   BackendBillUpdatePayload,
@@ -161,6 +164,18 @@ export const rawUserFacturation = (targetUserId: string) =>
   api.get<{ grossSavingsThisMonth: number; gainShareThisMonth: number; invoiceCount: number; billCount: number }>(
     `/api/admin/users/${targetUserId}/facturation`,
   )
+export const rawSuspendUser = (targetUserId: string, suspended: boolean) =>
+  api.patch<BackendUser>(`/api/admin/users/${targetUserId}/suspend`, { suspended })
+export const rawDeleteUser = (targetUserId: string) => api.delete<{ deleted: boolean }>(`/api/admin/users/${targetUserId}`)
+export const rawAdminResetPassword = (targetUserId: string, newPassword: string) =>
+  api.post<{ ok: boolean }>(`/api/admin/users/${targetUserId}/reset-password`, { new_password: newPassword })
+export const rawAdminUpdateUserProfile = (targetUserId: string, nom: string) =>
+  api.patch<BackendUser>(`/api/admin/users/${targetUserId}/profile`, { nom })
+export const rawUserPredictions = (targetUserId: string) =>
+  api.get<BackendAdminUserPredictions>(`/api/admin/users/${targetUserId}/predictions`)
+export const rawUserAlerts = (targetUserId: string) =>
+  api.get<BackendAdminUserAlerts>(`/api/admin/users/${targetUserId}/alerts`)
+export const rawPlatformAlerts = () => api.get<BackendPlatformAlerts>('/api/admin/alerts')
 
 /** Formulaire public "Demander un audit" — aucune authentification requise. */
 export const rawCreateAuditRequest = (payload: BackendAuditRequestPayload) =>

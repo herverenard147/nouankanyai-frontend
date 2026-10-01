@@ -14,8 +14,9 @@ export function AlertsPage() {
   return (
     <div className="flex flex-col gap-7">
       <p className="text-sm text-text-secondary">
-        Dérives détectées sur vos équipements : actions déjà résolues automatiquement ou en attente de votre
-        validation.
+        {profile === 'admin'
+          ? 'Dérives détectées sur les équipements de tous les comptes de la plateforme.'
+          : 'Dérives détectées sur vos équipements : actions déjà résolues automatiquement ou en attente de votre validation.'}
       </p>
       <AlertSection profile={profile} level={level} />
 

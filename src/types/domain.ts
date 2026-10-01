@@ -258,7 +258,9 @@ export interface AdminUser {
   name: string
   email: string
   profile: Profile
-  status: 'actif' | 'suspendu'
+  status: 'actif' | 'suspendu' | 'supprime'
+  isSuspended: boolean
+  isDeleted: boolean
   lastLogin: string
   provenance: Provenance
   platformRole: 'admin' | 'superadmin' | null
@@ -267,6 +269,15 @@ export interface AdminUser {
   ownerName: string | null
   /** Libellé affiché tel quel dans le tableau admin : "Compte principal", "Membre — {entreprise}", ou "—" (Ménage/Admin, non applicable). */
   accountLabel: string
+}
+
+/** Prédiction compacte d'un équipement, pour la fiche détail d'un utilisateur côté Admin
+ * (pas besoin du détail complet de Prediction — juste la valeur à l'heure suivante). */
+export interface AdminMachinePrediction {
+  machineId: string
+  nom: string
+  nextHourValue: string | null
+  error: string | null
 }
 
 export interface JournalEntry {

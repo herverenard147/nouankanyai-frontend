@@ -14,6 +14,11 @@ interface ActionAlertCardProps {
    * les pages Vue d'ensemble où les alertes ne sont qu'un aperçu, la liste
    * complète et les actions vivant sur /app/alertes. */
   compact?: boolean
+  /** Admin (alertes plateforme, tous comptes confondus) : l'alerte porte sur l'équipement
+   * d'un AUTRE compte — "Vérifier et résoudre" appellerait /api/machines/{id}/test scopé
+   * sur le compte Admin lui-même (qui n'a pas cet équipement), pas sur le vrai propriétaire.
+   * Masque le bouton plutôt que de le laisser échouer silencieusement. */
+  readOnly?: boolean
 }
 
 interface AutoAlertCardProps {
@@ -25,7 +30,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
   const resolveMutation = useResolveMachine()
 
   if (props.variant === 'action') {
-    const { alert, compact } = props
+    const { alert, compact, readOnly } = props
 
     if (compact) {
       return (
@@ -55,13 +60,13 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             Source : <ProvenanceBadge value={alert.provenance} className="lowercase" />
             {alert.basis && <span>· {alert.basis}</span>}
           </p>
-          {resolveMutation.isError && (
+          {!readOnly && resolveMutation.isError && (
             <ApiErrorMessage
               message={resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec de la vérification.'}
               className="mt-2 text-sm text-alert"
             />
           )}
-          {resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
+          {!readOnly && resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
             <p className="mt-2 text-sm text-alert">
               Nouvelle mesure : température {formatNumberFr(resolveMutation.data.temperature_c, 1)}
               {NARROW_NBSP}°C, vibration {formatNumberFr(resolveMutation.data.vibration_hz, 1)}
@@ -75,14 +80,16 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
               {alert.ctaLabel}
             </Link>
           )}
-          <button
-            type="button"
-            disabled={resolveMutation.isPending}
-            onClick={() => resolveMutation.mutate(alert.machineId)}
-            className="focus-ring inline-flex min-h-10 items-center justify-center bg-dark-bg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-dark-bg/90 disabled:opacity-60"
-          >
-            {resolveMutation.isPending ? 'Vérification en cours…' : 'Vérifier et résoudre'}
-          </button>
+          {!readOnly && (
+            <button
+              type="button"
+              disabled={resolveMutation.isPending}
+              onClick={() => resolveMutation.mutate(alert.machineId)}
+              className="focus-ring inline-flex min-h-10 items-center justify-center bg-dark-bg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-dark-bg/90 disabled:opacity-60"
+            >
+              {resolveMutation.isPending ? 'Vérification en cours…' : 'Vérifier et résoudre'}
+            </button>
+          )}
         </div>
       </div>
     )

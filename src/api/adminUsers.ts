@@ -3,7 +3,7 @@ import { deriveProfile } from '@/lib/profileMapping'
 import type { AdminUser } from '@/types/domain'
 
 function accountLabel(profile: ReturnType<typeof deriveProfile>, ownerName: string | null): string {
-  if (ownerName) return `Membre — ${ownerName}`
+  if (ownerName) return `Membre : ${ownerName}`
   if (profile === 'pme' || profile === 'industrie') return 'Compte principal'
   return '—'
 }
@@ -17,7 +17,9 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       name: u.name,
       email: u.email,
       profile,
-      status: u.status === 'actif' ? 'actif' : 'suspendu',
+      status: u.status,
+      isSuspended: u.is_suspended,
+      isDeleted: u.is_deleted,
       lastLogin: u.last_active,
       provenance: 'telemetrie_systeme' as const,
       platformRole: u.platform_role,
