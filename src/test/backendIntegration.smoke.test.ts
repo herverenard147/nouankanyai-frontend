@@ -24,6 +24,7 @@ import {
   rawUserMachines,
 } from '@/api/rawBackend'
 import { fetchThresholds, updateThresholds } from '@/api/settings'
+import { queryClient } from '@/lib/queryClient'
 import { useSessionStore } from '@/store/sessionStore'
 
 /**
@@ -139,6 +140,12 @@ describe('intégration backend réel — compte PME', () => {
 
     const simulated = await rawSimulateMachine(machineId)
     expect(simulated.status).toBe('success')
+
+    // rawSimulateMachine/rawAddMachine appellent le backend directement, sans passer par les
+    // hooks de mutation (useMachineCrud) qui invalident ['machines'] en app réelle : sans ce
+    // reset explicite ici, fetchEquipmentTable servirait la liste mise en cache par le premier
+    // test de ce describe (voir getCachedMachines, src/api/rawBackend.ts).
+    queryClient.clear()
 
     const table = await fetchEquipmentTable('pme')
     expect(table.rows.find((r) => r.id === machineId)?.statut).toBe('Anomalie détectée')

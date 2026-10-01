@@ -5,8 +5,15 @@
  * seulement ici, que vit la connaissance du contrat HTTP réel.
  */
 import { api } from '@/lib/apiClient'
+import { queryClient } from '@/lib/queryClient'
 import type {
+  BackendAdminMachineActionResult,
   BackendAdminMetrics,
+  BackendAdminUserAlerts,
+  BackendAdminUserPredictions,
+  BackendPlatformAlerts,
+  BackendPlatformConsumption,
+  BackendPlatformPredictions,
   BackendAuditEvent,
   BackendAuditPage,
   BackendJournalPage,
@@ -72,6 +79,25 @@ export const rawCreateSite = (payload: { nom: string; localisation: string }) =>
   api.post<BackendSite>('/api/sites', payload)
 
 export const rawMachines = () => api.get<BackendMachine[]>('/api/machines')
+
+/**
+ * Même donnée que `rawMachines()`, mais passée par le cache react-query
+ * (`['machines']`, `staleTime` par défaut du client) : plusieurs widgets
+ * indépendants (KPI, prédiction, alertes, machines suivies) en ont besoin sur
+ * le même écran sans se parler entre eux — sans ce partage, chacun relance
+ * son propre GET /api/machines et l'Aperçu Industrie en déclenche jusqu'à 4
+ * en parallèle pour une donnée identique.
+ */
+export const getCachedMachines = () => queryClient.fetchQuery({ queryKey: ['machines'], queryFn: rawMachines })
+
+/**
+ * Même partage que `getCachedMachines()`, pour `/api/admin/metrics` et
+ * `/api/ml/models` : le Portail Admin (KPI, Journal, Utilisateurs) et la page
+ * Modèles & observabilité (panneaux XGBoost + Isolation Forest) les
+ * interrogent chacun de leur côté, doublant les appels sur un même écran.
+ */
+export const getCachedAdminMetrics = () => queryClient.fetchQuery({ queryKey: ['admin-metrics'], queryFn: rawAdminMetrics })
+export const getCachedMlModels = () => queryClient.fetchQuery({ queryKey: ['ml-models'], queryFn: rawMlModels })
 export const rawEquipmentCatalog = () => api.get<BackendEquipmentCatalog>('/api/equipment-catalog', false)
 export const rawAddMachine = (payload: BackendNewMachinePayload) =>
   api.post<{ status: string; machines: BackendMachine[] }>('/api/machines', payload)
@@ -162,6 +188,23 @@ export const rawUserFacturation = (targetUserId: string) =>
   api.get<{ grossSavingsThisMonth: number; gainShareThisMonth: number; invoiceCount: number; billCount: number }>(
     `/api/admin/users/${targetUserId}/facturation`,
   )
+export const rawSuspendUser = (targetUserId: string, suspended: boolean) =>
+  api.patch<BackendUser>(`/api/admin/users/${targetUserId}/suspend`, { suspended })
+export const rawDeleteUser = (targetUserId: string) => api.delete<{ deleted: boolean }>(`/api/admin/users/${targetUserId}`)
+export const rawAdminResetPassword = (targetUserId: string, newPassword: string) =>
+  api.post<{ ok: boolean }>(`/api/admin/users/${targetUserId}/reset-password`, { new_password: newPassword })
+export const rawAdminUpdateUserProfile = (targetUserId: string, nom: string) =>
+  api.patch<BackendUser>(`/api/admin/users/${targetUserId}/profile`, { nom })
+export const rawUserPredictions = (targetUserId: string) =>
+  api.get<BackendAdminUserPredictions>(`/api/admin/users/${targetUserId}/predictions`)
+export const rawUserAlerts = (targetUserId: string) =>
+  api.get<BackendAdminUserAlerts>(`/api/admin/users/${targetUserId}/alerts`)
+export const rawPlatformAlerts = () => api.get<BackendPlatformAlerts>('/api/admin/alerts')
+export const rawPlatformPredictions = (hoursAhead = 24) =>
+  api.get<BackendPlatformPredictions>(`/api/admin/predictions?hours_ahead=${hoursAhead}`)
+export const rawPlatformConsumption = () => api.get<BackendPlatformConsumption>('/api/admin/consumption')
+export const rawAdminTestMachine = (machineId: string) =>
+  api.post<BackendAdminMachineActionResult>(`/api/admin/machines/${machineId}/test`)
 
 /** Formulaire public "Demander un audit" — aucune authentification requise. */
 export const rawCreateAuditRequest = (payload: BackendAuditRequestPayload) =>

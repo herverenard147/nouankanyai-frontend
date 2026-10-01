@@ -1,5 +1,5 @@
 import { formatFcfaAmount } from '@/api/backendHelpers'
-import { rawAdminMetrics, rawFacturation, rawMachines } from '@/api/rawBackend'
+import { getCachedAdminMetrics, rawFacturation, getCachedMachines } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { Kpi, KpiWindow, Profile } from '@/types/domain'
 
@@ -49,7 +49,7 @@ function formatUptime(seconds: number): string {
 async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
   // Les 4 indicateurs client viennent des 2 mêmes requêtes (machines, facturation) : une seule fois pour
   // toute la bande, pas une fois par indicateur (KpiStrip montait 4 KpiTile, chacun refetchait tout).
-  const [machines, facturation] = await Promise.all([rawMachines(), rawFacturation()])
+  const [machines, facturation] = await Promise.all([getCachedMachines(), rawFacturation()])
   const activeMachines = machines.filter((m) => m.status === 'actif')
   const alerteMachines = machines.filter((m) => m.status === 'alerte')
   const totalPower = machines.reduce((sum, m) => sum + m.power_kw, 0)
@@ -92,7 +92,7 @@ async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
 
 async function fetchAdminKpiSet(): Promise<Record<string, Kpi>> {
   // Les 4 indicateurs admin viennent tous de GET /api/admin/metrics : une seule fois pour toute la bande.
-  const metrics = await rawAdminMetrics()
+  const metrics = await getCachedAdminMetrics()
 
   return {
     'base-donnees': {

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { rawMachines } from '@/api/rawBackend'
+import { getCachedMachines } from '@/api/rawBackend'
 
 /**
  * Version brute (non transformée en libellés d'affichage) de la liste des
@@ -11,5 +11,5 @@ import { rawMachines } from '@/api/rawBackend'
  * formes dans le cache.
  */
 export function useRawMachines() {
-  return useQuery({ queryKey: ['machines-raw'], queryFn: rawMachines })
+  return useQuery({ queryKey: ['machines-raw'], queryFn: getCachedMachines })
 }

@@ -1,4 +1,4 @@
-import { rawMachines, rawPredict } from '@/api/rawBackend'
+import { getCachedMachines, rawPredict } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { Prediction, PredictionGranularity, PredictionsBundle, PredictionSeriesPoint, Profile } from '@/types/domain'
 
@@ -80,7 +80,7 @@ function toPrediction(title: string, granularity: PredictionGranularity, buckete
  * on interroge chaque équipement séparément puis on agrège pour la vue globale.
  */
 export async function fetchPredictionsBundle(_profile: Profile, granularity: PredictionGranularity): Promise<PredictionsBundle> {
-  const machines = await rawMachines()
+  const machines = await getCachedMachines()
   // Aucun équipement enregistré (compte neuf, ou Admin qui n'a pas de site propre) : état vide, pas une
   // erreur réseau (DESIGN.md règle 1 — MetricState affiche « Aucune donnée pour le moment », jamais
   // « Indisponible » pour une absence de donnée légitime).

@@ -1,4 +1,4 @@
-import { rawMachineHistory, rawMachines, rawRecommend } from '@/api/rawBackend'
+import { rawMachineHistory, getCachedMachines, rawPlatformAlerts, rawRecommend } from '@/api/rawBackend'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { BackendMachine } from '@/types/backend'
 import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types/domain'
@@ -11,13 +11,35 @@ import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types
  * action humaine) — un mapping direct, pas une invention.
  */
 async function fetchRecommendations() {
-  const machines = await rawMachines()
+  const machines = await getCachedMachines()
   if (machines.length === 0) return { machines, recommendations: [] as Awaited<ReturnType<typeof rawRecommend>>['recommendations'] }
   const { recommendations } = await rawRecommend(machines)
   return { machines, recommendations }
 }
 
-export async function fetchActionAlerts(_profile: Profile): Promise<ActionAlert[]> {
+export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]> {
+  // Admin : alertes de TOUTE la plateforme (tous comptes), pas du compte Admin lui-même
+  // (qui n'a pas d'équipement en propre, voir GET /api/admin/alerts — corrige un scope
+  // erroné trouvé par audit, 2026-10-01 : la page se disait "tous profils confondus" mais
+  // était en réalité toujours vide).
+  if (profile === 'admin') {
+    const { recommendations } = await rawPlatformAlerts()
+    return recommendations
+      .filter((rec) => rec.type === 'alerte')
+      .map((rec, i) => ({
+        kind: 'action' as const,
+        id: `${rec.machine_id}-${rec.type}-${i}`,
+        machineId: rec.machine_id,
+        level: `sévérité ${rec.severity}`,
+        title: `${rec.title} (${rec.owner_nom})`,
+        detail: frenchNumbersWithUnits(rec.description),
+        basis: frenchNumbersWithUnits(rec.action),
+        provenance: 'synthetique' as const,
+        ctaLabel: 'Voir le compte',
+        ctaTarget: `/app/admin/utilisateurs/${rec.owner_id}`,
+      }))
+  }
+
   const { recommendations } = await fetchRecommendations()
   // Alertes = uniquement de vrais problèmes détectés (anomalie/surchauffe/
   // vibration), jamais optimisation/efficacité (des suggestions, pas des
@@ -39,7 +61,8 @@ export async function fetchActionAlerts(_profile: Profile): Promise<ActionAlert[
     }))
 }
 
-export async function fetchAutoAlerts(_profile: Profile): Promise<AutoAlert[]> {
+export async function fetchAutoAlerts(profile: Profile): Promise<AutoAlert[]> {
+  if (profile === 'admin') return []
   const { recommendations } = await fetchRecommendations()
   return recommendations
     .filter((rec) => rec.auto_resolu)
@@ -60,7 +83,7 @@ export async function fetchAutoAlerts(_profile: Profile): Promise<AutoAlert[]> {
  * "action" — pas de fausse case "auto" pour ces entrées-là.
  */
 export async function fetchAlertHistory(_profile: Profile): Promise<AlertHistoryEntry[]> {
-  const machines = await rawMachines()
+  const machines = await getCachedMachines()
   const histories = await Promise.all(machines.map((m) => rawMachineHistory(m.machine_id).catch(() => null)))
   const entries: AlertHistoryEntry[] = []
   histories.forEach((history, idx) => {
@@ -70,7 +93,7 @@ export async function fetchAlertHistory(_profile: Profile): Promise<AlertHistory
       entries.push({
         id: `${machine.machine_id}-hist-${i}`,
         date: new Date(alert.created_at).toLocaleString('fr-FR'),
-        title: `${alert.type_alerte} — ${machine.nom}`,
+        title: `${alert.type_alerte}, ${machine.nom}`,
         resolution: alert.action_recommandee,
         registre: 'action',
       })

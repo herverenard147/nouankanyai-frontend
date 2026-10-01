@@ -23,6 +23,7 @@ import { SettingsPage } from '@/pages/app/SettingsPage'
 import { AdminHealthPage } from '@/pages/app/admin/AdminHealthPage'
 import { AdminLeadsPage } from '@/pages/app/admin/AdminLeadsPage'
 import { AdminModelsPage } from '@/pages/app/admin/AdminModelsPage'
+import { AdminUserDetailPage } from '@/pages/app/admin/AdminUserDetailPage'
 import { AdminUsersPage } from '@/pages/app/admin/AdminUsersPage'
 import { AppIndexRedirect } from '@/routes/AppIndexRedirect'
 import { ProfileGuard } from '@/routes/ProfileGuard'
@@ -67,6 +68,7 @@ export const router = createBrowserRouter([
               { path: 'admin/sante', element: <AdminHealthPage /> },
               { path: 'admin/modeles', element: <AdminModelsPage /> },
               { path: 'admin/utilisateurs', element: <AdminUsersPage /> },
+              { path: 'admin/utilisateurs/:userId', element: <AdminUserDetailPage /> },
               { path: 'admin/leads', element: <AdminLeadsPage /> },
               { path: '*', element: <Navigate to="/app" replace /> },
             ],

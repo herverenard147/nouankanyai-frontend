@@ -1,5 +1,5 @@
 import { formatFcfaAmount } from '@/api/backendHelpers'
-import { rawImportPlanItems, rawPlanItems, rawPlanSummary, rawMachines, rawRecommend } from '@/api/rawBackend'
+import { rawImportPlanItems, rawPlanItems, rawPlanSummary, getCachedMachines, rawRecommend } from '@/api/rawBackend'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { BackendPlanItem, BackendPlanStatus } from '@/types/backend'
 import type { ActionPlanItem, ActionPlanSummary, PlanStatus, Profile } from '@/types/domain'
@@ -34,7 +34,7 @@ export async function fetchActionPlan(profile: Profile): Promise<ActionPlanItem[
   if (profile !== 'pme' && profile !== 'industrie') return []
   let items = await rawPlanItems()
   if (items.length === 0) {
-    const machines = await rawMachines()
+    const machines = await getCachedMachines()
     if (machines.length > 0) {
       const { recommendations } = await rawRecommend(machines)
       const priced = recommendations.filter((r) => (r.type === 'optimisation' || r.type === 'efficacite') && r.gain_fcfa > 0)
