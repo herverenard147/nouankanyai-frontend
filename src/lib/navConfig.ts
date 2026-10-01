@@ -21,6 +21,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/rapports', label: 'Commission' },
     { path: '/app/conseils', label: 'Conseils' },
     { path: '/app/recommandations', label: 'Recommandations' },
+    { path: '/app/boitier', label: 'Boîtier' },
     { path: '/app/parametres', label: 'Paramètres' },
   ],
   pme: [
@@ -35,6 +36,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/factures', label: 'Factures CIE' },
     { path: '/app/rapports', label: 'Commission' },
     { path: '/app/audit', label: 'Audit' },
+    { path: '/app/boitier', label: 'Boîtier' },
     { path: '/app/parametres', label: 'Paramètres' },
   ],
   industrie: [
@@ -63,6 +65,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/admin/leads', label: "Demandes d'audit" },
     { path: '/app/journal', label: 'Journal' },
     { path: '/app/audit', label: 'Audit' },
+    { path: '/app/admin/boitiers', label: 'Boîtiers' },
     { path: '/app/parametres', label: 'Paramètres' },
   ],
 }

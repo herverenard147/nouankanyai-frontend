@@ -259,3 +259,22 @@ Maquettes : planches `I`, `I2` (page) et `J` (annonce + navbar) du canvas. Code 
 - **Pas d'annonce du SIREX** sur le site. Aucune modification de la landing côté Ménage (présenté au hackathon).
 - **Pas de backend branché** : la page est une démonstration. Les routes `/api/v1/boitier/*` sont décrites dans le
   document d'architecture, elles n'existent pas encore.
+
+## 11. Boîtier dans le tableau de bord (`/app/boitier`, `/app/admin/boitiers`)
+
+Parcours décidé par le propriétaire : un compte n'a **aucun boîtier** au départ. Il en **demande** un (prix affiché dans la
+demande, 35 000 FCFA par boîtier, venu du backend et figé à la demande), le **reçoit**, puis **demande son code** de connexion
+et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste** ; chaque ligne ouvre la **fiche**.
+
+- Écrans : vide → demande (fenêtre) → « en attente de livraison » → code (formulaire puis code affiché une seule fois) →
+  liste → fiche. Maquettes dans le canvas, planches `H-Menage-Boitier-*`, `H-PME-Boitier-*`, `H-Admin-Boitiers-*`.
+- Niveaux (`src/lib/boitierLevels.ts`) : le débutant voit nom, lumière, connexion ; l'amateur ajoute site, portée, dernière
+  activité et le choix des appareils éteignables ; le technique ajoute langue, identifiant, dernier relevé, canal, détails.
+  Le ménage n'a qu'un niveau (débutant) mais voit la liste de ses appareils.
+- Un compte sans site (ils naissent avec les machines) le crée dans la fenêtre de demande ou de code.
+- Admin : demandes à livrer (« Marquer comme livré », tracé dans l'Audit du compte), liste de tous les boîtiers, fiche avec
+  révocation. Au départ, ni demande ni boîtier.
+- Provenance : l'état du boîtier vient de relevés simulés tant qu'aucun capteur réel n'est branché, donc « synthétique ».
+- Pas encore branché : l'écran de demande n'impose pas qu'une demande ait été livrée avant de demander un code (volontaire :
+  le propriétaire peut vouloir créer des boîtiers de test à la main).
+- Pas d'écran Industrie : boîtier ou tablette, décision en attente.
