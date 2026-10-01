@@ -7,6 +7,8 @@
 import { api } from '@/lib/apiClient'
 import { queryClient } from '@/lib/queryClient'
 import type {
+  BackendAdminDevice,
+  BackendAdminDeviceRequest,
   BackendAdminMachineActionResult,
   BackendAdminMetrics,
   BackendAssistantChatResponse,
@@ -30,6 +32,15 @@ import type {
   BackendAuditRequest,
   BackendAuditRequestPayload,
   BackendBillPhoto,
+  BackendBoitierPrice,
+  BackendDevice,
+  BackendDeviceCommand,
+  BackendDeviceCreatePayload,
+  BackendDeviceCreated,
+  BackendDeviceRequest,
+  BackendDeviceRequestPayload,
+  BackendDeviceState,
+  BackendDeviceUpdatePayload,
   BackendContactMessage,
   BackendContactMessagePayload,
   BackendDemoSeedResult,
@@ -267,3 +278,28 @@ export async function downloadAuditCsv(): Promise<void> {
   link.click()
   URL.revokeObjectURL(url)
 }
+
+// --- Boîtier vocal : routes du site (le boîtier lui-même parle à /api/v1/boitier, avec son propre jeton) ---
+export const rawBoitiers = () => api.get<BackendDevice[]>('/api/v1/boitiers')
+export const rawCreateBoitier = (payload: BackendDeviceCreatePayload) => api.post<BackendDeviceCreated>('/api/v1/boitiers', payload)
+export const rawUpdateBoitier = (id: string, payload: BackendDeviceUpdatePayload) => api.patch<BackendDevice>(`/api/v1/boitiers/${id}`, payload)
+export const rawRevokeBoitier = (id: string) => api.delete<{ status: string }>(`/api/v1/boitiers/${id}`)
+export const rawBoitierState = (id: string) => api.get<BackendDeviceState>(`/api/v1/boitiers/${id}/state`)
+export const rawBoitierCommands = (id: string) => api.get<BackendDeviceCommand[]>(`/api/v1/boitiers/${id}/commands`)
+export const rawSetMachineControl = (machineCode: string, controllable: boolean) =>
+  api.patch<{ machine_code: string; controllable: boolean; control_channel: string | null }>(`/api/v1/boitiers/machines/${machineCode}`, {
+    controllable,
+    control_channel: controllable ? 'simulated' : null,
+  })
+export const rawBoitierPrice = () => api.get<BackendBoitierPrice>('/api/v1/boitiers/price')
+export const rawBoitierRequests = () => api.get<BackendDeviceRequest[]>('/api/v1/boitiers/requests')
+export const rawCreateBoitierRequest = (payload: BackendDeviceRequestPayload) => api.post<BackendDeviceRequest>('/api/v1/boitiers/requests', payload)
+export const rawCancelBoitierRequest = (id: string) => api.delete<{ status: string }>(`/api/v1/boitiers/requests/${id}`)
+
+export const rawAdminBoitiers = () => api.get<BackendAdminDevice[]>('/api/v1/boitiers/admin/all')
+export const rawAdminBoitierState = (id: string) => api.get<BackendDeviceState>(`/api/v1/boitiers/admin/${id}/state`)
+export const rawAdminBoitierCommands = (id: string) => api.get<BackendDeviceCommand[]>(`/api/v1/boitiers/admin/${id}/commands`)
+export const rawAdminRevokeBoitier = (id: string) => api.delete<{ status: string }>(`/api/v1/boitiers/admin/${id}`)
+export const rawAdminBoitierRequests = () => api.get<BackendAdminDeviceRequest[]>('/api/v1/boitiers/admin/requests')
+export const rawAdminSetRequestStatus = (id: string, status: 'a_livrer' | 'livre') =>
+  api.patch<BackendAdminDeviceRequest>(`/api/v1/boitiers/admin/requests/${id}`, { status })

@@ -523,3 +523,109 @@ export interface BackendBillUpdatePayload {
   amount_xof?: number
   kwh_consumed?: number
 }
+
+// --- Boîtier vocal (PR NouanKanyAI#4) ---
+export type BackendBoitierLight = 'vert' | 'orange' | 'rouge' | 'aucune_donnee'
+export type BackendBoitierMachineState = 'vert' | 'orange' | 'rouge' | 'arrete' | 'inconnu'
+
+export interface BackendDevice {
+  id: string
+  nom: string
+  scope: 'site' | 'account'
+  language: 'fr' | 'en'
+  site_id: string | null
+  site_nom: string | null
+  paired: boolean
+  online: boolean
+  last_seen_at: string | null
+  created_at: string | null
+}
+
+export interface BackendAdminDevice extends BackendDevice {
+  account: string | null
+  firmware_version: string | null
+  commands_24h: number
+}
+
+export interface BackendDeviceCreated extends BackendDevice {
+  pairing_code: string
+  pairing_expires_at: string
+}
+
+export interface BackendDeviceCreatePayload {
+  nom: string
+  site_id?: string | null
+  scope?: 'site' | 'account'
+  language?: 'fr' | 'en'
+}
+
+export interface BackendDeviceUpdatePayload {
+  nom?: string
+  scope?: 'site' | 'account'
+  language?: 'fr' | 'en'
+}
+
+export interface BackendDeviceMachineState {
+  code: string
+  nom: string
+  state: BackendBoitierMachineState
+  reason: string
+  measure: string | null
+  value: number | null
+  limit: number | null
+  controllable: boolean
+}
+
+export interface BackendDeviceCommand {
+  id: string
+  machine_code: string | null
+  machine_nom: string | null
+  type: string
+  status: 'proposed' | 'confirmed' | 'executed' | 'failed' | 'expired' | 'cancelled'
+  requested_via: 'voice' | 'site'
+  simulated: boolean
+  result: string | null
+  created_at: string | null
+  expires_at: string | null
+  executed_at: string | null
+}
+
+export interface BackendDeviceState {
+  light: BackendBoitierLight
+  summary: string
+  language: 'fr' | 'en'
+  machines: BackendDeviceMachineState[]
+  pending_command: BackendDeviceCommand | null
+  unassigned_machines: number
+  updated_at: string
+}
+
+export interface BackendDeviceRequestPayload {
+  site_id: string
+  quantity: number
+  contact: string
+  notes?: string | null
+}
+
+export interface BackendDeviceRequest {
+  id: string
+  site_id: string | null
+  site_nom: string | null
+  quantity: number
+  contact: string
+  notes: string | null
+  unit_price_fcfa: number
+  total_fcfa: number
+  status: 'a_livrer' | 'livre'
+  created_at: string | null
+  delivered_at: string | null
+}
+
+export interface BackendAdminDeviceRequest extends BackendDeviceRequest {
+  account: string | null
+}
+
+export interface BackendBoitierPrice {
+  unit_price_fcfa: number
+  currency: string
+}
