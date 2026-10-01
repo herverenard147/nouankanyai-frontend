@@ -4,16 +4,25 @@ Document d'orientation pour qui continue le design dans ce dépôt (Claude Code 
 Il dit **ce qui est fait**, **ce qui reste à faire** et **les règles à suivre** pour chaque écran et
 chaque type de compte. Il complète `CLAUDE.md` (pièges techniques) et `README.md` (structure, API).
 
-Les maquettes validées sont dans le canvas « Nouankany — Propositions de design » :
-`E` (landing complète), `F2` (section « problème »), `G1` (vue d'ensemble Industrie, bureau 1440×900,
-niveau technique) et `G2` (même vue, mobile). `G1`/`G2` ont été validées par le propriétaire.
+Les maquettes sont dans le canvas « Nouankany — Propositions de design »
+(https://claude.ai/artifact/WnHgKLuo5DF81qHQ7XucGe) :
+- **validées** : `E` (landing complète), `F2` (section « problème »), `G1` (vue d'ensemble Industrie, bureau
+  1440×900, niveau technique) et `G2` (même vue, mobile) ;
+- **à valider** : 116 planches `H-*` (une page du canvas par type de compte, une ligne par écran, une colonne par
+  variante de niveau ; les niveaux qui donnent le même écran partagent une planche) : tous les écrans de
+  chaque profil, l'onglet **Audit**, la page **Plan d'action** et les **modales** (§8).
+  Les chiffres de ces planches viennent d'une base **locale de test** alimentée par `seed_demo.py` et par de vraies
+  requêtes sur les endpoints ; ce ne sont pas des données de staging.
 
 ## 1. Règles non négociables
 
 1. **Aucun élément factice.** Pas de chiffre, témoignage, logo ou graphique inventé. Pas de donnée → état
    vide (`MetricState`, « Aucune donnée pour le moment. »).
-2. **Toute donnée affichée porte sa provenance** (`ProvenanceBadge` : mesuré / estimé / synthétique /
-   télémétrie système). Jamais codée en dur : elle vient de l'objet de donnée.
+2. **Toute donnée affichée porte sa provenance** (mesuré / estimé / synthétique / télémétrie système). Jamais
+   codée en dur : elle vient de l'objet de donnée. **Rendu sobre** (décidé après retour du propriétaire) : texte
+   discret gris « Synthétique », « Estimé »… en police normale, **sans pastille colorée ni police mono** ; sur
+   une carte d'alerte, une ligne « Source : synthétique » en pied de carte, pas un badge à droite.
+   `ProvenanceBadge` doit être restylé en ce sens.
 3. **Une vue d'ensemble tient sur un écran** (1440×900 au niveau technique). Elle montre l'essentiel et
    renvoie vers les pages de détail par des raccourcis ; elle n'explique pas. Tout texte long vit dans la
    page de détail.
@@ -30,7 +39,18 @@ niveau technique) et `G2` (même vue, mobile). `G1`/`G2` ont été validées par
    - Industrie : « Vue d'ensemble de votre site industriel : consommation, prédiction, machines suivies et plan d'action en cours. »
    - Admin : « Vue d'ensemble de la plateforme : alertes tous profils confondus et accès rapide aux outils d'administration. »
 8. **Nombres à la française** (virgule, espace avant l'unité : « 75,0 °C ») : `formatNumberFr`, ou
-   `frenchNumbersWithUnits` pour les textes venus du backend.
+   `frenchNumbersWithUnits` pour les textes venus du backend. **Une seule famille pour tous les chiffres**
+   (Hanken Grotesk, chiffres tabulaires) : les petits nombres n'ont plus de police mono, qui les différenciait
+   des grands et élargissait l'espace entre « 1 500 » et « FCFA ». Dans les maquettes, l'espace est une espace
+   fine insécable (U+202F) ; dans le code `formatters.ts` normalise encore en espace normale (voir §9, à faire).
+9. **Niveau technique : parler des appareils, pas du modèle.** Aucune mention de « modèle », « XGBoost », « jeu de
+   données » ni de « capteur / simulé » dans les écrans client. On explique ce qui se passe sur chaque appareil
+   (puissance attendue, température, vibration, pression comparées aux seuils d'alerte). Le détail des modèles
+   reste réservé à l'Admin (page « Modèles & observabilité »).
+10. **Modifier et supprimer exigent une modale de validation** ; ajouter non (§8).
+11. **Graphique à une seule mesure** : quand un graphique horaire n'a qu'un relevé (cas de « Conso & coûts »), on
+    montre 24 créneaux, **une barre**, les autres heures vides, à largeur fixe (≈ 480 px), pas une barre
+    étirée sur toute la bande.
 
 ## 2. Langage visuel (déjà dans `src/styles/index.css`, `@theme`)
 
@@ -42,7 +62,7 @@ niveau technique) et `G2` (même vue, mobile). `G1`/`G2` ont été validées par
 | Fond de page / panneau neutre | `bg` `#fafaf9` / `bg-elevated` `#f1f1ee` ; bordures `border` `#e2e1db` |
 | Alerte | `alert` `#d6293e` ; confirmation `confirm` `#1b7a43` |
 | Titres | Hanken Grotesk 700, `tracking-[-0.02em]`, interligne ~1,05 |
-| Texte | Inter ; valeurs, axes et étiquettes techniques : IBM Plex Mono |
+| Texte | Inter ; valeurs, axes, étiquettes : Hanken Grotesk en chiffres tabulaires (`font-mono` pointe maintenant dessus ; IBM Plex Mono n'est plus chargé) |
 
 - **Filets, pas de cartes** : sections séparées par `border-t` (trait épais `border-t-2 border-text-primary`
   en tête d'un bloc), pas de `Card` ni d'ombres sur la vue d'ensemble. Coins droits.
@@ -72,11 +92,11 @@ conservé après rechargement. Sélecteur : `TopBar` (bureau), `Paramètres` (mo
 | Bloc | Débutant | Amateur | Technique |
 |---|---|---|---|
 | Sous-titre, indicateurs clés, alertes, prédiction (valeur + graphique) | oui | oui | oui |
-| Ligne « modèle · jeu de données » sous la prédiction | non | non | **oui** |
+| Ligne « modèle · jeu de données » sous la prédiction | non | non | **retirée** (règle 9) — `PredictionSummary` et `PredictionPanel` affichent encore `modelName · jeu de données`, à supprimer |
 | Machines : colonnes | Machine, Statut, Priorité | idem | **+ Température, Vibration, Pression** |
 | Raccourcis | Conseils, Paliers tarifaires | idem | **Plan d'action, Historique des résolutions**, Paliers |
 
-### PME, Ménage, Admin — À FAIRE (proposition, à valider avec le propriétaire)
+### PME, Ménage, Admin — MAQUETTÉ (planches `H-*`, à valider), code À FAIRE
 
 Appliquer le même gabarit (en-tête, `KpiStrip`, bloc prédiction + alertes, bloc résumé + raccourcis) avec
 une fonction `…OverviewBlocks(level)` par profil dans `src/lib/overviewLevels.ts`, et son test.
@@ -87,9 +107,27 @@ une fonction `…OverviewBlocks(level)` par profil dans `src/lib/overviewLevels.
 | **Ménage** (débutant, sans sélecteur) | 1 | Gabarit le plus court : prédiction + alertes ; « Dernière facture CIE » (période, consommation, montant seulement) ; raccourcis Conseils, Factures, Recommandations. À décider : le KPI « Part sur les économies » (commission) n'a pas de sens pour une formule gratuite — voir §6. |
 | **Admin** (technique par défaut) | 3 | `KpiStrip` télémétrie (base de données, uptime, latence 5 min, machines plateforme — provenance « télémétrie système ») ; alertes tous profils ; les 4 outils d'administration en raccourcis ; pas de `DemoDataBanner`. |
 
+### Ce que change le niveau, écran par écran (tel que dessiné dans les planches `H-*`)
+
+| Écran | Débutant | Amateur | Technique |
+|---|---|---|---|
+| Vue d'ensemble PME | équipements : Catégorie, Site, Statut | + Marque, Modèle, Priorité | idem amateur + raccourci « Plan d'action » |
+| Vue d'ensemble Industrie | machines : Machine, Statut, Priorité | idem | + Température, Vibration, Pression ; raccourcis Plan d'action et Historique des résolutions |
+| Vue d'ensemble Admin | identique | identique | identique (sans ligne « modèle ») |
+| Équipements (PME) | Catégorie, Site, Statut | + Marque, Modèle, Priorité | idem amateur |
+| Machines (Industrie) | Machine, Statut, Priorité | idem | + relevés ; texte explicatif « ce qui se passe sur chaque appareil » |
+| Prédiction | valeur, graphique, par équipement | idem | + phrase expliquant la page (appareils, seuils, recalage) |
+| Conseils / Recommandations | sans sévérité ni gain | sévérité (conseils), gain chiffré (recos) | idem amateur |
+| Plan d'action (PME, Industrie) | gain restant + actions | idem | + **Historique des résolutions** |
+| Audit (hors Ménage) | Heure, Action, Détail | + Acteur | + Source, filtres par famille, **Export CSV** (Admin : + colonne Compte) |
+| Alertes, Conso & coûts, Factures, Commission, Journal, Paramètres | identiques à tous les niveaux | | |
+
+Ménage : un seul niveau (débutant), pas d'Audit, pas de Plan d'action, pas de Machines/Équipements ni de Commission.
+
 ## 5. État écran par écran
 
-Légende : ✅ fait · ◐ cadre fait (barre latérale, en-tête) mais contenu à refaire · ☐ à faire.
+Légende : ✅ fait · ◐ cadre fait (barre latérale, en-tête) mais contenu à refaire · ☐ à faire. Les écrans « ◐ » et
+« ☐ » sont **maquettés** dans les planches `H-*` ; la maquette est la référence.
 
 | Écran (route) | Industrie | PME | Ménage | Admin | Gating par niveau déjà en place (à conserver) |
 |---|---|---|---|---|---|
@@ -104,6 +142,8 @@ Légende : ✅ fait · ◐ cadre fait (barre latérale, en-tête) mais contenu �
 | Factures CIE `/app/factures` | ◐ | ◐ | ◐ | — | — |
 | Commission `/app/rapports` | ◐ | ◐ | — | — | — |
 | Journal `/app/journal` | ◐ | — | — | ◐ | — |
+| **Audit** `/app/audit` (nouveau) | ☐ | ☐ | — | ☐ | colonnes et export selon le niveau (§4) |
+| **Plan d'action** `/app/plan-action` (nouveau) | ☐ | ☐ | — | — | historique des résolutions au niveau technique |
 | Paramètres `/app/parametres` | ◐ | ◐ | ◐ | ◐ | sélecteur de niveau (hors Ménage) |
 | Admin : santé, modèles, utilisateurs, demandes d'audit | — | — | — | ◐ | — |
 
@@ -120,11 +160,16 @@ ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des 
 1. **Part de 10 % sur les économies** : appliquée par le backend (`gross_savings * 0.10`) et affichée dans le
    dashboard, mais la landing dit « Structure définie lors de l'audit ». Annoncer le 10 % sur la landing, ou en faire
    un paramètre par contrat ?
-2. **Plan d'action mensuel chiffré et historique des résolutions** n'ont pas de page dédiée et le backend ne les
-   produit pas (listes vides). Les raccourcis pointent provisoirement vers `/app/recommandations` et `/app/journal`.
+2. **Plan d'action et Audit** : endpoints créés (PR NouanKanyAI#2, voir §9) mais **pas encore branchés** ; à valider
+   d'abord sur les maquettes. Les raccourcis pointent provisoirement vers `/app/recommandations` et `/app/journal`.
 3. **KPI « Part sur les économies » pour le Ménage** (formule gratuite, pas de commission).
 4. **Libellé « Gratuit pour commencer »** de la formule Découverte (Ménages) alors que le segment n'est pas ouvert.
-5. **Textes générés par le backend** (« Éteignez Compresseur d'air » : article manquant) : correction côté backend.
+5. **Textes générés par le backend** (« Éteignez Compresseur d'air » : article manquant ; « Les capteurs de … montrent
+   un comportement anormal » : contredit la règle 9) : correction côté backend.
+6. **Encadré « Vos appareils » de la barre latérale** : remplace « Capteurs IoT : aucun capteur déployé… ». Il dit
+   d'où vient chaque valeur sans prononcer « capteur ». Vérifier avec le propriétaire que cela suffit sur le plan de
+   l'honnêteté (la provenance « synthétique » reste visible partout).
+7. **« Modèles & observabilité » (Admin)** parle de modèles : conservé (outil d'administration, pas un écran client).
 
 ## 7. Tester en local, avec le vrai backend
 
@@ -146,3 +191,51 @@ Comptes (mot de passe `demo1234`) : `aicha@menage.demo` (Ménage), `contact@boul
 Contrôles à refaire pour chaque écran refait : `npx tsc -b`, `npx oxlint src`, `npm run test`, les trois niveaux
 (`Débutant`, `Amateur`, `Technique`) sur les profils qui ont un sélecteur, 1440×900 et 390×844 (aucun
 défilement horizontal), barre latérale immobile au défilement, aucune erreur console/HTTP.
+
+## 8. Modales (maquettées pour chaque profil, sur la vraie page en arrière-plan)
+
+| Action | Modale | Validation |
+|---|---|---|
+| Ajouter (machine/équipement, facture, membre d'équipe, action du plan) | formulaire, bouton « Ajouter… », rappel « enregistré dans l'Audit » | aucune |
+| Modifier (machine/équipement, facture, action du plan, seuils d'alerte, profil, rôle utilisateur) | formulaire pré-rempli, bouton « Enregistrer » | **modale « Confirmer la modification ? »** : tableau *avant → après* des seuls champs changés, boutons « Retour » / « Confirmer la modification » |
+| Supprimer (machine/équipement, facture, membre, action du plan) | **modale de suppression** : conséquences en liste, bouton rouge « Supprimer définitivement » ; pour une machine, saisir son nom pour confirmer | c'est elle-même la validation |
+| Changer le mot de passe | formulaire (mot de passe actuel = validation) | pas de seconde modale |
+
+Règles : `role="dialog" aria-modal`, focus piégé et rendu à l'élément déclencheur, `Échap` = Annuler, fond assombri,
+bouton destructif en `alert`. Chaque confirmation écrit un événement dans l'Audit (§9). Corps de la modale :
+mêmes champs que l'API (`POST/PATCH /api/machines`, `/api/bills`, `/api/alert-thresholds`, `/api/v1/team/members`,
+`/api/v1/plan/items`, `PATCH /api/auth/me`, `PATCH /api/admin/users/{id}/role`).
+
+## 9. Backend créé pour l'Audit, le Plan d'action et l'Historique des résolutions
+
+PR `herverenard147/NouanKanyAI#2` (branche `claude/audit-plan-endpoints`, empilée sur la PR #1). 150 tests passent.
+
+| Route | Rôle |
+|---|---|
+| `GET /api/v1/audit/events?category&since&until&q&limit&offset` | Piste d'audit du compte : `{total, items[], categories{famille: n}}`, ordre chronologique inverse |
+| `GET /api/v1/audit/events.csv` | Export CSV (niveau technique), séparateur `;`, BOM pour Excel |
+| `GET /api/v1/audit/admin/events?owner_id` | Piste de toute la plateforme (Admin) |
+| `GET/POST /api/v1/plan/items`, `POST …/import`, `PATCH/DELETE …/{id}`, `GET …/summary` | Plan d'action du mois ; `import` reprend des recommandations de façon idempotente (`source_ref`) ; statuts `a_faire / en_cours / fait / abandonne` |
+| `GET /api/v1/plan/resolutions` | Historique des « Vérifier et résoudre » (écrit par `POST /api/machines/{id}/test`) |
+| `PATCH /api/bills/{id}` | Modifier une facture (la modale « Modifier » n'avait pas d'endpoint) |
+
+Familles d'audit : `compte, connexions, sites, machines, resolutions, factures, seuils, equipe, plan`. La piste est
+append-only ; un membre d'équipe écrit dans la piste de son propriétaire, l'acteur reste la vraie personne.
+**Limites** : pas de rétro-remplissage (les événements antérieurs au déploiement n'existent pas) ; l'écriture ne bloque
+jamais l'action métier ; les gains du plan sont des **estimations** du moteur, jamais des économies mesurées ; les
+heures sont en UTC.
+
+### Reste à faire côté frontend (dans cet ordre)
+
+1. `src/api/audit.ts`, `src/api/plan.ts` (adaptateurs ; remplacer `fetchActionPlan`/`fetchResolutions`, aujourd'hui `[]`) ;
+   appliquer `frenchNumbersWithUnits` aux `detail` d'audit (le backend écrit « 45.0 kW »).
+2. Pages `AuditPage` et `PlanActionPage`, routes, `navConfig.ts` (« Audit » hors Ménage, « Plan d'action » PME/Industrie,
+   avant « Paramètres » / après « Recommandations »), icônes dans `navIcons.ts` ; niveaux dans `overviewLevels.ts`.
+3. Composant `Modal` (+ variantes `ConfirmEditModal`, `ConfirmDeleteModal`) et branchement sur machines/équipements,
+   factures, équipe, seuils, profil, plan, rôle utilisateur ; colonne « Actions » (Modifier / Supprimer) dans les tableaux.
+4. Restyler `ProvenanceBadge` (règle 2), carte d'alerte sobre (filet rouge à gauche, « Sévérité critique · une personne doit
+   intervenir », « Source : synthétique » en pied), supprimer « modèle · jeu de données » (règle 9), graphique horaire à
+   une barre (règle 11), bouton « Assistant Nouankany » en bas à droite sans recouvrir le contenu.
+5. `formatters.ts` : passer à l'espace fine insécable U+202F (milliers et avant l'unité) et mettre à jour les tests
+   (`dashboardCorrections.test.ts` attend l'espace normale).
+6. Retirer `@fontsource/ibm-plex-mono` de `package.json` (import déjà retiré de `index.css`) et régénérer le lockfile.
