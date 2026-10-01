@@ -282,10 +282,12 @@ export interface AdminMachinePrediction {
 
 export interface JournalEntry {
   id: string
+  /** Horodatage UTC déjà formaté. */
   time: string
   type: string
   detail: string
-  count: number
+  /** Compte concerné (vue Admin uniquement). */
+  account?: string
 }
 
 export type Thresholds =

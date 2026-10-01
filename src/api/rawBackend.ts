@@ -16,6 +16,7 @@ import type {
   BackendPlatformPredictions,
   BackendAuditEvent,
   BackendAuditPage,
+  BackendJournalPage,
   BackendBillUpdatePayload,
   BackendPlanItem,
   BackendPlanItemPayload,
@@ -236,6 +237,8 @@ export const rawAuditEvents = (query: AuditQuery = {}) =>
   api.get<BackendAuditPage>(`/api/v1/audit/events${toQueryString({ ...query })}`)
 export const rawAdminAuditEvents = (query: AuditQuery = {}) =>
   api.get<BackendAuditPage>(`/api/v1/audit/admin/events${toQueryString({ ...query })}`)
+
+export const rawJournalEvents = (limit = 100) => api.get<BackendJournalPage>(`/api/v1/journal/events?limit=${limit}`)
 
 export const rawPlanItems = () => api.get<BackendPlanItem[]>('/api/v1/plan/items')
 export const rawPlanSummary = () => api.get<BackendPlanSummary>('/api/v1/plan/summary')
