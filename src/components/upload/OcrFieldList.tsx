@@ -9,9 +9,10 @@ interface OcrFieldListProps {
 
 /** Aperçu de l'extraction OCR, champ par champ, avec correction manuelle possible. */
 export function OcrFieldList({ fields }: OcrFieldListProps) {
-  const [values, setValues] = useState<Record<string, string>>(() =>
-    Object.fromEntries(fields.map((f) => [f.key, f.value])),
-  )
+  // Seules les corrections saisies sont gardées en état : la valeur affichée vient des props tant qu'elle n'est pas
+  // corrigée (sinon une facture modifiée ailleurs restait affichée avec son ancienne valeur).
+  const [edits, setEdits] = useState<Record<string, string>>({})
+  const values: Record<string, string> = Object.fromEntries(fields.map((f) => [f.key, edits[f.key] ?? f.value]))
   const [editingKey, setEditingKey] = useState<string | null>(null)
 
   return (
@@ -24,7 +25,7 @@ export function OcrFieldList({ fields }: OcrFieldListProps) {
               <input
                 autoFocus
                 value={values[field.key]}
-                onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
+                onChange={(e) => setEdits((v) => ({ ...v, [field.key]: e.target.value }))}
                 onBlur={() => setEditingKey(null)}
                 className="focus-ring w-40 max-w-full min-w-0 rounded-control border border-border bg-card px-2.5 py-1.5 text-right font-mono text-sm text-text-primary"
               />

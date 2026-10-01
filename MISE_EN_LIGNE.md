@@ -3,23 +3,19 @@
 Fichier destiné à Claude Code en local (qui a accès aux comptes Vercel et Railway). Lire d'abord `CLAUDE.md` puis
 `DESIGN.md` (règles, matrice niveau × écran, modales, endpoints). **Ce fichier dit où mettre quoi.**
 
-## 1. Les bons sites (à vérifier avant toute action : cette session n'a pas pu les lire)
+## 1. Les bons sites
 
-La session qui a préparé ce travail n'avait accès à **aucun** projet Nouankany sur Vercel ni Railway (les comptes
-visibles étaient d'autres projets). Les correspondances ci-dessous viennent des commentaires du bot Vercel sur les PR et
-des fichiers du dépôt : **les confirmer** dans les tableaux de bord avant de fusionner.
+Claude Code en local **connaît les vrais liens** (projets Vercel, services Railway, URL, branches déployées, variables) : c'est
+**lui qui fait foi**, pas ce fichier. Les repères ci-dessous viennent des commentaires du bot Vercel sur les PR et du dépôt ; en cas
+de différence avec ce que tu vois dans Vercel / Railway, **corrige ce tableau** et continue avec la vraie valeur.
 
-| Élément | Où | Source |
-|---|---|---|
-| Frontend (dépôt `herverenard147/nouankanyai-frontend`) | Projet Vercel **`nouankany-staging-frontend`** (`prj_rErtwyrGCds7NpASipCg8I039F2D`, équipe `team_C4v7fqf8HYLVJvCLcS42OvQm`), répertoire racine = racine du dépôt. Site : https://nouankany-staging-frontend.vercel.app/ ; aperçu de la branche : `nouankany-staging-frontend-git-ca6bcf-herverenard147s-projects.vercel.app` | commentaires Vercel de la PR frontend #1 |
-| Backend (dépôt `herverenard147/NouanKanyAI`) | Service Railway **`nouankany-staging-backend`**, URL https://nouankany-staging-backend-production.up.railway.app | `.env.production` du frontend |
-| **À débrancher** | Projet Vercel **`nouankanyai-frontend`** (`prj_LOSUC3bvmeRCbvZWg6egtEZos6BA`, répertoire racine `frontend`) est relié **par erreur** au dépôt **backend** : il échoue sur chaque PR backend (dossier `frontend` inexistant). Le déconnecter de `NouanKanyAI` (ou le supprimer s'il ne sert à rien ; demander avant de supprimer). | check Vercel rouge sur les PR backend |
+| Élément | Repère |
+|---|---|
+| Frontend (`herverenard147/nouankanyai-frontend`) | projet Vercel `nouankany-staging-frontend`, racine du dépôt |
+| Backend (`herverenard147/NouanKanyAI`) | service Railway `nouankany-staging-backend` ; le frontend l'appelle via `VITE_API_BASE_URL` (`.env.production`) |
+| À débrancher | le projet Vercel `nouankanyai-frontend` (répertoire racine `frontend`) est relié **par erreur au dépôt backend** : il est rouge sur chaque PR backend |
 
-Le frontend lit `VITE_API_BASE_URL` (committé dans `.env.production` : l'URL Railway ci-dessus) ; `vercel.json` réécrit
-toutes les routes vers `/index.html`. Aucun secret dans le dépôt.
-
-**Il n'existe, à notre connaissance, qu'un environnement « staging ».** Ne pas inventer de production : si le propriétaire
-veut une production séparée, la lui demander.
+`vercel.json` réécrit toutes les routes vers `/index.html`. Aucun secret dans le dépôt.
 
 ## 2. Ordre de mise en ligne (⚠ = demander confirmation au propriétaire avant)
 
@@ -31,7 +27,7 @@ veut une production séparée, la lui demander.
    - Au démarrage, `Base.metadata.create_all` crée seul `audit_events`, `action_plan_items`, `resolution_records` : pas de
      migration, aucune donnée existante touchée.
    - **CORS** : le backend n'autorise que `FRONTEND_URL` + `ALLOWED_ORIGINS` (voir `CLAUDE.md` du backend, règle 6). Vérifier que
-     `https://nouankany-staging-frontend.vercel.app` y figure (sinon l'ajouter dans les variables Railway) ; les aperçus de PR
+     le domaine public du site Vercel du frontend y figure (sinon l'ajouter dans les variables Railway) ; les aperçus de PR
      (`*.vercel.app`) n'y sont pas : à ajouter seulement si on veut tester les aperçus contre ce backend.
    - Variables obligatoires déjà en place côté Railway : `DATABASE_URL`, `JWT_SECRET` (ne jamais les écrire dans le dépôt ni dans
      un message). `SUPERADMIN_EMAIL` pour le compte admin.
@@ -68,9 +64,12 @@ d'ensemble des 4 profils, règles de niveau (`lib/overviewLevels.ts`, `auditLeve
 d'alerte sobre, graphique horaire à une barre, assistant plus bas, espace fine insécable, encadré « Vos appareils ».
 
 À vérifier / finir :
-- Parcours réels de bout en bout avec les 4 comptes, aux 3 niveaux, à 390, 768, 1024 et 1440 px (aucun défilement horizontal,
-  barre latérale immobile, tiroir mobile) ; avertissement React « deux enfants avec la même clé » vu sur le compte PME de test
-  (14 machines de test) : trouver le composant et corriger.
+- Parcours réels de bout en bout avec les 4 comptes, aux 3 niveaux, à 390, 768, 1024 et 1440 px (barre latérale immobile,
+  tiroir mobile). Déjà vérifié en local avec Playwright : toutes les routes des 4 profils chargent sans erreur ; modales
+  (modifier + validation, supprimer + validation), plan d'action, audit (colonnes par niveau, export CSV), factures, seuils,
+  profil et équipe fonctionnent ; aucun défilement horizontal à 390 / 1024 px sur Machines, Équipements et la validation. Deux défauts
+  trouvés et corrigés (colonne « Actions » qui débordait ; liste de champs de facture qui gardait l'ancienne valeur après
+  modification). Reste à refaire sur le site déployé.
 - Pages restées à l'ancien style (cartes) : Alertes, Conseils, Recommandations, Journal, Commission (`ReportsPage`),
   Admin (Santé, Modèles, Utilisateurs, Demandes d'audit) : les passer au langage visuel de `DESIGN.md` §2 (filets, coins droits).
 - Retirer `@fontsource/ibm-plex-mono` de `package.json` (import déjà retiré) et régénérer le lockfile.

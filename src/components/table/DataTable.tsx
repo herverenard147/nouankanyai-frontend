@@ -81,7 +81,7 @@ export function DataTable<T extends { id: string; provenance: Provenance }>({
               <th scope="col" className="px-4 py-3 text-left font-mono text-mono-axis font-semibold uppercase tracking-wide text-text-secondary">
                 Provenance
               </th>
-              {renderActions && <th scope="col" className="px-4 py-3"><span className="sr-only">Actions</span></th>}
+              {renderActions && <th scope="col" className="relative px-4 py-3"><span className="sr-only">Actions</span></th>}
             </tr>
           </thead>
           <tbody>

@@ -46,10 +46,7 @@ export function useUpdateInvoice(profile: Profile) {
   return useMutation({
     mutationFn: ({ billId, payload }: { billId: string; payload: { month?: string; amountXof?: number; kwhConsumed?: number } }) =>
       updateInvoice(billId, payload),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['invoices', profile] })
-      void queryClient.invalidateQueries({ queryKey: ['audit'] })
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['invoices', profile] }),
   })
 }
 
