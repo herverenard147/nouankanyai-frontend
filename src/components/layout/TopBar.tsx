@@ -26,7 +26,7 @@ export function TopBar() {
   const showLevelSelector = session.profile !== 'menage'
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-7 py-4">
+    <header className="flex flex-wrap items-center justify-between gap-3 px-8 pb-3 pt-6">
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -37,7 +37,7 @@ export function TopBar() {
           <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
         <div>
-          <h1 className="text-view-title font-semibold text-text-primary">{currentEntry?.label ?? 'Nouankany'}</h1>
+          <h1 className="font-heading text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-text-primary">{currentEntry?.label ?? 'Nouankany'}</h1>
           <p className="text-sm text-text-secondary">
             {session.displayName} · {session.subtitle}
           </p>

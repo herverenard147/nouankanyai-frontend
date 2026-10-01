@@ -18,12 +18,12 @@ export function AppLayout() {
       >
         Aller au contenu
       </a>
-      <aside className="sticky top-0 hidden h-screen w-[244px] shrink-0 overflow-y-auto border-r border-border lg:block">
+      <aside className="sticky top-0 hidden h-screen w-[244px] shrink-0 overflow-hidden border-r border-dark-field-border bg-dark-bg lg:block">
         <SideRail />
       </aside>
       <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <TopBar />
-        <main id="main-content" className="flex flex-1 flex-col gap-7 px-7 pb-32 pt-7">
+        <main id="main-content" className="flex flex-1 flex-col gap-5 px-8 pb-24 pt-2">
           <Outlet />
         </main>
       </div>
