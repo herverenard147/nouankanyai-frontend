@@ -3,6 +3,7 @@ import { Navigate, createBrowserRouter } from 'react-router-dom'
 import { AppLayout } from '@/layouts/AppLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { AuditRequestPage } from '@/pages/audit/AuditRequestPage'
+import { BoitierPage } from '@/pages/boitier/BoitierPage'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { HowItWorksPage } from '@/pages/landing/HowItWorksPage'
 import { LandingPage } from '@/pages/landing/LandingPage'
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
       { index: true, element: <LandingPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'comment-ca-marche', element: <HowItWorksPage /> },
+      { path: 'le-boitier', element: <BoitierPage /> },
       { path: 'demander-un-audit', element: <AuditRequestPage /> },
     ],
   },

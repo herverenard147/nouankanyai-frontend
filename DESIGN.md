@@ -242,3 +242,20 @@ heures sont en UTC.
 5. `formatters.ts` : passer à l'espace fine insécable U+202F (milliers et avant l'unité) et mettre à jour les tests
    (`dashboardCorrections.test.ts` attend l'espace normale).
 6. Retirer `@fontsource/ibm-plex-mono` de `package.json` (import déjà retiré de `index.css`) et régénérer le lockfile.
+
+## 10. Boîtier (page publique `/le-boitier`, annonce sur l'accueil)
+
+Maquettes : planches `I`, `I2` (page) et `J` (annonce + navbar) du canvas. Code : `src/components/boitier/`,
+`src/pages/boitier/BoitierPage.tsx`, `src/pages/landing/sections/BoitierSection.tsx`.
+
+- **Quatre lumières** (`boitierStates.ts`) : vert « tout va bien », orange « un appareil s'approche de son seuil »
+  (validé par le propriétaire), rouge « un appareil dépasse son seuil », **blanc pulsé = le boîtier écoute**. Le vert
+  n'est jamais utilisé pour l'écoute, sinon un boîtier qui écoute pendant une alerte rouge passerait un instant au vert.
+- **Vue 3D** : `three`, chargée à la demande (`BoitierViewer` → `Boitier3D`, environ 135 kB gzip, seulement sur l'accueil
+  et la page boîtier). Repli : schéma 2D (`Boitier2D`) sans WebGL. `prefers-reduced-motion` : pas de balancement ni de
+  pulsation. L'aspect du boîtier est un schéma de principe : à remplacer par le prototype quand la photo arrive.
+- **Échanges affichés** : exemples d'illustration, sans aucun chiffre (test `boitier.test.tsx`). La liste des formulations
+  comprises (`BOITIER_PHRASES`) doit rester alignée avec le routeur d'intentions du backend quand il existera.
+- **Pas d'annonce du SIREX** sur le site. Aucune modification de la landing côté Ménage (présenté au hackathon).
+- **Pas de backend branché** : la page est une démonstration. Les routes `/api/v1/boitier/*` sont décrites dans le
+  document d'architecture, elles n'existent pas encore.
