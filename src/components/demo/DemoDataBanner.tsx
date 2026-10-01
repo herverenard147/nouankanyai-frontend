@@ -26,7 +26,7 @@ export function DemoDataBanner() {
       <div>
         <p className="text-sm font-semibold text-text-primary">Essai gratuit : ce compte est vide</p>
         <p className="mt-1 text-sm text-text-secondary">
-          Chargez des sites, équipements et factures fictifs pour explorer le tableau de bord — tout est
+          Chargez des sites, équipements et factures fictifs pour explorer le tableau de bord, tout est
           clairement identifié comme simulé, rien n&rsquo;est présenté comme une mesure réelle.
         </p>
       </div>

@@ -49,7 +49,7 @@ function UserDetail({ user, canManageRoles }: { user: AdminUser; canManageRoles:
             Changer le rôle
           </Button>
         )}
-        {isSuperadmin && <span className="text-sm font-semibold text-text-tertiary">Superadmin — rôle non modifiable</span>}
+        {isSuperadmin && <span className="text-sm font-semibold text-text-tertiary">Superadmin, rôle non modifiable</span>}
       </div>
       {step === 'form' && (
         <Modal
