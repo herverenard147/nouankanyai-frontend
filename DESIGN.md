@@ -11,7 +11,7 @@ Les maquettes sont dans le canvas « Nouankany — Propositions de design »
 - **validées** (le propriétaire les a approuvées) : 116 planches `H-*` (une page du canvas par type de compte, une ligne par écran, une colonne par
   variante de niveau ; les niveaux qui donnent le même écran partagent une planche) : tous les écrans de
   chaque profil, l'onglet **Audit**, la page **Plan d'action** et les **modales** (§8).
-  Les chiffres de ces planches viennent d'une base **locale de test** alimentée par `seed_demo.py` et par de vraies
+  Les chiffres de ces planches viennent d'une base **locale de test** (reproductible : `seed_demo.py --with-history`) alimentée par `seed_demo.py` et par de vraies
   requêtes sur les endpoints ; ce ne sont pas des données de staging.
 
 ## 1. Règles non négociables
@@ -179,7 +179,7 @@ validées. Le câblage frontend et la mise en ligne (Vercel, Railway) sont faits
 DATABASE_URL=postgresql://… JWT_SECRET=… SUPERADMIN_EMAIL=admin@nouankany.demo \
 FRONTEND_URL=http://localhost:5173 AI_MODE=mock PORT=8001 python backend/main.py
 # 2) Comptes et données de démonstration (script de la PR NouanKanyAI#1, idempotent)
-python backend/scripts/seed_demo.py --with-alert
+python backend/scripts/seed_demo.py --with-alert --with-history   # + factures, équipe, plan, vérifications (PR NouanKanyAI#2)
 # 3) Frontend
 npm run dev            # http://localhost:5173, VITE_API_BASE_URL=http://localhost:8001
 npm run test           # inclut le test d'intégration (13 tests) contre ce backend
