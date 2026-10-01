@@ -9,6 +9,7 @@ import { queryClient } from '@/lib/queryClient'
 import type {
   BackendAdminMachineActionResult,
   BackendAdminMetrics,
+  BackendAssistantChatResponse,
   BackendAdminUserAlerts,
   BackendAdminUserPredictions,
   BackendPlatformAlerts,
@@ -172,8 +173,8 @@ export const rawMlMetrics = () => api.get<Record<string, unknown>>('/api/v1/ml/m
 export const rawMlAudit = () => api.get<BackendMlAuditEntry[]>('/api/v1/ml/audit')
 export const rawMlReload = () => api.post<BackendMlReloadResult>('/api/v1/ml/reload')
 
-export const rawChat = (message: string, context: BackendMachine[]) =>
-  api.post<{ response: string }>('/api/chat', { message, context })
+export const rawAssistantChat = (message: string) =>
+  api.post<BackendAssistantChatResponse>('/api/v1/assistant/chat', { message })
 
 export const rawAdminMetrics = () => api.get<BackendAdminMetrics>('/api/admin/metrics')
 export const rawGeminiMetrics = () => api.get<BackendGeminiMetrics>('/api/admin/gemini-metrics')

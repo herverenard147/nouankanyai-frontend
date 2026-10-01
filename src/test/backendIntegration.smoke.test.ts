@@ -102,7 +102,7 @@ describe('intégration backend réel — compte Ménage', () => {
     expect(invoice.period).toBe('Test smoke')
   }, 30000)
 
-  it('assistant : /api/chat répond réellement (AI_MODE=mock attendu en local)', async () => {
+  it('assistant : /api/v1/assistant/chat répond réellement (AI_MODE=mock attendu en local)', async () => {
     const reply = await sendAssistantMessage('menage', 'Bonjour')
     expect(typeof reply).toBe('string')
     expect(reply.length).toBeGreaterThan(0)

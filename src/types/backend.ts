@@ -405,6 +405,13 @@ export interface BackendMlReloadResult {
   active_models: string[]
 }
 
+export interface BackendAssistantChatResponse {
+  response: string
+  model_name: string
+  latency_ms: number
+  session_id: string
+}
+
 export type LeadSector = 'pme' | 'industrie'
 
 export interface BackendAuditRequestPayload {
