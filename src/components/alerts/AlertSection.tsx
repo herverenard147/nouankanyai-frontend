@@ -49,19 +49,19 @@ export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionPr
   return (
     <section className="flex flex-col gap-4" aria-label="Alertes">
       {actionQuery.status === 'pending' && (
-        <div className={`animate-pulse rounded-card border border-border bg-card ${maxActionAlerts !== undefined ? 'p-3' : 'p-6'}`}>
+        <div className={`animate-pulse border-t border-border ${maxActionAlerts !== undefined ? 'py-3' : 'py-6'}`}>
           <div className="h-5 w-1/2 rounded bg-bg-elevated" />
         </div>
       )}
       {actionQuery.status === 'error' && (
-        <div className="rounded-card border border-border bg-card p-6 text-sm text-text-secondary">
+        <div className="border-t border-border py-6 text-sm text-text-secondary">
           <span className="font-semibold text-text-primary">Alertes indisponibles.</span> Le reste de la page
           continue de fonctionner.
         </div>
       )}
       {actionQuery.status === 'success' &&
         (visibleActionAlerts!.length === 0 ? (
-          <div className="rounded-card border border-border bg-card p-6 text-sm text-text-secondary">
+          <div className="border-t border-border py-6 text-sm text-text-secondary">
             Aucune alerte active nécessitant une action.
           </div>
         ) : (
@@ -80,19 +80,15 @@ export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionPr
       )}
 
       {showAutoBlock && (
-        <div className="flex flex-col gap-3">
-          <p className="font-mono text-mono-axis font-semibold uppercase tracking-wide text-text-secondary">
-            Registre distinct : actions automatiques déjà exécutées
-          </p>
+        <div className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
+          <p className="text-sm font-semibold text-text-primary">Registre distinct : actions automatiques déjà exécutées</p>
           {autoQuery.status === 'pending' && (
-            <div className="animate-pulse rounded-card border border-border bg-card p-6">
+            <div className="animate-pulse border-t border-border py-6">
               <div className="h-5 w-1/2 rounded bg-bg-elevated" />
             </div>
           )}
           {autoQuery.status === 'error' && (
-            <div className="rounded-card border border-border bg-card p-6 text-sm text-text-secondary">
-              Indisponible pour le moment.
-            </div>
+            <div className="border-t border-border py-6 text-sm text-text-secondary">Indisponible pour le moment.</div>
           )}
           {autoQuery.status === 'success' &&
             autoQuery.data.map((alert) => <AlertCard key={alert.id} variant="auto" alert={alert} />)}

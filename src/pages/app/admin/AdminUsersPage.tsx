@@ -4,7 +4,6 @@ import { MetricState } from '@/components/state/MetricState'
 import { DataTable } from '@/components/table/DataTable'
 import type { TableColumn } from '@/components/table/DataTable'
 import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
 import { ConfirmEditModal, Modal, SelectField } from '@/components/ui/Modal'
 import { useAdminUsers, usePromoteUser, useUserFacturation, useUserMachines } from '@/hooks/queries/useAdminUsers'
 import { formatFcfa } from '@/lib/formatters'
@@ -31,7 +30,7 @@ function UserDetail({ user, canManageRoles }: { user: AdminUser; canManageRoles:
   const [target, setTarget] = useState<'client' | 'admin'>(isAdmin ? 'admin' : 'client')
 
   return (
-    <Card className="flex flex-col gap-5 p-6">
+    <section className="flex flex-col gap-5 border-t-2 border-text-primary pt-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-section-title font-semibold text-text-primary">{user.name}</h3>
@@ -105,7 +104,7 @@ function UserDetail({ user, canManageRoles }: { user: AdminUser; canManageRoles:
               {machinesQuery.data?.map((m) => (
                 <li key={m.id} className="flex justify-between border-b border-border pb-1.5 text-text-primary">
                   <span>{m.nom}</span>
-                  <span className="font-mono text-text-secondary">{m.status}</span>
+                  <span className="text-text-secondary">{m.status}</span>
                 </li>
               ))}
             </ul>
@@ -118,22 +117,22 @@ function UserDetail({ user, canManageRoles }: { user: AdminUser; canManageRoles:
               <ul className="flex flex-col gap-1.5 text-sm text-text-primary">
                 <li className="flex justify-between border-b border-border pb-1.5">
                   <span>Économies brutes</span>
-                  <span className="font-mono">{formatFcfa(facturationQuery.data.grossSavingsThisMonth)}</span>
+                  <span className="tabular-nums">{formatFcfa(facturationQuery.data.grossSavingsThisMonth)}</span>
                 </li>
                 <li className="flex justify-between border-b border-border pb-1.5">
                   <span>Commission (10 %)</span>
-                  <span className="font-mono">{formatFcfa(facturationQuery.data.gainShareThisMonth)}</span>
+                  <span className="tabular-nums">{formatFcfa(facturationQuery.data.gainShareThisMonth)}</span>
                 </li>
                 <li className="flex justify-between">
                   <span>Factures enregistrées</span>
-                  <span className="font-mono">{facturationQuery.data.billCount}</span>
+                  <span className="tabular-nums">{facturationQuery.data.billCount}</span>
                 </li>
               </ul>
             )}
           </MetricState>
         </div>
       </div>
-    </Card>
+    </section>
   )
 }
 

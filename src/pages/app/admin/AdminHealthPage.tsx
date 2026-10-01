@@ -1,5 +1,5 @@
 import { AlertSection } from '@/components/alerts/AlertSection'
-import { KpiGrid } from '@/components/kpi/KpiGrid'
+import { KpiStrip } from '@/components/overview/KpiStrip'
 import { useLevel } from '@/store/levelStore'
 
 export function AdminHealthPage() {
@@ -10,8 +10,8 @@ export function AdminHealthPage() {
       <p className="text-sm text-text-secondary">
         État de la plateforme : alertes actives tous profils confondus et indicateurs de charge système.
       </p>
+      <KpiStrip profile="admin" targets={{}} />
       <AlertSection profile="admin" level={level} />
-      <KpiGrid profile="admin" />
     </div>
   )
 }
