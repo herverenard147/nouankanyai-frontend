@@ -3,11 +3,12 @@ import { Menu } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const LINKS = [
-  { href: '#probleme', label: 'Le problème' },
-  { href: '#profils', label: 'Pour qui' },
-  { href: '#apropos', label: 'Qui sommes-nous' },
-  { href: '#confiance', label: 'Notre engagement' },
-  { href: '#formules', label: 'Formules' },
+  { to: '/#probleme', label: 'Le problème' },
+  { to: '/#profils', label: 'Pour qui' },
+  { to: '/le-boitier', label: 'Le boîtier' },
+  { to: '/#apropos', label: 'Qui sommes-nous' },
+  { to: '/#confiance', label: 'Notre engagement' },
+  { to: '/#formules', label: 'Formules' },
 ]
 
 export function NavBar() {
@@ -25,8 +26,8 @@ export function NavBar() {
 
         <ul className="hidden items-center gap-5 lg:flex">
           {LINKS.map((link) => (
-            <li key={link.href}>
-              <Link to={`/${link.href}`} className="text-[0.92rem] text-white/85 hover:text-white">
+            <li key={link.to}>
+              <Link to={link.to} className="text-[0.92rem] text-white/85 hover:text-white">
                 {link.label}
               </Link>
             </li>
@@ -63,9 +64,9 @@ export function NavBar() {
         <div className="border-t border-white/20 bg-dark-bg px-6 py-4 lg:hidden">
           <ul className="flex flex-col gap-3">
             {LINKS.map((link) => (
-              <li key={link.href}>
+              <li key={link.to}>
                 <Link
-                  to={`/${link.href}`}
+                  to={link.to}
                   onClick={() => setOpen(false)}
                   className="text-sm text-white/85 hover:text-white"
                 >
