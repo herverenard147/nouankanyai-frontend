@@ -56,7 +56,7 @@ export function PredictionPage() {
       <section className="flex flex-col gap-4 border-t-2 border-text-primary pt-4" aria-label="Prédiction globale">
         <MetricState status={query.status} isEmpty={!query.data?.global}>
           {query.data?.global && (
-            <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} showModelName={profile === 'admin'} />
+            <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} />
           )}
         </MetricState>
       </section>
@@ -67,7 +67,7 @@ export function PredictionPage() {
           <div className="flex flex-col">
             {query.data.perDevice.map((prediction, index) => (
               <div key={`${prediction.title}-${index}`} className="flex flex-col gap-4 border-t-2 border-text-primary py-4">
-                <PredictionContent prediction={prediction} showModelDetails={showModelDetails} showModelName={profile === 'admin'} />
+                <PredictionContent prediction={prediction} showModelDetails={showModelDetails} />
               </div>
             ))}
           </div>
