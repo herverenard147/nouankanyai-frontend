@@ -1,45 +1,51 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { FormEvent } from 'react'
 
 import { LevelSelector } from '@/components/level/LevelSelector'
-import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, type FieldChange } from '@/components/ui/Modal'
 import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
 import { useAuthMe, useChangePassword, useUpdateProfile } from '@/hooks/queries/useAuthMe'
 import { useCreateTeamMember, useDeleteTeamMember, useTeamMembers } from '@/hooks/queries/useTeam'
 import { useThresholds, useUpdateThresholds } from '@/hooks/queries/useThresholds'
-import { ApiError } from '@/lib/apiClient'
+import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 import { useLevel, useLevelStore } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 import type { Session } from '@/types/domain'
 
 const MAX_TEAM_MEMBERS = 4
 
+const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
+const ROW = 'flex flex-wrap items-baseline justify-between gap-2 border-t border-border py-2.5 text-sm'
+
 function ProfileCard({ session }: { session: Session }) {
   const meQuery = useAuthMe()
   const updateProfileMutation = useUpdateProfile()
   const changePasswordMutation = useChangePassword()
 
-  const [editingName, setEditingName] = useState(false)
+  const [dialog, setDialog] = useState<'name' | 'name-confirm' | 'password' | null>(null)
   const [nom, setNom] = useState(session.displayName)
-
-  const [showPasswordForm, setShowPasswordForm] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordMismatch, setPasswordMismatch] = useState(false)
 
-  useEffect(() => {
-    if (!editingName) setNom(session.displayName)
-  }, [session.displayName, editingName])
+  function openName() {
+    setNom(session.displayName)
+    updateProfileMutation.reset()
+    setDialog('name')
+  }
 
-  function handleNameSubmit(event: FormEvent) {
-    event.preventDefault()
-    if (!nom.trim()) return
-    updateProfileMutation.mutate({ nom: nom.trim() }, { onSuccess: () => setEditingName(false) })
+  function openPassword() {
+    setCurrentPassword('')
+    setNewPassword('')
+    setConfirmPassword('')
+    setPasswordMismatch(false)
+    changePasswordMutation.reset()
+    setDialog('password')
   }
 
   function handlePasswordSubmit(event: FormEvent) {
@@ -49,139 +55,127 @@ function ProfileCard({ session }: { session: Session }) {
       return
     }
     setPasswordMismatch(false)
-    changePasswordMutation.mutate(
-      { current_password: currentPassword, new_password: newPassword },
-      { onSuccess: () => { setCurrentPassword(''); setNewPassword(''); setConfirmPassword('') } },
-    )
+    changePasswordMutation.mutate({ current_password: currentPassword, new_password: newPassword }, { onSuccess: () => setDialog(null) })
   }
 
   const memberSince = meQuery.data
     ? new Date(meQuery.data.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
     : null
-  const lastSignIn = meQuery.data?.last_sign_in_at
-    ? new Date(meQuery.data.last_sign_in_at).toLocaleString('fr-FR')
-    : null
+  const lastSignIn = meQuery.data?.last_sign_in_at ? new Date(meQuery.data.last_sign_in_at).toLocaleString('fr-FR') : null
 
   return (
-    <Card className="flex flex-col gap-4 p-6">
+    <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Profil</h2>
 
       <MetricState status={meQuery.status}>
-        <dl className="flex flex-col gap-2 text-sm">
-          <div className="flex justify-between">
+        <dl>
+          <div className={ROW}>
             <dt className="text-text-secondary">Email</dt>
-            <dd className="text-text-primary">{meQuery.data?.email}</dd>
+            <dd className="font-semibold text-text-primary">{meQuery.data?.email}</dd>
           </div>
-          <div className="flex justify-between">
+          <div className={ROW}>
             <dt className="text-text-secondary">Type de compte</dt>
-            <dd className="text-right text-text-primary">{session.subtitle}</dd>
+            <dd className="text-right font-semibold text-text-primary">{session.subtitle}</dd>
           </div>
           {memberSince && (
-            <div className="flex justify-between">
+            <div className={ROW}>
               <dt className="text-text-secondary">Membre depuis</dt>
-              <dd className="text-text-primary">{memberSince}</dd>
+              <dd className="font-semibold text-text-primary">{memberSince}</dd>
             </div>
           )}
           {lastSignIn && (
-            <div className="flex justify-between">
+            <div className={ROW}>
               <dt className="text-text-secondary">Dernière connexion</dt>
-              <dd className="text-text-primary">{lastSignIn}</dd>
+              <dd className="font-semibold text-text-primary">{lastSignIn}</dd>
             </div>
           )}
+          <div className={ROW}>
+            <dt className="text-text-secondary">Nom</dt>
+            <dd className="font-semibold text-text-primary">{session.displayName}</dd>
+          </div>
         </dl>
       </MetricState>
 
-      <div className="flex flex-col gap-2 border-t border-border pt-4">
-        {editingName ? (
-          <form onSubmit={handleNameSubmit} className="flex flex-wrap items-end gap-2">
-            <TextField label="Nom" value={nom} onChange={(e) => setNom(e.target.value)} required />
-            <Button type="submit" disabled={updateProfileMutation.isPending}>
-              {updateProfileMutation.isPending ? 'Enregistrement…' : 'Enregistrer'}
-            </Button>
-            <Button type="button" variant="ghost" onClick={() => setEditingName(false)}>
-              Annuler
-            </Button>
-          </form>
-        ) : (
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <p className="text-sm text-text-secondary">Nom</p>
-              <p className="text-text-primary">{session.displayName}</p>
-            </div>
-            <Button type="button" variant="ghost" onClick={() => setEditingName(true)}>
-              Modifier
-            </Button>
-          </div>
-        )}
-        {updateProfileMutation.isError && (
-          <ApiErrorMessage
-            message={updateProfileMutation.error instanceof ApiError ? updateProfileMutation.error.message : 'Échec de la mise à jour du nom.'}
-            className="text-sm text-alert"
-          />
-        )}
+      <div className="flex flex-wrap gap-3">
+        <Button type="button" variant="outline" onClick={openName}>
+          Modifier le profil
+        </Button>
+        <Button type="button" variant="outline" onClick={openPassword}>
+          Changer le mot de passe
+        </Button>
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-border pt-4">
-        {showPasswordForm ? (
-          <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-3">
-            <PasswordField
-              label="Mot de passe actuel"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
-            />
-            <PasswordField
-              label="Nouveau mot de passe"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              minLength={6}
-              required
-            />
-            <PasswordField
-              label="Confirmer le nouveau mot de passe"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              minLength={6}
-              required
-            />
-            <div className="flex flex-wrap gap-2">
-              <Button type="submit" disabled={changePasswordMutation.isPending}>
-                {changePasswordMutation.isPending ? 'Enregistrement…' : 'Changer le mot de passe'}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  setShowPasswordForm(false)
-                  setCurrentPassword('')
-                  setNewPassword('')
-                  setConfirmPassword('')
-                  setPasswordMismatch(false)
-                }}
-              >
+      {dialog === 'name' && (
+        <Modal
+          title="Modifier le profil"
+          description="Le nom s’affiche en haut de chaque écran."
+          onClose={() => setDialog(null)}
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={() => setDialog(null)}>
                 Annuler
               </Button>
+              <Button type="submit" form="profile-form">
+                Enregistrer
+              </Button>
+            </>
+          }
+        >
+          <form
+            id="profile-form"
+            className="flex flex-col gap-3"
+            onSubmit={(event) => {
+              event.preventDefault()
+              if (nom.trim()) setDialog('name-confirm')
+            }}
+          >
+            <TextField label="Nom affiché" value={nom} onChange={(e) => setNom(e.target.value)} required />
+            <TextField label="Email" value={meQuery.data?.email ?? ''} disabled readOnly />
+            <p className="text-xs text-text-secondary">L’email et le type de compte ne sont pas modifiables ici.</p>
+          </form>
+        </Modal>
+      )}
+
+      {dialog === 'name-confirm' && (
+        <ConfirmEditModal
+          subject="Votre profil sera mis à jour."
+          changes={nom.trim() === session.displayName ? [] : [{ label: 'Nom affiché', before: session.displayName, after: nom.trim() }]}
+          pending={updateProfileMutation.isPending}
+          error={updateProfileMutation.error}
+          onBack={() => setDialog('name')}
+          onConfirm={() => updateProfileMutation.mutate({ nom: nom.trim() }, { onSuccess: () => setDialog(null) })}
+        />
+      )}
+
+      {dialog === 'password' && (
+        <Modal
+          title="Changer le mot de passe"
+          description="Votre mot de passe actuel sert de validation."
+          onClose={() => setDialog(null)}
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={() => setDialog(null)}>
+                Annuler
+              </Button>
+              <Button type="submit" form="password-form" disabled={changePasswordMutation.isPending}>
+                {changePasswordMutation.isPending ? 'Enregistrement…' : 'Changer le mot de passe'}
+              </Button>
+            </>
+          }
+        >
+          <form id="password-form" onSubmit={handlePasswordSubmit} className="flex flex-col gap-3">
+            <PasswordField label="Mot de passe actuel" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <PasswordField label="Nouveau mot de passe" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} minLength={6} required />
+              <PasswordField label="Confirmer le nouveau mot de passe" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} minLength={6} required />
             </div>
             {passwordMismatch && <p className="text-sm text-alert">Les deux mots de passe ne correspondent pas.</p>}
-            {changePasswordMutation.isError && (
-              <ApiErrorMessage
-                message={
-                  changePasswordMutation.error instanceof ApiError
-                    ? changePasswordMutation.error.message
-                    : 'Échec du changement de mot de passe.'
-                }
-                className="text-sm text-alert"
-              />
-            )}
-            {changePasswordMutation.isSuccess && <p className="text-sm text-confirm">Mot de passe mis à jour.</p>}
+            <p className="text-xs text-text-secondary">Le changement sera enregistré dans l’onglet Audit (jamais le mot de passe).</p>
+            <MutationError error={changePasswordMutation.error} />
           </form>
-        ) : (
-          <Button type="button" variant="ghost" className="w-fit" onClick={() => setShowPasswordForm(true)}>
-            Changer le mot de passe
-          </Button>
-        )}
-      </div>
-    </Card>
+        </Modal>
+      )}
+    </section>
   )
 }
 
@@ -190,17 +184,19 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
   const createMutation = useCreateTeamMember()
   const deleteMutation = useDeleteTeamMember()
   const [form, setForm] = useState({ nom: '', email: '', password: '' })
+  const [adding, setAdding] = useState(false)
+  const [removing, setRemoving] = useState<{ id: string; nom: string; email: string } | null>(null)
 
   const memberCount = (query.data?.length ?? 1) - 1 // exclut le propriétaire lui-même
   const atCap = memberCount >= MAX_TEAM_MEMBERS
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    createMutation.mutate(form, { onSuccess: () => setForm({ nom: '', email: '', password: '' }) })
+    createMutation.mutate(form, { onSuccess: () => { setForm({ nom: '', email: '', password: '' }); setAdding(false) } })
   }
 
   return (
-    <Card className="flex flex-col gap-3 p-6">
+    <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Équipe</h2>
       <p className="text-sm text-text-secondary">
         {isOwner
@@ -208,126 +204,192 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
           : 'Vous faites partie de cette équipe. Le compte principal de l’entreprise gère les membres.'}
       </p>
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
-        <ul className="flex flex-col gap-2">
+        <ul>
           {query.data?.map((member) => (
-            <li
-              key={member.id}
-              className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2 last:border-b-0 last:pb-0"
-            >
+            <li key={member.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-border py-2.5">
               <div>
                 <p className="text-sm font-semibold text-text-primary">
-                  {member.nom} {member.isOwner && <span className="text-text-tertiary">— Propriétaire</span>}
+                  {member.nom} {member.isOwner && <span className="font-normal text-text-tertiary">· Propriétaire</span>}
                 </p>
                 <p className="text-sm text-text-secondary">{member.email}</p>
               </div>
               {isOwner && !member.isOwner && (
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  disabled={deleteMutation.isPending}
-                  onClick={() => deleteMutation.mutate(member.id)}
+                  className="focus-ring text-sm font-semibold text-alert hover:underline"
+                  aria-label={`Retirer ${member.nom}`}
+                  onClick={() => {
+                    deleteMutation.reset()
+                    setRemoving({ id: member.id, nom: member.nom, email: member.email })
+                  }}
                 >
                   Retirer
-                </Button>
+                </button>
               )}
             </li>
           ))}
         </ul>
       </MetricState>
-      {deleteMutation.isError && <p className="text-sm text-alert">Échec du retrait du membre.</p>}
 
       {isOwner && (
-        <div className="mt-2 flex flex-col gap-3 border-t border-border pt-4">
+        <div className="flex flex-col gap-3 border-t border-border pt-3">
           <p className="text-sm font-medium text-text-primary">
             {memberCount}/{MAX_TEAM_MEMBERS} comptes membres utilisés
           </p>
           {atCap ? (
-            <p className="text-sm text-text-secondary">
-              Plafond atteint — retirez un membre pour pouvoir en ajouter un nouveau.
-            </p>
+            <p className="text-sm text-text-secondary">Plafond atteint — retirez un membre pour pouvoir en ajouter un nouveau.</p>
           ) : (
-            <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-3">
-              <TextField
-                label="Nom"
-                value={form.nom}
-                onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))}
-                required
-              />
-              <TextField
-                label="Email"
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                required
-              />
-              <PasswordField
-                label="Mot de passe initial"
-                value={form.password}
-                onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-                minLength={6}
-                required
-              />
-              <Button type="submit" disabled={createMutation.isPending} className="sm:col-span-3 sm:w-fit">
-                {createMutation.isPending ? 'Ajout…' : 'Ajouter un membre'}
-              </Button>
-              {createMutation.isError && (
-                <p className="text-sm text-alert sm:col-span-3">
-                  Échec de l&rsquo;ajout — vérifiez que l&rsquo;email n&rsquo;est pas déjà utilisé.
-                </p>
-              )}
-            </form>
+            <Button type="button" className="w-fit" onClick={() => { createMutation.reset(); setAdding(true) }}>
+              Ajouter un membre
+            </Button>
           )}
         </div>
       )}
-    </Card>
+
+      {adding && (
+        <Modal
+          title="Ajouter un membre"
+          description="Il pourra se connecter avec cet email et ce mot de passe."
+          onClose={() => setAdding(false)}
+          width="lg"
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={() => setAdding(false)}>
+                Annuler
+              </Button>
+              <Button type="submit" form="member-form" disabled={createMutation.isPending}>
+                {createMutation.isPending ? 'Ajout…' : 'Ajouter le membre'}
+              </Button>
+            </>
+          }
+        >
+          <form id="member-form" onSubmit={handleSubmit} className="flex flex-col gap-3">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <TextField label="Nom" value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} required />
+              <TextField label="Email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required />
+            </div>
+            <PasswordField label="Mot de passe initial" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} minLength={6} required />
+            <p className="text-xs text-text-secondary">
+              Le membre aura accès aux mêmes machines, factures et alertes que vous. Vous seul pouvez ajouter ou retirer des membres. 4 membres maximum.
+            </p>
+            <p className="text-xs text-text-secondary">Cette action sera enregistrée dans l’onglet Audit.</p>
+            <MutationError error={createMutation.error} />
+          </form>
+        </Modal>
+      )}
+
+      {removing && (
+        <ConfirmDeleteModal
+          title={`Retirer ${removing.nom} ?`}
+          description={removing.email}
+          consequences={['Son compte est supprimé : il ne pourra plus se connecter.', 'Ses actions passées restent visibles dans l’Audit, à son nom.']}
+          confirmLabel="Retirer le membre"
+          pending={deleteMutation.isPending}
+          error={deleteMutation.error}
+          onCancel={() => setRemoving(null)}
+          onConfirm={() => deleteMutation.mutate(removing.id, { onSuccess: () => setRemoving(null) })}
+        />
+      )}
+    </section>
   )
 }
 
 function ThresholdsCard() {
   const query = useThresholds()
   const mutation = useUpdateThresholds()
+  const [step, setStep] = useState<'form' | 'confirm' | null>(null)
   const [form, setForm] = useState({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2 })
 
-  useEffect(() => {
-    if (query.data) setForm(query.data)
-  }, [query.data])
-
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    mutation.mutate(form)
-  }
+  const current = query.data
+  const changes: FieldChange[] = current
+    ? [
+        { label: 'Température max', before: `${formatNumberFr(current.temperature_max_c, 1)}${NARROW_NBSP}°C`, after: `${formatNumberFr(form.temperature_max_c, 1)}${NARROW_NBSP}°C` },
+        { label: 'Vibration max', before: `${formatNumberFr(current.vibration_max_hz, 1)}${NARROW_NBSP}Hz`, after: `${formatNumberFr(form.vibration_max_hz, 1)}${NARROW_NBSP}Hz` },
+        { label: 'Ratio de surconsommation', before: String(current.surconsommation_ratio).replace('.', ','), after: String(form.surconsommation_ratio).replace('.', ',') },
+      ].filter((change) => change.before !== change.after)
+    : []
 
   return (
-    <Card className="flex flex-col gap-3 p-6">
+    <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Seuils d&rsquo;alerte</h2>
       <MetricState status={query.status}>
-        <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-3">
-          <TextField
-            label="Température max (°C)"
-            type="number"
-            value={form.temperature_max_c}
-            onChange={(e) => setForm((f) => ({ ...f, temperature_max_c: Number(e.target.value) }))}
-          />
-          <TextField
-            label="Vibration max (Hz)"
-            type="number"
-            value={form.vibration_max_hz}
-            onChange={(e) => setForm((f) => ({ ...f, vibration_max_hz: Number(e.target.value) }))}
-          />
-          <TextField
-            label="Ratio de surconsommation"
-            type="number"
-            step="0.1"
-            value={form.surconsommation_ratio}
-            onChange={(e) => setForm((f) => ({ ...f, surconsommation_ratio: Number(e.target.value) }))}
-          />
-          <Button type="submit" disabled={mutation.isPending} className="sm:col-span-3 sm:w-fit">
-            {mutation.isPending ? 'Enregistrement…' : 'Enregistrer'}
-          </Button>
-          {mutation.isSuccess && <p className="text-sm text-confirm sm:col-span-3">Seuils mis à jour.</p>}
-        </form>
+        {current && (
+          <dl>
+            <div className={ROW}>
+              <dt className="text-text-secondary">Température max</dt>
+              <dd className="font-semibold text-text-primary">{formatNumberFr(current.temperature_max_c, 1)}{NARROW_NBSP}°C</dd>
+            </div>
+            <div className={ROW}>
+              <dt className="text-text-secondary">Vibration max</dt>
+              <dd className="font-semibold text-text-primary">{formatNumberFr(current.vibration_max_hz, 1)}{NARROW_NBSP}Hz</dd>
+            </div>
+            <div className={ROW}>
+              <dt className="text-text-secondary">Ratio de surconsommation</dt>
+              <dd className="font-semibold text-text-primary">{String(current.surconsommation_ratio).replace('.', ',')}</dd>
+            </div>
+          </dl>
+        )}
       </MetricState>
-    </Card>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-fit"
+        disabled={!current}
+        onClick={() => {
+          if (current) setForm(current)
+          mutation.reset()
+          setStep('form')
+        }}
+      >
+        Modifier les seuils
+      </Button>
+
+      {step === 'form' && (
+        <Modal
+          title="Modifier les seuils d’alerte"
+          description="S’appliquent à tous vos appareils."
+          onClose={() => setStep(null)}
+          width="lg"
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={() => setStep(null)}>
+                Annuler
+              </Button>
+              <Button type="submit" form="thresholds-form">
+                Enregistrer
+              </Button>
+            </>
+          }
+        >
+          <form
+            id="thresholds-form"
+            className="flex flex-col gap-3"
+            onSubmit={(event) => {
+              event.preventDefault()
+              setStep('confirm')
+            }}
+          >
+            <div className="grid gap-3 sm:grid-cols-3">
+              <TextField label="Température max (°C)" type="number" step="0.1" value={form.temperature_max_c} onChange={(e) => setForm((f) => ({ ...f, temperature_max_c: Number(e.target.value) }))} />
+              <TextField label="Vibration max (Hz)" type="number" step="0.1" value={form.vibration_max_hz} onChange={(e) => setForm((f) => ({ ...f, vibration_max_hz: Number(e.target.value) }))} />
+              <TextField label="Ratio de surconsommation" type="number" step="0.1" value={form.surconsommation_ratio} onChange={(e) => setForm((f) => ({ ...f, surconsommation_ratio: Number(e.target.value) }))} />
+            </div>
+            <p className="text-xs text-text-secondary">Au-delà de ces valeurs, un appareil passe en « Anomalie détectée » et une alerte apparaît.</p>
+          </form>
+        </Modal>
+      )}
+
+      {step === 'confirm' && (
+        <ConfirmEditModal
+          subject="Les alertes seront recalculées avec ces seuils."
+          changes={changes}
+          pending={mutation.isPending}
+          error={mutation.error}
+          onBack={() => setStep('form')}
+          onConfirm={() => mutation.mutate(form, { onSuccess: () => setStep(null) })}
+        />
+      )}
+    </section>
   )
 }
 

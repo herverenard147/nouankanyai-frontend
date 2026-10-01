@@ -9,17 +9,17 @@ export function Footer() {
   const [openDoc, setOpenDoc] = useState<'cgu' | 'confidentialite' | null>(null)
 
   return (
-    <footer className="border-t border-border py-14">
-      <div className="mx-auto max-w-[1120px] px-6">
+    <footer className="bg-dark-bg py-14 text-dark-text">
+      <div className="mx-auto max-w-[1200px] px-6">
         <div className="mb-9 grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr))]">
           <div>
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="Nouankany" className="h-[26px] w-[26px] object-contain" />
-              <span className="font-bold text-text-primary" style={{ fontFamily: 'var(--font-heading)' }}>
+              <span className="font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
                 Nouankany
               </span>
             </div>
-            <p className="mt-2 text-[0.8rem] text-text-secondary">
+            <p className="mt-2 text-[0.85rem] text-dark-text">
               Plateforme logicielle en démonstration active, avec instrumentation IoT ciblée dès le pilote
               industriel de 6 à 9 mois. Nous ne confondons pas preuve de concept et industrialisation à grande
               échelle.
@@ -27,27 +27,27 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-mono text-label font-semibold uppercase tracking-wide text-text-primary">
+            <h4 className="text-[0.95rem] font-bold text-white">
               Produit
             </h4>
-            <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
+            <ul className="mt-3 flex flex-col gap-2 text-sm text-dark-text">
               <li>
-                <Link to="/#profils" className="hover:text-text-primary">
+                <Link to="/#profils" className="hover:text-white">
                   Pour qui
                 </Link>
               </li>
               <li>
-                <Link to="/comment-ca-marche" className="hover:text-text-primary">
+                <Link to="/comment-ca-marche" className="hover:text-white">
                   Comment ça marche
                 </Link>
               </li>
               <li>
-                <Link to="/#formules" className="hover:text-text-primary">
+                <Link to="/#formules" className="hover:text-white">
                   Formules
                 </Link>
               </li>
               <li>
-                <Link to="/#confiance" className="hover:text-text-primary">
+                <Link to="/#confiance" className="hover:text-white">
                   Notre engagement
                 </Link>
               </li>
@@ -55,22 +55,22 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-mono text-label font-semibold uppercase tracking-wide text-text-primary">
+            <h4 className="text-[0.95rem] font-bold text-white">
               Entreprise
             </h4>
-            <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
+            <ul className="mt-3 flex flex-col gap-2 text-sm text-dark-text">
               <li>
-                <Link to="/#apropos" className="hover:text-text-primary">
+                <Link to="/#apropos" className="hover:text-white">
                   Qui sommes-nous
                 </Link>
               </li>
               <li>
-                <Link to="/#contact" className="hover:text-text-primary">
+                <Link to="/#contact" className="hover:text-white">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link to="/#faq" className="hover:text-text-primary">
+                <Link to="/#faq" className="hover:text-white">
                   FAQ
                 </Link>
               </li>
@@ -78,10 +78,10 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-mono text-label font-semibold uppercase tracking-wide text-text-primary">Légal</h4>
-            <ul className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
+            <h4 className="text-[0.95rem] font-bold text-white">Légal</h4>
+            <ul className="mt-3 flex flex-col gap-2 text-sm text-dark-text">
               <li>
-                <button type="button" onClick={() => setOpenDoc('cgu')} className="text-left hover:text-text-primary">
+                <button type="button" onClick={() => setOpenDoc('cgu')} className="text-left hover:text-white">
                   Conditions Générales d&rsquo;Utilisation
                 </button>
               </li>
@@ -89,7 +89,7 @@ export function Footer() {
                 <button
                   type="button"
                   onClick={() => setOpenDoc('confidentialite')}
-                  className="text-left hover:text-text-primary"
+                  className="text-left hover:text-white"
                 >
                   Politique de confidentialité
                 </button>
@@ -98,7 +98,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-5 text-sm text-text-secondary">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-dark-field-border pt-5 text-sm text-dark-text">
           <span>© 2026 Nouankany. Tous droits réservés.</span>
         </div>
       </div>

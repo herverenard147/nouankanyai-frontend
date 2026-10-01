@@ -1,70 +1,42 @@
-import { Link } from 'react-router-dom'
-
-import { AdviceList } from '@/components/advice/AdviceList'
-import { AlertSection } from '@/components/alerts/AlertSection'
-import { ResolutionsList } from '@/components/anomalies/ResolutionsList'
+import { AlertsSummary } from '@/components/overview/AlertsSummary'
+import { KpiStrip } from '@/components/overview/KpiStrip'
+import { MachinesSummary } from '@/components/overview/MachinesSummary'
+import { PredictionSummary } from '@/components/overview/PredictionSummary'
+import { ShortcutList } from '@/components/overview/ShortcutList'
+import { useShortcutCatalog } from '@/components/overview/useShortcutCatalog'
 import { DemoDataBanner } from '@/components/demo/DemoDataBanner'
-import { PredictionPanel } from '@/components/prediction/PredictionPanel'
-import { KpiGrid } from '@/components/kpi/KpiGrid'
-import { ActionPlanList } from '@/components/plan/ActionPlanList'
-import { TariffSection } from '@/components/tariff/TariffSection'
-import { MetricState } from '@/components/state/MetricState'
-import { DataTable } from '@/components/table/DataTable'
-import type { TableColumn } from '@/components/table/DataTable'
-import { useMachinesTable } from '@/hooks/queries/useMachinesTable'
-import { levelAtLeast } from '@/lib/levelGating'
+import { industrieOverviewBlocks, kpiTargets } from '@/lib/overviewLevels'
 import { useLevel } from '@/store/levelStore'
-import type { MachineRow } from '@/types/domain'
 
-// Température/vibration/pression sont des relevés capteur bruts — réservés
-// au niveau "technique", niveau par défaut Industrie (voir
-// DEFAULT_LEVEL_BY_PROFILE) : aucun changement pour qui n'y touche pas.
-const COLUMNS_BASE: TableColumn<MachineRow>[] = [
-  { key: 'machine', label: 'Machine' },
-  { key: 'statut', label: 'Statut' },
-  { key: 'priorite', label: 'Priorité' },
-]
-const COLUMNS_FULL: TableColumn<MachineRow>[] = [
-  { key: 'machine', label: 'Machine' },
-  { key: 'temperature', label: 'Température' },
-  { key: 'vibration', label: 'Vibration' },
-  { key: 'pression', label: 'Pression' },
-  { key: 'statut', label: 'Statut' },
-  { key: 'priorite', label: 'Priorité' },
-]
-
+/**
+ * Vue d'ensemble INDUSTRIE : tient sur un écran (voir DESIGN.md, maquettes G1/G2). Elle ne montre que
+ * l'essentiel et renvoie vers les pages de détail ; ce que chaque niveau (débutant / amateur /
+ * technique) affiche est décidé dans lib/overviewLevels.ts, pas ici.
+ */
 export function IndustrieOverview() {
-  const machinesQuery = useMachinesTable('industrie')
   const level = useLevel('industrie')
-  const columns = levelAtLeast(level, 'technique') ? COLUMNS_FULL : COLUMNS_BASE
+  const blocks = industrieOverviewBlocks(level)
+  const catalog = useShortcutCatalog('industrie')
 
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-5">
       <DemoDataBanner />
       <p className="text-sm text-text-secondary">
         Vue d&rsquo;ensemble de votre site industriel : consommation, prédiction, machines suivies et plan d&rsquo;action
         en cours.
       </p>
-      <AlertSection profile="industrie" level={level} maxActionAlerts={2} />
-      <KpiGrid profile="industrie" />
-      <TariffSection profile="industrie" />
-      <PredictionPanel profile="industrie" level={level} />
-      <AdviceList profile="industrie" level={level} maxItems={2} />
 
-      <section className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-section-title font-semibold text-text-primary">{machinesQuery.data?.title ?? 'Métadonnées machine'}</h2>
-          <Link to="/app/machines" className="text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
-            Voir toutes les machines
-          </Link>
-        </div>
-        <MetricState status={machinesQuery.status} isEmpty={machinesQuery.data?.rows.length === 0}>
-          {machinesQuery.data && <DataTable columns={columns} rows={machinesQuery.data.rows} />}
-        </MetricState>
-      </section>
+      <KpiStrip profile="industrie" targets={kpiTargets('industrie')} />
 
-      <ActionPlanList profile="industrie" level={level} />
-      <ResolutionsList profile="industrie" level={level} />
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.55fr_1fr] lg:gap-9">
+        <PredictionSummary profile="industrie" />
+        <AlertsSummary profile="industrie" max={2} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.55fr_1fr] lg:gap-9">
+        <MachinesSummary columns={blocks.machineColumns} max={5} />
+        <ShortcutList items={blocks.shortcuts.map((id) => catalog[id])} />
+      </div>
     </div>
   )
 }

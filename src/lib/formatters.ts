@@ -4,28 +4,38 @@ const numberFormatterOneDecimal = new Intl.NumberFormat('fr-FR', {
   maximumFractionDigits: 1,
 })
 
-// Intl.NumberFormat('fr-FR') insère U+202F (narrow no-break space) entre les milliers ;
-// on la normalise en espace normale (U+0020) pour un rendu prévisible dans toutes les polices.
-const NARROW_NBSP = String.fromCodePoint(0x202f)
+// Espace fine insécable (U+202F) : séparateur de milliers de Intl.NumberFormat('fr-FR') ET espace avant
+// l'unité (« 1 500 FCFA », « 75,0 °C »). Une espace pleine, ou une police mono, laissait un trou visible
+// entre le nombre et son unité (retour du propriétaire, voir DESIGN.md règle 8).
+export const NARROW_NBSP = String.fromCodePoint(0x202f)
 const NBSP = String.fromCodePoint(0x00a0)
-const NON_BREAKING_SPACES = new RegExp(`[${NARROW_NBSP}${NBSP}]`, 'g')
+const NON_BREAKING_SPACES = new RegExp(`[${NBSP}]`, 'g')
 
-/** Formate un nombre en notation française : espace pour les milliers, virgule décimale. */
+/** Formate un nombre en notation française : espace fine pour les milliers, virgule décimale. */
 export function formatNumberFr(value: number, decimals: 0 | 1 = 0): string {
   const formatted = decimals === 0 ? numberFormatterInt.format(value) : numberFormatterOneDecimal.format(value)
-  return formatted.replace(NON_BREAKING_SPACES, ' ')
+  return formatted.replace(NON_BREAKING_SPACES, NARROW_NBSP)
 }
 
 export function formatFcfa(value: number): string {
-  return `${formatNumberFr(value)} FCFA`
+  return `${formatNumberFr(value)}${NARROW_NBSP}FCFA`
 }
 
 export function formatKwh(value: number, decimals: 0 | 1 = 0): string {
-  return `${formatNumberFr(value, decimals)} kWh`
+  return `${formatNumberFr(value, decimals)}${NARROW_NBSP}kWh`
 }
 
 export function formatPercent(value: number, decimals: 0 | 1 = 0): string {
-  return `${formatNumberFr(value, decimals)} %`
+  return `${formatNumberFr(value, decimals)}${NARROW_NBSP}%`
+}
+
+/** Horodatage UTC du backend (ISO sans fuseau) → « 01/10/2026 01:12:09 », heure UTC. */
+export function formatUtcDateTime(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  const date = new Date(/[zZ]|[+-]\d\d:\d\d$/.test(iso) ? iso : `${iso}Z`)
+  if (Number.isNaN(date.getTime())) return '—'
+  const two = (n: number) => String(n).padStart(2, '0')
+  return `${two(date.getUTCDate())}/${two(date.getUTCMonth() + 1)}/${date.getUTCFullYear()} ${two(date.getUTCHours())}:${two(date.getUTCMinutes())}:${two(date.getUTCSeconds())}`
 }
 
 /**

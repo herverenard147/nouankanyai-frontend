@@ -1,6 +1,6 @@
+import { impactClassName } from '@/lib/severity'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
-import { Card } from '@/components/ui/Card'
 import { levelAtLeast } from '@/lib/levelGating'
 import { useRecommendations } from '@/hooks/queries/useRecommendations'
 import type { Level, Profile } from '@/types/domain'
@@ -24,17 +24,17 @@ export function RecommendationList({ profile, level }: RecommendationListProps) 
         pour chaque équipement.
       </p>
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col border-t-2 border-text-primary">
           {query.data?.map((reco) => (
-            <Card key={reco.rank} className="flex flex-wrap items-center gap-4 p-5">
-              <span className="font-mono text-lg font-semibold text-text-tertiary">{reco.rank}</span>
+            <div key={reco.rank} className="flex flex-wrap items-center gap-4 border-b border-border py-4">
+              <span className="text-lg font-semibold tabular-nums text-text-tertiary">{reco.rank}</span>
               <div className="min-w-[200px] flex-1">
                 <p className="font-semibold text-text-primary">{reco.title}</p>
                 <p className="text-sm text-text-secondary">{reco.detail}</p>
               </div>
-              {showImpact && <span className="font-mono text-lg font-semibold text-confirm">{reco.impactLabel}</span>}
+              {showImpact && <span className={`text-lg font-semibold tabular-nums ${impactClassName(reco.impactKind, reco.impactLabel)}`}>{reco.impactLabel}</span>}
               <ProvenanceBadge value={reco.provenance} />
-            </Card>
+            </div>
           ))}
         </div>
       </MetricState>

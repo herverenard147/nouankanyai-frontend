@@ -3,15 +3,6 @@ import type { Level } from '@/types/domain'
 
 const PROFILES: { tag: string; caption: string; images: string[]; title: string; body: string; level: Level; badge?: string }[] = [
   {
-    tag: 'PME',
-    caption:
-      'Pressing (machines à laver, séchoirs) et bureau informatique (postes, serveur), les deux gros postes de consommation PME',
-    images: ['/images/profiles/pme-pressing.jpg', '/images/profiles/pme-informatique.jpg'],
-    title: 'Arbitrer sans risque',
-    body: 'Seuils par appareil, conseils priorisés par impact sur la marge, rapport hebdomadaire exploitable sans expertise technique.',
-    level: 'amateur',
-  },
-  {
     tag: 'Industrie',
     caption:
       'Équipements des 4 secteurs pilotes : industrie, grande distribution, hôtellerie, santé',
@@ -24,6 +15,15 @@ const PROFILES: { tag: string; caption: string; images: string[]; title: string;
     title: 'Piloter la charge',
     body: 'Alertes multi-niveaux, détection d’anomalie machine, plan d’action chiffré. Pensé pour un usage technique quotidien.',
     level: 'technique',
+  },
+  {
+    tag: 'PME',
+    caption:
+      'Pressing (machines à laver, séchoirs) et bureau informatique (postes, serveur), les deux gros postes de consommation PME',
+    images: ['/images/profiles/pme-pressing.jpg', '/images/profiles/pme-informatique.jpg'],
+    title: 'Arbitrer sans risque',
+    body: 'Seuils par appareil, conseils priorisés par impact sur la marge, rapport hebdomadaire exploitable sans expertise technique.',
+    level: 'amateur',
   },
   {
     tag: 'Ménage',
@@ -42,30 +42,29 @@ const PROFILES: { tag: string; caption: string; images: string[]; title: string;
 
 export function ProfilesSection() {
   return (
-    <section id="profils" className="py-16">
-      <div className="mx-auto max-w-[1120px] px-6">
-        <div className="mb-10 flex flex-col gap-2">
-          <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
-            PME et Industrie d&rsquo;abord, ménages ensuite
-          </p>
-          <h2 className="text-h2-section font-bold text-text-primary">Le dashboard s&rsquo;adapte à qui l&rsquo;utilise</h2>
-          <p className="max-w-[60ch] text-small-body text-text-secondary">
-            PME et Industrie sont en phase pilote active dès aujourd&rsquo;hui. La formule Ménage arrive dans un
-            second temps, une fois le pilote industriel consolidé. Le niveau de détail affiché s&rsquo;adapte à
-            votre profil, et reste modifiable à tout moment.
-          </p>
-        </div>
+    <section id="profils" className="py-20 lg:py-28">
+      <div className="mx-auto max-w-[1200px] px-6">
+        <h2 className="max-w-[18ch] text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
+          Le dashboard s&rsquo;adapte à qui l&rsquo;utilise
+        </h2>
+        <p className="mt-4 max-w-[60ch] text-text-secondary">
+          PME et Industrie sont en phase pilote active dès aujourd&rsquo;hui. La formule Ménage arrive dans un
+          second temps, une fois le pilote industriel consolidé. Le niveau de détail affiché s&rsquo;adapte à
+          votre profil, et reste modifiable à tout moment.
+        </p>
 
-        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))]">
-          {PROFILES.map((profile) => {
+        <div className="mt-14 flex flex-col gap-16 lg:mt-16 lg:gap-20">
+          {PROFILES.map((profile, index) => {
             const cycleSuffix = profile.images.length as 2 | 3 | 4
             return (
               <div
                 key={profile.tag}
-                className="flex flex-col rounded-segment border border-border bg-card transition-colors duration-150 ease-out hover:border-text-tertiary"
+                className="grid items-center gap-8 lg:grid-cols-[6fr_5fr] lg:gap-14"
               >
                 <div
-                  className="relative aspect-[4/3] w-full overflow-hidden rounded-t-segment"
+                  className={`relative aspect-[4/3] w-full overflow-hidden lg:aspect-[16/11] ${
+                    index % 2 === 1 ? 'lg:order-2' : ''
+                  }`}
                   role="img"
                   aria-label={profile.caption}
                 >
@@ -95,18 +94,17 @@ export function ProfilesSection() {
                     </div>
                   )}
                 </div>
-                <div className="flex flex-1 flex-col gap-2 p-5.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-mono text-caption font-semibold uppercase tracking-wide text-text-secondary">
-                      {profile.tag}
-                    </p>
-                    {profile.badge && (
-                      <span className="w-fit text-caption font-semibold text-text-tertiary">· {profile.badge}</span>
-                    )}
-                  </div>
-                  <h3 className="text-h3-card font-semibold text-text-primary">{profile.title}</h3>
-                  <p className="text-sm text-text-secondary">{profile.body}</p>
-                  <div className="mt-auto border-t border-border pt-3.5">
+                <div className="flex flex-col gap-3">
+                  <p className="font-mono text-sm font-semibold text-accent-cta">
+                    {profile.tag}
+                    {profile.badge && <span> · {profile.badge}</span>}
+                  </p>
+                  <h3 className="text-[clamp(1.75rem,3vw,2.125rem)] font-bold leading-tight tracking-[-0.02em] text-text-primary">
+                    {profile.title}
+                  </h3>
+                  <p className="text-text-secondary">{profile.body}</p>
+                  <p className="text-sm text-text-secondary">{profile.caption}.</p>
+                  <div className="mt-2 border-t border-border pt-4">
                     <LevelSelector value={profile.level} readOnly />
                   </div>
                 </div>

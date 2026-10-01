@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import type { Provenance } from '@/types/domain'
@@ -13,6 +13,8 @@ interface DataTableProps<T extends { id: string; provenance: Provenance }> {
   rows: T[]
   onRowClick?: (row: T) => void
   searchPlaceholder?: string
+  /** Colonne d'actions en fin de ligne (Modifier / Supprimer) ; un clic dessus n'ouvre pas la fiche détail. */
+  renderActions?: (row: T) => ReactNode
 }
 
 export function DataTable<T extends { id: string; provenance: Provenance }>({
@@ -20,6 +22,7 @@ export function DataTable<T extends { id: string; provenance: Provenance }>({
   rows,
   onRowClick,
   searchPlaceholder = 'Rechercher…',
+  renderActions,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState<keyof T | null>(null)
@@ -59,7 +62,7 @@ export function DataTable<T extends { id: string; provenance: Provenance }>({
         aria-label={searchPlaceholder}
         className="focus-ring min-h-11 w-full max-w-xs rounded-control border border-border bg-card px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary"
       />
-      <div className="overflow-x-auto rounded-card border border-border">
+      <div className="overflow-x-auto border-y border-border">
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <thead className="bg-bg-elevated">
             <tr>
@@ -78,6 +81,7 @@ export function DataTable<T extends { id: string; provenance: Provenance }>({
               <th scope="col" className="px-4 py-3 text-left font-mono text-mono-axis font-semibold uppercase tracking-wide text-text-secondary">
                 Provenance
               </th>
+              {renderActions && <th scope="col" className="relative px-4 py-3"><span className="sr-only">Actions</span></th>}
             </tr>
           </thead>
           <tbody>
@@ -98,11 +102,16 @@ export function DataTable<T extends { id: string; provenance: Provenance }>({
                 <td className="px-4 py-3">
                   <ProvenanceBadge value={row.provenance} />
                 </td>
+                {renderActions && (
+                  <td className="px-4 py-3 text-right" onClick={(event) => event.stopPropagation()}>
+                    {renderActions(row)}
+                  </td>
+                )}
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={columns.length + 1} className="px-4 py-6 text-center text-text-secondary">
+                <td colSpan={columns.length + (renderActions ? 2 : 1)} className="px-4 py-6 text-center text-text-secondary">
                   Aucun résultat.
                 </td>
               </tr>

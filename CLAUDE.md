@@ -10,9 +10,24 @@ qui n'y est pas ou ce qui a changé depuis.
 ## Ce dépôt est un frontend seul, branché sur un backend séparé
 
 Le backend réel vit dans `../NouanKanyAI/` (dépôt git distinct,
-`herverenard147/NouanKanyAI`, branche `feature/merge-steph-ml-subsystem`). Ce
-dépôt-ci (`NouanKanyAI Landing et Dashboard/`) n'a **aucun commit** à ce jour
-— tout est en `Fichiers non suivis`. Ne pas supposer un historique git.
+`herverenard147/nouankanyai`, branche `main` ; le frontend était branché sur
+`feature/merge-steph-ml-subsystem`). Ce dépôt-ci a maintenant un historique git
+(`herverenard147/nouankanyai-frontend`) : le travail de refonte design est sur la
+branche `claude/nouankany-design-propositions-5o9kyw` (PR en brouillon).
+
+## Design et écrans : lire `DESIGN.md` avant de toucher à l'interface
+
+`DESIGN.md` (racine) fixe les règles de design, la matrice profil × niveau
+(débutant / amateur / technique), l'état écran par écran (fait / à faire), les
+décisions en attente et la procédure de test en local avec le vrai backend. Le
+niveau d'affichage doit changer réellement chaque écran, pour chaque type de
+compte : ne pas contourner `src/lib/overviewLevels.ts`.
+
+## Mise en ligne : lire `MISE_EN_LIGNE.md`
+
+`MISE_EN_LIGNE.md` (racine) dit quel projet Vercel (`nouankany-staging-frontend`) et quel service Railway
+(`nouankany-staging-backend`) sont les bons, le projet Vercel relié par erreur au dépôt backend (`nouankanyai-frontend`), l'ordre
+de déploiement (backend d'abord), CORS, la création des données de démonstration et les tests à faire.
 
 ## Faire tourner les deux en local
 

@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { X } from 'lucide-react'
 
-import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { Button } from '@/components/ui/Button'
+import { ConfirmEditModal, Modal, MutationError, SelectField, type FieldChange } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
 import { useAddMachine, useUpdateMachine } from '@/hooks/queries/useMachineCrud'
 import { useSites } from '@/hooks/queries/useSites'
-import { onEscape } from '@/lib/a11y'
-import { ApiError } from '@/lib/apiClient'
+import { formatNumberFr } from '@/lib/formatters'
+import { priorityLabel } from '@/api/backendHelpers'
 import type { BackendMachine } from '@/types/backend'
 
 interface MachineFormDrawerProps {
@@ -24,14 +23,18 @@ const PRIORITIES = [
   { value: 'haute', label: 'Haute' },
 ]
 
-/** Formulaire d'ajout/modification, partagé entre EquipmentPage (PME) et
- * MachinesPage (Industrie) — même ressource backend (`/api/machines`). */
+/**
+ * Modale d'ajout/modification, partagée entre EquipmentPage (PME) et MachinesPage (Industrie) — même
+ * ressource backend (`/api/machines`). L'ajout s'enregistre directement ; la modification passe par une
+ * seconde modale de validation (avant → après), voir DESIGN.md §8. (Le nom du fichier est historique : c'était
+ * un tiroir.)
+ */
 export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDrawerProps) {
   const isEdit = machine !== null
   const sitesQuery = useSites()
   const addMutation = useAddMachine()
   const updateMutation = useUpdateMachine()
-  const mutation = isEdit ? updateMutation : addMutation
+  const [step, setStep] = useState<'form' | 'confirm'>('form')
 
   const [form, setForm] = useState({
     nom: machine?.nom ?? '',
@@ -43,11 +46,23 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     priority: machine?.priority ?? 'moyenne',
     site_id: machine?.site_id ?? '',
   })
+  const siteName = (id: string) => sitesQuery.data?.find((site) => site.id === id)?.nom ?? 'Non associé'
 
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault()
+  const changes: FieldChange[] = machine
+    ? [
+        { label: 'Nom', before: machine.nom, after: form.nom },
+        { label: 'Catégorie', before: machine.categorie ?? '', after: form.categorie },
+        { label: 'Marque', before: machine.marque ?? '', after: form.marque },
+        { label: 'Modèle', before: machine.modele ?? '', after: form.modele },
+        { label: 'Numéro de série', before: machine.numero_serie ?? '', after: form.numero_serie },
+        { label: 'Puissance', before: `${formatNumberFr(machine.power_kw, 1)} kW`, after: form.power_kw ? `${formatNumberFr(Number(form.power_kw), 1)} kW` : '' },
+        { label: 'Priorité', before: priorityLabel(machine.priority), after: priorityLabel(form.priority) },
+        { label: 'Site', before: siteName(machine.site_id ?? ''), after: siteName(form.site_id) },
+      ].filter((change) => change.before !== change.after)
+    : []
+
+  function save() {
     const power_kw = form.power_kw ? Number(form.power_kw) : undefined
-
     if (isEdit && machine) {
       updateMutation.mutate(
         {
@@ -81,116 +96,77 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-40 flex justify-end bg-dark-bg/40 overlay-backdrop">
-      <button type="button" aria-label="Fermer" className="absolute inset-0 cursor-default" onClick={onClose} />
-      <aside
-        className="relative flex h-full w-full max-w-sm flex-col gap-4 overflow-y-auto bg-card p-6 shadow-assistant-panel overlay-panel-right"
-        role="dialog"
-        aria-modal="true"
-        aria-label={isEdit ? `Modifier ${itemLabel}` : `Ajouter ${itemLabel}`}
-        onKeyDown={onEscape(onClose)}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="text-section-title font-semibold text-text-primary">
-            {isEdit ? `Modifier ${itemLabel}` : `Ajouter ${itemLabel}`}
-          </h3>
-          <button type="button" onClick={onClose} className="focus-ring rounded-control p-1 text-text-secondary hover:text-text-primary" aria-label="Fermer">
-            <X className="h-4 w-4" aria-hidden="true" />
-          </button>
-        </div>
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+    if (isEdit) setStep('confirm')
+    else save()
+  }
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+  if (step === 'confirm' && machine) {
+    return (
+      <ConfirmEditModal
+        subject={`Vous allez modifier « ${machine.nom} ».`}
+        changes={changes}
+        pending={updateMutation.isPending}
+        error={updateMutation.error}
+        onConfirm={save}
+        onBack={() => setStep('form')}
+      />
+    )
+  }
+
+  const title = isEdit ? `Modifier « ${machine?.nom} »` : `Ajouter ${itemLabel}`
+  const pending = addMutation.isPending
+
+  return (
+    <Modal
+      title={title}
+      description={isEdit ? 'Seuls les champs modifiés sont mis à jour.' : 'La puissance vient du catalogue quand le modèle y figure, sinon saisissez-la.'}
+      onClose={onClose}
+      width="lg"
+      actions={
+        <>
+          <Button type="button" variant="outline" onClick={onClose}>
+            Annuler
+          </Button>
+          <Button type="submit" form="machine-form" disabled={pending}>
+            {pending ? 'Enregistrement…' : isEdit ? 'Enregistrer' : 'Ajouter'}
+          </Button>
+        </>
+      }
+    >
+      <form id="machine-form" onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <TextField label="Nom" required value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} />
+          {isEdit ? (
+            <SelectField label="Priorité" value={form.priority} onChange={(value) => setForm((f) => ({ ...f, priority: value }))} options={PRIORITIES} />
+          ) : (
+            <TextField label="Numéro de série" value={form.numero_serie} onChange={(e) => setForm((f) => ({ ...f, numero_serie: e.target.value }))} />
+          )}
+          <TextField label="Catégorie" value={form.categorie} onChange={(e) => setForm((f) => ({ ...f, categorie: e.target.value }))} />
+          <TextField label="Marque" value={form.marque} onChange={(e) => setForm((f) => ({ ...f, marque: e.target.value }))} />
+          <TextField label="Modèle" value={form.modele} onChange={(e) => setForm((f) => ({ ...f, modele: e.target.value }))} />
           <TextField
-            label="Nom"
-            required
-            value={form.nom}
-            onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))}
-          />
-          <TextField
-            label="Catégorie"
-            value={form.categorie}
-            onChange={(e) => setForm((f) => ({ ...f, categorie: e.target.value }))}
-          />
-          <TextField
-            label="Marque"
-            value={form.marque}
-            onChange={(e) => setForm((f) => ({ ...f, marque: e.target.value }))}
-          />
-          <TextField
-            label="Modèle"
-            value={form.modele}
-            onChange={(e) => setForm((f) => ({ ...f, modele: e.target.value }))}
-          />
-          <TextField
-            label="Numéro de série"
-            value={form.numero_serie}
-            onChange={(e) => setForm((f) => ({ ...f, numero_serie: e.target.value }))}
-          />
-          <TextField
-            label="Puissance (kW)"
+            label="Puissance nominale (kW)"
             type="number"
             step="0.1"
             min="0"
             value={form.power_kw}
             onChange={(e) => setForm((f) => ({ ...f, power_kw: e.target.value }))}
           />
-          {!isEdit && (
-            <p className="text-xs text-text-secondary">
-              Si le modèle ne correspond à aucun modèle du catalogue, la puissance (kW) est obligatoire.
-            </p>
-          )}
-
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="machine-site" className="text-sm font-medium text-text-primary">
-              Site
-            </label>
-            <select
-              id="machine-site"
-              value={form.site_id}
-              onChange={(e) => setForm((f) => ({ ...f, site_id: e.target.value }))}
-              className="focus-ring min-h-11 rounded-control border border-border bg-card px-3.5 py-3 text-sm text-text-primary"
-            >
-              <option value="">Non associé</option>
-              {sitesQuery.data?.map((site) => (
-                <option key={site.id} value={site.id}>
-                  {site.nom}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {isEdit && (
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="machine-priority" className="text-sm font-medium text-text-primary">
-                Priorité
-              </label>
-              <select
-                id="machine-priority"
-                value={form.priority}
-                onChange={(e) => setForm((f) => ({ ...f, priority: e.target.value }))}
-                className="focus-ring min-h-11 rounded-control border border-border bg-card px-3.5 py-3 text-sm text-text-primary"
-              >
-                {PRIORITIES.map((p) => (
-                  <option key={p.value} value={p.value}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <TextField label="Numéro de série" value={form.numero_serie} onChange={(e) => setForm((f) => ({ ...f, numero_serie: e.target.value }))} />
           )}
-
-          <Button type="submit" disabled={mutation.isPending} className="mt-2 w-fit">
-            {mutation.isPending ? 'Enregistrement…' : isEdit ? 'Enregistrer les modifications' : 'Ajouter'}
-          </Button>
-          {mutation.isError && (
-            <ApiErrorMessage
-              message={mutation.error instanceof ApiError ? mutation.error.message : "Échec de l'enregistrement."}
-              className="text-sm text-alert"
-            />
-          )}
-        </form>
-      </aside>
-    </div>
+          <SelectField
+            label="Site"
+            value={form.site_id}
+            onChange={(value) => setForm((f) => ({ ...f, site_id: value }))}
+            options={[{ value: '', label: 'Non associé' }, ...(sitesQuery.data?.map((site) => ({ value: site.id, label: site.nom })) ?? [])]}
+          />
+        </div>
+        {!isEdit && <p className="text-xs text-text-secondary">Cette action sera enregistrée dans l’onglet Audit.</p>}
+        <MutationError error={isEdit ? updateMutation.error : addMutation.error} />
+      </form>
+    </Modal>
   )
 }

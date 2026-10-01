@@ -14,7 +14,7 @@ export function AssistantWidget({ profile }: AssistantWidgetProps) {
   if (profile === 'admin') return null
 
   return (
-    <div className="fixed bottom-7 right-7 z-30 flex flex-col items-end gap-3">
+    <div className="fixed bottom-3 right-4 z-30 flex flex-col items-end gap-3">
       {assistantOpen && <AssistantPanel profile={profile} onClose={toggleAssistant} />}
       <button
         type="button"

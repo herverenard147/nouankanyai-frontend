@@ -4,7 +4,7 @@ import { computeYTicks, formatFcfa, formatKwh, formatNumberFr, formatPercent } f
 
 describe('formatNumberFr', () => {
   it('formats thousands with a French space separator', () => {
-    expect(formatNumberFr(1240)).toBe('1 240')
+    expect(formatNumberFr(1240)).toBe('1\u202f240')
   })
 
   it('formats one decimal with a comma', () => {
@@ -14,9 +14,9 @@ describe('formatNumberFr', () => {
 
 describe('formatFcfa / formatKwh / formatPercent', () => {
   it('appends the right unit', () => {
-    expect(formatFcfa(18800)).toBe('18 800 FCFA')
-    expect(formatKwh(142)).toBe('142 kWh')
-    expect(formatPercent(29)).toBe('29 %')
+    expect(formatFcfa(18800)).toBe('18\u202f800\u202fFCFA')
+    expect(formatKwh(142)).toBe('142\u202fkWh')
+    expect(formatPercent(29)).toBe('29\u202f%')
   })
 })
 

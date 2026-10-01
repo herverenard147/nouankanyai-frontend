@@ -19,15 +19,12 @@ export function AdminLeadsPage() {
         recontacter, pas un compte utilisateur.
       </p>
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
-        <div className="overflow-x-auto rounded-card border border-border">
+        <div className="overflow-x-auto border-y border-border">
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead className="bg-bg-elevated">
               <tr>
                 {['Reçu le', 'Entreprise', 'Contact', 'Email', 'Téléphone', 'Segment', 'Statut', 'Message'].map((label) => (
-                  <th
-                    key={label}
-                    className="px-4 py-3 text-left font-mono text-mono-axis font-semibold uppercase tracking-wide text-text-secondary"
-                  >
+                  <th key={label} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">
                     {label}
                   </th>
                 ))}
@@ -36,19 +33,15 @@ export function AdminLeadsPage() {
             <tbody>
               {query.data?.map((lead) => (
                 <tr key={lead.id} className="border-t border-border align-top">
-                  <td className="whitespace-nowrap px-4 py-3 font-mono text-text-secondary">
+                  <td className="whitespace-nowrap px-4 py-3 tabular-nums text-text-secondary">
                     {new Date(lead.created_at).toLocaleString('fr-FR')}
                   </td>
                   <td className="px-4 py-3 text-text-primary">{lead.entreprise}</td>
                   <td className="px-4 py-3 text-text-primary">{lead.contact_nom}</td>
-                  <td className="px-4 py-3 font-mono text-text-secondary">{lead.email}</td>
-                  <td className="px-4 py-3 font-mono text-text-secondary">{lead.telephone ?? '—'}</td>
+                  <td className="px-4 py-3 text-text-secondary">{lead.email}</td>
+                  <td className="px-4 py-3 tabular-nums text-text-secondary">{lead.telephone ?? '—'}</td>
                   <td className="px-4 py-3 text-text-secondary">{SECTOR_LABEL[lead.secteur] ?? lead.secteur}</td>
-                  <td className="px-4 py-3">
-                    <span className="rounded-pill bg-bg-elevated px-2.5 py-1 font-mono text-mono-badge font-semibold text-text-secondary">
-                      {STATUS_LABEL[lead.status] ?? lead.status}
-                    </span>
-                  </td>
+                  <td className="px-4 py-3 text-xs font-semibold text-text-secondary">{STATUS_LABEL[lead.status] ?? lead.status}</td>
                   <td className="max-w-xs px-4 py-3 text-text-secondary">{lead.message ?? '—'}</td>
                 </tr>
               ))}

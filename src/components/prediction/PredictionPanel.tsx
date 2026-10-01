@@ -32,9 +32,12 @@ export function PredictionPanel({ profile, level }: PredictionPanelProps) {
 export function PredictionContent({
   prediction,
   showModelDetails,
+  showModelName = false,
 }: {
   prediction: Prediction
   showModelDetails: boolean
+  /** Admin uniquement : nom du modèle et jeu de données (il suit le comportement des modèles). Jamais côté client. */
+  showModelName?: boolean
 }) {
   const maxPoint = prediction.series.reduce((max, p) => (p.percent > max.percent ? p : max), prediction.series[0])
   const yTicks = maxPoint ? computeYTicks(maxPoint.value, maxPoint.percent) : ['0', '0', '0']
@@ -59,8 +62,8 @@ export function PredictionContent({
         </div>
         <div className="flex flex-col items-end gap-1">
           <ProvenanceBadge value={prediction.provenance} />
-          {showModelDetails && (
-            <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName} · dataset: synthetic</p>
+          {showModelName && (
+            <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName} · jeu de données : synthétique</p>
           )}
         </div>
       </div>
@@ -78,7 +81,13 @@ export function PredictionContent({
         />
       </div>
 
-      {showModelDetails && <p className="text-sm text-text-secondary">{prediction.modelNote}</p>}
+      {showModelDetails && (
+        <p className="text-sm text-text-secondary">
+          {showModelName
+            ? prediction.modelNote
+            : 'Pour chaque appareil, la puissance attendue heure par heure. Un appareil dont la température, la vibration ou la pression dépasse vos seuils d’alerte est signalé dans Alertes ; la courbe se recale à chaque nouveau relevé.'}
+        </p>
+      )}
     </>
   )
 }

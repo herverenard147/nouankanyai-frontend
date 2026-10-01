@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom'
 import { adviceSectionTitle } from '@/api/advice'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { levelAtLeast } from '@/lib/levelGating'
+import { formatNumberFr } from '@/lib/formatters'
+import { impactClassName } from '@/lib/severity'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
-import { Card } from '@/components/ui/Card'
 import { useAdvice } from '@/hooks/queries/useAdvice'
 import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
 import { ApiError } from '@/lib/apiClient'
@@ -30,21 +31,21 @@ interface AdviceListProps {
 
 function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolean }) {
   const resolveMutation = useResolveMachine()
-  // Le diagnostic réutilise la même vérification que "Marquer comme résolu" sur
+  // Le diagnostic réutilise la même vérification que "Vérifier et résoudre" sur
   // /app/alertes (POST /api/machines/{id}/test) : seuls les conseils de type alerte
   // (anomalie/surchauffe/vibration) ont un machineId ET des étapes de dépannage —
   // les conseils d'optimisation/efficacité n'ont rien à "diagnostiquer".
   const canDiagnose = Boolean(advice.machineId) && Boolean(advice.troubleshooting?.length)
 
   return (
-    <Card className="flex flex-col gap-3 p-5">
+    <article className="flex flex-col gap-3 border-b border-border py-4">
       <div className="flex flex-wrap items-center gap-4">
-        <span className="font-mono text-lg font-semibold text-text-tertiary">{advice.rank}</span>
+        <span className="text-lg font-semibold tabular-nums text-text-tertiary">{advice.rank}</span>
         <div className="min-w-[200px] flex-1">
           <p className="font-semibold text-text-primary">{advice.title}</p>
           <p className="text-sm text-text-secondary">{advice.detail}</p>
         </div>
-        {showImpact && <span className="font-mono text-lg font-semibold text-confirm">{advice.impactLabel}</span>}
+        {showImpact && <span className={`text-lg font-semibold tabular-nums ${impactClassName(advice.impactKind, advice.impactLabel)}`}>{advice.impactLabel}</span>}
         <ProvenanceBadge value={advice.provenance} />
       </div>
 
@@ -80,11 +81,11 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
       {resolveMutation.isSuccess && resolveMutation.data && (
         <p className={`text-right text-sm ${resolveMutation.data.resolved ? 'text-confirm' : 'text-alert'}`}>
           {resolveMutation.data.resolved
-            ? `Nouvelle mesure : température ${resolveMutation.data.temperature_c}°C, vibration ${resolveMutation.data.vibration_hz} Hz — dans les seuils normaux.`
-            : `Nouvelle mesure : température ${resolveMutation.data.temperature_c}°C, vibration ${resolveMutation.data.vibration_hz} Hz — l’anomalie persiste. Suivez les étapes ci-dessus, puis réessayez.`}
+            ? `Nouvelle mesure : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz — dans les seuils normaux.`
+            : `Nouvelle mesure : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz — l’anomalie persiste. Suivez les étapes ci-dessus, puis réessayez.`}
         </p>
       )}
-    </Card>
+    </article>
   )
 }
 
@@ -109,7 +110,7 @@ export function AdviceList({ profile, level, markSeenOnView, maxItems }: AdviceL
     <section className="flex flex-col gap-3">
       <h2 className="text-section-title font-semibold text-text-primary">{title}</h2>
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col border-t-2 border-text-primary">
           {visibleAdvice?.map((advice) => (
             <AdviceCard key={advice.rank} advice={advice} showImpact={showImpact} />
           ))}

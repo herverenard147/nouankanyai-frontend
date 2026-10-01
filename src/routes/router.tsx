@@ -7,6 +7,8 @@ import { LoginPage } from '@/pages/auth/LoginPage'
 import { HowItWorksPage } from '@/pages/landing/HowItWorksPage'
 import { LandingPage } from '@/pages/landing/LandingPage'
 import { AdvicePage } from '@/pages/app/AdvicePage'
+import { AuditPage } from '@/pages/app/AuditPage'
+import { PlanActionPage } from '@/pages/app/PlanActionPage'
 import { AlertsPage } from '@/pages/app/AlertsPage'
 import { ConsumptionPage } from '@/pages/app/ConsumptionPage'
 import { EquipmentPage } from '@/pages/app/EquipmentPage'
@@ -59,6 +61,8 @@ export const router = createBrowserRouter([
               { path: 'machines', element: <MachinesPage /> },
               { path: 'rapports', element: <ReportsPage /> },
               { path: 'journal', element: <JournalPage /> },
+              { path: 'audit', element: <AuditPage /> },
+              { path: 'plan-action', element: <PlanActionPage /> },
               { path: 'parametres', element: <SettingsPage /> },
               { path: 'admin/sante', element: <AdminHealthPage /> },
               { path: 'admin/modeles', element: <AdminModelsPage /> },

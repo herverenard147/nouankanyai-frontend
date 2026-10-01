@@ -21,7 +21,7 @@ export function MobileDrawer() {
         aria-modal="true"
         aria-label="Navigation"
         onKeyDown={onEscape(close)}
-        className="relative h-full w-[280px] max-w-[80vw] border-r border-border bg-bg shadow-assistant-panel overlay-panel-right"
+        className="relative h-full w-[280px] max-w-[80vw] border-r border-dark-field-border bg-dark-bg shadow-assistant-panel overlay-panel-right"
       >
         <SideRail onNavigate={close} />
       </div>

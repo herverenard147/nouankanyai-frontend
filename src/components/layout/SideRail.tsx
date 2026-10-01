@@ -1,8 +1,10 @@
+import { LogOut } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
 
 import { SensorDisclaimer } from '@/components/layout/SensorDisclaimer'
 import { useAlertsBadgeCount, useAdviceBadgeCount } from '@/hooks/useNotificationBadges'
 import { NAV_BY_PROFILE } from '@/lib/navConfig'
+import { NAV_ICONS } from '@/lib/navIcons'
 import { useSessionStore } from '@/store/sessionStore'
 
 interface SideRailProps {
@@ -12,12 +14,17 @@ interface SideRailProps {
 function NavBadge({ count }: { count: number }) {
   if (count <= 0) return null
   return (
-    <span className="ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-alert px-1.5 font-mono text-[0.65rem] font-bold text-white">
+    <span className="ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center bg-accent px-1.5 font-mono text-[0.7rem] font-semibold text-text-primary">
       {count > 99 ? '99+' : count}
     </span>
   )
 }
 
+/**
+ * Barre latérale statique (le conteneur est collé à l'écran : sticky h-screen dans AppLayout, tiroir
+ * plein hauteur sur mobile) : fond sombre, navigation avec icônes, rappel capteurs et déconnexion
+ * toujours visibles sans défiler la page.
+ */
 export function SideRail({ onNavigate }: SideRailProps) {
   const session = useSessionStore((s) => s.session)
   const logout = useSessionStore((s) => s.logout)
@@ -28,34 +35,35 @@ export function SideRail({ onNavigate }: SideRailProps) {
   const entries = NAV_BY_PROFILE[session.profile]
 
   return (
-    <div className="flex h-full flex-col gap-6 p-4">
-      <Link to="/app/apercu" onClick={onNavigate} className="focus-ring flex items-center gap-2 rounded-control px-2 py-1">
-        <img src="/logo.png" alt="Nouankany" className="h-8 w-8 object-contain" />
-        <span className="text-sm font-bold text-text-primary" style={{ fontFamily: 'var(--font-heading)' }}>
+    <div className="flex h-full flex-col gap-4 bg-dark-bg px-2.5 py-4 text-dark-text">
+      <Link to="/app/apercu" onClick={onNavigate} className="focus-ring flex items-center gap-2.5 px-3.5 pb-2 pt-1">
+        <img src="/logo.png" alt="Nouankany" className="h-7 w-7 object-contain" />
+        <span className="text-base font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
           Nouankany
         </span>
       </Link>
 
-      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto" aria-label="Navigation principale">
-        {entries.map((entry) => (
-          <NavLink
-            key={entry.path}
-            to={entry.path}
-            onClick={onNavigate}
-            className={({ isActive }) =>
-              `focus-ring flex min-h-11 items-center gap-2.5 rounded-control px-2.5 text-sm transition-colors ${
-                isActive ? 'bg-bg-elevated font-semibold text-text-primary' : 'text-text-secondary hover:bg-bg-elevated'
-              }`
-            }
-          >
-            <span className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md border border-border bg-card font-mono text-[0.65rem] font-semibold text-text-secondary">
-              {entry.icon}
-            </span>
-            {entry.label}
-            {entry.path === '/app/alertes' && <NavBadge count={alertsBadge} />}
-            {entry.path === '/app/conseils' && <NavBadge count={adviceBadge} />}
-          </NavLink>
-        ))}
+      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto" aria-label="Navigation principale">
+        {entries.map((entry) => {
+          const Icon = NAV_ICONS[entry.path]
+          return (
+            <NavLink
+              key={entry.path}
+              to={entry.path}
+              onClick={onNavigate}
+              className={({ isActive }) =>
+                `focus-ring flex min-h-11 items-center gap-3 px-3.5 text-sm transition-colors ${
+                  isActive ? 'bg-dark-field font-semibold text-white' : 'text-dark-text hover:bg-dark-field/60'
+                }`
+              }
+            >
+              {Icon && <Icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />}
+              {entry.label}
+              {entry.path === '/app/alertes' && <NavBadge count={alertsBadge} />}
+              {entry.path === '/app/conseils' && <NavBadge count={adviceBadge} />}
+            </NavLink>
+          )
+        })}
       </nav>
 
       <SensorDisclaimer />
@@ -63,8 +71,9 @@ export function SideRail({ onNavigate }: SideRailProps) {
       <button
         type="button"
         onClick={logout}
-        className="focus-ring min-h-11 rounded-control border border-border px-2.5 text-left text-sm font-semibold text-text-secondary hover:bg-bg-elevated"
+        className="focus-ring flex min-h-11 items-center gap-3 border-t border-dark-field-border px-3.5 text-left text-sm font-semibold text-dark-text hover:bg-dark-field/60"
       >
+        <LogOut className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
         Se déconnecter
       </button>
     </div>

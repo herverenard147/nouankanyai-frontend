@@ -10,7 +10,7 @@ export interface ChartBar {
   tip: string
 }
 
-type Size = 'landing' | 'dashboard' | 'dashboardMobile'
+type Size = 'landing' | 'dashboard' | 'dashboardMobile' | 'compact'
 
 interface BarChartProps {
   bars: ChartBar[]
@@ -21,6 +21,9 @@ interface BarChartProps {
   sourceLabel?: string
   gapPx?: number
   footerNote?: string
+  /** N'affiche qu'une étiquette d'abscisse sur N (graphique dense, ex. 24 barres horaires). Le libellé
+   * complet reste lu par les lecteurs d'écran (aria-label) et dans l'infobulle. */
+  xLabelEvery?: number
 }
 
 const SIZE_CONFIG: Record<
@@ -47,6 +50,16 @@ const SIZE_CONFIG: Record<
     radiusClass: 'rounded-t-bar-dashboard',
     tooltipRadiusClass: 'rounded-tooltip-dashboard',
   },
+  // Aperçu des vues d'ensemble : un graphique par écran, sans légende d'axes (la valeur
+  // exacte reste dans l'infobulle au survol/toucher).
+  compact: {
+    plotHeightPx: 104,
+    xLabelBandPx: 20,
+    defaultGapPx: 3,
+    barWidthClass: 'flex-1 min-w-0',
+    radiusClass: 'rounded-t-bar-landing',
+    tooltipRadiusClass: 'rounded-tooltip-landing',
+  },
   dashboardMobile: {
     plotHeightPx: 126,
     xLabelBandPx: 22,
@@ -63,7 +76,17 @@ const SIZE_CONFIG: Record<
  * L'état de survol/épinglage est local à chaque instance — contrairement à la
  * maquette d'origine où il était partagé entre les 3 graphiques de la landing.
  */
-export function BarChart({ bars, yTicks, size, yAxisLabel, xAxisLabel, sourceLabel, gapPx, footerNote }: BarChartProps) {
+export function BarChart({
+  bars,
+  yTicks,
+  size,
+  yAxisLabel,
+  xAxisLabel,
+  sourceLabel,
+  gapPx,
+  footerNote,
+  xLabelEvery = 1,
+}: BarChartProps) {
   const [hovered, setHovered] = useState<string | null>(null)
   const [pinned, setPinned] = useState<string | null>(null)
   const config = SIZE_CONFIG[size]
@@ -87,7 +110,7 @@ export function BarChart({ bars, yTicks, size, yAxisLabel, xAxisLabel, sourceLab
           className="flex flex-1 items-end justify-evenly border-b border-l border-border px-3"
           style={{ height: config.plotHeightPx, paddingBottom: config.xLabelBandPx, gap }}
         >
-          {bars.map((bar) => {
+          {bars.map((bar, index) => {
             const isActive = activeKey === bar.key
             return (
               <div
@@ -109,12 +132,14 @@ export function BarChart({ bars, yTicks, size, yAxisLabel, xAxisLabel, sourceLab
                     backgroundColor: isActive ? 'var(--color-accent-cta)' : 'var(--color-accent)',
                   }}
                 />
-                <span
-                  className="absolute left-1/2 whitespace-nowrap font-mono text-mono-axis text-text-tertiary"
-                  style={{ bottom: -config.xLabelBandPx + 4, transform: 'translateX(-50%)' }}
-                >
-                  {bar.x}
-                </span>
+                {index % xLabelEvery === 0 && (
+                  <span
+                    className="absolute left-1/2 whitespace-nowrap font-mono text-mono-axis text-text-tertiary"
+                    style={{ bottom: -config.xLabelBandPx + 4, transform: 'translateX(-50%)' }}
+                  >
+                    {bar.x}
+                  </span>
+                )}
               </div>
             )
           })}
@@ -124,7 +149,7 @@ export function BarChart({ bars, yTicks, size, yAxisLabel, xAxisLabel, sourceLab
         <p className="font-mono text-mono-axis text-text-tertiary">
           axe des abscisses : {xAxisLabel} · source : {sourceLabel}
         </p>
-      ) : (
+      ) : size === 'compact' ? null : (
         <div className="flex flex-wrap justify-between gap-2 font-mono text-mono-axis text-text-tertiary">
           <span>axe des ordonnées : {yAxisLabel}</span>
           <span>axe des abscisses : {xAxisLabel} · survol pour la valeur</span>

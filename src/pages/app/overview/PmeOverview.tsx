@@ -1,64 +1,37 @@
-import { Link } from 'react-router-dom'
-
-import { AdviceList } from '@/components/advice/AdviceList'
-import { AlertSection } from '@/components/alerts/AlertSection'
+import { AlertsSummary } from '@/components/overview/AlertsSummary'
+import { EquipmentSummary } from '@/components/overview/EquipmentSummary'
+import { KpiStrip } from '@/components/overview/KpiStrip'
+import { PredictionSummary } from '@/components/overview/PredictionSummary'
+import { ShortcutList } from '@/components/overview/ShortcutList'
+import { useShortcutCatalog } from '@/components/overview/useShortcutCatalog'
 import { DemoDataBanner } from '@/components/demo/DemoDataBanner'
-import { PredictionPanel } from '@/components/prediction/PredictionPanel'
-import { KpiGrid } from '@/components/kpi/KpiGrid'
-import { TariffSection } from '@/components/tariff/TariffSection'
-import { MetricState } from '@/components/state/MetricState'
-import { DataTable } from '@/components/table/DataTable'
-import type { TableColumn } from '@/components/table/DataTable'
-import { useEquipmentTable } from '@/hooks/queries/useEquipmentTable'
-import { levelAtLeast } from '@/lib/levelGating'
+import { kpiTargets, pmeOverviewBlocks } from '@/lib/overviewLevels'
 import { useLevel } from '@/store/levelStore'
-import type { EquipmentRow } from '@/types/domain'
 
-// Au niveau "débutant" : l'essentiel (quoi, où, état). Marque/modèle/priorité
-// (détail d'inventaire, utile une fois qu'on gère plusieurs appareils) —
-// dès "amateur", niveau par défaut PME (voir DEFAULT_LEVEL_BY_PROFILE).
-const COLUMNS_BASE: TableColumn<EquipmentRow>[] = [
-  { key: 'categorie', label: 'Catégorie' },
-  { key: 'site', label: 'Site' },
-  { key: 'statut', label: 'Statut' },
-]
-const COLUMNS_FULL: TableColumn<EquipmentRow>[] = [
-  { key: 'categorie', label: 'Catégorie' },
-  { key: 'marque', label: 'Marque' },
-  { key: 'modele', label: 'Modèle' },
-  { key: 'site', label: 'Site' },
-  { key: 'priorite', label: 'Priorité' },
-  { key: 'statut', label: 'Statut' },
-]
-
+/** Vue d'ensemble PME : même gabarit que l'Industrie ; le niveau décide des colonnes et des raccourcis (lib/overviewLevels.ts). */
 export function PmeOverview() {
-  const equipmentQuery = useEquipmentTable('pme')
   const level = useLevel('pme')
-  const columns = levelAtLeast(level, 'amateur') ? COLUMNS_FULL : COLUMNS_BASE
+  const blocks = pmeOverviewBlocks(level)
+  const catalog = useShortcutCatalog('pme')
 
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-5">
       <DemoDataBanner />
       <p className="text-sm text-text-secondary">
         Vue d&rsquo;ensemble de votre activité : consommation, prédiction et équipements déclarés sur vos sites.
       </p>
-      <AlertSection profile="pme" level={level} maxActionAlerts={2} />
-      <KpiGrid profile="pme" />
-      <TariffSection profile="pme" />
-      <PredictionPanel profile="pme" level={level} />
-      <AdviceList profile="pme" level={level} maxItems={2} />
 
-      <section className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-section-title font-semibold text-text-primary">{equipmentQuery.data?.title ?? 'Équipements déclarés'}</h2>
-          <Link to="/app/equipements" className="text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
-            Voir tous les équipements
-          </Link>
-        </div>
-        <MetricState status={equipmentQuery.status} isEmpty={equipmentQuery.data?.rows.length === 0}>
-          {equipmentQuery.data && <DataTable columns={columns} rows={equipmentQuery.data.rows} />}
-        </MetricState>
-      </section>
+      <KpiStrip profile="pme" targets={kpiTargets('pme')} />
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.55fr_1fr] lg:gap-9">
+        <PredictionSummary profile="pme" />
+        <AlertsSummary profile="pme" max={2} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.55fr_1fr] lg:gap-9">
+        <EquipmentSummary columns={blocks.equipmentColumns} max={5} />
+        <ShortcutList items={blocks.shortcuts.map((id) => catalog[id])} />
+      </div>
     </div>
   )
 }

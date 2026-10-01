@@ -35,23 +35,23 @@ export function JournalPage() {
       </div>
 
       <MetricState status={query.status} isEmpty={filtered.length === 0}>
-        <div className="overflow-x-auto rounded-card border border-border">
+        <div className="overflow-x-auto border-y border-border">
           <table className="w-full min-w-[560px] border-collapse text-sm">
             <thead className="bg-bg-elevated">
               <tr>
-                <th className="px-4 py-3 text-left font-mono text-mono-axis font-semibold uppercase tracking-wide text-text-secondary">Heure</th>
-                <th className="px-4 py-3 text-left font-mono text-mono-axis font-semibold uppercase tracking-wide text-text-secondary">Type</th>
-                <th className="px-4 py-3 text-left font-mono text-mono-axis font-semibold uppercase tracking-wide text-text-secondary">Détail</th>
-                <th className="px-4 py-3 text-left font-mono text-mono-axis font-semibold uppercase tracking-wide text-text-secondary">Compteur</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">Heure</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">Type</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">Détail</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">Compteur</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((entry) => (
                 <tr key={entry.id} className="border-t border-border">
-                  <td className="px-4 py-3 font-mono text-text-secondary">{entry.time}</td>
+                  <td className="px-4 py-3 tabular-nums text-text-secondary">{entry.time}</td>
                   <td className="px-4 py-3 text-text-primary">{entry.type}</td>
                   <td className="px-4 py-3 text-text-secondary">{entry.detail}</td>
-                  <td className="px-4 py-3 font-mono tabular-nums text-text-secondary">{entry.count}</td>
+                  <td className="px-4 py-3 tabular-nums text-text-secondary">{entry.count}</td>
                 </tr>
               ))}
             </tbody>

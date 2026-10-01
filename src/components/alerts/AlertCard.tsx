@@ -4,6 +4,7 @@ import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
 import { ApiError } from '@/lib/apiClient'
+import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
 
 interface ActionAlertCardProps {
@@ -28,17 +29,12 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
 
     if (compact) {
       return (
-        <div className="flex items-center gap-2.5 rounded-control border border-alert bg-alert-bg px-3 py-2">
+        <div className="flex items-center gap-2.5 border-t border-border py-2">
           <span className="h-2 w-2 shrink-0 rounded-full bg-alert" aria-hidden="true" />
           <p className="min-w-0 flex-1 truncate text-sm font-medium text-text-primary">{alert.title}</p>
-          <span className="shrink-0 font-mono text-mono-badge font-semibold uppercase tracking-wide text-alert">
-            {alert.level}
-          </span>
+          <span className="shrink-0 text-xs font-semibold text-alert">{alert.level}</span>
           {alert.ctaTarget && (
-            <Link
-              to={alert.ctaTarget}
-              className="focus-ring shrink-0 text-sm font-semibold text-accent-cta hover:text-accent-cta-hover"
-            >
+            <Link to={alert.ctaTarget} className="focus-ring shrink-0 text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
               {alert.ctaLabel}
             </Link>
           )}
@@ -46,80 +42,62 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
       )
     }
 
+    // Carte sobre (retour du propriétaire : les pastilles colorées, étiquettes en capitales et fonds teintés
+    // faisaient « interface générée ») : filet rouge à gauche, texte, provenance en pied de carte.
     return (
-      <div className="flex flex-col gap-2 rounded-card border border-alert bg-alert-bg p-4">
-        <div className="flex items-center gap-2.5">
-          <span
-            className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-alert font-mono text-xs font-bold text-white"
-            aria-hidden="true"
-          >
-            !
-          </span>
-          <p className="font-mono text-mono-badge font-semibold uppercase tracking-wide text-alert">
-            Action humaine requise · {alert.level}
+      <div className="relative flex flex-col gap-3 border-t border-border py-4 pl-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <span className="absolute bottom-4 left-0 top-4 w-[3px] bg-alert" aria-hidden="true" />
+        <div className="min-w-0">
+          <h3 className="text-[0.9375rem] font-bold text-text-primary">{alert.title}</h3>
+          <p className="mt-0.5 text-xs font-semibold text-alert">{alert.level} · une personne doit intervenir</p>
+          <p className="mt-1.5 text-sm text-text-secondary">{alert.detail}</p>
+          <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-text-secondary">
+            Source : <ProvenanceBadge value={alert.provenance} className="lowercase" />
+            {alert.basis && <span>· {alert.basis}</span>}
           </p>
+          {resolveMutation.isError && (
+            <ApiErrorMessage
+              message={resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec de la vérification.'}
+              className="mt-2 text-sm text-alert"
+            />
+          )}
+          {resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
+            <p className="mt-2 text-sm text-alert">
+              Nouvelle mesure : température {formatNumberFr(resolveMutation.data.temperature_c, 1)}
+              {NARROW_NBSP}°C, vibration {formatNumberFr(resolveMutation.data.vibration_hz, 1)}
+              {NARROW_NBSP}Hz — l&rsquo;anomalie persiste encore. Réessayez une fois l&rsquo;intervention terminée.
+            </p>
+          )}
         </div>
-        <h3 className="text-sm font-semibold text-text-primary">{alert.title}</h3>
-        <p className="text-sm text-text-secondary">{alert.detail}</p>
-        <div className="flex flex-wrap items-center gap-2">
-          <ProvenanceBadge value={alert.provenance} />
-          <span className="text-sm text-text-tertiary">{alert.basis}</span>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="flex shrink-0 flex-wrap items-center gap-4">
+          {alert.ctaTarget && (
+            <Link to={alert.ctaTarget} className="focus-ring text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
+              {alert.ctaLabel}
+            </Link>
+          )}
           <button
             type="button"
             disabled={resolveMutation.isPending}
             onClick={() => resolveMutation.mutate(alert.machineId)}
-            className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control border border-alert px-4 py-2 text-sm font-semibold text-alert transition-colors hover:bg-white disabled:opacity-60"
+            className="focus-ring inline-flex min-h-10 items-center justify-center bg-dark-bg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-dark-bg/90 disabled:opacity-60"
           >
-            {resolveMutation.isPending ? 'Test en cours…' : 'Marquer comme résolu'}
+            {resolveMutation.isPending ? 'Vérification en cours…' : 'Vérifier et résoudre'}
           </button>
-          {alert.ctaTarget ? (
-            <Link
-              to={alert.ctaTarget}
-              className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
-            >
-              {alert.ctaLabel}
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover"
-            >
-              {alert.ctaLabel}
-            </button>
-          )}
         </div>
-        {resolveMutation.isError && (
-          <ApiErrorMessage
-            message={resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec du test.'}
-            className="text-right text-sm text-alert"
-          />
-        )}
-        {resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
-          <p className="text-right text-sm text-alert">
-            Nouvelle mesure : température {resolveMutation.data.temperature_c}°C, vibration{' '}
-            {resolveMutation.data.vibration_hz} Hz — l&rsquo;anomalie persiste encore. Réessayez une fois
-            l&rsquo;intervention terminée.
-          </p>
-        )}
       </div>
     )
   }
 
   const { alert } = props
   return (
-    <div className="flex flex-col gap-2 rounded-card border border-confirm bg-confirm-bg p-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-pill bg-white px-2.5 py-1 font-mono text-mono-badge font-semibold text-confirm">
-          auto-exécutée
-        </span>
-      </div>
-      <h4 className="text-sm font-semibold text-text-primary">{alert.title}</h4>
+    <div className="relative flex flex-col gap-1.5 border-t border-border py-4 pl-4">
+      <span className="absolute bottom-4 left-0 top-4 w-[3px] bg-confirm" aria-hidden="true" />
+      <h4 className="text-sm font-bold text-text-primary">{alert.title}</h4>
+      <p className="text-xs font-semibold text-confirm">Exécutée automatiquement</p>
       <p className="text-sm text-text-secondary">{alert.detail}</p>
-      <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-text-tertiary">
-        <span className="font-mono text-mono-axis">{alert.timestamp}</span>
-        <Link to="/app/journal" className="focus-ring font-semibold text-accent-cta hover:text-accent-cta-hover">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-text-secondary">
+        <span className="tabular-nums">{alert.timestamp}</span>
+        <Link to="/app/journal" className="focus-ring text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
           Voir le journal
         </Link>
       </div>

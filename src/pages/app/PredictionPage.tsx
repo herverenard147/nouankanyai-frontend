@@ -40,7 +40,7 @@ export function PredictionPage() {
 
       <Card className="flex flex-col gap-4 p-6" aria-label="Prédiction globale">
         <MetricState status={query.status}>
-          {query.data && <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} />}
+          {query.data && <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} showModelName={profile === 'admin'} />}
         </MetricState>
       </Card>
 
@@ -48,9 +48,9 @@ export function PredictionPage() {
         <section className="flex flex-col gap-3">
           <h2 className="text-section-title font-semibold text-text-primary">Par équipement</h2>
           <div className="flex flex-col gap-4">
-            {query.data.perDevice.map((prediction) => (
-              <Card key={prediction.title} className="flex flex-col gap-4 p-6">
-                <PredictionContent prediction={prediction} showModelDetails={showModelDetails} />
+            {query.data.perDevice.map((prediction, index) => (
+              <Card key={`${prediction.title}-${index}`} className="flex flex-col gap-4 p-6">
+                <PredictionContent prediction={prediction} showModelDetails={showModelDetails} showModelName={profile === 'admin'} />
               </Card>
             ))}
           </div>

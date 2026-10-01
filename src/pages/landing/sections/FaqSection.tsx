@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { Minus, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
@@ -50,7 +52,7 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
     answer: (
       <>
         D&rsquo;ici 12 à 24 mois, une fois le pilote PME/Industrie consolidé.{' '}
-        <Link to="/comment-ca-marche" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+        <Link to="/#contact" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
           Inscrivez-vous pour être informé(e) à l&rsquo;ouverture
         </Link>
         .
@@ -60,32 +62,59 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
 ]
 
 export function FaqSection() {
+  // Une seule réponse ouverte à la fois ; la première l'est au chargement.
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
+
   return (
-    <section id="faq" className="border-t border-border bg-bg-elevated py-16">
-      <div className="mx-auto max-w-[1120px] px-6">
-        <div className="mb-10 flex max-w-[60ch] flex-col gap-2">
-          <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
-            Questions fréquentes
+    <section id="faq" className="py-20 lg:py-28">
+      <div className="mx-auto grid max-w-[1200px] gap-10 px-6 lg:grid-cols-[4fr_8fr] lg:gap-[72px]">
+        <div>
+          <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
+            Avant de nous écrire, la réponse est peut-être ici
+          </h2>
+          <p className="mt-6 text-text-secondary">
+            Une autre question ?{' '}
+            <Link to="/#contact" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+              Contactez-nous
+            </Link>
+            .
           </p>
-          <h2 className="text-h2-section font-bold text-text-primary">Avant de nous écrire, la réponse est peut-être ici</h2>
         </div>
 
-        <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))]">
-          {FAQ_ITEMS.map((item) => (
-            <div key={item.question} className="rounded-card border border-border bg-card p-5">
-              <h3 className="text-sm font-semibold text-text-primary">{item.question}</h3>
-              <p className="mt-2 text-sm text-text-secondary">{item.answer}</p>
-            </div>
-          ))}
+        <div className="border-b border-border">
+          {FAQ_ITEMS.map((item, index) => {
+            const isOpen = openIndex === index
+            const panelId = `faq-panel-${index}`
+            const Icon = isOpen ? Minus : Plus
+            return (
+              <div key={item.question} className="border-t border-border">
+                <h3>
+                  <button
+                    type="button"
+                    id={`faq-button-${index}`}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    onClick={() => setOpenIndex(isOpen ? null : index)}
+                    className="focus-ring flex w-full items-center justify-between gap-6 py-6 text-left text-xl font-bold leading-snug tracking-[-0.01em] text-text-primary hover:text-accent-cta"
+                  >
+                    {item.question}
+                    <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                  </button>
+                </h3>
+                <div
+                  id={panelId}
+                  className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+                    isOpen ? 'grid-rows-[1fr]' : 'invisible grid-rows-[0fr]'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <p className="pb-6 text-text-secondary">{item.answer}</p>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
-
-        <p className="mt-8 text-sm text-text-secondary">
-          Une autre question ?{' '}
-          <Link to="/#contact" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
-            Contactez-nous
-          </Link>
-          .
-        </p>
       </div>
     </section>
   )

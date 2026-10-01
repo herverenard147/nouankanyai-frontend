@@ -377,3 +377,78 @@ export interface BackendAuditRequest {
   status: 'nouveau' | 'contacte' | 'qualifie' | 'clos'
   created_at: string
 }
+
+// --- Piste d'audit, plan d'action, historique des résolutions (PR NouanKanyAI#2) ---
+export interface BackendAuditEvent {
+  id: string
+  created_at: string
+  actor_nom: string | null
+  action: string
+  category: string
+  label: string
+  detail: string | null
+  target_ref: string | null
+  owner_nom: string | null
+}
+
+export interface BackendAuditPage {
+  total: number
+  items: BackendAuditEvent[]
+  categories: Record<string, number>
+}
+
+export type BackendPlanStatus = 'a_faire' | 'en_cours' | 'fait' | 'abandonne'
+
+export interface BackendPlanItem {
+  id: string
+  month: string
+  title: string
+  description: string | null
+  gain_estime_fcfa: number | null
+  status: BackendPlanStatus
+  source_ref: string | null
+  created_at: string
+  updated_at: string | null
+  done_at: string | null
+}
+
+export interface BackendPlanSummary {
+  month: string
+  total_items: number
+  potential_fcfa: number
+  done_fcfa: number
+  counts: Record<BackendPlanStatus, number>
+}
+
+export interface BackendPlanItemPayload {
+  title: string
+  description?: string
+  gain_estime_fcfa?: number
+  source_ref?: string
+  month?: string
+}
+
+export interface BackendPlanItemUpdate {
+  title?: string
+  description?: string
+  gain_estime_fcfa?: number
+  status?: BackendPlanStatus
+}
+
+export interface BackendResolution {
+  id: string
+  created_at: string
+  machine_code: string
+  machine_nom: string | null
+  resolved: boolean
+  temperature_c: number | null
+  vibration_hz: number | null
+  pressure_bar: number | null
+  power_kw: number | null
+}
+
+export interface BackendBillUpdatePayload {
+  month?: string
+  amount_xof?: number
+  kwh_consumed?: number
+}

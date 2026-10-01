@@ -1,4 +1,5 @@
 import { rawAdminMetrics, rawMachineHistory, rawMachines } from '@/api/rawBackend'
+import { formatNumberFr } from '@/lib/formatters'
 import type { BackendRecentActivity } from '@/types/backend'
 import type { JournalEntry, Profile } from '@/types/domain'
 
@@ -44,8 +45,8 @@ export async function fetchJournal(profile: Profile): Promise<JournalEntry[]> {
       entries.push({
         id: `${machine.machine_id}-${i}`,
         time: new Date(point.recorded_at).toLocaleString('fr-FR'),
-        type: 'Relevé capteur',
-        detail: `${machine.nom} · ${point.power_kw} kW, ${point.temperature_c} °C`,
+        type: 'Relevé simulé',
+        detail: `${machine.nom} · ${formatNumberFr(point.power_kw, 1)} kW, ${formatNumberFr(point.temperature_c, 1)} °C`,
         count: 1,
       })
     })

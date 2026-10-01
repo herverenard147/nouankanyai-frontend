@@ -1,16 +1,13 @@
 const STEPS = [
   {
-    n: '01',
     title: 'Audit initial',
     body: 'Analyse de vos factures CIE et de vos équipements pour identifier les postes de consommation à fort potentiel d’économie.',
   },
   {
-    n: '02',
     title: 'Pilote 6 à 9 mois',
     body: 'Instrumentation ciblée des équipements prioritaires. Vos économies réelles sont chiffrées, mesures à l’appui.',
   },
   {
-    n: '03',
     title: 'Généralisation',
     body: 'Extension du suivi à l’ensemble du site si les résultats du pilote sont concluants.',
   },
@@ -18,23 +15,23 @@ const STEPS = [
 
 export function ProofSection() {
   return (
-    <section className="py-14">
-      <div className="mx-auto max-w-[1120px] px-6">
-        <div className="mb-8 flex max-w-[60ch] flex-col gap-2">
-          <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
-            Comment ça marche
-          </p>
-          <h2 className="text-h2-section font-bold text-text-primary">Une méthode en 3 étapes, pas un abonnement figé</h2>
-        </div>
-        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))]">
+    <section id="methode" className="py-20 lg:py-28">
+      <div className="mx-auto max-w-[1200px] px-6">
+        <h2 className="max-w-[20ch] text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
+          Une méthode en 3 étapes, pas un abonnement figé
+        </h2>
+        <ol className="relative mt-12 grid gap-10 lg:mt-16 lg:grid-cols-3 lg:gap-12">
+          <span aria-hidden="true" className="absolute left-0 right-0 top-[9px] hidden h-0.5 bg-text-primary lg:block" />
           {STEPS.map((step) => (
-            <div key={step.n} className="flex flex-col gap-2 rounded-card border border-border bg-card p-6">
-              <span className="font-heading text-h2-secondary font-bold text-text-tertiary">{step.n}</span>
-              <h3 className="text-section-title font-semibold text-text-primary">{step.title}</h3>
-              <p className="text-sm text-text-secondary">{step.body}</p>
-            </div>
+            <li key={step.title} className="relative">
+              <span aria-hidden="true" className="block h-5 w-5 border-2 border-text-primary bg-accent" />
+              <h3 className="mt-6 text-[1.625rem] font-bold leading-tight tracking-[-0.015em] text-text-primary">
+                {step.title}
+              </h3>
+              <p className="mt-2.5 text-text-secondary">{step.body}</p>
+            </li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   )

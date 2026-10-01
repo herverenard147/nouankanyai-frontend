@@ -1,5 +1,6 @@
 import { rawMachines, rawRecommend } from '@/api/rawBackend'
 import { formatFcfaAmount } from '@/api/backendHelpers'
+import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { Advice, Profile } from '@/types/domain'
 
 /**
@@ -18,8 +19,9 @@ export async function fetchRecommendations(_profile: Profile): Promise<Advice[]>
     .map((rec, i) => ({
       rank: String(i + 1).padStart(2, '0'),
       title: rec.title,
-      detail: `${rec.description} ${rec.action}`,
+      detail: frenchNumbersWithUnits(`${rec.description} ${rec.action}`),
       impactLabel: rec.gain_fcfa > 0 ? `−${formatFcfaAmount(rec.gain_fcfa)}` : rec.severity,
+      impactKind: rec.gain_fcfa > 0 ? ('gain' as const) : ('severity' as const),
       provenance: 'synthetique' as const,
       machineId: rec.machine_id,
     }))

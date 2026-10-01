@@ -6,8 +6,8 @@ export function PrivacyContent() {
         <p className="mt-2">
           Nouankany, Abidjan, Côte d&rsquo;Ivoire, est responsable du traitement des données décrites ci-dessous.
           Contact :{' '}
-          <a href="mailto:contact@nouankany.demo" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
-            contact@nouankany.demo
+          <a href="mailto:contact@nouankany.com" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+            contact@nouankany.com
           </a>
           .
         </p>
@@ -79,8 +79,8 @@ export function PrivacyContent() {
           Conformément au RGPD et à la loi ivoirienne relative à la protection des données à caractère personnel, vous
           disposez d&rsquo;un droit d&rsquo;accès, de rectification, d&rsquo;effacement et d&rsquo;opposition sur vos
           données. Pour l&rsquo;exercer, contactez{' '}
-          <a href="mailto:contact@nouankany.demo" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
-            contact@nouankany.demo
+          <a href="mailto:contact@nouankany.com" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+            contact@nouankany.com
           </a>
           .
         </p>

@@ -9,8 +9,8 @@ const ADMIN_KPI_IDS = ['base-donnees', 'uptime', 'latence-moyenne', 'machines-pl
 const CLIENT_LABELS: Record<(typeof CLIENT_KPI_IDS)[number], string> = {
   'puissance-totale': 'Puissance active totale',
   'machines-actives': 'Machines actives',
-  'economies-mois': 'Économies ce mois (Gain-Share)',
-  'anomalies-actives': 'Anomalies actives',
+  'economies-mois': 'Part sur les économies ce mois',
+  'anomalies-actives': 'Machines en anomalie',
 }
 
 const ADMIN_LABELS: Record<(typeof ADMIN_KPI_IDS)[number], string> = {
