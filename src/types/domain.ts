@@ -139,6 +139,11 @@ export interface Advice {
   /** Étapes de dépannage concrètes (voir backend/ml/troubleshooting_advice.py) — présent
    * uniquement pour les conseils de type alerte (anomalie/surchauffe/vibration). */
   troubleshooting?: string[]
+  /** Référence stable (machine:type:titre) pour « Marquer comme appliquée » (Recommandations, PME/Industrie
+   * uniquement) : reprend la recommandation dans le plan d'action puis la passe au statut fait. Présent
+   * uniquement quand la recommandation a un gain chiffré (impactKind === 'gain'). */
+  sourceRef?: string
+  gainFcfa?: number
 }
 
 export interface EquipmentRow {

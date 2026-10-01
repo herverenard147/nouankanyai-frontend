@@ -24,5 +24,9 @@ export async function fetchRecommendations(_profile: Profile): Promise<Advice[]>
       impactKind: rec.gain_fcfa > 0 ? ('gain' as const) : ('severity' as const),
       provenance: 'synthetique' as const,
       machineId: rec.machine_id,
+      // Même format que l'import automatique du plan d'action (voir api/actionPlan.ts) : une recommandation
+      // « appliquée » depuis ici et reprise plus tard par le plan d'action pointent vers le même item.
+      sourceRef: rec.gain_fcfa > 0 ? `${rec.machine_id}:${rec.type}:${rec.title}` : undefined,
+      gainFcfa: rec.gain_fcfa,
     }))
 }

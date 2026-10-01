@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { kpiIdsFor, kpiMeta, kpiSectionTitle } from '@/api/kpis'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
-import { useKpi } from '@/hooks/queries/useKpi'
+import { useKpiSet } from '@/hooks/queries/useKpi'
 import type { Profile } from '@/types/domain'
 
 interface KpiStripProps {
@@ -36,7 +36,8 @@ export function KpiStrip({ profile, targets }: KpiStripProps) {
 
 function KpiTile({ profile, kpiId, to, index }: { profile: Profile; kpiId: string; to?: string; index: number }) {
   const { label, window } = kpiMeta(profile, kpiId)
-  const query = useKpi(profile, kpiId)
+  const setQuery = useKpiSet(profile)
+  const kpi = setQuery.data?.[kpiId]
 
   // Filets verticaux : entre colonnes (2 par ligne sur mobile, 4 sur bureau) ; horizontal sous la 1re ligne mobile.
   const dividers = [
@@ -53,22 +54,20 @@ function KpiTile({ profile, kpiId, to, index }: { profile: Profile; kpiId: strin
         {to && <ArrowRight className="h-4 w-4 shrink-0 text-accent-cta" aria-hidden="true" />}
       </div>
       {window && (
-        <p className="font-mono text-mono-axis text-text-tertiary">
+        <p className="text-xs text-text-tertiary">
           fenêtre {window.label}
           {window.sampleCount !== undefined ? ` · ${window.sampleCount.toLocaleString('fr-FR')} échantillons` : ''}
         </p>
       )}
-      <MetricState status={query.status}>
-        {query.data && (
+      <MetricState status={setQuery.status} isEmpty={setQuery.status === 'success' && !kpi}>
+        {kpi && (
           <>
             <p className="font-heading text-[clamp(1.75rem,3vw,2.25rem)] font-bold leading-tight tracking-[-0.02em] tabular-nums text-text-primary">
-              {query.data.value}
-              {query.data.unit && (
-                <span className="ml-1 text-sm font-medium tracking-normal text-text-secondary">{query.data.unit}</span>
-              )}
+              {kpi.value}
+              {kpi.unit && <span className="ml-1 text-sm font-medium tracking-normal text-text-secondary">{kpi.unit}</span>}
             </p>
-            <p className="text-xs text-text-secondary">{query.data.note}</p>
-            <ProvenanceBadge value={query.data.provenance} className="mt-1 w-fit" />
+            <p className="text-xs text-text-secondary">{kpi.note}</p>
+            <ProvenanceBadge value={kpi.provenance} className="mt-1 w-fit" />
           </>
         )}
       </MetricState>
