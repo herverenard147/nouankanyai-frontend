@@ -104,7 +104,7 @@ une fonction `…OverviewBlocks(level)` par profil dans `src/lib/overviewLevels.
 | Profil | Niveaux | Contenu proposé de la vue d'ensemble |
 |---|---|---|
 | **PME** (amateur par défaut) | 3 | `KpiStrip` (cibles : puissance/machines → `/app/equipements`, économies → `/app/rapports`, anomalies → `/app/alertes`) ; prédiction + alertes ; résumé des équipements déclarés (`Catégorie, Site, Statut` ; dès amateur `+ Marque, Modèle, Priorité`, comme aujourd'hui) ; raccourcis Conseils, Recommandations, Factures CIE, Commission. |
-| **Ménage** (débutant, sans sélecteur) | 1 | Gabarit le plus court : prédiction + alertes ; « Dernière facture CIE » (période, consommation, montant seulement) ; raccourcis Conseils, Factures, Recommandations. À décider : le KPI « Part sur les économies » (commission) n'a pas de sens pour une formule gratuite — voir §6. |
+| **Ménage** (débutant, sans sélecteur) | 1 | Gabarit le plus court : `KpiStrip` **avec** « Part sur les économies » (le Ménage paie selon ses économies, il n'est pas gratuit) ; prédiction + alertes ; « Dernière facture CIE » ; raccourcis Conseils, Recommandations, Commission, Paliers. Entrée « Commission » dans sa navigation (après Factures). |
 | **Admin** (technique par défaut) | 3 | `KpiStrip` télémétrie (base de données, uptime, latence 5 min, machines plateforme — provenance « télémétrie système ») ; alertes tous profils ; les 4 outils d'administration en raccourcis ; pas de `DemoDataBanner`. |
 
 ### Ce que change le niveau, écran par écran (tel que dessiné dans les planches `H-*`)
@@ -122,7 +122,7 @@ une fonction `…OverviewBlocks(level)` par profil dans `src/lib/overviewLevels.
 | Audit (hors Ménage) | Heure, Action, Détail | + Acteur | + Source, filtres par famille, **Export CSV** (Admin : + colonne Compte) |
 | Alertes, Conso & coûts, Factures, Commission, Journal, Paramètres | identiques à tous les niveaux | | |
 
-Ménage : un seul niveau (débutant), pas d'Audit, pas de Plan d'action, pas de Machines/Équipements ni de Commission.
+Ménage : un seul niveau (débutant), pas d'Audit, pas de Plan d'action, pas de Machines/Équipements ; **a** une page Commission.
 
 ## 5. État écran par écran
 
@@ -157,19 +157,19 @@ ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des 
 
 ## 6. Décisions en attente (ne pas trancher sans le propriétaire)
 
-1. **Part de 10 % sur les économies** : appliquée par le backend (`gross_savings * 0.10`) et affichée dans le
-   dashboard, mais la landing dit « Structure définie lors de l'audit ». Annoncer le 10 % sur la landing, ou en faire
-   un paramètre par contrat ?
-2. **Plan d'action et Audit** : endpoints créés (PR NouanKanyAI#2, voir §9) mais **pas encore branchés** ; à valider
-   d'abord sur les maquettes. Les raccourcis pointent provisoirement vers `/app/recommandations` et `/app/journal`.
-3. **KPI « Part sur les économies » pour le Ménage** (formule gratuite, pas de commission).
-4. **Libellé « Gratuit pour commencer »** de la formule Découverte (Ménages) alors que le segment n'est pas ouvert.
-5. **Textes générés par le backend** (« Éteignez Compresseur d'air » : article manquant) : correction côté backend.
+1. ~~Part de 10 %~~ **Décidé** : 10 % par défaut (backend), affiché dans le dashboard ; la landing continue de dire
+   « Structure définie lors de l'audit » (on ne change pas la communication).
+2. ~~Plan d'action et Audit~~ : maquettes validées, endpoints créés (PR NouanKanyAI#2, §9), **à brancher**.
+3. ~~KPI « Part sur les économies » pour le Ménage~~ **Décidé** : affiché ; le Ménage n'est pas gratuit, il paie selon ses
+   économies.
+4. ~~« Gratuit pour commencer »~~ **Décidé** : libellé retiré de la landing (offre pas encore ouverte). Aucun prix affiché pour
+   la formule Ménage.
+5. **Textes générés par le backend** : article manquant corrigé (« Éteignez l'appareil « Compresseur d'air » », PR NouanKanyAI#2).
    « Les capteurs de … montrent un comportement anormal » est **conservé** : le mot « capteur » reste permis quand il
    désigne un élément précis (décision du propriétaire).
 
 **Décidé par le propriétaire :** encadré « Vos appareils » dans la barre latérale (validé) ; page Admin « Modèles &
-observabilité » conservée ; aucune mention du modèle (nom, jeu de données) dans la Prédiction à aucun niveau ; planches `H-*`
+observabilité » conservée ; aucune mention du modèle (nom, jeu de données) dans la Prédiction **côté client** à aucun niveau — les mentions de modèles restent dans le volet **Admin** (page « Modèles & observabilité » et, pour l'Admin seulement, nom du modèle sur la page Prédiction) ; planches `H-*`
 validées. Le câblage frontend et la mise en ligne (Vercel, Railway) sont faits par Claude Code en local.
 
 ## 7. Tester en local, avec le vrai backend

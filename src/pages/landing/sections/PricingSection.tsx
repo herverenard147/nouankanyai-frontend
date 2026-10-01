@@ -9,7 +9,8 @@ interface TierCta {
 interface Tier {
   name: string
   audience: string
-  priceLabel: string
+  /** Absent tant que le segment n'est pas ouvert : aucune promesse de prix (le Ménage paie selon ses économies). */
+  priceLabel?: string
   badge: string
   features: string[]
   /**
@@ -28,7 +29,6 @@ const TIERS: Tier[] = [
   {
     name: 'Découverte',
     audience: 'Ménages, Côte d’Ivoire',
-    priceLabel: 'Gratuit pour commencer',
     badge: 'Bientôt disponible',
     features: [
       'Suivi de consommation à partir de votre facture CIE',
@@ -99,7 +99,7 @@ export function PricingSection() {
                 </p>
                 <h3 className="mt-2 text-[1.75rem] font-bold leading-tight tracking-[-0.02em]">{tier.name}</h3>
                 <p className="mt-1 text-dark-text">{tier.audience}</p>
-                <p className="mt-4 font-semibold">{tier.priceLabel}</p>
+                {tier.priceLabel && <p className="mt-4 font-semibold">{tier.priceLabel}</p>}
                 <ul className="mt-5 flex flex-col gap-3 text-[0.95rem] text-dark-text">
                   {tier.features.map((feature) => (
                     <li key={feature}>{feature}</li>
