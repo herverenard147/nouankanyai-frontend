@@ -64,8 +64,9 @@ describe('intégration backend réel — compte Ménage', () => {
     expect(Array.isArray(advice)).toBe(true)
 
     const predictions = await fetchPredictionsBundle('menage', 'heure')
-    expect(predictions.global.series.length).toBeGreaterThan(0)
-    expect(predictions.global.provenance).toBe('synthetique')
+    expect(predictions.global).not.toBeNull()
+    expect(predictions.global?.series.length).toBeGreaterThan(0)
+    expect(predictions.global?.provenance).toBe('synthetique')
     expect(predictions.perDevice.length).toBeGreaterThan(0)
 
     const consumption = await fetchConsumptionSeries('menage')

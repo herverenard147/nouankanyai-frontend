@@ -4,17 +4,18 @@ const numberFormatterOneDecimal = new Intl.NumberFormat('fr-FR', {
   maximumFractionDigits: 1,
 })
 
-// Espace fine insécable (U+202F) : séparateur de milliers de Intl.NumberFormat('fr-FR') ET espace avant
-// l'unité (« 1 500 FCFA », « 75,0 °C »). Une espace pleine, ou une police mono, laissait un trou visible
-// entre le nombre et son unité (retour du propriétaire, voir DESIGN.md règle 8).
+// Espace fine insécable (U+202F) avant l'unité (« 1.500 FCFA », « 75,0 °C ») : une espace pleine, ou une
+// police mono, laissait un trou visible entre le nombre et son unité (retour du propriétaire, voir DESIGN.md
+// règle 8). Séparateur de milliers : un point (retour du propriétaire, 2026-10-01 — Intl.NumberFormat('fr-FR')
+// produit une espace par défaut, remplacée ci-dessous).
 export const NARROW_NBSP = String.fromCodePoint(0x202f)
 const NBSP = String.fromCodePoint(0x00a0)
-const NON_BREAKING_SPACES = new RegExp(`[${NBSP}]`, 'g')
+const GROUP_SEPARATORS = new RegExp(`[${NBSP}${NARROW_NBSP} ]`, 'g')
 
-/** Formate un nombre en notation française : espace fine pour les milliers, virgule décimale. */
+/** Formate un nombre en notation française : point pour les milliers, virgule décimale. */
 export function formatNumberFr(value: number, decimals: 0 | 1 = 0): string {
   const formatted = decimals === 0 ? numberFormatterInt.format(value) : numberFormatterOneDecimal.format(value)
-  return formatted.replace(NON_BREAKING_SPACES, NARROW_NBSP)
+  return formatted.replace(GROUP_SEPARATORS, '.')
 }
 
 export function formatFcfa(value: number): string {

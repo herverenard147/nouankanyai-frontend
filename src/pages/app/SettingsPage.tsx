@@ -4,7 +4,6 @@ import type { FormEvent } from 'react'
 import { LevelSelector } from '@/components/level/LevelSelector'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
 import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, type FieldChange } from '@/components/ui/Modal'
 import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
@@ -406,14 +405,14 @@ export function SettingsPage() {
       <ProfileCard session={session} />
 
       {session.profile !== 'menage' && (
-        <Card className="flex flex-col gap-3 p-6">
+        <section className={SECTION}>
           <h2 className="text-section-title font-semibold text-text-primary">Niveau d&rsquo;affichage</h2>
           <p className="text-sm text-text-secondary">
             Contrôle la densité d&rsquo;information affichée sur le dashboard. Accessible ici sur mobile ; en haut de
             l&rsquo;écran sur desktop.
           </p>
           <LevelSelector value={level} onChange={(l) => setLevel(session.profile, l)} />
-        </Card>
+        </section>
       )}
 
       {(session.profile === 'pme' || session.profile === 'industrie') && (

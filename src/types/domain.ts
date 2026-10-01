@@ -119,8 +119,9 @@ export interface Prediction {
 export type PredictionGranularity = 'heure' | 'jour' | 'semaine'
 
 export interface PredictionsBundle {
-  /** Somme des prédictions de tous les équipements du compte, point par point. */
-  global: Prediction
+  /** Somme des prédictions de tous les équipements du compte, point par point. `null` tant qu'aucun
+   * équipement n'est enregistré (voir fetchPredictionsBundle) : état vide, pas une erreur. */
+  global: Prediction | null
   /** Une prédiction par équipement, dans le même ordre que /api/machines. */
   perDevice: Prediction[]
 }

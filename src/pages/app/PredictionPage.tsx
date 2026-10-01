@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 import { PredictionContent } from '@/components/prediction/PredictionPanel'
 import { MetricState } from '@/components/state/MetricState'
-import { Card } from '@/components/ui/Card'
 import { Pill } from '@/components/ui/Pill'
 import { levelAtLeast } from '@/lib/levelGating'
 import { usePredictionsBundle } from '@/hooks/queries/usePrediction'
@@ -38,20 +37,22 @@ export function PredictionPage() {
         ))}
       </div>
 
-      <Card className="flex flex-col gap-4 p-6" aria-label="Prédiction globale">
-        <MetricState status={query.status}>
-          {query.data && <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} showModelName={profile === 'admin'} />}
+      <section className="flex flex-col gap-4 border-t-2 border-text-primary pt-4" aria-label="Prédiction globale">
+        <MetricState status={query.status} isEmpty={!query.data?.global}>
+          {query.data?.global && (
+            <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} showModelName={profile === 'admin'} />
+          )}
         </MetricState>
-      </Card>
+      </section>
 
       {query.data && query.data.perDevice.length > 1 && (
         <section className="flex flex-col gap-3">
           <h2 className="text-section-title font-semibold text-text-primary">Par équipement</h2>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col">
             {query.data.perDevice.map((prediction, index) => (
-              <Card key={`${prediction.title}-${index}`} className="flex flex-col gap-4 p-6">
+              <div key={`${prediction.title}-${index}`} className="flex flex-col gap-4 border-t-2 border-text-primary py-4">
                 <PredictionContent prediction={prediction} showModelDetails={showModelDetails} showModelName={profile === 'admin'} />
-              </Card>
+              </div>
             ))}
           </div>
         </section>

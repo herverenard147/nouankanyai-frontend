@@ -81,8 +81,11 @@ function toPrediction(title: string, granularity: PredictionGranularity, buckete
  */
 export async function fetchPredictionsBundle(_profile: Profile, granularity: PredictionGranularity): Promise<PredictionsBundle> {
   const machines = await rawMachines()
+  // Aucun équipement enregistré (compte neuf, ou Admin qui n'a pas de site propre) : état vide, pas une
+  // erreur réseau (DESIGN.md règle 1 — MetricState affiche « Aucune donnée pour le moment », jamais
+  // « Indisponible » pour une absence de donnée légitime).
   if (machines.length === 0) {
-    throw new Error('Aucun équipement enregistré : ajoutez un site et une machine pour obtenir une prédiction.')
+    return { global: null, perDevice: [] }
   }
 
   const horizonHours = HORIZON_HOURS[granularity]

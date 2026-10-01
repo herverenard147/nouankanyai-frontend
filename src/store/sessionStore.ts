@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { api, ApiError } from '@/lib/apiClient'
-import { deriveProfile } from '@/lib/profileMapping'
+import { ACCOUNT_TYPE_LABELS, deriveProfile } from '@/lib/profileMapping'
 import { useNotificationStore } from '@/store/notificationStore'
 import type { BackendAuthResult } from '@/types/backend'
 import type { Session } from '@/types/domain'
@@ -17,7 +17,7 @@ function toSession(result: BackendAuthResult): Session {
     profile,
     platformRole: result.user.platform_role,
     displayName: result.user.nom,
-    subtitle: result.user.type_compte,
+    subtitle: profile === 'admin' ? ACCOUNT_TYPE_LABELS.admin : result.user.type_compte,
     formule: null,
     // Seuls les PME/Industrie sans owner_id (compte principal, pas membre d'une
     // équipe) peuvent gérer des membres — voir app/api/v1/team/ côté backend.

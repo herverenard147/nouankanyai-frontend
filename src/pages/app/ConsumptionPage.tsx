@@ -1,7 +1,6 @@
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { TariffSection } from '@/components/tariff/TariffSection'
-import { Card } from '@/components/ui/Card'
 import { BarChart, type ChartBar } from '@/components/charts/BarChart'
 import { SingleMeasureChart } from '@/components/charts/SingleMeasureChart'
 import { useConsumptionSeries } from '@/hooks/queries/useConsumptionSeries'
@@ -33,7 +32,7 @@ export function ConsumptionPage() {
           }))
 
           return (
-            <Card key={series.granularity} className="flex flex-col gap-4 p-6">
+            <section key={series.granularity} className="flex flex-col gap-4 border-t-2 border-text-primary pt-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-section-title font-semibold text-text-primary">
                   Consommation ({series.granularity === '30j' ? '30 derniers jours' : 'suivi quotidien'})
@@ -61,14 +60,14 @@ export function ConsumptionPage() {
                     <div className="h-2 flex-1 overflow-hidden rounded-full bg-bg-elevated">
                       <div className="h-full rounded-full bg-accent" style={{ width: `${post.percent}%` }} />
                     </div>
-                    <span className="w-12 shrink-0 text-right font-mono text-sm tabular-nums text-text-secondary">
+                    <span className="w-12 shrink-0 text-right text-sm tabular-nums text-text-secondary">
                       {post.percent}%
                     </span>
                     <ProvenanceBadge value={post.provenance} />
                   </div>
                 ))}
               </div>
-            </Card>
+            </section>
           )
         })}
       </MetricState>

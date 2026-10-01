@@ -22,8 +22,8 @@ export function PredictionSummary({ profile, showModelName = false }: Prediction
 
   return (
     <section aria-label="Prédiction IA" className="flex min-w-0 flex-col gap-2">
-      <MetricState status={query.status}>
-        {query.data && <PredictionBody prediction={query.data.global} showModelName={showModelName} />}
+      <MetricState status={query.status} isEmpty={!query.data?.global}>
+        {query.data?.global && <PredictionBody prediction={query.data.global} showModelName={showModelName} />}
       </MetricState>
     </section>
   )
@@ -33,7 +33,7 @@ function PredictionBody({
   prediction,
   showModelName,
 }: {
-  prediction: NonNullable<ReturnType<typeof usePredictionsBundle>['data']>['global']
+  prediction: NonNullable<NonNullable<ReturnType<typeof usePredictionsBundle>['data']>['global']>
   showModelName: boolean
 }) {
   const maxPoint = prediction.series.reduce((max, p) => (p.percent > max.percent ? p : max), prediction.series[0])

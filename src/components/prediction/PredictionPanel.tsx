@@ -1,33 +1,7 @@
 import { computeYTicks } from '@/lib/formatters'
-import { levelAtLeast } from '@/lib/levelGating'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
-import { MetricState } from '@/components/state/MetricState'
-import { Card } from '@/components/ui/Card'
 import { BarChart, type ChartBar } from '@/components/charts/BarChart'
-import { usePredictionsBundle } from '@/hooks/queries/usePrediction'
-import type { Level, Prediction, Profile } from '@/types/domain'
-
-interface PredictionPanelProps {
-  profile: Profile
-  level: Level
-}
-
-/** Aperçu compact utilisé sur les pages Vue d'ensemble : uniquement la prédiction
- * globale (tous équipements), à l'heure — le détail par équipement et les autres
- * granularités vivent sur la page dédiée /app/prediction. */
-export function PredictionPanel({ profile, level }: PredictionPanelProps) {
-  const query = usePredictionsBundle(profile, 'heure')
-
-  return (
-    <Card className="flex flex-col gap-4 p-6" aria-label="Prédiction IA">
-      <MetricState status={query.status}>
-        {query.data && (
-          <PredictionContent prediction={query.data.global} showModelDetails={levelAtLeast(level, 'technique')} />
-        )}
-      </MetricState>
-    </Card>
-  )
-}
+import type { Prediction } from '@/types/domain'
 
 export function PredictionContent({
   prediction,
