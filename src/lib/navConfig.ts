@@ -16,6 +16,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/apercu', label: "Vue d'ensemble" },
     { path: '/app/alertes', label: 'Alertes' },
     { path: '/app/consommation', label: 'Conso & coûts' },
+    { path: '/app/equipements', label: 'Équipements' },
     { path: '/app/prediction', label: 'Prédiction' },
     { path: '/app/factures', label: 'Factures' },
     { path: '/app/rapports', label: 'Commission' },

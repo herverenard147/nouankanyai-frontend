@@ -13,6 +13,7 @@ import { useDeleteMachine } from '@/hooks/queries/useMachineCrud'
 import { useRawMachines } from '@/hooks/queries/useRawMachines'
 import { levelAtLeast } from '@/lib/levelGating'
 import { useLevel } from '@/store/levelStore'
+import { useSessionStore } from '@/store/sessionStore'
 import type { BackendMachine } from '@/types/backend'
 import type { EquipmentRow } from '@/types/domain'
 
@@ -32,14 +33,17 @@ const COLUMNS_FULL: TableColumn<EquipmentRow>[] = [
 ]
 
 export function EquipmentPage() {
-  const query = useEquipmentTable('pme')
+  // Partagée entre PME et Ménage (voir navConfig.ts) : aucune des deux n'a de
+  // logique propre ici, seul le niveau par défaut diffère (store/levelStore.ts).
+  const profile = useSessionStore((s) => s.session?.profile) ?? 'pme'
+  const query = useEquipmentTable(profile)
   const rawQuery = useRawMachines()
   const deleteMutation = useDeleteMachine()
   const [selected, setSelected] = useState<EquipmentRow | null>(null)
   const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState<BackendMachine | null>(null)
   const [deleting, setDeleting] = useState<BackendMachine | null>(null)
-  const level = useLevel('pme')
+  const level = useLevel(profile)
   const columns = levelAtLeast(level, 'amateur') ? COLUMNS_FULL : COLUMNS_BASE
 
   const rawOf = (id: string) => rawQuery.data?.find((m) => m.machine_id === id) ?? null
