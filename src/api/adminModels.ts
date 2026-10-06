@@ -21,7 +21,7 @@ async function xgboostPanel(): Promise<AdminPanel> {
     meta: model?.trained_at ? `entraîné le ${model.trained_at}` : 'entraînement inconnu',
     badge: `jeu de données : ${datasetLabel(xgb.dataset)}`,
     rows: [
-      { label: 'R²', value: xgb.r2 !== null ? formatNumberFr(xgb.r2, 1) : (model?.metrics.r2?.toFixed(3) ?? '—') },
+      { label: 'R²', value: xgb.r2 !== null ? xgb.r2.toFixed(3).replace('.', ',') : (model?.metrics.r2?.toFixed(3) ?? '—') },
       { label: 'MAE', value: xgb.mae_kw !== null ? `${formatNumberFr(xgb.mae_kw, 1)} kW` : '—' },
       { label: 'MAPE', value: xgb.mape_pct !== null ? `${formatNumberFr(xgb.mape_pct, 1)} %` : '—' },
       { label: 'Statut modèle', value: model?.status ?? '—' },
@@ -38,10 +38,10 @@ async function isolationForestPanel(): Promise<AdminPanel> {
     meta: model?.trained_at ? `entraîné le ${model.trained_at}` : 'entraînement inconnu',
     badge: 'jeu de données : synthétique',
     rows: [
-      { label: 'Anomalies détectées', value: String(adminMetrics.ml_health.isolation_forest_anomalies_detected) },
-      { label: 'F1-score', value: model?.metrics.f1_score !== undefined ? model.metrics.f1_score.toFixed(3) : '—' },
+      { label: 'Alertes plateforme actives', value: String(adminMetrics.ml_health.isolation_forest_anomalies_detected) },
+      { label: 'F1-score (R&D v2, non déployé)', value: model?.metrics.f1_score !== undefined ? `${model.metrics.f1_score.toFixed(2)} (recherche)` : '—' },
       { label: 'Statut modèle', value: model?.status ?? '—' },
-      { label: 'Dérive du modèle', value: adminMetrics.ml_health.model_drift_status },
+      { label: 'Surveillance dérive', value: 'Non configurée' },
     ],
   }
 }

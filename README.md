@@ -167,6 +167,12 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   modèles » (`POST /api/v1/ml/reload`) ; `/app/factures` a une action « la vraie
   facture est arrivée » pour confirmer le montant réel d'une prévision (`PATCH
   /api/bills/{id}/actual`).
+- **Panneaux Admin — métriques et observabilité des modèles IA** (`/app/admin/modeles`) :
+  Les panneaux de supervision des modèles (`src/api/adminModels.ts`) présentent les indicateurs opérationnels réels sans masquer l'état du backend :
+  * **Surveillance dérive : Non configurée** (le backend renvoie `"NORMAL"` en dur dans `GET /api/admin/metrics`, aucun algorithme de drift n'étant encore branché).
+  * **Alertes plateforme actives : <compteur>** (reflète la somme SQL des alertes et machines en alerte issue de `ml_health.isolation_forest_anomalies_detected`, et non une sortie d'inférence directe du modèle Isolation Forest).
+  * **R² : 0,990** (affiché avec 3 décimales au lieu de `1,0` pour refléter fidèlement le score XGBoost sans arrondi trompeur).
+  * **F1-score (R&D v2, non déployé) : 0.11 (recherche)** (annoté explicitement pour distinguer le modèle expérimental v2 du système opérationnel d'alertes clients).
 - **Profil** (`/app/parametres`) : `useAuthMe`/`GET /api/auth/me` affiche
   email, type de compte, membre depuis, dernière connexion ; le nom est
   modifiable (`PATCH /api/auth/me`, restreint au nom — `type_compte`
