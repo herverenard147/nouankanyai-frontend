@@ -64,6 +64,7 @@ export interface BackendMachine {
   marque: string | null
   modele: string | null
   numero_serie: string | null
+  photo_data_url?: string | null
 }
 
 export interface BackendCatalogModel {
@@ -85,6 +86,22 @@ export interface BackendNewMachinePayload {
   numero_serie?: string
   quantite?: number
   site_id?: string
+  photo_data_url?: string
+}
+
+/** Réponse de POST /api/machines/extract-photo : champs potentiellement `null`
+ * (jamais devinés) à relire/corriger avant un POST /api/machines classique. */
+export interface BackendMachinePhotoExtraction {
+  status: string
+  extracted: {
+    nom_suggere: string | null
+    categorie: string | null
+    marque: string | null
+    modele: string | null
+    puissance_nominale_kw: number | null
+    categorie_connue: boolean
+  }
+  photo_data_url: string
 }
 
 export interface BackendMachineUpdatePayload {
@@ -110,12 +127,27 @@ export interface BackendWaitlistEntry {
   created_at: string
 }
 
+/** Diagnostic déterministe (médiane/MAD/tendance, ml/diagnostic.py) — null tant que
+ * l'historique de la machine compte moins de 3 relevés. N'est jamais l'autorité de
+ * décision (voir `resolved`, basé sur les seuils) : une information enrichie en plus. */
+export interface BackendMachineDiagnostic {
+  is_healthy: boolean
+  severity: 'normal' | 'surveillance' | 'moyenne' | 'elevee'
+  trend: 'hausse' | 'stable' | 'baisse'
+  primary_measure: string | null
+  since_n_readings: number
+  probable_cause: string | null
+  recommended_actions: string[]
+  family: string
+}
+
 export interface BackendMachineTestResult {
   resolved: boolean
   temperature_c: number
   vibration_hz: number
   pressure_bar: number
   power_kw: number
+  diagnostic: BackendMachineDiagnostic | null
 }
 
 export interface BackendDemoSeedResult {
@@ -170,6 +202,8 @@ export interface BackendAlertThresholds {
   temperature_max_c: number
   vibration_max_hz: number
   surconsommation_ratio: number
+  /** Panneau « Automatisation IA » (Réglages) — jamais activé par défaut. */
+  auto_resolve_enabled: boolean
 }
 
 export interface BackendFacturation {

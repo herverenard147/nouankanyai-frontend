@@ -63,6 +63,7 @@ export function EquipmentPage() {
             columns={columns}
             rows={query.data.rows}
             onRowClick={setSelected}
+            photoColumn
             renderActions={(row) => {
               const raw = rawOf(row.id)
               return raw ? <RowActions label={raw.nom} onEdit={() => setEditing(raw)} onDelete={() => setDeleting(raw)} /> : null

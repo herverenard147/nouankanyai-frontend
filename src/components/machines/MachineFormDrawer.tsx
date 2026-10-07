@@ -4,11 +4,12 @@ import type { FormEvent } from 'react'
 import { Button } from '@/components/ui/Button'
 import { ConfirmEditModal, Modal, MutationError, SelectField, type FieldChange } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
+import { MachinePhotoCapture } from '@/components/machines/MachinePhotoCapture'
 import { useAddMachine, useUpdateMachine } from '@/hooks/queries/useMachineCrud'
 import { useSites } from '@/hooks/queries/useSites'
 import { formatNumberFr } from '@/lib/formatters'
 import { priorityLabel } from '@/api/backendHelpers'
-import type { BackendMachine } from '@/types/backend'
+import type { BackendMachine, BackendMachinePhotoExtraction } from '@/types/backend'
 
 interface MachineFormDrawerProps {
   /** Machine existante à modifier, ou `null` pour un ajout. */
@@ -34,7 +35,8 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
   const sitesQuery = useSites()
   const addMutation = useAddMachine()
   const updateMutation = useUpdateMachine()
-  const [step, setStep] = useState<'form' | 'confirm'>('form')
+  const [step, setStep] = useState<'form' | 'confirm' | 'photo'>('form')
+  const [categorieNonReconnue, setCategorieNonReconnue] = useState(false)
 
   const [form, setForm] = useState({
     nom: machine?.nom ?? '',
@@ -45,7 +47,22 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     power_kw: machine?.power_kw != null ? String(machine.power_kw) : '',
     priority: machine?.priority ?? 'moyenne',
     site_id: machine?.site_id ?? '',
+    photo_data_url: undefined as string | undefined,
   })
+
+  function handlePhotoExtracted(extracted: BackendMachinePhotoExtraction['extracted'], photoDataUrl: string) {
+    setForm((f) => ({
+      ...f,
+      nom: extracted.nom_suggere ?? f.nom,
+      categorie: extracted.categorie ?? f.categorie,
+      marque: extracted.marque ?? f.marque,
+      modele: extracted.modele ?? f.modele,
+      power_kw: extracted.puissance_nominale_kw != null ? String(extracted.puissance_nominale_kw) : f.power_kw,
+      photo_data_url: photoDataUrl,
+    }))
+    setCategorieNonReconnue(!extracted.categorie_connue)
+    setStep('form')
+  }
   const siteName = (id: string) => sitesQuery.data?.find((site) => site.id === id)?.nom ?? 'Non associé'
 
   const changes: FieldChange[] = machine
@@ -90,6 +107,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           numero_serie: form.numero_serie || undefined,
           power_kw,
           site_id: form.site_id || undefined,
+          photo_data_url: form.photo_data_url,
         },
         { onSuccess: onClose },
       )
@@ -100,6 +118,18 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     event.preventDefault()
     if (isEdit) setStep('confirm')
     else save()
+  }
+
+  if (step === 'photo') {
+    return (
+      <Modal title="Ajouter par photo" description="Les champs reconnus pré-rempliront le formulaire ; à vérifier avant l'ajout." onClose={onClose} width="lg" actions={
+        <Button type="button" variant="outline" onClick={() => setStep('form')}>
+          Revenir au formulaire
+        </Button>
+      }>
+        <MachinePhotoCapture onExtracted={handlePhotoExtracted} />
+      </Modal>
+    )
   }
 
   if (step === 'confirm' && machine) {
@@ -136,6 +166,14 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
       }
     >
       <form id="machine-form" onSubmit={handleSubmit} className="flex flex-col gap-3">
+        {!isEdit && (
+          <Button type="button" variant="outline" onClick={() => setStep('photo')} className="self-start">
+            Ajouter par photo
+          </Button>
+        )}
+        {categorieNonReconnue && (
+          <p className="text-xs text-text-secondary">Catégorie non reconnue automatiquement — vérifiez/complétez les champs.</p>
+        )}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <TextField label="Nom" required value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} />
           {isEdit ? (

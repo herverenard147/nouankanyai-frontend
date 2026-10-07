@@ -51,6 +51,11 @@ export interface ActionAlert {
   id: string
   machineId: string
   level: string
+  /** Sévérité brute (voir ml/recommendation_engine.py) — distincte du diagnostic
+   * à 4 niveaux renvoyé par POST /api/machines/{id}/test : sert uniquement à décider
+   * si la relance automatique de « Vérifier et résoudre » est autorisée pour cette
+   * alerte (jamais pour « critique », voir useAutoResolveMachine). */
+  severity: 'critique' | 'modérée' | 'faible'
   title: string
   detail: string
   basis: string
@@ -155,6 +160,7 @@ export interface EquipmentRow {
   priorite: 'Haute' | 'Moyenne' | 'Basse'
   statut: string
   provenance: Provenance
+  photo_data_url: string | null
 }
 
 export interface MachineRow {
@@ -166,6 +172,7 @@ export interface MachineRow {
   statut: string
   priorite: 'Haute' | 'Moyenne' | 'Basse'
   provenance: Provenance
+  photo_data_url: string | null
 }
 
 /** Résultat d'un « Vérifier et résoudre » (relevé refait puis comparé aux seuils d'alerte). */

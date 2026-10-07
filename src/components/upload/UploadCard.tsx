@@ -8,11 +8,21 @@ interface UploadCardProps {
   caption: string
   onFileSelected: (file: File) => void
   isUploading: boolean
+  /** Par défaut : libellé facture (usage d'origine, InvoicesPage). */
+  buttonLabel?: string
+  busyLabel?: string
 }
 
-/** Encart d'envoi de facture par photo : ouvre le sélecteur de fichier/appareil
- * photo réel de l'appareil, puis transmet le fichier choisi à l'appelant. */
-export function UploadCard({ title, caption, onFileSelected, isUploading }: UploadCardProps) {
+/** Encart d'envoi de photo générique (facture, appareil…) : ouvre le sélecteur de
+ * fichier/appareil photo réel de l'appareil, puis transmet le fichier choisi à l'appelant. */
+export function UploadCard({
+  title,
+  caption,
+  onFileSelected,
+  isUploading,
+  buttonLabel = 'Prendre la facture en photo',
+  busyLabel = 'Analyse en cours…',
+}: UploadCardProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -42,7 +52,7 @@ export function UploadCard({ title, caption, onFileSelected, isUploading }: Uplo
         tabIndex={-1}
       />
       <Button type="button" onClick={() => inputRef.current?.click()} disabled={isUploading}>
-        {isUploading ? 'Analyse en cours…' : 'Prendre la facture en photo'}
+        {isUploading ? busyLabel : buttonLabel}
       </Button>
     </div>
   )

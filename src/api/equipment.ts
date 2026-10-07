@@ -15,6 +15,7 @@ export async function fetchEquipmentTable(_profile: Profile): Promise<{ title: s
       priorite: priorityLabel(m.priority),
       statut: statusLabel(m.status),
       provenance: 'estime' as const,
+      photo_data_url: m.photo_data_url ?? null,
     })),
   }
 }

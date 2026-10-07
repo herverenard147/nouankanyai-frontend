@@ -297,7 +297,7 @@ function ThresholdsCard() {
   const query = useThresholds()
   const mutation = useUpdateThresholds()
   const [step, setStep] = useState<'form' | 'confirm' | null>(null)
-  const [form, setForm] = useState({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2 })
+  const [form, setForm] = useState({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: false })
 
   const current = query.data
   const changes: FieldChange[] = current
@@ -392,6 +392,46 @@ function ThresholdsCard() {
   )
 }
 
+/**
+ * Panneau de consentement unique pour l'autonomie de l'IA — demandé pour ne
+ * pas redemander à chaque clic sur « Vérifier et résoudre » si l'utilisateur
+ * veut une relance automatique. Sauvegarde immédiate (pas de modal) : c'est
+ * un réglage global, pas une action qui mérite une confirmation à deux temps
+ * comme les seuils numériques ci-dessus.
+ */
+function AutomationCard() {
+  const query = useThresholds()
+  const mutation = useUpdateThresholds()
+  const current = query.data
+
+  return (
+    <section className={SECTION}>
+      <h2 className="text-section-title font-semibold text-text-primary">Automatisation IA</h2>
+      <MetricState status={query.status}>
+        {current && (
+          <label className="flex items-start gap-3 text-sm text-text-primary">
+            <input
+              type="checkbox"
+              className="mt-0.5 h-4 w-4"
+              checked={current.auto_resolve_enabled}
+              disabled={mutation.isPending}
+              onChange={(e) => mutation.mutate({ ...current, auto_resolve_enabled: e.target.checked })}
+            />
+            <span>
+              Relancer automatiquement la vérification d&rsquo;une alerte jusqu&rsquo;à résolution (les alertes
+              critiques restent toujours manuelles).
+              <span className="mt-1 block text-xs text-text-secondary">
+                La mesure reste simulée en l&rsquo;absence de capteur réel branché.
+              </span>
+            </span>
+          </label>
+        )}
+      </MetricState>
+      <MutationError error={mutation.error} />
+    </section>
+  )
+}
+
 export function SettingsPage() {
   const session = useSessionStore((s) => s.session)
   const logout = useSessionStore((s) => s.logout)
@@ -420,6 +460,7 @@ export function SettingsPage() {
       )}
 
       {session.profile !== 'admin' && <ThresholdsCard />}
+      {session.profile !== 'admin' && <AutomationCard />}
 
       <button
         type="button"

@@ -50,6 +50,7 @@ import type {
   BackendGeminiMetrics,
   BackendMachine,
   BackendMachineHistory,
+  BackendMachinePhotoExtraction,
   BackendMachineTestResult,
   BackendMachineUpdatePayload,
   BackendMlAuditEntry,
@@ -115,6 +116,11 @@ export const rawAddMachine = (payload: BackendNewMachinePayload) =>
   api.post<{ status: string; machines: BackendMachine[] }>('/api/machines', payload)
 export const rawUpdateMachine = (machineId: string, payload: BackendMachineUpdatePayload) =>
   api.patch<BackendMachine>(`/api/machines/${machineId}`, payload)
+export const rawExtractMachinePhoto = (file: File) => {
+  const form = new FormData()
+  form.append('file', file)
+  return api.postForm<BackendMachinePhotoExtraction>('/api/machines/extract-photo', form)
+}
 export const rawDeleteMachine = (machineId: string) => api.delete<null>(`/api/machines/${machineId}`)
 export const rawSimulateMachine = (machineId: string) => api.post<{ status: string }>(`/api/machines/${machineId}/simulate`)
 export const rawResetMachine = (machineId: string) => api.post<{ status: string }>(`/api/machines/${machineId}/reset`)
