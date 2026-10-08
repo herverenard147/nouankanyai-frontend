@@ -5,6 +5,7 @@ import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useAutoResolveMachine } from '@/hooks/queries/useMachineCrud'
 import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
+import { AllowedLink } from '@/routes/AllowedLink'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
 
 interface ActionAlertCardProps {
@@ -131,9 +132,9 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
       <p className="text-sm text-text-secondary">{alert.detail}</p>
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-text-secondary">
         <span className="tabular-nums">{alert.timestamp}</span>
-        <Link to="/app/journal" className="focus-ring text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
+        <AllowedLink to="/app/journal" className="focus-ring text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
           Voir le journal
-        </Link>
+        </AllowedLink>
       </div>
     </div>
   )

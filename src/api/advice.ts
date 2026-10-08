@@ -1,4 +1,4 @@
-import { getCachedMachines, rawRecommend } from '@/api/rawBackend'
+import { getCachedMachines, getCachedRecommend } from '@/api/rawBackend'
 import { formatFcfa } from '@/lib/formatters'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { Advice, Profile } from '@/types/domain'
@@ -10,7 +10,7 @@ export function adviceSectionTitle(_profile: Profile): string {
 export async function fetchAdvice(_profile: Profile): Promise<Advice[]> {
   const machines = await getCachedMachines()
   if (machines.length === 0) return []
-  const { recommendations } = await rawRecommend(machines)
+  const { recommendations } = await getCachedRecommend(machines)
 
   // Conseils = exactement les mêmes éléments qu'Alertes (voir src/api/alerts.ts),
   // ni plus ni moins : un conseil de dépannage n'a de sens que pour un problème

@@ -4,7 +4,7 @@
  * "vue" (`types/domain.ts`) au-dessus de ces fonctions — c'est ici, et
  * seulement ici, que vit la connaissance du contrat HTTP réel.
  */
-import { api } from '@/lib/apiClient'
+import { api, saveBlob } from '@/lib/apiClient'
 import { queryClient } from '@/lib/queryClient'
 import type {
   BackendAdminDevice,
@@ -159,8 +159,19 @@ function toSensorReading(machine: BackendMachine) {
     priority: machine.priority,
   }
 }
-export const rawRecommend = (machines: BackendMachine[]) =>
-  api.post<{ recommendations: BackendRecommendation[]; count: number }>('/api/recommend', machines.map(toSensorReading))
+/**
+ * /api/recommend partagé entre alertes, conseils, recommandations et plan d'action :
+ * chaque écran l'appelait séparément (jusqu'à 5 fois par page, avec à chaque fois les
+ * actions automatiques côté serveur). La clé contient l'état envoyé, donc un relevé
+ * ou une machine qui change relance bien le calcul.
+ */
+export const getCachedRecommend = (machines: BackendMachine[]) => {
+  const readings = machines.map(toSensorReading)
+  return queryClient.fetchQuery({
+    queryKey: ['recommend', readings],
+    queryFn: () => api.post<{ recommendations: BackendRecommendation[]; count: number }>('/api/recommend', readings),
+  })
+}
 
 export const rawPredict = (machine: BackendMachine, hoursAhead: number) =>
   api.post<{ machine_id: string; predictions: { hour: number; predicted_kw: number; cost_fcfa: number }[] }>(
@@ -261,17 +272,8 @@ export type { BackendAuditEvent, BackendPlanStatus }
 
 /** Export CSV de la piste d'audit : le navigateur doit envoyer le jeton, donc fetch + Blob (pas un simple lien). */
 export async function downloadAuditCsv(): Promise<void> {
-  const { useSessionStore } = await import('@/store/sessionStore')
-  const base = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8001').replace(/\/$/, '')
-  const token = useSessionStore.getState().session?.token
-  const response = await fetch(`${base}/api/v1/audit/events.csv`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-  if (!response.ok) throw new Error(`Export impossible (erreur ${response.status})`)
-  const url = URL.createObjectURL(await response.blob())
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'audit-nouankany.csv'
-  link.click()
-  URL.revokeObjectURL(url)
+  const { blob, filename } = await api.getBlob('/api/v1/audit/events.csv')
+  saveBlob(blob, filename ?? 'audit-nouankany.csv')
 }
 
 // --- Boîtier vocal : routes du site (le boîtier lui-même parle à /api/v1/boitier, avec son propre jeton) ---

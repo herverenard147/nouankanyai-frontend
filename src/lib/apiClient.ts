@@ -77,6 +77,48 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return data as T
 }
 
+/**
+ * Téléchargement d'un fichier (CSV, PDF, Word…) : même base d'URL, même jeton et même
+ * gestion des erreurs que les appels JSON, mais renvoie le Blob et le nom de fichier
+ * proposé par le serveur (en-tête Content-Disposition).
+ */
+async function requestBlob(path: string, method: 'GET' | 'POST', body?: unknown): Promise<{ blob: Blob; filename: string | null }> {
+  const headers: Record<string, string> = {}
+  const token = useSessionStore.getState().session?.token
+  if (token) headers.Authorization = `Bearer ${token}`
+  let requestBody: BodyInit | undefined
+  if (body !== undefined) {
+    headers['Content-Type'] = 'application/json'
+    requestBody = JSON.stringify(body)
+  }
+
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, { method, headers, body: requestBody })
+  } catch {
+    throw new ApiError('Impossible de joindre le serveur. Vérifiez votre connexion.', 0)
+  }
+  if (!response.ok) {
+    const data = await response.json().catch(() => null)
+    if (response.status === 401) useSessionStore.getState().logout()
+    const message = data?.detail ?? data?.error?.message ?? `Erreur ${response.status}`
+    throw new ApiError(typeof message === 'string' ? message : JSON.stringify(message), response.status)
+  }
+  const disposition = response.headers.get('content-disposition') ?? ''
+  const match = /filename="?([^";]+)"?/i.exec(disposition)
+  return { blob: await response.blob(), filename: match ? match[1] : null }
+}
+
+/** Propose le fichier à l'utilisateur (lien de téléchargement temporaire). */
+export function saveBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
 export const api = {
   get: <T>(path: string, auth = true) => request<T>(path, { method: 'GET', auth }),
   post: <T>(path: string, body?: unknown, auth = true) => request<T>(path, { method: 'POST', body, auth }),
@@ -84,4 +126,6 @@ export const api = {
   patch: <T>(path: string, body?: unknown, auth = true) => request<T>(path, { method: 'PATCH', body, auth }),
   delete: <T>(path: string, auth = true) => request<T>(path, { method: 'DELETE', auth }),
   postForm: <T>(path: string, form: FormData, auth = true) => request<T>(path, { method: 'POST', rawBody: form, auth }),
+  getBlob: (path: string) => requestBlob(path, 'GET'),
+  postBlob: (path: string, body?: unknown) => requestBlob(path, 'POST', body),
 }

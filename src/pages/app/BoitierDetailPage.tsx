@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { BOITIER_PROVENANCE, CONNECTION_LABEL, LANGUAGE_LABEL, LIGHT_SENTENCE, MACHINE_STATE_LABEL, connectionOf, lastActivity } from '@/api/boitiers'
 import { BackLink, BoitierSectionBlock, CommandsTable, DefinitionRows, LightDot, Th } from '@/components/boitier/BoitierParts'
@@ -8,6 +8,7 @@ import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal, ConfirmEditModal, MutationError } from '@/components/ui/Modal'
 import { useBoitierDetail, useBoitierMutations, useBoitiers } from '@/hooks/queries/useBoitiers'
+import { AllowedLink } from '@/routes/AllowedLink'
 import { boitierDetailBlocks } from '@/lib/boitierLevels'
 import { useLevel } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
@@ -155,9 +156,9 @@ export function BoitierDetailPage() {
               title="Ce que le boîtier a fait"
               action={
                 blocks.auditLink ? (
-                  <Link to="/app/audit" className="focus-ring text-sm font-semibold text-accent-cta">
+                  <AllowedLink to="/app/audit" className="focus-ring text-sm font-semibold text-accent-cta">
                     Voir l’Audit
-                  </Link>
+                  </AllowedLink>
                 ) : undefined
               }
             >
