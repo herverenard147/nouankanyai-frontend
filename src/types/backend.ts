@@ -267,18 +267,6 @@ export interface BackendPredictionPoint {
   cost_fcfa: number
 }
 
-export interface BackendAnomalyResult {
-  request_id: string
-  is_anomaly: boolean
-  anomaly_score: number
-  anomaly_probability: number
-  confidence: number
-  severity: string
-  model_name: string
-  model_version: string
-  metadata: { execution_time_ms: number; timestamp: string; feature_count: number }
-}
-
 export interface BackendAdminUserRow {
   id: string
   name: string
@@ -416,20 +404,6 @@ export interface BackendMlModelInfo {
   features: string[]
   metrics: Record<string, number>
   artifact_path: string | null
-}
-export interface BackendMlAuditEntry {
-  audit_id: string
-  request_id: string
-  timestamp: string
-  operation: string
-  model_name: string
-  model_version: string
-  input_hash: string
-  input_summary: Record<string, unknown>
-  output_summary: Record<string, unknown>
-  execution_time_ms: number
-  status: string
-  error_message: string | null
 }
 export interface BackendMlReloadResult {
   status: string

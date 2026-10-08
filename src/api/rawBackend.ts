@@ -28,7 +28,6 @@ import type {
   BackendPlanSummary,
   BackendResolution,
   BackendAlertThresholds,
-  BackendAnomalyResult,
   BackendAuditRequest,
   BackendAuditRequestPayload,
   BackendBillPhoto,
@@ -53,7 +52,6 @@ import type {
   BackendMachinePhotoExtraction,
   BackendMachineTestResult,
   BackendMachineUpdatePayload,
-  BackendMlAuditEntry,
   BackendMlHealth,
   BackendMlModelInfo,
   BackendMlReloadResult,
@@ -177,17 +175,8 @@ export const rawPredict = (machine: BackendMachine, hoursAhead: number) =>
     false,
   )
 
-export const rawDetectAnomaly = (reading: {
-  power_kw: number
-  temperature_c: number
-  vibration_hz: number
-  pressure_bar: number
-}) => api.post<BackendAnomalyResult>('/api/v1/ml/detect-anomaly', reading, false)
-
 export const rawMlHealth = () => api.get<BackendMlHealth>('/api/v1/ml/health', false)
 export const rawMlModels = () => api.get<BackendMlModelInfo[]>('/api/v1/ml/models')
-export const rawMlMetrics = () => api.get<Record<string, unknown>>('/api/v1/ml/metrics')
-export const rawMlAudit = () => api.get<BackendMlAuditEntry[]>('/api/v1/ml/audit')
 export const rawMlReload = () => api.post<BackendMlReloadResult>('/api/v1/ml/reload')
 
 export const rawAssistantChat = (message: string) =>
