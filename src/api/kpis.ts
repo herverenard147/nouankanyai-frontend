@@ -1,4 +1,4 @@
-import { formatFcfaAmount } from '@/api/backendHelpers'
+import { formatFcfa } from '@/lib/formatters'
 import { getCachedAdminMetrics, rawFacturation, getCachedMachines } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { Kpi, KpiWindow, Profile } from '@/types/domain'
@@ -76,7 +76,7 @@ async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
       label: CLIENT_LABELS['economies-mois'],
       value: formatNumberFr(facturation.grossSavings),
       unit: 'FCFA',
-      note: `Commission Nouankany (10 %) : ${formatFcfaAmount(facturation.gainShare)}`,
+      note: `Commission Nouankany (10 %) : ${formatFcfa(facturation.gainShare)}`,
       provenance: 'estime',
     },
     'anomalies-actives': {
@@ -135,9 +135,3 @@ export function fetchKpiSet(profile: Profile): Promise<Record<string, Kpi>> {
   return profile === 'admin' ? fetchAdminKpiSet() : fetchClientKpiSet()
 }
 
-export async function fetchKpi(profile: Profile, kpiId: string): Promise<Kpi> {
-  const set = await fetchKpiSet(profile)
-  const kpi = set[kpiId]
-  if (!kpi) throw new Error(`KPI inconnu : ${kpiId}`)
-  return kpi
-}

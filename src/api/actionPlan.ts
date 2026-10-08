@@ -1,4 +1,4 @@
-import { formatFcfaAmount } from '@/api/backendHelpers'
+import { formatFcfa } from '@/lib/formatters'
 import { rawImportPlanItems, rawPlanItems, rawPlanSummary, getCachedMachines, rawRecommend } from '@/api/rawBackend'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { BackendPlanItem, BackendPlanStatus } from '@/types/backend'
@@ -18,7 +18,7 @@ export function toPlanItem(item: BackendPlanItem): ActionPlanItem {
     title: item.title,
     detail: frenchNumbersWithUnits(item.description ?? ''),
     gain,
-    amountLabel: gain > 0 ? `−${formatFcfaAmount(gain)}` : '',
+    amountLabel: gain > 0 ? `−${formatFcfa(gain)}` : '',
     status: item.status as BackendPlanStatus,
     statusLabel: PLAN_STATUS_LABEL[item.status],
     // Le gain vient du moteur de recommandation (jeu de données synthétique) : jamais une mesure.
@@ -57,8 +57,8 @@ export async function fetchActionPlan(profile: Profile): Promise<ActionPlanItem[
 export async function fetchPlanSummary(_profile: Profile): Promise<ActionPlanSummary> {
   const summary = await rawPlanSummary()
   return {
-    potentialLabel: formatFcfaAmount(summary.potential_fcfa),
-    doneLabel: formatFcfaAmount(summary.done_fcfa),
+    potentialLabel: formatFcfa(summary.potential_fcfa),
+    doneLabel: formatFcfa(summary.done_fcfa),
     openCount: summary.counts.a_faire + summary.counts.en_cours,
     doneCount: summary.counts.fait,
     totalCount: summary.total_items,

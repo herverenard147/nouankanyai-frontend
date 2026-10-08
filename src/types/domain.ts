@@ -20,7 +20,6 @@ export interface Session {
   platformRole: 'admin' | 'superadmin' | null
   displayName: string
   subtitle: string
-  formule: 'eco-essentiel' | 'eco-intelligent' | 'eco-premium' | null
   /**
    * Compte principal d'une équipe PME/Industrie (peut ajouter/retirer des
    * membres) — toujours `false` pour un Ménage ou un Admin, et pour un
@@ -73,8 +72,6 @@ export interface AutoAlert {
   provenance: Provenance
   journalRef?: string
 }
-
-export type Alert = ActionAlert | AutoAlert
 
 export interface AlertHistoryEntry {
   id: string
@@ -314,14 +311,6 @@ export interface ConsumptionSeries {
   yAxisUnit: string
   provenance: Provenance
   byPost: ConsumptionPost[]
-}
-
-export interface Report {
-  id: string
-  period: string
-  headline: string
-  body: string
-  provenance: Provenance
 }
 
 export interface TariffInfo {
