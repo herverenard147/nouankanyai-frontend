@@ -6,7 +6,7 @@ import { BackLink, BoitierSectionBlock, CommandsTable, DefinitionRows, LightDot,
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
-import { ConfirmDeleteModal, ConfirmEditModal, MutationError } from '@/components/ui/Modal'
+import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError } from '@/components/ui/Modal'
 import { useBoitierDetail, useBoitierMutations, useBoitiers } from '@/hooks/queries/useBoitiers'
 import { AllowedLink } from '@/routes/AllowedLink'
 import { boitierDetailBlocks } from '@/lib/boitierLevels'
@@ -14,7 +14,7 @@ import { useLevel } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 import type { BackendBoitierMachineState } from '@/types/backend'
 
-type Dialog = 'scope' | 'revoke' | null
+type Dialog = 'scope' | 'revoke' | { kind: 'shutdown'; code: string; nom: string } | null
 
 const STATE_CLASS: Record<BackendBoitierMachineState, string> = {
   vert: 'text-confirm',
@@ -32,7 +32,7 @@ export function BoitierDetailPage() {
   const level = useLevel(profile ?? 'menage')
   const list = useBoitiers()
   const detail = useBoitierDetail(deviceId)
-  const { update, revoke, setControl } = useBoitierMutations()
+  const { update, revoke, setControl, shutdown } = useBoitierMutations()
   const [dialog, setDialog] = useState<Dialog>(null)
 
   if (!profile) return null
@@ -107,6 +107,7 @@ export function BoitierDetailPage() {
                           {blocks.readings && <Th>Dernier relevé</Th>}
                           <Th>Éteignable par le boîtier</Th>
                           {blocks.technical && <Th>Canal de commande</Th>}
+                          <Th>Action</Th>
                         </tr>
                       </thead>
                       <tbody>
@@ -139,6 +140,18 @@ export function BoitierDetailPage() {
                               )}
                             </td>
                             {blocks.technical && <td className="px-3 py-2.5 text-text-secondary">{machine.controllable ? 'Simulé' : '—'}</td>}
+                            <td className="px-3 py-2.5">
+                              {machine.controllable && machine.state !== 'arrete' && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className="min-h-9 px-3 py-1.5"
+                                  onClick={() => setDialog({ kind: 'shutdown', code: machine.code, nom: machine.nom })}
+                                >
+                                  Éteindre
+                                </Button>
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -149,6 +162,7 @@ export function BoitierDetailPage() {
                   <p className="text-xs text-text-secondary">Un appareil prioritaire n’est jamais éteint à la voix : le boîtier vous renvoie vers le site.</p>
                 )}
                 <MutationError error={setControl.error} />
+                <MutationError error={shutdown.error} />
               </BoitierSectionBlock>
             )}
 
@@ -249,6 +263,29 @@ export function BoitierDetailPage() {
                   })
                 }
               />
+            )}
+            {dialog !== null && typeof dialog === 'object' && dialog.kind === 'shutdown' && (
+              <Modal
+                title={`Éteindre « ${dialog.nom} » ?`}
+                description="Le boîtier coupe l’alimentation de cet appareil maintenant."
+                onClose={() => setDialog(null)}
+                actions={
+                  <>
+                    <Button type="button" variant="outline" onClick={() => setDialog(null)} disabled={shutdown.isPending}>
+                      Annuler
+                    </Button>
+                    <Button
+                      type="button"
+                      disabled={shutdown.isPending}
+                      onClick={() => shutdown.mutate({ deviceId: device.id, code: dialog.code }, { onSettled: () => setDialog(null) })}
+                    >
+                      {shutdown.isPending ? 'Extinction…' : 'Éteindre maintenant'}
+                    </Button>
+                  </>
+                }
+              >
+                <p className="text-sm text-text-secondary">L’action est enregistrée dans l’historique du boîtier. Rallumez l’appareil à la main quand vous le souhaitez.</p>
+              </Modal>
             )}
           </>
         )}

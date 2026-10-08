@@ -32,11 +32,11 @@ describe('impactClassName', () => {
 })
 
 describe('navigation PME/Industrie', () => {
-  it('distingue les factures d’électricité de la commission Nouankany', () => {
+  it('distingue les factures d’électricité de la facturation Nouankany', () => {
     for (const profile of ['pme', 'industrie'] as const) {
       const labels = NAV_BY_PROFILE[profile].map((entry) => entry.label)
       expect(labels).toContain('Factures CIE')
-      expect(labels).toContain('Commission')
+      expect(labels).toContain('Facturation Nouankany')
       expect(labels).not.toContain('Facturation')
     }
   })

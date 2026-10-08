@@ -65,6 +65,10 @@ import type {
   BackendUser,
   BackendWaitlistEntry,
   BackendWaitlistPayload,
+  BackendDriftReport,
+  BackendMediaAnalysis,
+  ReportFormat,
+  ReportType,
 } from '@/types/backend'
 
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
@@ -300,3 +304,20 @@ export const rawAdminRevokeBoitier = (id: string) => api.delete<{ status: string
 export const rawAdminBoitierRequests = () => api.get<BackendAdminDeviceRequest[]>('/api/v1/boitiers/admin/requests')
 export const rawAdminSetRequestStatus = (id: string, status: 'a_livrer' | 'livre') =>
   api.patch<BackendAdminDeviceRequest>(`/api/v1/boitiers/admin/requests/${id}`, { status })
+
+// --- Routes gardées sans écran jusqu'ici (voir lib/navConfig.ts pour qui y accède) ---
+export const rawDeleteSite = (siteId: string) => api.delete<null>(`/api/sites/${siteId}`)
+export const rawAnalyzeMachineMedia = (machineId: string, file: File) => {
+  const form = new FormData()
+  form.append('file', file)
+  return api.postForm<BackendMediaAnalysis>(`/api/machines/${machineId}/analyze-media`, form)
+}
+export const rawSiteShutdown = (deviceId: string, machineCode: string) =>
+  api.post<BackendDeviceCommand>(`/api/v1/boitiers/${deviceId}/commands`, { machine_code: machineCode, type: 'shutdown' })
+export const rawGenerateReport = (reportType: ReportType, exportFormat: ReportFormat) =>
+  api.postBlob('/api/v1/reports/generate', { report_type: reportType, export_format: exportFormat })
+export const rawContactMessages = () => api.get<BackendContactMessage[]>('/api/v1/contact')
+export const rawWaitlistEntries = () => api.get<BackendWaitlistEntry[]>('/api/v1/waitlist')
+export const rawMlDrift = (window = 500) => api.get<BackendDriftReport>(`/api/v1/ml/drift?window=${window}`)
+export const rawMlDriftLog = (window = 500) =>
+  api.post<{ status: string; log_file: string; report: BackendDriftReport }>(`/api/v1/ml/drift/log?window=${window}`)

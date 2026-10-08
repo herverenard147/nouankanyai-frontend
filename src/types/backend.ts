@@ -381,7 +381,8 @@ export interface BackendGeminiMetrics {
   gemini_model: string
   rate_limit_per_minute: number
   max_queue_wait_seconds: number
-  endpoints: Record<'chat' | 'ocr' | 'media', BackendGeminiEndpointMetrics>
+  /** Appels Gemini restants : lecture de facture (ocr), analyse photo/vidéo (media), identification de machine. */
+  endpoints: Record<'ocr' | 'media' | 'machine-vision', BackendGeminiEndpointMetrics>
 }
 
 export interface BackendMlHealth {
@@ -636,4 +637,33 @@ export interface BackendAdminDeviceRequest extends BackendDeviceRequest {
 export interface BackendBoitierPrice {
   unit_price_fcfa: number
   currency: string
+}
+
+/** POST /api/machines/{id}/analyze-media */
+export interface BackendMediaAnalysis {
+  status: 'NORMAL' | 'ALERTE' | 'ERROR'
+  description: string
+  message?: string
+}
+
+export type ReportType = 'daily' | 'weekly' | 'monthly' | 'energy_audit' | 'anomaly_report' | 'performance_report'
+export type ReportFormat = 'pdf' | 'docx' | 'xlsx' | 'pptx'
+
+/** GET /api/v1/ml/drift (administrateurs) */
+export interface BackendDriftFeature {
+  feature_name: string
+  psi: number
+  ks_statistic: number
+  ks_pvalue: number
+  status: 'stable' | 'warning' | 'critical'
+  reference_mean: number
+  observed_mean: number
+}
+export interface BackendDriftReport {
+  timestamp: string
+  sample_size: number
+  features: BackendDriftFeature[]
+  global_status: 'stable' | 'warning' | 'critical'
+  features_in_warning: number
+  features_in_critical: number
 }

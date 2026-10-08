@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { MachineFormDrawer } from '@/components/machines/MachineFormDrawer'
+import { MachineTools } from '@/components/machines/MachineTools'
 import { MetricState } from '@/components/state/MetricState'
 import { DataTable } from '@/components/table/DataTable'
 import type { TableColumn } from '@/components/table/DataTable'
@@ -69,7 +70,9 @@ export function MachinesPage() {
           />
         )}
       </MetricState>
-      <RowDetailDrawer row={selected} columns={columns} title={selected?.machine ?? ''} onClose={() => setSelected(null)} />
+      <RowDetailDrawer row={selected} columns={columns} title={selected?.machine ?? ''} onClose={() => setSelected(null)}>
+        {selected && rawOf(selected.id) && <MachineTools machine={rawOf(selected.id) as BackendMachine} />}
+      </RowDetailDrawer>
       {adding && <MachineFormDrawer machine={null} itemLabel="une machine" onClose={() => setAdding(false)} />}
       {editing && <MachineFormDrawer machine={editing} itemLabel="la machine" onClose={() => setEditing(null)} />}
       {deleting && (

@@ -34,6 +34,9 @@ export interface Session {
    * (voir DemoDataBanner) sur un dashboard vide.
    */
   isTrial: boolean
+  /** Compte de démonstration (`*.demo`, voir README) : comme un compte d'essai, il voit les
+   * outils de démo (« Simuler une alerte »). */
+  isDemo: boolean
 }
 
 export interface TeamMember {

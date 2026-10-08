@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 
 import { LevelSelector } from '@/components/level/LevelSelector'
+import { SitesCard } from '@/components/settings/SitesCard'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, type FieldChange } from '@/components/ui/Modal'
@@ -456,7 +457,10 @@ export function SettingsPage() {
       )}
 
       {(session.profile === 'pme' || session.profile === 'industrie') && (
-        <TeamCard isOwner={session.isTeamOwner} />
+        <>
+          <SitesCard />
+          <TeamCard isOwner={session.isTeamOwner} />
+        </>
       )}
 
       {session.profile !== 'admin' && <ThresholdsCard />}
