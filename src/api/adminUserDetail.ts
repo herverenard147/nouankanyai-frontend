@@ -4,18 +4,17 @@ import {
   rawAdminUpdateUserProfile,
   rawAdminResetPassword,
   rawDeleteUser,
-  rawPlatformAlerts,
   rawPlatformConsumption,
   rawPlatformPredictions,
   rawSuspendUser,
   rawUserAlerts,
   rawUserPredictions,
 } from '@/api/rawBackend'
-import { formatFcfaAmount } from '@/api/backendHelpers'
+import { formatFcfa } from '@/lib/formatters'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import { formatNumberFr } from '@/lib/formatters'
 import type { AdminMachinePrediction } from '@/types/domain'
-import type { BackendRecommendation, BackendPlatformAlertItem } from '@/types/backend'
+import type { BackendRecommendation } from '@/types/backend'
 
 export function suspendUser(targetUserId: string, suspended: boolean) {
   return rawSuspendUser(targetUserId, suspended)
@@ -66,7 +65,7 @@ function toAlertItem(rec: BackendRecommendation, i: number, ownerNom?: string): 
     id: `${rec.machine_id}-${rec.type}-${i}`,
     title: rec.title,
     detail: frenchNumbersWithUnits(rec.description),
-    severityOrGain: rec.gain_fcfa > 0 ? `−${formatFcfaAmount(rec.gain_fcfa)}` : rec.severity,
+    severityOrGain: rec.gain_fcfa > 0 ? `−${formatFcfa(rec.gain_fcfa)}` : rec.severity,
     provenance: 'synthetique',
     ownerNom,
     machineId: rec.machine_id,
@@ -80,14 +79,6 @@ export async function fetchUserAlerts(targetUserId: string): Promise<AdminAlertI
   return recommendations.map((rec, i) => toAlertItem(rec, i))
 }
 
-/** Alertes agrégées de toute la plateforme (tous comptes), pour la Vue d'ensemble et la
- * page Alertes de l'Admin — remplace l'ancien scope erroné (compte Admin lui-même, qui n'a
- * pas d'équipement en propre, voir api/alerts.ts). */
-export async function fetchPlatformAlerts(): Promise<AdminAlertItem[]> {
-  const { recommendations } = await rawPlatformAlerts()
-  return recommendations.map((rec: BackendPlatformAlertItem, i) => toAlertItem(rec, i, rec.owner_nom))
-}
-
 export interface AdminPlatformPredictionRow {
   ownerId: string
   ownerNom: string
@@ -98,7 +89,7 @@ export interface AdminPlatformPredictionRow {
 
 /** Prédictions agrégées de toute la plateforme, par utilisateur — remplace l'ancien scope
  * erroné (compte Admin lui-même, sans équipement propre) sur la page Prédiction de l'Admin,
- * même correction que fetchPlatformAlerts. */
+ * même correction que les alertes plateforme (api/alerts.ts). */
 export async function fetchPlatformPredictions(): Promise<AdminPlatformPredictionRow[]> {
   // hours_ahead=1 : seule la valeur « heure suivante » est affichée ici (voir nextHourValue/
   // totalNextHourKw ci-dessous) — demander les 24h par défaut forcerait le backend à calculer

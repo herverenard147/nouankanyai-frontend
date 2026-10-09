@@ -4,7 +4,9 @@ import type { FormEvent } from 'react'
 import { Button } from '@/components/ui/Button'
 import { ConfirmEditModal, Modal, MutationError, SelectField, type FieldChange } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
+import { CatalogPicker } from '@/components/machines/CatalogPicker'
 import { MachinePhotoCapture } from '@/components/machines/MachinePhotoCapture'
+import { useSessionStore } from '@/store/sessionStore'
 import { useAddMachine, useUpdateMachine } from '@/hooks/queries/useMachineCrud'
 import { useSites } from '@/hooks/queries/useSites'
 import { formatNumberFr } from '@/lib/formatters'
@@ -32,6 +34,8 @@ const PRIORITIES = [
  */
 export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDrawerProps) {
   const isEdit = machine !== null
+  const profile = useSessionStore((s) => s.session?.profile)
+  const showCatalog = !isEdit && profile !== undefined && profile !== 'admin'
   const sitesQuery = useSites()
   const addMutation = useAddMachine()
   const updateMutation = useUpdateMachine()
@@ -170,6 +174,21 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           <Button type="button" variant="outline" onClick={() => setStep('photo')} className="self-start">
             Ajouter par photo
           </Button>
+        )}
+        {showCatalog && (
+          <CatalogPicker
+            segment={profile === 'menage' ? 'menage' : undefined}
+            onPick={(choice) =>
+              setForm((f) => ({
+                ...f,
+                nom: f.nom || `${choice.categorie} ${choice.marque} ${choice.modele}`,
+                categorie: choice.categorie,
+                marque: choice.marque,
+                modele: choice.modele,
+                power_kw: String(choice.puissance_kw),
+              }))
+            }
+          />
         )}
         {categorieNonReconnue && (
           <p className="text-xs text-text-secondary">Catégorie non reconnue automatiquement — vérifiez/complétez les champs.</p>

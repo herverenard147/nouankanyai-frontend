@@ -15,6 +15,7 @@ import { PlanActionPage } from '@/pages/app/PlanActionPage'
 import { AlertsPage } from '@/pages/app/AlertsPage'
 import { ConsumptionPage } from '@/pages/app/ConsumptionPage'
 import { EquipmentPage } from '@/pages/app/EquipmentPage'
+import { FacturationPage } from '@/pages/app/FacturationPage'
 import { InvoicesPage } from '@/pages/app/InvoicesPage'
 import { JournalPage } from '@/pages/app/JournalPage'
 import { MachinesPage } from '@/pages/app/MachinesPage'
@@ -26,7 +27,9 @@ import { SettingsPage } from '@/pages/app/SettingsPage'
 import { AdminBoitierDetailPage } from '@/pages/app/admin/AdminBoitierDetailPage'
 import { AdminBoitiersPage } from '@/pages/app/admin/AdminBoitiersPage'
 import { AdminHealthPage } from '@/pages/app/admin/AdminHealthPage'
+import { AdminBillingPage } from '@/pages/app/admin/AdminBillingPage'
 import { AdminLeadsPage } from '@/pages/app/admin/AdminLeadsPage'
+import { AdminMessagesPage } from '@/pages/app/admin/AdminMessagesPage'
 import { AdminModelsPage } from '@/pages/app/admin/AdminModelsPage'
 import { AdminUserDetailPage } from '@/pages/app/admin/AdminUserDetailPage'
 import { AdminUsersPage } from '@/pages/app/admin/AdminUsersPage'
@@ -67,6 +70,7 @@ export const router = createBrowserRouter([
               { path: 'equipements', element: <EquipmentPage /> },
               { path: 'machines', element: <MachinesPage /> },
               { path: 'rapports', element: <ReportsPage /> },
+              { path: 'facturation', element: <FacturationPage /> },
               { path: 'journal', element: <JournalPage /> },
               { path: 'audit', element: <AuditPage /> },
               { path: 'plan-action', element: <PlanActionPage /> },
@@ -80,6 +84,8 @@ export const router = createBrowserRouter([
               { path: 'admin/utilisateurs', element: <AdminUsersPage /> },
               { path: 'admin/utilisateurs/:userId', element: <AdminUserDetailPage /> },
               { path: 'admin/leads', element: <AdminLeadsPage /> },
+              { path: 'admin/messages', element: <AdminMessagesPage /> },
+              { path: 'admin/facturation', element: <AdminBillingPage /> },
               { path: '*', element: <Navigate to="/app" replace /> },
             ],
           },

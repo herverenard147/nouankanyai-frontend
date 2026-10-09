@@ -41,23 +41,23 @@ async function isolationForestPanel(): Promise<AdminPanel> {
       { label: 'Alertes plateforme actives', value: String(adminMetrics.ml_health.isolation_forest_anomalies_detected) },
       { label: 'F1-score (R&D v2, non déployé)', value: model?.metrics.f1_score !== undefined ? `${model.metrics.f1_score.toFixed(2)} (recherche)` : '—' },
       { label: 'Statut modèle', value: model?.status ?? '—' },
-      { label: 'Surveillance dérive', value: 'Non configurée' },
     ],
   }
 }
 
 async function geminiPanel(): Promise<AdminPanel> {
   const gemini = await rawGeminiMetrics()
-  const chat = gemini.endpoints.chat
+  const all = Object.values(gemini.endpoints)
+  const sum = (key: 'real_calls_total' | 'cache_hits' | 'http_429_count') => all.reduce((total, e) => total + e[key], 0)
   return {
     id: 'gemini',
     title: 'Gemini · observabilité',
     meta: `modèle ${gemini.gemini_model}`,
     badge: gemini.ai_mode === 'mock' ? 'mode mock : activé' : 'mode mock : désactivé',
     rows: [
-      { label: 'Appels réels (chat)', value: String(chat.real_calls_total) },
-      { label: 'Cache hits', value: String(chat.cache_hits) },
-      { label: 'Saturations (429)', value: String(chat.http_429_count) },
+      { label: 'Appels réels (vision)', value: String(sum('real_calls_total')) },
+      { label: 'Cache hits', value: String(sum('cache_hits')) },
+      { label: 'Saturations (429)', value: String(sum('http_429_count')) },
       { label: 'Limite locale', value: `${gemini.rate_limit_per_minute} / min` },
     ],
   }

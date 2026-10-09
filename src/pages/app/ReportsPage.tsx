@@ -1,89 +1,88 @@
-import { BarChart, type ChartBar } from '@/components/charts/BarChart'
-import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
-import { MetricState } from '@/components/state/MetricState'
-import { useFacturation } from '@/hooks/queries/useFacturation'
-import { formatFcfa, formatNumberFr } from '@/lib/formatters'
+import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 
-/** Commission sur les économies : Nouankany prend 10 % des économies réellement journalisées ce mois. */
+import { rawGenerateReport } from '@/api/rawBackend'
+import { Button } from '@/components/ui/Button'
+import { MutationError, SelectField } from '@/components/ui/Modal'
+import { saveBlob } from '@/lib/apiClient'
+import { useSessionStore } from '@/store/sessionStore'
+import type { Profile } from '@/types/domain'
+import type { ReportFormat, ReportType } from '@/types/backend'
+
+const TYPE_LABELS: Record<ReportType, string> = {
+  daily: 'Journalier',
+  weekly: 'Hebdomadaire',
+  monthly: 'Mensuel',
+  energy_audit: 'Audit énergétique',
+  anomaly_report: 'Anomalies',
+  performance_report: 'Performance des machines',
+}
+
+const FORMAT_LABELS: Record<ReportFormat, string> = {
+  pdf: 'PDF',
+  xlsx: 'Excel',
+  docx: 'Word',
+  pptx: 'PowerPoint',
+}
+
+/** Ce que chaque type de compte peut générer : le Ménage veut un bilan lisible, l'Industrie
+ * des documents à retravailler ou présenter. */
+export const REPORT_OPTIONS: Record<Exclude<Profile, 'admin'>, { types: ReportType[]; formats: ReportFormat[] }> = {
+  menage: { types: ['monthly'], formats: ['pdf'] },
+  pme: { types: ['monthly', 'weekly', 'energy_audit'], formats: ['pdf', 'xlsx'] },
+  industrie: {
+    types: ['monthly', 'weekly', 'daily', 'energy_audit', 'anomaly_report', 'performance_report'],
+    formats: ['pdf', 'docx', 'pptx', 'xlsx'],
+  },
+}
+
+/** Rapports énergétiques générés par le serveur à partir des données réelles du compte
+ * (POST /api/v1/reports/generate). */
 export function ReportsPage() {
-  const query = useFacturation()
+  const profile = useSessionStore((s) => s.session?.profile)
+  const options = REPORT_OPTIONS[profile === 'pme' || profile === 'industrie' ? profile : 'menage']
+  const [reportType, setReportType] = useState<ReportType>(options.types[0])
+  const [format, setFormat] = useState<ReportFormat>(options.formats[0])
+  const generate = useMutation({
+    mutationFn: () => rawGenerateReport(reportType, format),
+    onSuccess: ({ blob, filename }) => saveBlob(blob, filename ?? `rapport-nouankany.${format}`),
+  })
 
   return (
     <div className="flex flex-col gap-7">
+      <h1 className="text-section-title font-semibold text-text-primary">Rapports</h1>
       <p className="text-sm text-text-secondary">
-        Détail du calcul de la commission Nouankany sur les économies et piste d&rsquo;audit des économies enregistrées ce
-        mois.
+        Un rapport reprend vos équipements, leurs derniers relevés, votre dernière facture CIE et les alertes de la période.
+        Quand une valeur est estimée faute de mesure, le rapport le signale.
       </p>
-      <MetricState status={query.status}>
-        {query.data && (
-          <>
-            <div className="grid grid-cols-1 border-y border-border border-t-2 border-t-text-primary sm:grid-cols-2">
-              <div className="flex flex-col gap-2 border-b border-border py-4 sm:border-b-0 sm:border-r sm:pr-6">
-                <h3 className="text-sm font-medium text-text-secondary">Économies brutes ce mois</h3>
-                <p className="font-heading text-kpi-value font-semibold tabular-nums text-text-primary">
-                  {formatFcfa(query.data.grossSavings)}
-                </p>
-                <ProvenanceBadge value="estime" className="w-fit" />
-              </div>
-              <div className="flex flex-col gap-2 py-4 sm:pl-6">
-                <h3 className="text-sm font-medium text-text-secondary">Commission Nouankany (10 %)</h3>
-                <p className="font-heading text-kpi-value font-semibold tabular-nums text-text-primary">
-                  {formatFcfa(query.data.gainShare)}
-                </p>
-                <ProvenanceBadge value="estime" className="w-fit" />
-              </div>
-            </div>
-
-            <section className="flex flex-col gap-4 border-t-2 border-text-primary pt-4">
-              <h3 className="text-section-title font-semibold text-text-primary">Économies par semaine</h3>
-              <MetricState status="success" isEmpty={query.data.barData.every((bar) => bar.savings === 0)}>
-                <BarChartFromFacturation bars={query.data.barData} />
-              </MetricState>
-            </section>
-
-            <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
-              <h3 className="text-section-title font-semibold text-text-primary">Piste d&rsquo;audit</h3>
-              <MetricState status="success" isEmpty={query.data.auditTrail.length === 0}>
-                <div className="flex flex-col">
-                  {query.data.auditTrail.map((entry, i) => (
-                    <div key={i} className="flex flex-wrap items-center justify-between gap-2 border-t border-border py-2.5 text-sm">
-                      <span className="tabular-nums text-text-tertiary">{new Date(entry.timestamp).toLocaleString('fr-FR')}</span>
-                      <span className="min-w-0 flex-1 px-3 text-text-primary">{entry.action}</span>
-                      <span className="text-text-secondary">{entry.status}</span>
-                    </div>
-                  ))}
-                </div>
-              </MetricState>
-            </section>
-
-            <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
-              <h3 className="text-section-title font-semibold text-text-primary">Factures de commission</h3>
-              <MetricState status="success" isEmpty={query.data.invoices.length === 0}>
-                <div className="flex flex-col">
-                  {query.data.invoices.map((invoice) => (
-                    <div key={invoice.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-border py-2.5 text-sm">
-                      <span className="text-text-primary">{invoice.month}</span>
-                      <span className="tabular-nums text-text-secondary">{invoice.amount}</span>
-                    </div>
-                  ))}
-                </div>
-              </MetricState>
-            </section>
-          </>
+      <form
+        className="flex flex-col gap-4 border-t-2 border-text-primary pt-4 sm:max-w-md"
+        onSubmit={(event) => {
+          event.preventDefault()
+          generate.mutate()
+        }}
+      >
+        {options.types.length > 1 && (
+          <SelectField
+            label="Type de rapport"
+            value={reportType}
+            onChange={(value) => setReportType(value as ReportType)}
+            options={options.types.map((t) => ({ value: t, label: TYPE_LABELS[t] }))}
+          />
         )}
-      </MetricState>
+        {options.formats.length > 1 && (
+          <SelectField
+            label="Format"
+            value={format}
+            onChange={(value) => setFormat(value as ReportFormat)}
+            options={options.formats.map((f) => ({ value: f, label: FORMAT_LABELS[f] }))}
+          />
+        )}
+        <Button type="submit" disabled={generate.isPending} className="self-start">
+          {generate.isPending ? 'Génération…' : `Télécharger le rapport ${TYPE_LABELS[reportType].toLowerCase()} (${FORMAT_LABELS[format]})`}
+        </Button>
+        <MutationError error={generate.error} />
+      </form>
     </div>
   )
-}
-
-function BarChartFromFacturation({ bars }: { bars: { name: string; savings: number }[] }) {
-  const max = Math.max(...bars.map((b) => b.savings), 1)
-  const chartBars: ChartBar[] = bars.map((b) => ({
-    key: b.name,
-    x: b.name,
-    percent: Math.round((b.savings / max) * 100),
-    tip: formatFcfa(b.savings),
-  }))
-  const yTicks = [formatNumberFr(max), formatNumberFr(max / 2), '0']
-  return <BarChart bars={chartBars} yTicks={yTicks} size="dashboard" yAxisLabel="FCFA" xAxisLabel="semaine" />
 }

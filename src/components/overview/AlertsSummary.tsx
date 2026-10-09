@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 
 import { MetricState } from '@/components/state/MetricState'
 import { useActionAlerts } from '@/hooks/queries/useAlerts'
+import { AllowedLink } from '@/routes/AllowedLink'
 import type { Profile } from '@/types/domain'
 
 interface AlertsSummaryProps {
@@ -60,9 +61,9 @@ export function AlertsSummary({ profile, max = 2 }: AlertsSummaryProps) {
         </ul>
         {alerts.length > 0 && (
           <div className="flex justify-between border-t border-border pt-2.5">
-            <Link to="/app/conseils" className="focus-ring text-[0.8125rem] font-semibold text-accent-cta hover:text-accent-cta-hover">
+            <AllowedLink to="/app/conseils" className="focus-ring text-[0.8125rem] font-semibold text-accent-cta hover:text-accent-cta-hover">
               Voir les conseils ({alerts.length}) →
-            </Link>
+            </AllowedLink>
             {hidden > 0 && <span className="text-[0.8125rem] text-text-secondary">+ {hidden} autre{hidden > 1 ? 's' : ''}</span>}
           </div>
         )}

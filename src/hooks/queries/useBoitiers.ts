@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { fetchAdminBoitierDetail, fetchBoitierDetail, fetchBoitierRows } from '@/api/boitiers'
 import {
+  rawSiteShutdown,
   rawAdminBoitierRequests,
   rawAdminBoitiers,
   rawAdminRevokeBoitier,
@@ -73,6 +74,11 @@ export function useBoitierMutations() {
     }),
     setControl: useMutation({
       mutationFn: ({ code, controllable }: { code: string; controllable: boolean }) => rawSetMachineControl(code, controllable),
+      onSuccess: refresh,
+    }),
+    /** Extinction demandée depuis le site : la personne connectée a déjà confirmé dans la modale. */
+    shutdown: useMutation({
+      mutationFn: ({ deviceId, code }: { deviceId: string; code: string }) => rawSiteShutdown(deviceId, code),
       onSuccess: refresh,
     }),
   }

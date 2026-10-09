@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 import { Button } from '@/components/ui/Button'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
@@ -14,6 +15,8 @@ interface RowDetailDrawerProps<T extends { id: string; provenance: Provenance; p
   onEdit?: () => void
   onDelete?: () => void
   deletePending?: boolean
+  /** Contenu propre à la ressource, affiché sous les champs (ex. outils d'une machine). */
+  children?: ReactNode
 }
 
 /** Fiche détail d'une ligne de table (équipement, machine), ouverte au clic sur la ligne. */
@@ -25,6 +28,7 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance; 
   onEdit,
   onDelete,
   deletePending,
+  children,
 }: RowDetailDrawerProps<T>) {
   if (!row) return null
 
@@ -61,6 +65,7 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance; 
           ))}
         </dl>
         <ProvenanceBadge value={row.provenance} className="w-fit" />
+        {children}
         {(onEdit || onDelete) && (
           <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-4">
             {onEdit && (

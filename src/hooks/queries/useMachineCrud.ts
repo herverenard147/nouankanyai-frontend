@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { rawAddMachine, rawDeleteMachine, rawExtractMachinePhoto, rawTestMachine, rawUpdateMachine } from '@/api/rawBackend'
+import {
+  rawAddMachine,
+  rawAnalyzeMachineMedia,
+  rawDeleteMachine,
+  rawExtractMachinePhoto,
+  rawResetMachine,
+  rawSimulateMachine,
+  rawTestMachine,
+  rawUpdateMachine,
+} from '@/api/rawBackend'
 import { useThresholds } from '@/hooks/queries/useThresholds'
 import type { BackendMachineTestResult, BackendMachineUpdatePayload, BackendNewMachinePayload } from '@/types/backend'
 
@@ -30,6 +39,34 @@ function invalidateMachineQueries(queryClient: ReturnType<typeof useQueryClient>
 
 /** Reconnaissance de l'appareil à partir d'une photo (pré-remplissage du formulaire
  * d'ajout) — ne touche jamais la liste des machines, pas d'invalidation de cache. */
+/** Analyse d'une photo ou d'une vidéo de la machine (POST /api/machines/{id}/analyze-media) :
+ * une menace détectée passe la machine en alerte, d'où l'invalidation. */
+export function useAnalyzeMachineMedia() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ machineId, file }: { machineId: string; file: File }) => rawAnalyzeMachineMedia(machineId, file),
+    onSuccess: () => invalidateMachineQueries(queryClient),
+  })
+}
+
+/** Remise en état normal par le client (POST /api/machines/{id}/reset). */
+export function useResetMachine() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (machineId: string) => rawResetMachine(machineId),
+    onSuccess: () => invalidateMachineQueries(queryClient),
+  })
+}
+
+/** Outil de démonstration (POST /api/machines/{id}/simulate) : comptes d'essai et de démo seulement. */
+export function useSimulateMachine() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (machineId: string) => rawSimulateMachine(machineId),
+    onSuccess: () => invalidateMachineQueries(queryClient),
+  })
+}
+
 export function useExtractMachinePhoto() {
   return useMutation({
     mutationFn: (file: File) => rawExtractMachinePhoto(file),

@@ -1,4 +1,4 @@
-import { rawMachineHistory, getCachedMachines, rawPlatformAlerts, rawRecommend } from '@/api/rawBackend'
+import { rawMachineHistory, getCachedMachines, rawPlatformAlerts, getCachedRecommend } from '@/api/rawBackend'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { BackendMachine } from '@/types/backend'
 import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types/domain'
@@ -12,8 +12,8 @@ import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types
  */
 async function fetchRecommendations() {
   const machines = await getCachedMachines()
-  if (machines.length === 0) return { machines, recommendations: [] as Awaited<ReturnType<typeof rawRecommend>>['recommendations'] }
-  const { recommendations } = await rawRecommend(machines)
+  if (machines.length === 0) return { machines, recommendations: [] as Awaited<ReturnType<typeof getCachedRecommend>>['recommendations'] }
+  const { recommendations } = await getCachedRecommend(machines)
   return { machines, recommendations }
 }
 

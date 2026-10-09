@@ -113,8 +113,19 @@ describe('navigation par profil (DESIGN.md §4)', () => {
     expect(labels('menage')).not.toContain("Plan d'action")
     expect(labels('admin')).not.toContain("Plan d'action")
   })
-  it('Commission aussi pour le Ménage (il paie selon ses économies)', () => {
-    expect(labels('menage')).toContain('Commission')
+  it('le Ménage voit son abonnement, PME et Industrie la facturation Nouankany', () => {
+    expect(labels('menage')).toContain('Abonnement')
+    expect(labels('pme')).toContain('Facturation Nouankany')
+    expect(labels('industrie')).toContain('Facturation Nouankany')
+    expect(labels('admin')).not.toContain('Facturation Nouankany')
+  })
+  it('Rapports pour les trois types de compte client, pas pour l’Admin', () => {
+    for (const profile of ['menage', 'pme', 'industrie'] as const) expect(labels(profile)).toContain('Rapports')
+    expect(labels('admin')).not.toContain('Rapports')
+  })
+  it('Messages et inscriptions réservé à l’Admin', () => {
+    expect(labels('admin')).toContain('Messages et inscriptions')
+    for (const profile of ['menage', 'pme', 'industrie'] as const) expect(labels(profile)).not.toContain('Messages et inscriptions')
   })
   it('le Journal est conservé (ce n’est pas un audit)', () => {
     expect(labels('industrie')).toContain('Journal')
