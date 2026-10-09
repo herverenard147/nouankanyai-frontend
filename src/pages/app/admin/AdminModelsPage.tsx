@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { adminPanelIds } from '@/api/adminModels'
-import { rawMlDrift, rawMlDriftLog, rawMlHealth } from '@/api/rawBackend'
+import { rawColdStart, rawColdStartEvaluate, rawMlDrift, rawMlDriftLog, rawMlHealth } from '@/api/rawBackend'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { MutationError } from '@/components/ui/Modal'
@@ -88,6 +88,62 @@ function DriftTable({ report }: { report: BackendDriftReport }) {
   )
 }
 
+const SEGMENT_LABEL: Record<string, string> = { menage: 'Ménage', pme: 'PME', industrie: 'Industrie' }
+
+/** GET /api/v1/ml/cold-start : un compte neuf est-il déjà prédit d'après les comptes qui lui
+ * ressemblent ? Seuils : backend/ml/cold_start_config.py. */
+function ColdStartPanel() {
+  const client = useQueryClient()
+  const query = useQuery({ queryKey: ['ml-cold-start'], queryFn: rawColdStart })
+  const evaluate = useMutation({ mutationFn: rawColdStartEvaluate, onSuccess: (data) => client.setQueryData(['ml-cold-start'], data) })
+  return (
+    <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
+      <div>
+        <h2 className="text-section-title font-semibold text-text-primary">Démarrage à froid</h2>
+        <p className="text-sm text-text-secondary">
+          Par segment, la prédiction par similarité s&rsquo;active seule quand il y a assez de comptes de référence et que le test historique caché
+          lui est favorable.
+        </p>
+      </div>
+      <MetricState status={query.status}>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {query.data?.map((s) => {
+            const usable = Object.entries(s.category_counts).filter(([, n]) => n >= s.min_per_category)
+            return (
+              <div key={s.segment} className="flex flex-col gap-2 border border-border p-4 text-sm">
+                <div className="flex items-baseline justify-between gap-2">
+                  <h3 className="font-semibold text-text-primary">{SEGMENT_LABEL[s.segment]}</h3>
+                  <span className={`text-xs font-semibold ${s.active ? 'text-confirm' : 'text-text-secondary'}`}>{s.active ? 'Active' : 'Inactive'}</span>
+                </div>
+                <p className="tabular-nums text-text-primary">
+                  {s.reference_accounts} / {s.activate_threshold} comptes de référence
+                </p>
+                <p className="text-text-secondary">
+                  {usable.length > 0
+                    ? `Catégories utilisables : ${usable.map(([c, n]) => `${c} (${n})`).join(', ')}`
+                    : `Aucune catégorie n’a encore ${s.min_per_category} appareils.`}
+                </p>
+                <p className="text-text-secondary">
+                  {s.mape_similarity !== null && s.mape_reference !== null
+                    ? `Dernier test : MAPE ${decimal(s.mape_similarity, 1)} % (similarité) contre ${decimal(s.mape_reference, 1)} % (référentiel)`
+                    : 'Pas encore de test'}
+                </p>
+                {s.reason && <p className="text-xs text-text-secondary">{s.reason}</p>}
+              </div>
+            )
+          })}
+        </div>
+      </MetricState>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button type="button" variant="ghost" disabled={evaluate.isPending} onClick={() => evaluate.mutate()}>
+          {evaluate.isPending ? 'Réévaluation…' : 'Réévaluer maintenant'}
+        </Button>
+        <MutationError error={evaluate.error} />
+      </div>
+    </section>
+  )
+}
+
 /** GET /api/v1/ml/drift et POST /drift/log : les relevés récents ressemblent-ils encore aux
  * données d'entraînement ? (PSI < 0,10 stable, 0,10 à 0,25 à surveiller, au-delà critique.) */
 function DriftPanel() {
@@ -168,6 +224,7 @@ export function AdminModelsPage() {
       </div>
       <MlHealthPanel />
       <DriftPanel />
+      <ColdStartPanel />
       {adminPanelIds().map((id) => (
         <AdminPanel key={id} panelId={id} />
       ))}

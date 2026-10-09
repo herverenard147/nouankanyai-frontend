@@ -726,3 +726,19 @@ export interface BackendDriftReport {
   features_in_warning: number
   features_in_critical: number
 }
+
+/** GET /api/v1/ml/cold-start (administrateurs) : bascule par segment vers la prédiction par similarité. */
+export interface BackendColdStartSegment {
+  segment: 'menage' | 'pme' | 'industrie'
+  active: boolean
+  changed_at: string | null
+  reference_accounts: number
+  activate_threshold: number
+  deactivate_threshold: number
+  category_counts: Record<string, number>
+  min_per_category: number
+  mape_similarity: number | null
+  mape_reference: number | null
+  last_test_at: string | null
+  reason: string | null
+}

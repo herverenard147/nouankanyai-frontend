@@ -71,6 +71,7 @@ import type {
   BackendUser,
   BackendWaitlistEntry,
   BackendWaitlistPayload,
+  BackendColdStartSegment,
   BackendDriftReport,
   BackendMediaAnalysis,
   ReportFormat,
@@ -334,3 +335,5 @@ export const rawWaitlistEntries = () => api.get<BackendWaitlistEntry[]>('/api/v1
 export const rawMlDrift = (window = 500) => api.get<BackendDriftReport>(`/api/v1/ml/drift?window=${window}`)
 export const rawMlDriftLog = (window = 500) =>
   api.post<{ status: string; log_file: string; report: BackendDriftReport }>(`/api/v1/ml/drift/log?window=${window}`)
+export const rawColdStart = () => api.get<BackendColdStartSegment[]>('/api/v1/ml/cold-start')
+export const rawColdStartEvaluate = () => api.post<BackendColdStartSegment[]>('/api/v1/ml/cold-start/evaluate')
