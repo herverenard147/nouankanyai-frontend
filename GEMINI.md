@@ -7,7 +7,9 @@ Lis-le en entier avant toute action, puis `CLAUDE.md`, `DESIGN.md` et `MISE_EN_L
 
 Rappels non négociables :
 
-- commence par la partie K du document (audit du code, des modèles et des tests), avant toute nouvelle fonction ;
+- suis l'ordre de la section 9 du document : d'abord la partie L (CI des tests, relecture, journal), puis M1 et M2
+  (isolation des comptes), puis K (audit du code, des modèles et des tests), avant toute nouvelle fonction ;
+- tu ne fusionnes jamais une PR toi-même : CI verte et relecture par Chris ou le propriétaire d'abord ;
 - quand un test échoue, corrige le code, pas le test ; écris les tests depuis le comportement attendu, erreurs et cas limites compris ;
 - les clés et identifiants de déploiement viennent de Chris ou du propriétaire (partie J), jamais du dépôt ;
 - avant et après chaque modification : `npx tsc -b && npx vitest run && npm run lint && npm run build` ;
