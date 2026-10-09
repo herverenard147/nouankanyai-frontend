@@ -1,57 +1,37 @@
-# Nouankany — mise en ligne (Vercel + Railway) et tests
+# Nouankany : mise en ligne (backend Render, frontend Vercel) et tests
 
-Fichier destiné à Claude Code en local (qui a accès aux comptes Vercel et Railway). Lire d'abord `CLAUDE.md` puis
-`DESIGN.md` (règles, matrice niveau × écran, modales, endpoints). **Ce fichier dit où mettre quoi.**
+Fichier destiné à Claude Code en local, qui a accès aux comptes. Lire d'abord `CLAUDE.md`, puis `DESIGN.md`. Les noms
+ci-dessous font foi jusqu'à preuve du contraire : en cas de différence avec ce que montrent Render ou Vercel, **corriger ce
+tableau** et continuer avec la vraie valeur.
 
-## 1. Les bons sites
+## 1. Où tourne quoi (staging, au 2026-10-09)
 
-Claude Code en local **connaît les vrais liens** (projets Vercel, services Railway, URL, branches déployées, variables) : c'est
-**lui qui fait foi**, pas ce fichier. Les repères ci-dessous viennent des commentaires du bot Vercel sur les PR et du dépôt ; en cas
-de différence avec ce que tu vois dans Vercel / Railway, **corrige ce tableau** et continue avec la vraie valeur.
-
-| Élément | Repère |
+| Brique | Hébergement |
 |---|---|
-| Frontend (`herverenard147/nouankanyai-frontend`) | projet Vercel `nouankany-staging-frontend`, racine du dépôt |
-| Backend (`herverenard147/NouanKanyAI`) | **app Fly.io `nouankany-staging-backend`** (`nouankany-staging-backend.fly.dev`, région `cdg`), `backend/Dockerfile` + `backend/fly.toml`. Le frontend l'appelle via `VITE_API_BASE_URL` (`.env.production`) |
-| Base de données | **Neon** (projet `neondb`, région `eu-central-1`), `DATABASE_URL` réglée comme secret Fly |
-| À débrancher | le projet Vercel `nouankanyai-frontend` (répertoire racine `frontend`) est relié **par erreur au dépôt backend** : il est rouge sur chaque PR backend |
+| Frontend (`herverenard147/nouankanyai-frontend`, branche `main`) | projet Vercel `nouankany-staging-frontend`, redéployé à chaque push. L'URL du backend vient de `.env.production` (`VITE_API_BASE_URL`), pas d'une variable Vercel : la changer veut dire modifier ce fichier et pousser |
+| Backend (`herverenard147/NouanKanyAI`, branche `main`) | service web Render `nouankany-staging-backend` (URL avec suffixe aléatoire, voir le tableau de bord Render), redéployé à chaque push. `AI_MODE=mock` : l'assistant répond en simulation tant qu'il n'est pas passé à `live` |
+| Base de données | **Neon**, la même depuis le début : toujours la réutiliser, jamais en créer une neuve sans demande explicite |
+| À débrancher (non vérifié depuis le 2026-10-01) | le projet Vercel `nouankanyai-frontend` (répertoire racine `frontend`), relié **par erreur au dépôt backend** : il est rouge sur chaque PR backend |
+| Lambda `ml-service` | pas configurée sur ce staging (`ML_SERVICE_URL` absente) : le backend calcule en local, ce qui est complet |
 
-**Migration du 2026-10-01 (Railway → Fly.io + Neon)** : le crédit d'essai Railway (compte `hervegeorges002@gmail.com`, projet
-`nouankanyai`) a été épuisé pendant cette session — passerelle publique en 502 sur les deux services (`nouankanyai-backend` ET
-`nouankany-staging-backend`), confirmé non lié à une panne Railway (statut officiel UP) via accès direct par proxy TCP. Le
-staging a été recréé sur Fly.io (DB Neon neuve, vide — pas de reprise des données Railway). Le backend `main` (prod,
-`nouankanyai-backend`) reste sur Railway et n'a pas été vérifié/migré (hors périmètre de cette session, à surveiller : même
-compte, même risque d'épuisement de crédit).
+Historique de l'hébergement du backend : Render, puis Railway, puis Fly.io, puis Render sur un nouveau compte (chaque fois une
+fin d'essai ou de crédit, pas un choix technique). Les mentions de Railway et de Fly.io ailleurs sont périmées.
 
 `vercel.json` réécrit toutes les routes vers `/index.html`. Aucun secret dans le dépôt.
 
 ## 2. Ordre de mise en ligne (⚠ = demander confirmation au propriétaire avant)
 
-1. **Backend d'abord** (le frontend déployé appelle les nouveaux endpoints `/api/v1/audit/*` et `/api/v1/plan/*`).
-   - PR `herverenard147/NouanKanyAI#1` (script de démo) puis `#2` (endpoints, empilée sur `#1`) ; vérifier `pytest backend/tests`
-     (150 passent) avec un PostgreSQL de test.
-   - ⚠ Fusionner `#1` puis `#2`. Quelle branche Railway déploie-t-elle ? (`main`, ou `feature/merge-steph-ml-subsystem` d'où le
-     frontend a été branché à l'origine) : **vérifier dans Railway → service → Settings → Source** et fusionner dans celle-là.
-   - Au démarrage, `Base.metadata.create_all` crée seul `audit_events`, `action_plan_items`, `resolution_records` : pas de
-     migration, aucune donnée existante touchée.
-   - **CORS** : le backend n'autorise que `FRONTEND_URL` + `ALLOWED_ORIGINS` (voir `CLAUDE.md` du backend, règle 6). Vérifier que
-     le domaine public du site Vercel du frontend y figure (sinon l'ajouter dans les variables Railway) ; les aperçus de PR
-     (`*.vercel.app`) n'y sont pas : à ajouter seulement si on veut tester les aperçus contre ce backend.
-   - Variables obligatoires déjà en place côté Railway : `DATABASE_URL`, `JWT_SECRET` (ne jamais les écrire dans le dépôt ni dans
-     un message). `SUPERADMIN_EMAIL` pour le compte admin.
-   - Contrôle : `GET /` répond ; avec un vrai compte, `GET /api/v1/audit/events` répond 200 (et 401 sans jeton).
-2. **Frontend** : branche `claude/nouankany-design-propositions-5o9kyw`, PR #1 (brouillon). Faire le câblage restant (§4), tests
-   verts, **puis** ⚠ la sortir du brouillon et la fusionner ; Vercel redéploie `nouankany-staging-frontend`.
-3. **Débrancher** le projet Vercel `nouankanyai-frontend` du dépôt backend (§1).
-4. Contrôler l'URL publique (§5).
-
-### Journal réel (PR backend `herverenard147/NouanKanyAI#3` + PR frontend de la branche `claude/nouankany-design-propositions-5o9kyw`)
-
-Le Journal ne montre plus de connexions (elles sont dans l'Audit) ni de relevés reconstitués côté frontend : il lit
-`GET /api/v1/journal/events`, qui ne renvoie que des **faits enregistrés par le backend** (résultat de chaque vérification,
-alertes simulées, réinitialisations, délestages, analyses média, factures importées). **Déployer le backend (PR #3) avant le
-frontend**, sinon la page Journal est en erreur. L'Audit affiche « Compte Ménage » au lieu de « Compte menage ». Les données
-de démonstration restent possibles, mais le backend ne doit jamais fabriquer d'événement.
+1. **Lambda** (seulement si `ML_SERVICE_URL` est configurée sur le backend visé) : redéployer `ml-service` d'abord, voir son
+   `CLAUDE.md`. ⚠ Le déploiement de la Lambda demande l'accord explicite du propriétaire.
+2. **Migrations** sur Neon, depuis `NouanKanyAI/backend` : `alembic current` ; s'il est vide,
+   `alembic stamp 0002_add_photo_and_auto_resolve` ; puis `alembic upgrade head` (révisions 0003 à 0005 : facturation,
+   démarrage à froid, référentiel d'équipements). Plus jamais `alembic stamp head` sur une base existante.
+3. **Backend** : ⚠ fusion dans `main`, Render redéploie. Contrôles : `GET /` répond ; `GET /api/v1/billing` répond 200 avec un
+   jeton, 401 sans. **CORS** : le domaine Vercel du frontend doit figurer dans `FRONTEND_URL` ou `ALLOWED_ORIGINS` (règle 6 du
+   `CLAUDE.md` backend) ; les aperçus de PR (`*.vercel.app`) n'y sont pas.
+4. **Frontend** : ⚠ fusion dans `main`, Vercel redéploie. Le frontend appelle `/api/v1/billing`, `/api/v1/ml/cold-start` et
+   `/api/v1/contact` : le backend doit être déployé avant, sinon les pages Facturation, Modèles et Messages sont en erreur.
+5. Contrôler l'URL publique (§5).
 
 ## 3. Créer les données (comptes et historique)
 
@@ -68,29 +48,16 @@ python backend/scripts/seed_demo.py --with-alert --with-history   # http://local
   `exploitation@yopougon-l2.demo` (Industrie), `admin@nouankany.demo` (Admin, superadmin si `SUPERADMIN_EMAIL` était défini
   **avant** l'inscription) ; leurs sites et machines ; avec `--with-alert` une alerte sur l'Industrie ; avec `--with-history` les
   factures, un membre d'équipe par compte pro, le plan d'action et deux vérifications. Idempotent (relançable).
-- Le script **refuse un hôte non local** sans `--allow-remote`. **Le lancer sur Railway (staging) seulement si le propriétaire
+- Le script **refuse un hôte non local** sans `--allow-remote`. **Le lancer sur le staging seulement si le propriétaire
   le demande explicitement** (comptes à mot de passe public sur un site en ligne) ; **jamais sur une vraie production**.
 - Ces données sont des **données de test** (relevés simulés par le backend) : elles ne doivent pas être présentées comme réelles.
 - L'Audit n'est pas rétro-rempli : il ne contient que les actions faites après le déploiement.
 
-## 4. Reste à faire côté frontend (le gros est fait, voir `DESIGN.md` §9)
+## 4. Reste à faire côté frontend
 
-Fait dans le code : Audit, Plan d'action, modales (ajout / modification + validation / suppression + validation), vues
-d'ensemble des 4 profils, règles de niveau (`lib/overviewLevels.ts`, `auditLevels.ts`, `planLevels.ts`), provenance sobre, carte
-d'alerte sobre, graphique horaire à une barre, assistant plus bas, espace fine insécable, encadré « Vos appareils ».
-
-À vérifier / finir :
-- Parcours réels de bout en bout avec les 4 comptes, aux 3 niveaux, à 390, 768, 1024 et 1440 px (barre latérale immobile,
-  tiroir mobile). Déjà vérifié en local avec Playwright : toutes les routes des 4 profils chargent sans erreur ; modales
-  (modifier + validation, supprimer + validation), plan d'action, audit (colonnes par niveau, export CSV), factures, seuils,
-  profil et équipe fonctionnent ; aucun défilement horizontal à 390 / 1024 px sur Machines, Équipements et la validation. Deux défauts
-  trouvés et corrigés (colonne « Actions » qui débordait ; liste de champs de facture qui gardait l'ancienne valeur après
-  modification). Reste à refaire sur le site déployé.
-- Pages restées à l'ancien style (cartes) : Alertes, Conseils, Recommandations, Journal, Commission (`ReportsPage`),
-  Admin (Santé, Modèles, Utilisateurs, Demandes d'audit) : les passer au langage visuel de `DESIGN.md` §2 (filets, coins droits).
-- Retirer `@fontsource/ibm-plex-mono` de `package.json` (import déjà retiré) et régénérer le lockfile.
-- Supprimer ce qui n'est plus utilisé (`KpiGrid`, `TariffSection` dans les vues d'ensemble, `ActionPlanList`, `ResolutionsList`,
-  `NavEntry.icon` lettres) si rien ne les référence.
+- Parcours réels de bout en bout avec les 4 comptes, aux 3 niveaux, à 390, 768, 1024 et 1440 px, sur le site déployé.
+- Pages restées à l'ancien style (cartes) : Alertes, Conseils, Recommandations, Journal, Admin (Santé, Utilisateurs, Demandes
+  d'audit) : les passer au langage visuel de `DESIGN.md` §2 (filets, coins droits).
 - Le changement de rôle utilisateur (Admin) n'écrit pas dans l'Audit côté backend : à instrumenter si souhaité.
 
 ## 5. Tests à faire après la mise en ligne
@@ -108,7 +75,10 @@ d'alerte sobre, graphique horaire à une barre, assistant plus bas, espace fine 
 
 ## 6. Décisions déjà prises (ne pas les rouvrir)
 
-10 % de commission par défaut mais la landing garde « Structure définie lors de l'audit » ; libellé « Gratuit pour commencer »
-retiré ; le Ménage n'est pas gratuit (il paie selon ses économies) ; « capteur » permis quand il désigne un élément précis ;
-aucune mention du modèle côté client, uniquement dans le volet Admin (page « Modèles & observabilité » et nom du modèle sur la
-Prédiction de l'Admin) ; le Journal est conservé (ce n'est pas un audit).
+Facturation (2026-10-08) : PME et Industrie paient un audit de référence, une redevance mensuelle et 40 % (30 à 50) des
+économies mesurées sur leurs factures CIE ; les ménages paient un abonnement par palier (Découverte gratuit, Essentiel
+2 900 FCFA, Optimum 7 900 FCFA) ; calcul et relevés seulement, pas de paiement en ligne. Les gains estimés des actions
+automatiques restent indicatifs. La landing garde « Structure définie lors de l'audit » ; libellé « Gratuit pour commencer »
+retiré ; « capteur » permis quand il désigne un élément précis ; aucune mention du modèle côté client, uniquement dans le volet
+Admin (page « Modèles & observabilité » et nom du modèle sur la Prédiction de l'Admin) ; le Journal est conservé (ce n'est
+pas un audit).

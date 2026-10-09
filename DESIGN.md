@@ -103,8 +103,8 @@ une fonction `…OverviewBlocks(level)` par profil dans `src/lib/overviewLevels.
 
 | Profil | Niveaux | Contenu proposé de la vue d'ensemble |
 |---|---|---|
-| **PME** (amateur par défaut) | 3 | `KpiStrip` (cibles : puissance/machines → `/app/equipements`, économies → `/app/rapports`, anomalies → `/app/alertes`) ; prédiction + alertes ; résumé des équipements déclarés (`Catégorie, Site, Statut` ; dès amateur `+ Marque, Modèle, Priorité`, comme aujourd'hui) ; raccourcis Conseils, Recommandations, Factures CIE, Commission. |
-| **Ménage** (débutant, sans sélecteur) | 1 | Gabarit le plus court : `KpiStrip` **avec** « Part sur les économies » (le Ménage paie selon ses économies, il n'est pas gratuit) ; prédiction + alertes ; « Dernière facture CIE » ; raccourcis Conseils, Recommandations, Commission, Paliers. Entrée « Commission » dans sa navigation (après Factures). |
+| **PME** (amateur par défaut) | 3 | `KpiStrip` (cibles : puissance/machines → `/app/equipements`, économies → `/app/facturation`, anomalies → `/app/alertes`) ; prédiction + alertes ; résumé des équipements déclarés (`Catégorie, Site, Statut` ; dès amateur `+ Marque, Modèle, Priorité`, comme aujourd'hui) ; raccourcis Conseils, Recommandations, Factures CIE, Facturation Nouankany. |
+| **Ménage** (débutant, sans sélecteur) | 1 | Gabarit le plus court : `KpiStrip` avec « Économies estimées ce mois » (indicatif) ; prédiction + alertes ; « Dernière facture CIE » ; raccourcis Conseils, Recommandations, Abonnement, Paliers. Entrées « Abonnement » et « Rapports » dans sa navigation (après Factures). |
 | **Admin** (technique par défaut) | 3 | `KpiStrip` télémétrie (base de données, uptime, latence 5 min, machines plateforme — provenance « télémétrie système ») ; alertes tous profils ; les 4 outils d'administration en raccourcis ; pas de `DemoDataBanner`. |
 
 ### Ce que change le niveau, écran par écran (tel que dessiné dans les planches `H-*`)
@@ -120,9 +120,9 @@ une fonction `…OverviewBlocks(level)` par profil dans `src/lib/overviewLevels.
 | Conseils / Recommandations | sans sévérité ni gain | sévérité (conseils), gain chiffré (recos) | idem amateur |
 | Plan d'action (PME, Industrie) | gain restant + actions | idem | + **Historique des résolutions** |
 | Audit (hors Ménage) | Heure, Action, Détail | + Acteur | + Source, filtres par famille, **Export CSV** (Admin : + colonne Compte) |
-| Alertes, Conso & coûts, Factures, Commission, Journal, Paramètres | identiques à tous les niveaux | | |
+| Alertes, Conso & coûts, Factures, Facturation / Abonnement, Rapports, Journal, Paramètres | identiques à tous les niveaux | | |
 
-Ménage : un seul niveau (débutant), pas d'Audit, pas de Plan d'action, pas de Machines/Équipements ; **a** une page Commission.
+Ménage : un seul niveau (débutant), pas d'Audit, pas de Plan d'action, pas de Machines/Équipements ; **a** une page Abonnement (paliers) et une page Rapports (PDF mensuel).
 
 ## 5. État écran par écran
 
@@ -140,12 +140,14 @@ Légende : ✅ fait · ◐ cadre fait (barre latérale, en-tête) mais contenu �
 | Conseils `/app/conseils` | ◐ | ◐ | ◐ | — | impact chiffré dès amateur |
 | Recommandations `/app/recommandations` | ◐ | ◐ | ◐ | — | impact chiffré dès amateur |
 | Factures CIE `/app/factures` | ◐ | ◐ | ◐ | — | — |
-| Commission `/app/rapports` | ◐ | ◐ | — | — | — |
+| Facturation / Abonnement `/app/facturation` | ✓ | ✓ | ✓ | — | contrat et relevés (PME, Industrie), paliers (Ménage) |
+| Rapports `/app/rapports` | ✓ | ✓ | ✓ | — | formats : PDF (Ménage), PDF/Excel (PME), tous (Industrie) |
 | Journal `/app/journal` | ◐ | — | — | ◐ | — |
 | **Audit** `/app/audit` (nouveau) | ☐ | ☐ | — | ☐ | colonnes et export selon le niveau (§4) |
 | **Plan d'action** `/app/plan-action` (nouveau) | ☐ | ☐ | — | — | historique des résolutions au niveau technique |
 | Paramètres `/app/parametres` | ◐ | ◐ | ◐ | ◐ | sélecteur de niveau (hors Ménage) |
 | Admin : santé, modèles, utilisateurs, demandes d'audit | — | — | — | ◐ | — |
+| Admin : messages et inscriptions, impayés et abonnements | — | — | — | ✓ | — |
 
 Pour chaque écran « à faire » : en-tête (titre + sous-titre court), filets au lieu de cartes, provenance sur
 chaque donnée, états vides, mobile 390 px sans défilement horizontal, textes d'explication déplacés ou
@@ -157,11 +159,11 @@ ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des 
 
 ## 6. Décisions en attente (ne pas trancher sans le propriétaire)
 
-1. ~~Part de 10 %~~ **Décidé** : 10 % par défaut (backend), affiché dans le dashboard ; la landing continue de dire
-   « Structure définie lors de l'audit » (on ne change pas la communication).
+1. ~~Part de 10 %~~ **Décidé, puis remplacé le 2026-10-08** : PME et Industrie paient audit, redevance et 40 % (30 à 50)
+   des économies mesurées ; la landing continue de dire « Structure définie lors de l'audit ».
 2. ~~Plan d'action et Audit~~ : maquettes validées, endpoints créés (PR NouanKanyAI#2, §9), **à brancher**.
-3. ~~KPI « Part sur les économies » pour le Ménage~~ **Décidé** : affiché ; le Ménage n'est pas gratuit, il paie selon ses
-   économies.
+3. ~~KPI « Part sur les économies » pour le Ménage~~ **Remplacé le 2026-10-08** : le Ménage paie un abonnement par palier
+   (Découverte gratuit, Essentiel, Optimum) ; le KPI devient « Économies estimées ce mois », indicatif.
 4. ~~« Gratuit pour commencer »~~ **Décidé** : libellé retiré de la landing (offre pas encore ouverte). Aucun prix affiché pour
    la formule Ménage.
 5. **Textes générés par le backend** : article manquant corrigé (« Éteignez l'appareil « Compresseur d'air » », PR NouanKanyAI#2).
@@ -170,9 +172,9 @@ ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des 
 
 **Décidé par le propriétaire :** encadré « Vos appareils » dans la barre latérale (validé) ; page Admin « Modèles &
 observabilité » conservée ; aucune mention du modèle (nom, jeu de données) dans la Prédiction **côté client** à aucun niveau — les mentions de modèles restent dans le volet **Admin** (page « Modèles & observabilité » et, pour l'Admin seulement, nom du modèle sur la page Prédiction) ; planches `H-*`
-validées. Le câblage frontend et la mise en ligne (Vercel, Railway) sont faits par Claude Code en local.
+validées. Le câblage frontend et la mise en ligne (frontend sur Vercel, backend sur Render) sont faits par Claude Code en local.
 
-> Mise en ligne (Vercel, Railway), données et tests après déploiement : voir `MISE_EN_LIGNE.md`.
+> Mise en ligne (Vercel, Render), données et tests après déploiement : voir `MISE_EN_LIGNE.md`.
 
 ## 7. Tester en local, avec le vrai backend
 
