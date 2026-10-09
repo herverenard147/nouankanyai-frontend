@@ -45,7 +45,13 @@ import type {
   BackendDemoSeedResult,
   BackendElectricityBill,
   BackendEquipmentCatalog,
-  BackendFacturation,
+  BackendBilling,
+  BackendBillingContract,
+  BackendBillingStatement,
+  BackendContractPayload,
+  BackendTierRequest,
+  BackendUnpaidStatement,
+  BillingTierId,
   BackendGeminiMetrics,
   BackendMachine,
   BackendMachineHistory,
@@ -133,7 +139,18 @@ export const rawAlertThresholds = () => api.get<BackendAlertThresholds>('/api/al
 export const rawUpdateAlertThresholds = (payload: BackendAlertThresholds) =>
   api.put<BackendAlertThresholds>('/api/alert-thresholds', payload)
 
-export const rawFacturation = () => api.get<BackendFacturation>('/api/facturation')
+// --- Facturation Nouankany (/api/v1/billing) ---
+export const rawBilling = () => api.get<BackendBilling>('/api/v1/billing')
+export const rawRequestTier = (tier: BillingTierId) => api.post<BackendBillingContract>('/api/v1/billing/tier-request', { tier })
+export const rawAdminUserBilling = (userId: string) => api.get<BackendBilling>(`/api/v1/billing/admin/users/${userId}`)
+export const rawAdminSaveContract = (userId: string, payload: BackendContractPayload) =>
+  api.put<BackendBillingContract>(`/api/v1/billing/admin/users/${userId}/contract`, payload)
+export const rawAdminApproveTier = (userId: string) => api.post<BackendBillingContract>(`/api/v1/billing/admin/users/${userId}/approve-tier`)
+export const rawAdminComputeStatement = (userId: string, month: string) =>
+  api.post<BackendBillingStatement>(`/api/v1/billing/admin/users/${userId}/statements/${month}`)
+export const rawAdminMarkPaid = (statementId: string) => api.post<BackendBillingStatement>(`/api/v1/billing/admin/statements/${statementId}/paid`)
+export const rawAdminUnpaid = () => api.get<BackendUnpaidStatement[]>('/api/v1/billing/admin/unpaid')
+export const rawAdminTierRequests = () => api.get<BackendTierRequest[]>('/api/v1/billing/admin/tier-requests')
 
 export const rawBills = () => api.get<BackendElectricityBill[]>('/api/bills')
 export const rawAddManualBill = (payload: BackendNewManualBill) =>
@@ -205,10 +222,6 @@ export const rawAdminResetMachine = (machineId: string) => api.post<{ status: st
 export const rawUserMachines = (targetUserId: string) =>
   api.get<{ id: string; machine_id: string; nom: string; site_nom: string; status: string; puissance_nominale_kw: number }[]>(
     `/api/admin/users/${targetUserId}/machines`,
-  )
-export const rawUserFacturation = (targetUserId: string) =>
-  api.get<{ grossSavingsThisMonth: number; gainShareThisMonth: number; invoiceCount: number; billCount: number }>(
-    `/api/admin/users/${targetUserId}/facturation`,
   )
 export const rawSuspendUser = (targetUserId: string, suspended: boolean) =>
   api.patch<BackendUser>(`/api/admin/users/${targetUserId}/suspend`, { suspended })

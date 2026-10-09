@@ -20,7 +20,7 @@ import {
   rawResetMachine,
   rawSimulateMachine,
   rawSites,
-  rawUserFacturation,
+  rawAdminUserBilling,
   rawUserMachines,
 } from '@/api/rawBackend'
 import { fetchThresholds, updateThresholds } from '@/api/settings'
@@ -207,8 +207,8 @@ smoke('intégration backend réel — compte Admin', () => {
 
     const machines = await rawUserMachines(menageUser!.id)
     expect(machines.length).toBeGreaterThan(0)
-    const facturation = await rawUserFacturation(menageUser!.id)
-    expect(facturation).toHaveProperty('billCount')
+    const billing = await rawAdminUserBilling(menageUser!.id)
+    expect(billing.segment).toBe('menage')
   }, 30000)
 
   it('promotion/rétrogradation réelle d’un utilisateur (superadmin uniquement), puis restauration', async () => {

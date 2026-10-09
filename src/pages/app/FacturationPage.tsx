@@ -1,89 +1,141 @@
-import { BarChart, type ChartBar } from '@/components/charts/BarChart'
+import { Link } from 'react-router-dom'
+
+import { StatementList } from '@/components/billing/StatementList'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
-import { useFacturation } from '@/hooks/queries/useFacturation'
+import { Button } from '@/components/ui/Button'
+import { MutationError } from '@/components/ui/Modal'
+import { useBilling, useRequestTier } from '@/hooks/queries/useBilling'
 import { formatFcfa, formatNumberFr } from '@/lib/formatters'
+import { useSessionStore } from '@/store/sessionStore'
+import type { BackendBilling } from '@/types/backend'
 
-/** Commission sur les économies : Nouankany prend 10 % des économies réellement journalisées ce mois. */
+const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
+
+/** Ce que le compte paie à Nouankany (GET /api/v1/billing) : « Abonnement » pour le Ménage,
+ * « Facturation Nouankany » pour PME et Industrie. */
 export function FacturationPage() {
-  const query = useFacturation()
-
+  const query = useBilling()
   return (
     <div className="flex flex-col gap-7">
-      <p className="text-sm text-text-secondary">
-        Détail du calcul de la commission Nouankany sur les économies et piste d&rsquo;audit des économies enregistrées ce
-        mois.
-      </p>
       <MetricState status={query.status}>
-        {query.data && (
-          <>
-            <div className="grid grid-cols-1 border-y border-border border-t-2 border-t-text-primary sm:grid-cols-2">
-              <div className="flex flex-col gap-2 border-b border-border py-4 sm:border-b-0 sm:border-r sm:pr-6">
-                <h3 className="text-sm font-medium text-text-secondary">Économies brutes ce mois</h3>
-                <p className="font-heading text-kpi-value font-semibold tabular-nums text-text-primary">
-                  {formatFcfa(query.data.grossSavings)}
-                </p>
-                <ProvenanceBadge value="estime" className="w-fit" />
-              </div>
-              <div className="flex flex-col gap-2 py-4 sm:pl-6">
-                <h3 className="text-sm font-medium text-text-secondary">Commission Nouankany (10 %)</h3>
-                <p className="font-heading text-kpi-value font-semibold tabular-nums text-text-primary">
-                  {formatFcfa(query.data.gainShare)}
-                </p>
-                <ProvenanceBadge value="estime" className="w-fit" />
-              </div>
-            </div>
-
-            <section className="flex flex-col gap-4 border-t-2 border-text-primary pt-4">
-              <h3 className="text-section-title font-semibold text-text-primary">Économies par semaine</h3>
-              <MetricState status="success" isEmpty={query.data.barData.every((bar) => bar.savings === 0)}>
-                <BarChartFromFacturation bars={query.data.barData} />
-              </MetricState>
-            </section>
-
-            <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
-              <h3 className="text-section-title font-semibold text-text-primary">Piste d&rsquo;audit</h3>
-              <MetricState status="success" isEmpty={query.data.auditTrail.length === 0}>
-                <div className="flex flex-col">
-                  {query.data.auditTrail.map((entry, i) => (
-                    <div key={i} className="flex flex-wrap items-center justify-between gap-2 border-t border-border py-2.5 text-sm">
-                      <span className="tabular-nums text-text-tertiary">{new Date(entry.timestamp).toLocaleString('fr-FR')}</span>
-                      <span className="min-w-0 flex-1 px-3 text-text-primary">{entry.action}</span>
-                      <span className="text-text-secondary">{entry.status}</span>
-                    </div>
-                  ))}
-                </div>
-              </MetricState>
-            </section>
-
-            <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
-              <h3 className="text-section-title font-semibold text-text-primary">Factures de commission</h3>
-              <MetricState status="success" isEmpty={query.data.invoices.length === 0}>
-                <div className="flex flex-col">
-                  {query.data.invoices.map((invoice) => (
-                    <div key={invoice.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-border py-2.5 text-sm">
-                      <span className="text-text-primary">{invoice.month}</span>
-                      <span className="tabular-nums text-text-secondary">{invoice.amount}</span>
-                    </div>
-                  ))}
-                </div>
-              </MetricState>
-            </section>
-          </>
-        )}
+        {query.data && (query.data.segment === 'menage' ? <MenageSubscription billing={query.data} /> : <BusinessContract billing={query.data} />)}
       </MetricState>
+      {query.data && <EstimatedSavings billing={query.data} />}
     </div>
   )
 }
 
-function BarChartFromFacturation({ bars }: { bars: { name: string; savings: number }[] }) {
-  const max = Math.max(...bars.map((b) => b.savings), 1)
-  const chartBars: ChartBar[] = bars.map((b) => ({
-    key: b.name,
-    x: b.name,
-    percent: Math.round((b.savings / max) * 100),
-    tip: formatFcfa(b.savings),
-  }))
-  const yTicks = [formatNumberFr(max), formatNumberFr(max / 2), '0']
-  return <BarChart bars={chartBars} yTicks={yTicks} size="dashboard" yAxisLabel="FCFA" xAxisLabel="semaine" />
+function BusinessContract({ billing }: { billing: BackendBilling }) {
+  const isTrial = useSessionStore((s) => s.session?.isTrial)
+  const c = billing.contract
+  if (!c || c.kind !== 'pme_industrie') {
+    const d = billing.defaults
+    return (
+      <section className={SECTION}>
+        <h1 className="text-section-title font-semibold text-text-primary">Facturation Nouankany</h1>
+        <p className="text-sm text-text-secondary">
+          Aucun contrat pour l’instant. Tout commence par un audit de référence ({formatFcfa(d.audit_fee_fcfa)}, une fois) qui mesure votre
+          consommation actuelle. Ensuite : une redevance de {formatFcfa(d.saas_fee_fcfa)} par mois et {formatNumberFr(d.savings_share_pct)} % des
+          économies réellement mesurées sur vos factures CIE. Un mois sans économie, vous ne payez que la redevance.
+        </p>
+        {isTrial && (
+          <p className="text-sm text-text-secondary">
+            Compte d’essai : aucun montant ne vous est facturé. Les économies estimées ci-dessous viennent de vos données de démonstration.
+          </p>
+        )}
+        <Link to="/demander-un-audit" className="focus-ring w-fit rounded-control bg-accent-cta px-5 py-3 text-sm font-semibold text-white hover:bg-accent-cta-hover">
+          Demander un audit
+        </Link>
+      </section>
+    )
+  }
+  return (
+    <>
+      <section className={SECTION}>
+        <h1 className="text-section-title font-semibold text-text-primary">Votre contrat</h1>
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
+          {[
+            ['Ligne de base', `${formatNumberFr(c.baseline_kwh ?? 0)} kWh / mois`],
+            ['Redevance', `${formatFcfa(c.saas_fee_fcfa ?? 0)} / mois`],
+            ['Part des économies', `${formatNumberFr(c.savings_share_pct ?? 0)} %`],
+            ['Audit de référence', formatFcfa(c.audit_fee_fcfa ?? 0)],
+          ].map(([label, value]) => (
+            <div key={label} className="flex flex-col gap-1">
+              <dt className="text-xs text-text-secondary">{label}</dt>
+              <dd className="text-sm font-semibold tabular-nums text-text-primary">{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="text-xs text-text-secondary">
+          {c.baseline_period ? `Ligne de base relevée pendant : ${c.baseline_period}. ` : ''}
+          Premier mois facturé : {c.start_month}. Pas d’ajustement saisonnier de la ligne de base dans cette version du contrat.
+        </p>
+      </section>
+      <section className={SECTION}>
+        <h2 className="text-section-title font-semibold text-text-primary">Relevés mensuels</h2>
+        <MetricState status="success" isEmpty={billing.statements.length === 0}>
+          <StatementList statements={billing.statements} />
+        </MetricState>
+      </section>
+    </>
+  )
+}
+
+function MenageSubscription({ billing }: { billing: BackendBilling }) {
+  const request = useRequestTier()
+  const current = billing.effective_tier ?? 'decouverte'
+  const requested = billing.contract?.requested_tier
+  return (
+    <>
+      <section className={SECTION}>
+        <h1 className="text-section-title font-semibold text-text-primary">Abonnement</h1>
+        {requested && (
+          <p className="text-sm text-text-secondary" role="status">
+            Changement vers {billing.tiers.find((t) => t.id === requested)?.nom} demandé : il sera actif après validation par l’équipe Nouankany.
+          </p>
+        )}
+        <div className="grid gap-4 sm:grid-cols-3">
+          {billing.tiers.map((tier) => (
+            <div key={tier.id} className={`flex flex-col gap-2 border p-4 ${tier.id === current ? 'border-text-primary' : 'border-border'}`}>
+              <h2 className="font-semibold text-text-primary">{tier.nom}</h2>
+              <p className="tabular-nums text-text-primary">{tier.prix_mensuel_fcfa === 0 ? 'Gratuit' : `${formatFcfa(tier.prix_mensuel_fcfa)} / mois`}</p>
+              <ul className="flex flex-col gap-1 text-sm text-text-secondary">
+                {tier.fonctionnalites.map((f) => (
+                  <li key={f}>{f}</li>
+                ))}
+              </ul>
+              {tier.id === current ? (
+                <span className="mt-auto text-xs font-semibold text-text-secondary">Votre abonnement</span>
+              ) : (
+                <Button type="button" variant="outline" className="mt-auto" disabled={request.isPending || requested === tier.id} onClick={() => request.mutate(tier.id)}>
+                  {requested === tier.id ? 'Demande envoyée' : `Passer à ${tier.nom}`}
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+        <MutationError error={request.error} />
+      </section>
+      <section className={SECTION}>
+        <h2 className="text-section-title font-semibold text-text-primary">Relevés</h2>
+        <MetricState status="success" isEmpty={billing.statements.length === 0}>
+          <StatementList statements={billing.statements} />
+        </MetricState>
+      </section>
+    </>
+  )
+}
+
+function EstimatedSavings({ billing }: { billing: BackendBilling }) {
+  const s = billing.estimated_ai_savings
+  return (
+    <section className={SECTION}>
+      <h2 className="text-section-title font-semibold text-text-primary">Économies estimées par les actions automatiques</h2>
+      <p className="text-sm text-text-secondary">
+        À titre indicatif, ce mois : {formatFcfa(s.month_total_fcfa)}. Ce chiffre ne sert jamais de base à la facturation, qui repose sur vos factures CIE.
+      </p>
+      <ProvenanceBadge value="estime" className="w-fit" />
+    </section>
+  )
 }

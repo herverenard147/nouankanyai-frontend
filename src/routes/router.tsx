@@ -27,6 +27,7 @@ import { SettingsPage } from '@/pages/app/SettingsPage'
 import { AdminBoitierDetailPage } from '@/pages/app/admin/AdminBoitierDetailPage'
 import { AdminBoitiersPage } from '@/pages/app/admin/AdminBoitiersPage'
 import { AdminHealthPage } from '@/pages/app/admin/AdminHealthPage'
+import { AdminBillingPage } from '@/pages/app/admin/AdminBillingPage'
 import { AdminLeadsPage } from '@/pages/app/admin/AdminLeadsPage'
 import { AdminMessagesPage } from '@/pages/app/admin/AdminMessagesPage'
 import { AdminModelsPage } from '@/pages/app/admin/AdminModelsPage'
@@ -84,6 +85,7 @@ export const router = createBrowserRouter([
               { path: 'admin/utilisateurs/:userId', element: <AdminUserDetailPage /> },
               { path: 'admin/leads', element: <AdminLeadsPage /> },
               { path: 'admin/messages', element: <AdminMessagesPage /> },
+              { path: 'admin/facturation', element: <AdminBillingPage /> },
               { path: '*', element: <Navigate to="/app" replace /> },
             ],
           },

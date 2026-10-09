@@ -68,6 +68,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/admin/utilisateurs', label: 'Utilisateurs' },
     { path: '/app/admin/leads', label: "Demandes d'audit" },
     { path: '/app/admin/messages', label: 'Messages et inscriptions' },
+    { path: '/app/admin/facturation', label: 'Impayés et abonnements' },
     { path: '/app/journal', label: 'Journal' },
     { path: '/app/audit', label: 'Audit' },
     { path: '/app/admin/boitiers', label: 'Boîtiers' },

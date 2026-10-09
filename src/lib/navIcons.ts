@@ -20,6 +20,7 @@ import {
   Speaker,
   TrendingUp,
   Users,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -47,4 +48,5 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   '/app/admin/utilisateurs': Users,
   '/app/admin/leads': ClipboardList,
   '/app/admin/messages': Inbox,
+  '/app/admin/facturation': Wallet,
 }

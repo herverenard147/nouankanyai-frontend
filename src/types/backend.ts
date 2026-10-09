@@ -206,12 +206,71 @@ export interface BackendAlertThresholds {
   auto_resolve_enabled: boolean
 }
 
-export interface BackendFacturation {
-  grossSavings: number
-  gainShare: number
-  barData: { name: string; savings: number }[]
-  auditTrail: { timestamp: string; action: string; ref: string | null; status: string }[]
-  invoices: { id: string; month: string; amount: string }[]
+/** GET /api/v1/billing : ce que le compte paie à Nouankany (voir backend/billing/). */
+export type BillingTierId = 'decouverte' | 'essentiel' | 'optimum'
+export interface BackendBillingTier {
+  id: BillingTierId
+  nom: string
+  prix_mensuel_fcfa: number
+  max_machines: number | null
+  assistant_ia: boolean
+  alertes_avancees: boolean
+  fonctionnalites: string[]
+}
+export interface BackendBillingContract {
+  id: string
+  kind: 'pme_industrie' | 'menage'
+  tier: BillingTierId | null
+  requested_tier: BillingTierId | null
+  audit_fee_fcfa: number | null
+  saas_fee_fcfa: number | null
+  savings_share_pct: number | null
+  baseline_kwh: number | null
+  baseline_period: string | null
+  start_month: string | null
+  end_month: string | null
+  status: 'actif' | 'termine'
+}
+export interface BackendBillingStatement {
+  id: string
+  month: string
+  status: 'en_attente_facture' | 'a_payer' | 'paye'
+  baseline_kwh: number | null
+  actual_kwh: number | null
+  savings_kwh: number | null
+  savings_fcfa: number | null
+  saas_fee_fcfa: number | null
+  savings_share_fcfa: number | null
+  audit_fee_fcfa: number | null
+  total_fcfa: number | null
+  detail: { formule?: string; etapes?: string[]; raison?: string; palier_nom?: string }
+  paid_at: string | null
+}
+export interface BackendBilling {
+  segment: 'menage' | 'pme_industrie'
+  contract: BackendBillingContract | null
+  effective_tier: BillingTierId | null
+  tiers: BackendBillingTier[]
+  defaults: { audit_fee_fcfa: number; saas_fee_fcfa: number; savings_share_pct: number }
+  statements: BackendBillingStatement[]
+  estimated_ai_savings: {
+    month_total_fcfa: number
+    weeks: { name: string; savings: number }[]
+    actions: { timestamp: string; action: string; status: string }[]
+  }
+  legacy_invoices: { id: string; month: string; amount_xof: number | null }[]
+}
+export type BackendUnpaidStatement = BackendBillingStatement & { user_id: string; user_nom: string; user_email: string }
+export type BackendTierRequest = BackendBillingContract & { user_id: string; user_nom: string; user_email: string }
+export interface BackendContractPayload {
+  kind: 'pme_industrie' | 'menage'
+  tier?: BillingTierId
+  audit_fee_fcfa?: number
+  saas_fee_fcfa?: number
+  savings_share_pct?: number
+  baseline_kwh?: number
+  baseline_period?: string
+  start_month?: string
 }
 
 export type BackendBillSource = 'manuel' | 'ocr' | 'ocr-mock' | 'statistique'
