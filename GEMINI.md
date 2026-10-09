@@ -7,6 +7,9 @@ Lis-le en entier avant toute action, puis `CLAUDE.md`, `DESIGN.md` et `MISE_EN_L
 
 Rappels non négociables :
 
+- commence par la partie K du document (audit du code, des modèles et des tests), avant toute nouvelle fonction ;
+- quand un test échoue, corrige le code, pas le test ; écris les tests depuis le comportement attendu, erreurs et cas limites compris ;
+- les clés et identifiants de déploiement viennent de Chris ou du propriétaire (partie J), jamais du dépôt ;
 - avant et après chaque modification : `npx tsc -b && npx vitest run && npm run lint && npm run build` ;
   le nombre de tests qui passent ne baisse jamais ;
 - une tâche = une branche = une PR ; jamais de commit direct sur `main` (Vercel redéploie `main`) ;
