@@ -5,17 +5,19 @@ import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal, Modal, MutationError } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
+import { useBoitiers } from '@/hooks/queries/useBoitiers'
 import { useCreateSite, useDeleteSite, useSites } from '@/hooks/queries/useSites'
 
 const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
 
 /** Sites d'un compte PME ou Industrie : liste, ajout, suppression confirmée (DELETE /api/sites/{id}).
- * Les machines du site sont détachées, pas supprimées ; un site qui a un boîtier actif est refusé
- * par le serveur avec un message explicite. */
+ * Les machines du site sont détachées, pas supprimées ; les boîtiers du site sont déconnectés
+ * (un boîtier de site n'écoute que ce lieu), et le modal de validation les nomme. */
 export function SitesCard() {
   const query = useSites()
   const createMutation = useCreateSite()
   const deleteMutation = useDeleteSite()
+  const boitiers = useBoitiers()
   const [adding, setAdding] = useState(false)
   const [form, setForm] = useState({ nom: '', localisation: '' })
   const [removing, setRemoving] = useState<{ id: string; nom: string } | null>(null)
@@ -96,7 +98,9 @@ export function SitesCard() {
           title={`Supprimer le site « ${removing.nom} » ?`}
           consequences={[
             'Ses équipements restent dans votre compte, sans site.',
-            'Un boîtier rattaché à ce site doit d’abord être déconnecté.',
+            ...(boitiers.data ?? [])
+              .filter((row) => row.device.scope === 'site' && row.device.site_id === removing.id)
+              .map((row) => `Le boîtier « ${row.device.nom} » sera déconnecté : il ne répondra plus et ne pourra plus éteindre d’appareil. Pour le réutiliser, il faudra demander un nouveau code.`),
           ]}
           confirmLabel="Supprimer le site"
           pending={deleteMutation.isPending}

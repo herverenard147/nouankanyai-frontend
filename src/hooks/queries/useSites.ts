@@ -20,7 +20,7 @@ export function useDeleteSite() {
   return useMutation({
     mutationFn: rawDeleteSite,
     onSuccess: () => {
-      for (const key of ['sites', 'machines', 'machines-raw', 'equipment', 'machines-table']) void queryClient.invalidateQueries({ queryKey: [key] })
+      for (const key of ['sites', 'machines', 'machines-raw', 'equipment', 'machines-table', 'boitiers', 'audit']) void queryClient.invalidateQueries({ queryKey: [key] })
     },
   })
 }
