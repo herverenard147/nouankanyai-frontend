@@ -1,0 +1,51 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Vérifier les types
+        run: npx tsc -b
+
+      - name: Lancer les tests avec garde-fou
+        run: |
+          npx vitest run --reporter=default --reporter=junit --outputFile=/tmp/junit.xml
+          python3 - <<'PYEOF'
+          import xml.etree.ElementTree as ET
+          tree = ET.parse('/tmp/junit.xml')
+          root = tree.getroot()
+          suites = root.findall('testsuite') if root.tag == 'testsuites' else [root]
+          tests = sum(int(s.attrib.get('tests', 0)) for s in suites)
+          failures = sum(int(s.attrib.get('failures', 0)) for s in suites)
+          errors = sum(int(s.attrib.get('errors', 0)) for s in suites)
+          skipped = sum(int(s.attrib.get('skipped', 0)) for s in suites)
+          passed = tests - failures - errors - skipped
+          print(f"Total: {tests}, passés: {passed}, sautés: {skipped}, échecs: {failures}, erreurs: {errors}")
+          assert failures == 0 and errors == 0, f"{failures} échecs, {errors} erreurs"
+          assert passed >= 112, f"Seulement {passed} tests passés, 112 attendus"
+          PYEOF
+
+      - name: Linter
+        run: npm run lint
+
+      - name: Construire
+        env:
+          VITE_API_BASE_URL: https://example.invalid
+        run: npm run build
