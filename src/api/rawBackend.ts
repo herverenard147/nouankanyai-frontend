@@ -120,7 +120,9 @@ export const getCachedMachines = () => queryClient.fetchQuery({ queryKey: ['mach
  */
 export const getCachedAdminMetrics = () => queryClient.fetchQuery({ queryKey: ['admin-metrics'], queryFn: rawAdminMetrics })
 export const getCachedMlModels = () => queryClient.fetchQuery({ queryKey: ['ml-models'], queryFn: rawMlModels })
-export const rawEquipmentCatalog = () => api.get<BackendEquipmentCatalog>('/api/equipment-catalog', false)
+/** `menage` : référentiel domestique seul (sans le catalogue industriel). */
+export const rawEquipmentCatalog = (segment?: 'menage') =>
+  api.get<BackendEquipmentCatalog>(`/api/equipment-catalog${segment ? `?segment=${segment}` : ''}`, false)
 export const rawAddMachine = (payload: BackendNewMachinePayload) =>
   api.post<{ status: string; machines: BackendMachine[] }>('/api/machines', payload)
 export const rawUpdateMachine = (machineId: string, payload: BackendMachineUpdatePayload) =>

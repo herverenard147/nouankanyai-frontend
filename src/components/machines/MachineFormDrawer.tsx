@@ -35,7 +35,7 @@ const PRIORITIES = [
 export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDrawerProps) {
   const isEdit = machine !== null
   const profile = useSessionStore((s) => s.session?.profile)
-  const showCatalog = !isEdit && (profile === 'pme' || profile === 'industrie')
+  const showCatalog = !isEdit && profile !== undefined && profile !== 'admin'
   const sitesQuery = useSites()
   const addMutation = useAddMachine()
   const updateMutation = useUpdateMachine()
@@ -177,6 +177,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
         )}
         {showCatalog && (
           <CatalogPicker
+            segment={profile === 'menage' ? 'menage' : undefined}
             onPick={(choice) =>
               setForm((f) => ({
                 ...f,

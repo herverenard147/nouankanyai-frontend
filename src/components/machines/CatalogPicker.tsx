@@ -14,15 +14,15 @@ export interface CatalogChoice {
 /**
  * Sélecteur catégorie → marque → modèle du catalogue d'équipements
  * (GET /api/equipment-catalog). Le modèle choisi remplit les champs du formulaire,
- * puissance comprise. Catalogue industriel : proposé aux comptes PME et Industrie ; le
- * catalogue domestique viendra avec le référentiel d'équipements.
+ * puissance comprise. PME et Industrie : catalogue industriel + référentiel validé ; Ménage :
+ * référentiel domestique seul (rien n'est affiché tant qu'il est vide).
  */
-export function CatalogPicker({ onPick }: { onPick: (choice: CatalogChoice) => void }) {
-  const catalog = useQuery({ queryKey: ['equipment-catalog'], queryFn: rawEquipmentCatalog, staleTime: Infinity })
+export function CatalogPicker({ onPick, segment }: { onPick: (choice: CatalogChoice) => void; segment?: 'menage' }) {
+  const catalog = useQuery({ queryKey: ['equipment-catalog', segment ?? 'tous'], queryFn: () => rawEquipmentCatalog(segment), staleTime: Infinity })
   const [categorie, setCategorie] = useState('')
   const [marque, setMarque] = useState('')
 
-  if (!catalog.data) return null
+  if (!catalog.data || Object.keys(catalog.data).length === 0) return null
   const categories = Object.keys(catalog.data).sort()
   const brands = categorie ? Object.keys(catalog.data[categorie] ?? {}).sort() : []
   const models = categorie && marque ? (catalog.data[categorie]?.[marque]?.modeles ?? []) : []
@@ -52,7 +52,7 @@ export function CatalogPicker({ onPick }: { onPick: (choice: CatalogChoice) => v
           const model = models.find((m) => m.nom === value)
           if (model) onPick({ categorie, marque, modele: model.nom, puissance_kw: model.puissance_kw })
         }}
-        options={[{ value: '', label: 'Choisir…' }, ...models.map((m) => ({ value: m.nom, label: `${m.nom} (${m.puissance_kw} kW)` }))]}
+        options={[{ value: '', label: 'Choisir…' }, ...models.map((m) => ({ value: m.nom, label: `${m.nom} (${m.puissance_kw} kW${m.confiance === 'estimee' ? ', estimée' : ''})` }))]}
       />
     </fieldset>
   )

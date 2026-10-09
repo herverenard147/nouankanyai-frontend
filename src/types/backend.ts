@@ -70,9 +70,14 @@ export interface BackendMachine {
 export interface BackendCatalogModel {
   nom: string
   puissance_kw: number
+  /** Présents sur les modèles du référentiel validé (table equipment_reference). */
+  kwh_an?: number | null
+  classe?: string | null
+  source?: string
+  confiance?: 'fabricant' | 'eprel' | 'etiquette_ci' | 'revendeur' | 'estimee'
 }
 export interface BackendCatalogBrand {
-  efficacite: 'faible' | 'haute'
+  efficacite: 'faible' | 'haute' | 'inconnue'
   modeles: BackendCatalogModel[]
 }
 export type BackendEquipmentCatalog = Record<string, Record<string, BackendCatalogBrand>>
