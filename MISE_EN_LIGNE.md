@@ -12,7 +12,8 @@ tableau** et continuer avec la vraie valeur.
 | Backend (`herverenard147/NouanKanyAI`, branche `main`) | service web Render `nouankany-staging-backend` (URL avec suffixe aléatoire, voir le tableau de bord Render), redéployé à chaque push. `AI_MODE=mock` : l'assistant répond en simulation tant qu'il n'est pas passé à `live` |
 | Base de données | **Neon**, la même depuis le début : toujours la réutiliser, jamais en créer une neuve sans demande explicite |
 | À débrancher (non vérifié depuis le 2026-10-01) | le projet Vercel `nouankanyai-frontend` (répertoire racine `frontend`), relié **par erreur au dépôt backend** : il est rouge sur chaque PR backend |
-| Lambda `ml-service` | pas configurée sur ce staging (`ML_SERVICE_URL` absente) : le backend calcule en local, ce qui est complet |
+| Lambda `ml-service` | branchée depuis le 2026-10-09 (variables `ML_SERVICE_*` sur Render, image ECR `resync-2026-10-09`) : prévisions et recommandations calculées sur la Lambda, repli local automatique si elle ne répond pas |
+| Réveil | plan gratuit Render : le service s'endort après 15 min sans requête (réveil ~100 s). La tâche GitHub Actions « Keep-alive staging » du dépôt backend l'appelle toutes les 10 min ; à retirer si le plan devient payant |
 
 Historique de l'hébergement du backend : Render, puis Railway, puis Fly.io, puis Render sur un nouveau compte (chaque fois une
 fin d'essai ou de crédit, pas un choix technique). Les mentions de Railway et de Fly.io ailleurs sont périmées.
@@ -21,8 +22,7 @@ fin d'essai ou de crédit, pas un choix technique). Les mentions de Railway et d
 
 ## 2. Ordre de mise en ligne (⚠ = demander confirmation au propriétaire avant)
 
-1. **Lambda** (seulement si `ML_SERVICE_URL` est configurée sur le backend visé) : redéployer `ml-service` d'abord, voir son
-   `CLAUDE.md`. ⚠ Le déploiement de la Lambda demande l'accord explicite du propriétaire.
+1. **Lambda** (configurée sur ce staging) : redéployer `ml-service` d'abord quand `ml/` change, voir son `CLAUDE.md`. ⚠ Le déploiement de la Lambda demande l'accord explicite du propriétaire.
 2. **Migrations** sur Neon, depuis `NouanKanyAI/backend` : `alembic current` ; s'il est vide,
    `alembic stamp 0002_add_photo_and_auto_resolve` ; puis `alembic upgrade head` (révisions 0003 à 0005 : facturation,
    démarrage à froid, référentiel d'équipements). Plus jamais `alembic stamp head` sur une base existante.
