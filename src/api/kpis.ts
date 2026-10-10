@@ -53,6 +53,7 @@ async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
   const lastStatement = billing.statements.find((s) => s.total_fcfa !== null)
   const activeMachines = machines.filter((m) => m.status === 'actif')
   const alerteMachines = machines.filter((m) => m.status === 'alerte')
+  // Puissance tirée des relevés simulés (aucun capteur branché) : provenance « synthétique » (M20).
   const totalPower = machines.reduce((sum, m) => sum + m.power_kw, 0)
 
   return {
@@ -62,7 +63,7 @@ async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
       value: formatNumberFr(totalPower, 1),
       unit: 'kW',
       note: `${machines.length} machine${machines.length > 1 ? 's' : ''} enregistrée${machines.length > 1 ? 's' : ''}`,
-      provenance: 'estime',
+      provenance: 'synthetique',
     },
     'machines-actives': {
       id: 'machines-actives',
@@ -70,12 +71,13 @@ async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
       value: String(activeMachines.length),
       unit: `/ ${machines.length}`,
       note: alerteMachines.length > 0 ? `${alerteMachines.length} en alerte` : 'Aucune alerte active',
-      provenance: 'estime',
+      provenance: 'synthetique',
     },
     'economies-mois': {
       id: 'economies-mois',
       label: CLIENT_LABELS['economies-mois'],
-      // Indicatif (actions automatiques de l'IA) : la facturation se fait sur les économies mesurées.
+      // Indicatif : gains des seules actions réellement exécutées (plus les délestages jamais faits,
+      // Volet 2 C3) ; la facturation se fait sur les économies mesurées.
       value: formatNumberFr(billing.estimated_ai_savings.month_total_fcfa),
       unit: 'FCFA',
       note: lastStatement ? `Dernier relevé Nouankany (${lastStatement.month}) : ${formatFcfa(lastStatement.total_fcfa ?? 0)}` : 'Aucun relevé Nouankany pour l’instant',
@@ -87,7 +89,7 @@ async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
       value: String(alerteMachines.length),
       unit: alerteMachines.length > 1 ? 'machines' : 'machine',
       note: alerteMachines.length > 0 ? alerteMachines.map((m) => m.nom).join(', ') : 'Aucune',
-      provenance: 'estime',
+      provenance: 'synthetique',
     },
   }
 }

@@ -106,7 +106,7 @@ export interface BoitierDetail {
   readings: Record<string, string>
 }
 
-const one = (value: number) => value.toFixed(1).replace('.', ',')
+const one = (value: number | null) => (value === null ? '—' : value.toFixed(1).replace('.', ','))
 
 export async function fetchBoitierDetail(id: string): Promise<BoitierDetail> {
   const [state, commands, machines] = await Promise.all([rawBoitierState(id), rawBoitierCommands(id), getCachedMachines().catch(() => [])])
