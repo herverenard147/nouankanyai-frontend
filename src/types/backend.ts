@@ -463,6 +463,16 @@ export interface BackendAdminMetrics {
       dataset: string | null
       computed_at: string | null
     }
+    /** Modèle v2 (prévisions avec historique) : le gain sur la moyenne de chaque machine est la
+     * vraie mesure de son apport, le R² seul est trompeur. */
+    xgboost_v2?: {
+      r2?: number | null
+      mae_kw?: number | null
+      mae_moyenne_machine_kw?: number | null
+      gain_vs_moyenne_machine?: number | null
+      trained_at?: string | null
+      peak_hours?: number[] | null
+    }
   }
   system: {
     process_uptime_seconds: number
