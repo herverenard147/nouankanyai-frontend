@@ -83,7 +83,7 @@ import type {
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
 export const rawUpdateMe = (payload: { nom: string }) => api.patch<BackendUser>('/api/auth/me', payload)
 export const rawChangePassword = (payload: { current_password: string; new_password: string }) =>
-  api.post<{ status: string }>('/api/auth/change-password', payload)
+  api.post<{ status: string; token?: string; refresh_token?: string }>('/api/auth/change-password', payload)
 
 export const rawTeamMembers = () => api.get<BackendTeamMember[]>('/api/v1/team/members')
 export const rawCreateTeamMember = (payload: BackendNewTeamMemberPayload) =>

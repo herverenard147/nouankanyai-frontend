@@ -57,7 +57,34 @@ interface RequestOptions {
  *   introuvable) — on les traite comme des échecs ici ;
  * - les erreurs FastAPI standard arrivent en `{"detail": "..."}`.
  */
-async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+let refreshing: Promise<boolean> | null = null
+
+/** Échange le jeton de renouvellement contre une nouvelle paire, une seule fois même si plusieurs
+ * requêtes reçoivent un 401 en même temps (Volet 5). Renvoie false si la session est fermée. */
+function refreshSession(): Promise<boolean> {
+  const refreshToken = useSessionStore.getState().session?.refreshToken
+  if (!refreshToken) return Promise.resolve(false)
+  refreshing ??= (async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      })
+      if (!response.ok) return false
+      const data = (await response.json()) as { token: string; refresh_token?: string }
+      useSessionStore.getState().setTokens(data.token, data.refresh_token)
+      return true
+    } catch {
+      return false
+    } finally {
+      refreshing = null
+    }
+  })()
+  return refreshing
+}
+
+async function request<T>(path: string, options: RequestOptions = {}, retried = false): Promise<T> {
   const { method = 'GET', body, rawBody, auth = true } = options
   const headers: Record<string, string> = {}
 
@@ -95,6 +122,8 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     // /login pour se reconnecter (ProtectedRoute redirige dès que le store
     // repasse à session=null, pas besoin de navigation explicite ici).
     if (response.status === 401 && auth) {
+      // Jeton d'accès expiré (30 min) : un renouvellement silencieux, puis la même requête.
+      if (!retried && (await refreshSession())) return request<T>(path, options, true)
       useSessionStore.getState().logout()
     }
 
