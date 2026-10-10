@@ -132,6 +132,12 @@ export interface BackendWaitlistEntry {
   created_at: string
 }
 
+/** Réponse publique de POST /api/v1/waitlist : identique pour une adresse nouvelle ou déjà inscrite. */
+export interface BackendWaitlistJoinAck {
+  status: string
+  email: string
+}
+
 /** Diagnostic déterministe (médiane/MAD/tendance, ml/diagnostic.py) — null tant que
  * l'historique de la machine compte moins de 3 relevés. N'est jamais l'autorité de
  * décision (voir `resolved`, basé sur les seuils) : une information enrichie en plus. */

@@ -163,19 +163,22 @@ export function LoginPage() {
           </Link>
         </p>
 
-        <div className="mt-8 rounded-card border border-border bg-bg-elevated p-4">
-          <p className="font-mono text-mono-badge font-semibold uppercase tracking-wide text-text-secondary">
-            Comptes de démonstration
-          </p>
-          <ul className="mt-2 flex flex-col gap-1.5 text-xs text-text-secondary">
-            {DEMO_ACCOUNTS.map((account) => (
-              <li key={account.email} className="flex flex-wrap justify-between gap-x-2 gap-y-0.5 font-mono">
-                <span className="min-w-0 break-all">{account.email}</span>
-                <span>{account.password}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* En développement seulement : ces identifiants sont publics (constat C6 de l'audit du 2026-10-10). */}
+        {import.meta.env.DEV && (
+          <div className="mt-8 rounded-card border border-border bg-bg-elevated p-4">
+            <p className="font-mono text-mono-badge font-semibold uppercase tracking-wide text-text-secondary">
+              Comptes de démonstration
+            </p>
+            <ul className="mt-2 flex flex-col gap-1.5 text-xs text-text-secondary">
+              {DEMO_ACCOUNTS.map((account) => (
+                <li key={account.email} className="flex flex-wrap justify-between gap-x-2 gap-y-0.5 font-mono">
+                  <span className="min-w-0 break-all">{account.email}</span>
+                  <span>{account.password}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   )
