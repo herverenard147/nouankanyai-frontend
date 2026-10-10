@@ -1,4 +1,4 @@
-import { getCachedMachines, rawPredict } from '@/api/rawBackend'
+import { getCachedMachines, hasReading, rawPredict } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { Prediction, PredictionGranularity, PredictionsBundle, PredictionSeriesPoint, Profile } from '@/types/domain'
 
@@ -88,9 +88,15 @@ export async function fetchPredictionsBundle(_profile: Profile, granularity: Pre
     return { global: null, perDevice: [] }
   }
 
+  // Une prévision part d'un relevé réel : les machines sans relevé sont laissées de côté.
+  const measured = machines.filter(hasReading)
+  if (measured.length === 0) {
+    return { global: null, perDevice: [] }
+  }
+
   const horizonHours = HORIZON_HOURS[granularity]
   const perMachine = await Promise.all(
-    machines.map(async (machine) => ({
+    measured.map(async (machine) => ({
       machine,
       bucketed: bucketize((await rawPredict(machine, horizonHours)).predictions, granularity),
     })),

@@ -81,8 +81,8 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
       {resolveMutation.isSuccess && resolveMutation.data && (
         <p className={`text-right text-sm ${resolveMutation.data.resolved ? 'text-confirm' : 'text-alert'}`}>
           {resolveMutation.data.resolved
-            ? `Nouvelle mesure : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz, dans les seuils normaux.`
-            : `Nouvelle mesure : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz, l’anomalie persiste. Suivez les étapes ci-dessus, puis réessayez.`}
+            ? `Nouvelle mesure simulée (aucun capteur branché) : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz, dans les seuils normaux.`
+            : `Nouvelle mesure simulée (aucun capteur branché) : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz, l’anomalie persiste. Suivez les étapes ci-dessus, puis réessayez.`}
         </p>
       )}
     </article>

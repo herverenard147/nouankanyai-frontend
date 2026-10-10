@@ -20,7 +20,7 @@ vi.mock('@/api/rawBackend', () => ({
 import { rawAlertThresholds, rawTestMachine } from '@/api/rawBackend'
 
 function result(resolved: boolean, extra: Partial<BackendMachineTestResult> = {}): BackendMachineTestResult {
-  return { resolved, temperature_c: 50, vibration_hz: 10, pressure_bar: 1, power_kw: 2, diagnostic: null, ...extra }
+  return { provenance: 'simulation', resolved, temperature_c: 50, vibration_hz: 10, pressure_bar: 1, power_kw: 2, diagnostic: null, ...extra }
 }
 
 function wrapper({ children }: { children: ReactNode }) {

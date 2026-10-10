@@ -45,7 +45,7 @@ describe('AlertCard — honnêteté du message needs_human', () => {
       status: 'needs_human',
       attempt: 5,
       maxAttempts: 5,
-      lastResult: { resolved: false, temperature_c: 70, vibration_hz: 50, pressure_bar: 2, power_kw: 3, diagnostic: null },
+      lastResult: { provenance: 'simulation', resolved: false, temperature_c: 70, vibration_hz: 50, pressure_bar: 2, power_kw: 3, diagnostic: null },
       error: null,
       trigger: vi.fn(),
       autoEnabled: true,
@@ -55,6 +55,8 @@ describe('AlertCard — honnêteté du message needs_human', () => {
 
     expect(screen.getByText(/Non résolu après 5 tentatives automatiques/)).toBeInTheDocument()
     expect(screen.getByText(/intervention humaine est nécessaire/i)).toBeInTheDocument()
+    // Volet 2 (C4) : aucun capteur réel, la mesure est dite simulée.
+    expect(screen.getByText(/dernière mesure simulée/i)).toBeInTheDocument()
     // Jamais de formulation affirmant une résolution (seul "Non résolu" est acceptable).
     expect(screen.queryByText(/\best résolue\b/i)).not.toBeInTheDocument()
   })

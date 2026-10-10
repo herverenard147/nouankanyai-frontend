@@ -71,7 +71,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
           )}
           {!admin && autoResolve.lastResult && !autoResolve.lastResult.resolved && autoResolve.status !== 'needs_human' && (
             <p className="mt-2 text-sm text-alert">
-              Nouvelle mesure : température {formatNumberFr(autoResolve.lastResult.temperature_c, 1)}
+              Nouvelle mesure simulée (aucun capteur branché) : température {formatNumberFr(autoResolve.lastResult.temperature_c, 1)}
               {NARROW_NBSP}°C, vibration {formatNumberFr(autoResolve.lastResult.vibration_hz, 1)}
               {NARROW_NBSP}Hz, l&rsquo;anomalie persiste encore.{' '}
               {autoResolve.autoEnabled
@@ -81,7 +81,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
           )}
           {!admin && autoResolve.status === 'needs_human' && autoResolve.lastResult && (
             <p className="mt-2 text-sm text-alert">
-              Non résolu après {autoResolve.maxAttempts} tentatives automatiques (dernière mesure :{' '}
+              Non résolu après {autoResolve.maxAttempts} tentatives automatiques (dernière mesure simulée :{' '}
               {formatNumberFr(autoResolve.lastResult.temperature_c, 1)}
               {NARROW_NBSP}°C, {formatNumberFr(autoResolve.lastResult.vibration_hz, 1)}
               {NARROW_NBSP}Hz) : une intervention humaine est nécessaire.

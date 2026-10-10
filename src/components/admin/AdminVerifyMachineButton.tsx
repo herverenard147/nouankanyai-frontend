@@ -59,7 +59,7 @@ export function AdminVerifyMachineButton({ machineId, subject }: { machineId: st
       )}
       {verify.isSuccess && verify.data && !verify.data.resolved && (
         <p className="w-full text-xs text-alert">
-          Anomalie persistante : {formatNumberFr(verify.data.temperature_c, 1)}
+          Anomalie persistante (mesure simulée) : {formatNumberFr(verify.data.temperature_c, 1)}
           {NARROW_NBSP}°C, {formatNumberFr(verify.data.vibration_hz, 1)}
           {NARROW_NBSP}Hz.
         </p>
