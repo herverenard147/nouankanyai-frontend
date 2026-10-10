@@ -14,6 +14,7 @@ function toSession(result: BackendAuthResult): Session {
   return {
     userId: result.user.id,
     token: result.token,
+    refreshToken: result.refresh_token,
     profile,
     platformRole: result.user.platform_role,
     displayName: result.user.nom,
@@ -40,6 +41,8 @@ interface SessionState {
    * `session.displayName` est lu (TopBar, SettingsPage), sans attendre un nouveau
    * login. */
   setDisplayName: (nom: string) => void
+  /** Remplace la paire de jetons (renouvellement, changement de mot de passe). */
+  setTokens: (token: string, refreshToken?: string) => void
 }
 
 export const useSessionStore = create<SessionState>()(
@@ -75,6 +78,8 @@ export const useSessionStore = create<SessionState>()(
         // hérite du "vu" du précédent (voir notificationStore.resetSeen).
         useNotificationStore.getState().resetSeen()
       },
+      setTokens: (token, refreshToken) =>
+        set((state) => (state.session ? { session: { ...state.session, token, refreshToken: refreshToken ?? state.session.refreshToken } } : state)),
       setDisplayName: (nom) =>
         set((state) => (state.session ? { session: { ...state.session, displayName: nom } } : state)),
     }),
