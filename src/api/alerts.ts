@@ -1,4 +1,4 @@
-import { rawMachineHistory, getCachedMachines, rawPlatformAlerts, rawRecommend } from '@/api/rawBackend'
+import { rawMachineHistory, getCachedMachines, rawPlatformAlerts, getCachedRecommend } from '@/api/rawBackend'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { BackendMachine } from '@/types/backend'
 import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types/domain'
@@ -12,8 +12,8 @@ import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types
  */
 async function fetchRecommendations() {
   const machines = await getCachedMachines()
-  if (machines.length === 0) return { machines, recommendations: [] as Awaited<ReturnType<typeof rawRecommend>>['recommendations'] }
-  const { recommendations } = await rawRecommend(machines)
+  if (machines.length === 0) return { machines, recommendations: [] as Awaited<ReturnType<typeof getCachedRecommend>>['recommendations'] }
+  const { recommendations } = await getCachedRecommend(machines)
   return { machines, recommendations }
 }
 
@@ -31,6 +31,7 @@ export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]
         id: `${rec.machine_id}-${rec.type}-${i}`,
         machineId: rec.machine_id,
         level: `sévérité ${rec.severity}`,
+        severity: rec.severity,
         title: `${rec.title} (${rec.owner_nom})`,
         detail: frenchNumbersWithUnits(rec.description),
         basis: frenchNumbersWithUnits(rec.action),
@@ -52,6 +53,7 @@ export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]
       id: `${rec.machine_id}-${rec.type}-${i}`,
       machineId: rec.machine_id,
       level: `sévérité ${rec.severity}`,
+      severity: rec.severity,
       title: rec.title,
       detail: frenchNumbersWithUnits(rec.description),
       basis: frenchNumbersWithUnits(rec.action),

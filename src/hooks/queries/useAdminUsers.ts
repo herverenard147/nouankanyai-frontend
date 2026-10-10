@@ -13,7 +13,7 @@ import {
   updateUserProfile,
   verifyUserMachine,
 } from '@/api/adminUserDetail'
-import { rawUserFacturation, rawUserMachines } from '@/api/rawBackend'
+import { rawAdminUserBilling, rawUserMachines } from '@/api/rawBackend'
 
 export function useAdminUsers() {
   return useQuery({ queryKey: ['admin-users'], queryFn: fetchAdminUsers })
@@ -38,10 +38,10 @@ export function useUserMachines(targetUserId: string | null) {
   })
 }
 
-export function useUserFacturation(targetUserId: string | null) {
+export function useUserBilling(targetUserId: string | null) {
   return useQuery({
-    queryKey: ['admin-user-facturation', targetUserId],
-    queryFn: () => rawUserFacturation(targetUserId as string),
+    queryKey: ['admin-user-billing', targetUserId],
+    queryFn: () => rawAdminUserBilling(targetUserId as string),
     enabled: Boolean(targetUserId),
   })
 }

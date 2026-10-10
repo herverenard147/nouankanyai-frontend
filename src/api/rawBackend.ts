@@ -4,7 +4,7 @@
  * "vue" (`types/domain.ts`) au-dessus de ces fonctions — c'est ici, et
  * seulement ici, que vit la connaissance du contrat HTTP réel.
  */
-import { api } from '@/lib/apiClient'
+import { api, saveBlob } from '@/lib/apiClient'
 import { queryClient } from '@/lib/queryClient'
 import type {
   BackendAdminDevice,
@@ -28,7 +28,6 @@ import type {
   BackendPlanSummary,
   BackendResolution,
   BackendAlertThresholds,
-  BackendAnomalyResult,
   BackendAuditRequest,
   BackendAuditRequestPayload,
   BackendBillPhoto,
@@ -46,13 +45,19 @@ import type {
   BackendDemoSeedResult,
   BackendElectricityBill,
   BackendEquipmentCatalog,
-  BackendFacturation,
+  BackendBilling,
+  BackendBillingContract,
+  BackendBillingStatement,
+  BackendContractPayload,
+  BackendTierRequest,
+  BackendUnpaidStatement,
+  BillingTierId,
   BackendGeminiMetrics,
   BackendMachine,
   BackendMachineHistory,
+  BackendMachinePhotoExtraction,
   BackendMachineTestResult,
   BackendMachineUpdatePayload,
-  BackendMlAuditEntry,
   BackendMlHealth,
   BackendMlModelInfo,
   BackendMlReloadResult,
@@ -66,6 +71,11 @@ import type {
   BackendUser,
   BackendWaitlistEntry,
   BackendWaitlistPayload,
+  BackendColdStartSegment,
+  BackendDriftReport,
+  BackendMediaAnalysis,
+  ReportFormat,
+  ReportType,
 } from '@/types/backend'
 
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
@@ -110,11 +120,18 @@ export const getCachedMachines = () => queryClient.fetchQuery({ queryKey: ['mach
  */
 export const getCachedAdminMetrics = () => queryClient.fetchQuery({ queryKey: ['admin-metrics'], queryFn: rawAdminMetrics })
 export const getCachedMlModels = () => queryClient.fetchQuery({ queryKey: ['ml-models'], queryFn: rawMlModels })
-export const rawEquipmentCatalog = () => api.get<BackendEquipmentCatalog>('/api/equipment-catalog', false)
+/** `menage` : référentiel domestique seul (sans le catalogue industriel). */
+export const rawEquipmentCatalog = (segment?: 'menage') =>
+  api.get<BackendEquipmentCatalog>(`/api/equipment-catalog${segment ? `?segment=${segment}` : ''}`, false)
 export const rawAddMachine = (payload: BackendNewMachinePayload) =>
   api.post<{ status: string; machines: BackendMachine[] }>('/api/machines', payload)
 export const rawUpdateMachine = (machineId: string, payload: BackendMachineUpdatePayload) =>
   api.patch<BackendMachine>(`/api/machines/${machineId}`, payload)
+export const rawExtractMachinePhoto = (file: File) => {
+  const form = new FormData()
+  form.append('file', file)
+  return api.postForm<BackendMachinePhotoExtraction>('/api/machines/extract-photo', form)
+}
 export const rawDeleteMachine = (machineId: string) => api.delete<null>(`/api/machines/${machineId}`)
 export const rawSimulateMachine = (machineId: string) => api.post<{ status: string }>(`/api/machines/${machineId}/simulate`)
 export const rawResetMachine = (machineId: string) => api.post<{ status: string }>(`/api/machines/${machineId}/reset`)
@@ -125,7 +142,18 @@ export const rawAlertThresholds = () => api.get<BackendAlertThresholds>('/api/al
 export const rawUpdateAlertThresholds = (payload: BackendAlertThresholds) =>
   api.put<BackendAlertThresholds>('/api/alert-thresholds', payload)
 
-export const rawFacturation = () => api.get<BackendFacturation>('/api/facturation')
+// --- Facturation Nouankany (/api/v1/billing) ---
+export const rawBilling = () => api.get<BackendBilling>('/api/v1/billing')
+export const rawRequestTier = (tier: BillingTierId) => api.post<BackendBillingContract>('/api/v1/billing/tier-request', { tier })
+export const rawAdminUserBilling = (userId: string) => api.get<BackendBilling>(`/api/v1/billing/admin/users/${userId}`)
+export const rawAdminSaveContract = (userId: string, payload: BackendContractPayload) =>
+  api.put<BackendBillingContract>(`/api/v1/billing/admin/users/${userId}/contract`, payload)
+export const rawAdminApproveTier = (userId: string) => api.post<BackendBillingContract>(`/api/v1/billing/admin/users/${userId}/approve-tier`)
+export const rawAdminComputeStatement = (userId: string, month: string) =>
+  api.post<BackendBillingStatement>(`/api/v1/billing/admin/users/${userId}/statements/${month}`)
+export const rawAdminMarkPaid = (statementId: string) => api.post<BackendBillingStatement>(`/api/v1/billing/admin/statements/${statementId}/paid`)
+export const rawAdminUnpaid = () => api.get<BackendUnpaidStatement[]>('/api/v1/billing/admin/unpaid')
+export const rawAdminTierRequests = () => api.get<BackendTierRequest[]>('/api/v1/billing/admin/tier-requests')
 
 export const rawBills = () => api.get<BackendElectricityBill[]>('/api/bills')
 export const rawAddManualBill = (payload: BackendNewManualBill) =>
@@ -155,8 +183,19 @@ function toSensorReading(machine: BackendMachine) {
     priority: machine.priority,
   }
 }
-export const rawRecommend = (machines: BackendMachine[]) =>
-  api.post<{ recommendations: BackendRecommendation[]; count: number }>('/api/recommend', machines.map(toSensorReading))
+/**
+ * /api/recommend partagé entre alertes, conseils, recommandations et plan d'action :
+ * chaque écran l'appelait séparément (jusqu'à 5 fois par page, avec à chaque fois les
+ * actions automatiques côté serveur). La clé contient l'état envoyé, donc un relevé
+ * ou une machine qui change relance bien le calcul.
+ */
+export const getCachedRecommend = (machines: BackendMachine[]) => {
+  const readings = machines.map(toSensorReading)
+  return queryClient.fetchQuery({
+    queryKey: ['recommend', readings],
+    queryFn: () => api.post<{ recommendations: BackendRecommendation[]; count: number }>('/api/recommend', readings),
+  })
+}
 
 export const rawPredict = (machine: BackendMachine, hoursAhead: number) =>
   api.post<{ machine_id: string; predictions: { hour: number; predicted_kw: number; cost_fcfa: number }[] }>(
@@ -171,17 +210,9 @@ export const rawPredict = (machine: BackendMachine, hoursAhead: number) =>
     false,
   )
 
-export const rawDetectAnomaly = (reading: {
-  power_kw: number
-  temperature_c: number
-  vibration_hz: number
-  pressure_bar: number
-}) => api.post<BackendAnomalyResult>('/api/v1/ml/detect-anomaly', reading, false)
-
-export const rawMlHealth = () => api.get<BackendMlHealth>('/api/v1/ml/health', false)
+// Jeton envoyé : la route est publique mais ne renvoie le détail (composants, versions) qu'à un administrateur.
+export const rawMlHealth = () => api.get<BackendMlHealth>('/api/v1/ml/health')
 export const rawMlModels = () => api.get<BackendMlModelInfo[]>('/api/v1/ml/models')
-export const rawMlMetrics = () => api.get<Record<string, unknown>>('/api/v1/ml/metrics')
-export const rawMlAudit = () => api.get<BackendMlAuditEntry[]>('/api/v1/ml/audit')
 export const rawMlReload = () => api.post<BackendMlReloadResult>('/api/v1/ml/reload')
 
 export const rawAssistantChat = (message: string) =>
@@ -195,10 +226,6 @@ export const rawAdminResetMachine = (machineId: string) => api.post<{ status: st
 export const rawUserMachines = (targetUserId: string) =>
   api.get<{ id: string; machine_id: string; nom: string; site_nom: string; status: string; puissance_nominale_kw: number }[]>(
     `/api/admin/users/${targetUserId}/machines`,
-  )
-export const rawUserFacturation = (targetUserId: string) =>
-  api.get<{ grossSavingsThisMonth: number; gainShareThisMonth: number; invoiceCount: number; billCount: number }>(
-    `/api/admin/users/${targetUserId}/facturation`,
   )
 export const rawSuspendUser = (targetUserId: string, suspended: boolean) =>
   api.patch<BackendUser>(`/api/admin/users/${targetUserId}/suspend`, { suspended })
@@ -266,17 +293,8 @@ export type { BackendAuditEvent, BackendPlanStatus }
 
 /** Export CSV de la piste d'audit : le navigateur doit envoyer le jeton, donc fetch + Blob (pas un simple lien). */
 export async function downloadAuditCsv(): Promise<void> {
-  const { useSessionStore } = await import('@/store/sessionStore')
-  const base = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8001').replace(/\/$/, '')
-  const token = useSessionStore.getState().session?.token
-  const response = await fetch(`${base}/api/v1/audit/events.csv`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-  if (!response.ok) throw new Error(`Export impossible (erreur ${response.status})`)
-  const url = URL.createObjectURL(await response.blob())
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'audit-nouankany.csv'
-  link.click()
-  URL.revokeObjectURL(url)
+  const { blob, filename } = await api.getBlob('/api/v1/audit/events.csv')
+  saveBlob(blob, filename ?? 'audit-nouankany.csv')
 }
 
 // --- Boîtier vocal : routes du site (le boîtier lui-même parle à /api/v1/boitier, avec son propre jeton) ---
@@ -303,3 +321,22 @@ export const rawAdminRevokeBoitier = (id: string) => api.delete<{ status: string
 export const rawAdminBoitierRequests = () => api.get<BackendAdminDeviceRequest[]>('/api/v1/boitiers/admin/requests')
 export const rawAdminSetRequestStatus = (id: string, status: 'a_livrer' | 'livre') =>
   api.patch<BackendAdminDeviceRequest>(`/api/v1/boitiers/admin/requests/${id}`, { status })
+
+// --- Routes gardées sans écran jusqu'ici (voir lib/navConfig.ts pour qui y accède) ---
+export const rawDeleteSite = (siteId: string) => api.delete<null>(`/api/sites/${siteId}`)
+export const rawAnalyzeMachineMedia = (machineId: string, file: File) => {
+  const form = new FormData()
+  form.append('file', file)
+  return api.postForm<BackendMediaAnalysis>(`/api/machines/${machineId}/analyze-media`, form)
+}
+export const rawSiteShutdown = (deviceId: string, machineCode: string) =>
+  api.post<BackendDeviceCommand>(`/api/v1/boitiers/${deviceId}/commands`, { machine_code: machineCode, type: 'shutdown' })
+export const rawGenerateReport = (reportType: ReportType, exportFormat: ReportFormat) =>
+  api.postBlob('/api/v1/reports/generate', { report_type: reportType, export_format: exportFormat })
+export const rawContactMessages = () => api.get<BackendContactMessage[]>('/api/v1/contact')
+export const rawWaitlistEntries = () => api.get<BackendWaitlistEntry[]>('/api/v1/waitlist')
+export const rawMlDrift = (window = 500) => api.get<BackendDriftReport>(`/api/v1/ml/drift?window=${window}`)
+export const rawMlDriftLog = (window = 500) =>
+  api.post<{ status: string; log_file: string; report: BackendDriftReport }>(`/api/v1/ml/drift/log?window=${window}`)
+export const rawColdStart = () => api.get<BackendColdStartSegment[]>('/api/v1/ml/cold-start')
+export const rawColdStartEvaluate = () => api.post<BackendColdStartSegment[]>('/api/v1/ml/cold-start/evaluate')

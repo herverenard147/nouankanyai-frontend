@@ -15,6 +15,7 @@ export type ShortcutId =
   | 'resolutions'
   | 'paliers'
   | 'commission'
+  | 'rapports'
   | 'factures'
   | 'sante'
   | 'modeles'
@@ -55,7 +56,7 @@ export interface MenageOverviewBlocks {
   shortcuts: ShortcutId[]
 }
 
-/** Ménage : un seul niveau (débutant, aucun sélecteur). Il paie selon ses économies : la commission est un raccourci. */
+/** Ménage : un seul niveau (débutant, aucun sélecteur). Il paie selon ses économies : sa facturation est un raccourci. */
 export function menageOverviewBlocks(): MenageOverviewBlocks {
   return { shortcuts: ['conseils', 'recommandations', 'commission', 'paliers'] }
 }
@@ -74,11 +75,11 @@ export function adminOverviewBlocks(level: Level): AdminOverviewBlocks {
 export function kpiTargets(profile: Profile): Record<string, string> {
   switch (profile) {
     case 'industrie':
-      return { 'puissance-totale': '/app/machines', 'machines-actives': '/app/machines', 'economies-mois': '/app/rapports', 'anomalies-actives': '/app/alertes' }
+      return { 'puissance-totale': '/app/machines', 'machines-actives': '/app/machines', 'economies-mois': '/app/facturation', 'anomalies-actives': '/app/alertes' }
     case 'pme':
-      return { 'puissance-totale': '/app/equipements', 'machines-actives': '/app/equipements', 'economies-mois': '/app/rapports', 'anomalies-actives': '/app/alertes' }
+      return { 'puissance-totale': '/app/equipements', 'machines-actives': '/app/equipements', 'economies-mois': '/app/facturation', 'anomalies-actives': '/app/alertes' }
     case 'menage':
-      return { 'puissance-totale': '/app/consommation', 'machines-actives': '/app/alertes', 'economies-mois': '/app/rapports', 'anomalies-actives': '/app/alertes' }
+      return { 'puissance-totale': '/app/consommation', 'machines-actives': '/app/alertes', 'economies-mois': '/app/facturation', 'anomalies-actives': '/app/alertes' }
     case 'admin':
       return { 'base-donnees': '/app/admin/sante', uptime: '/app/admin/sante', 'latence-moyenne': '/app/admin/sante', 'machines-plateforme': '/app/admin/sante' }
   }

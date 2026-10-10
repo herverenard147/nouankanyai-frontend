@@ -13,7 +13,7 @@ import { kpiTargets, menageOverviewBlocks } from '@/lib/overviewLevels'
 
 /**
  * Vue d'ensemble MÉNAGE : le gabarit le plus court. Ménage n'a pas de sélecteur de niveau (toujours « débutant »).
- * Le Ménage n'est pas gratuit : il paie selon ses économies, donc « Part sur les économies » et « Commission » restent affichés.
+ * Le Ménage paie un abonnement par palier (Découverte gratuit, Essentiel, Optimum) : son raccourci mène à la page Abonnement.
  */
 export function MenageOverview() {
   const invoicesQuery = useInvoices('menage')

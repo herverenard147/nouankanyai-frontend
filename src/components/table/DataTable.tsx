@@ -1,3 +1,4 @@
+import { ImageOff } from 'lucide-react'
 import { useMemo, useState, type ReactNode } from 'react'
 
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
@@ -8,21 +9,24 @@ export interface TableColumn<T> {
   label: string
 }
 
-interface DataTableProps<T extends { id: string; provenance: Provenance }> {
+interface DataTableProps<T extends { id: string; provenance: Provenance; photo_data_url?: string | null }> {
   columns: TableColumn<T>[]
   rows: T[]
   onRowClick?: (row: T) => void
   searchPlaceholder?: string
   /** Colonne d'actions en fin de ligne (Modifier / Supprimer) ; un clic dessus n'ouvre pas la fiche détail. */
   renderActions?: (row: T) => ReactNode
+  /** Ajoute une vignette (`row.photo_data_url`) en première colonne — seulement pour les tables de machines/équipements. */
+  photoColumn?: boolean
 }
 
-export function DataTable<T extends { id: string; provenance: Provenance }>({
+export function DataTable<T extends { id: string; provenance: Provenance; photo_data_url?: string | null }>({
   columns,
   rows,
   onRowClick,
   searchPlaceholder = 'Rechercher…',
   renderActions,
+  photoColumn = false,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState<keyof T | null>(null)
@@ -66,6 +70,11 @@ export function DataTable<T extends { id: string; provenance: Provenance }>({
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <thead className="bg-bg-elevated">
             <tr>
+              {photoColumn && (
+                <th scope="col" className="px-4 py-3 text-left font-mono text-mono-axis font-semibold uppercase tracking-wide text-text-secondary">
+                  <span className="sr-only">Photo</span>
+                </th>
+              )}
               {columns.map((col) => (
                 <th key={String(col.key)} scope="col" className="p-0">
                   <button
@@ -91,6 +100,17 @@ export function DataTable<T extends { id: string; provenance: Provenance }>({
                 className={`border-t border-border ${onRowClick ? 'cursor-pointer hover:bg-bg-elevated' : ''}`}
                 onClick={() => onRowClick?.(row)}
               >
+                {photoColumn && (
+                  <td className="px-4 py-3">
+                    {row.photo_data_url ? (
+                      <img src={row.photo_data_url} alt="" className="h-10 w-10 rounded-control object-cover" />
+                    ) : (
+                      <span className="flex h-10 w-10 items-center justify-center rounded-control bg-bg-elevated text-text-tertiary">
+                        <ImageOff className="h-4 w-4" aria-hidden="true" />
+                      </span>
+                    )}
+                  </td>
+                )}
                 {columns.map((col, colIndex) => (
                   <td
                     key={String(col.key)}
@@ -111,7 +131,7 @@ export function DataTable<T extends { id: string; provenance: Provenance }>({
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={columns.length + (renderActions ? 2 : 1)} className="px-4 py-6 text-center text-text-secondary">
+                <td colSpan={columns.length + (renderActions ? 2 : 1) + (photoColumn ? 1 : 0)} className="px-4 py-6 text-center text-text-secondary">
                   Aucun résultat.
                 </td>
               </tr>

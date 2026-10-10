@@ -1,8 +1,5 @@
 import type { KeyboardEvent } from 'react'
 
-/** Classe utilitaire appliquant l'anneau de focus du design system (voir styles/index.css). */
-export const FOCUS_RING = 'focus-ring'
-
 /**
  * À poser sur `onKeyDown` d'un élément interactif non natif (ex. barre de
  * graphique en `<div role="button">`) pour que Entrée et Espace déclenchent

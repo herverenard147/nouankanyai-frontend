@@ -18,11 +18,11 @@ function toSession(result: BackendAuthResult): Session {
     platformRole: result.user.platform_role,
     displayName: result.user.nom,
     subtitle: profile === 'admin' ? ACCOUNT_TYPE_LABELS.admin : result.user.type_compte,
-    formule: null,
     // Seuls les PME/Industrie sans owner_id (compte principal, pas membre d'une
     // équipe) peuvent gérer des membres — voir app/api/v1/team/ côté backend.
     isTeamOwner: (profile === 'pme' || profile === 'industrie') && !result.user.owner_id,
     isTrial: result.user.is_trial,
+    isDemo: result.user.email.toLowerCase().endsWith('.demo'),
   }
 }
 

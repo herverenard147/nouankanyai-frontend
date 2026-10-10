@@ -1,5 +1,5 @@
-import { formatFcfaAmount } from '@/api/backendHelpers'
-import { getCachedAdminMetrics, rawFacturation, getCachedMachines } from '@/api/rawBackend'
+import { formatFcfa } from '@/lib/formatters'
+import { getCachedAdminMetrics, rawBilling, getCachedMachines } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { Kpi, KpiWindow, Profile } from '@/types/domain'
 
@@ -9,7 +9,7 @@ const ADMIN_KPI_IDS = ['base-donnees', 'uptime', 'latence-moyenne', 'machines-pl
 const CLIENT_LABELS: Record<(typeof CLIENT_KPI_IDS)[number], string> = {
   'puissance-totale': 'Puissance active totale',
   'machines-actives': 'Machines actives',
-  'economies-mois': 'Part sur les économies ce mois',
+  'economies-mois': 'Économies estimées ce mois',
   'anomalies-actives': 'Machines en anomalie',
 }
 
@@ -49,7 +49,8 @@ function formatUptime(seconds: number): string {
 async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
   // Les 4 indicateurs client viennent des 2 mêmes requêtes (machines, facturation) : une seule fois pour
   // toute la bande, pas une fois par indicateur (KpiStrip montait 4 KpiTile, chacun refetchait tout).
-  const [machines, facturation] = await Promise.all([getCachedMachines(), rawFacturation()])
+  const [machines, billing] = await Promise.all([getCachedMachines(), rawBilling()])
+  const lastStatement = billing.statements.find((s) => s.total_fcfa !== null)
   const activeMachines = machines.filter((m) => m.status === 'actif')
   const alerteMachines = machines.filter((m) => m.status === 'alerte')
   const totalPower = machines.reduce((sum, m) => sum + m.power_kw, 0)
@@ -74,9 +75,10 @@ async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
     'economies-mois': {
       id: 'economies-mois',
       label: CLIENT_LABELS['economies-mois'],
-      value: formatNumberFr(facturation.grossSavings),
+      // Indicatif (actions automatiques de l'IA) : la facturation se fait sur les économies mesurées.
+      value: formatNumberFr(billing.estimated_ai_savings.month_total_fcfa),
       unit: 'FCFA',
-      note: `Commission Nouankany (10 %) : ${formatFcfaAmount(facturation.gainShare)}`,
+      note: lastStatement ? `Dernier relevé Nouankany (${lastStatement.month}) : ${formatFcfa(lastStatement.total_fcfa ?? 0)}` : 'Aucun relevé Nouankany pour l’instant',
       provenance: 'estime',
     },
     'anomalies-actives': {
@@ -135,9 +137,3 @@ export function fetchKpiSet(profile: Profile): Promise<Record<string, Kpi>> {
   return profile === 'admin' ? fetchAdminKpiSet() : fetchClientKpiSet()
 }
 
-export async function fetchKpi(profile: Profile, kpiId: string): Promise<Kpi> {
-  const set = await fetchKpiSet(profile)
-  const kpi = set[kpiId]
-  if (!kpi) throw new Error(`KPI inconnu : ${kpiId}`)
-  return kpi
-}
