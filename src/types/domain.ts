@@ -246,6 +246,10 @@ export interface InvoiceRecord {
   /** true si cette facture vient d'une photo uploadée (source ocr/ocr-mock) —
    * seul ce cas a une photo à montrer via le bouton "Voir plus". */
   hasPhoto: boolean
+  /** Statut de validation par un administrateur (null pour une prévision). */
+  validationLabel: string | null
+  /** Facture validée : plus modifiable ni supprimable. */
+  locked: boolean
   /** Valeurs brutes pour pré-remplir la modale « Modifier ». */
   raw: { month: string; amountXof: number | null; kwhConsumed: number | null }
   /** Prévision statistique (non saisie par l'utilisateur). */
