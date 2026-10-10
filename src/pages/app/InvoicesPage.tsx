@@ -11,6 +11,7 @@ import { OcrFieldList } from '@/components/upload/OcrFieldList'
 import { UploadCard } from '@/components/upload/UploadCard'
 import {
   useAddManualInvoice,
+  useAttachInvoicePhoto,
   useConfirmInvoiceActual,
   useDeleteInvoice,
   useGenerateForecastInvoice,
@@ -41,6 +42,7 @@ export function InvoicesPage() {
   const updateMutation = useUpdateInvoice(profile!)
   const confirmMutation = useConfirmInvoiceActual(profile!)
   const deleteMutation = useDeleteInvoice(profile!)
+  const attachMutation = useAttachInvoicePhoto(profile!)
   const [dialog, setDialog] = useState<Dialog | null>(null)
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
   const [actualAmount, setActualAmount] = useState('')
@@ -49,6 +51,7 @@ export function InvoicesPage() {
   const [month, setMonth] = useState('')
   const [amount, setAmount] = useState('')
   const [kwh, setKwh] = useState('')
+  const [bimonthly, setBimonthly] = useState(false)
 
   if (!profile) return null
 
@@ -56,6 +59,7 @@ export function InvoicesPage() {
     setMonth('')
     setAmount('')
     setKwh('')
+    setBimonthly(false)
     manualMutation.reset()
     setDialog({ kind: 'add' })
   }
@@ -72,7 +76,10 @@ export function InvoicesPage() {
     event.preventDefault()
     const amountXof = Number(amount)
     if (!month || !Number.isFinite(amountXof) || amountXof <= 0) return
-    manualMutation.mutate({ month, amountXof, kwhConsumed: kwh ? Number(kwh) : undefined }, { onSuccess: () => setDialog(null) })
+    manualMutation.mutate(
+      { month, amountXof, kwhConsumed: kwh ? Number(kwh) : undefined, periodMonths: bimonthly ? 2 : 1 },
+      { onSuccess: () => setDialog(null) },
+    )
   }
 
   function handleConfirmSubmit(event: FormEvent, billId: string) {
@@ -148,8 +155,26 @@ export function InvoicesPage() {
                   <h3 className="font-semibold text-text-primary">{invoice.period}</h3>
                   <div className="flex flex-wrap items-center gap-4">
                     <span className="text-xs font-semibold text-text-secondary">
-                      {invoice.status === 'traitee' ? 'Confirmée' : 'Prévision en attente de confirmation'}
+                      {invoice.isForecast
+                        ? invoice.status === 'traitee' ? 'Confirmée' : 'Prévision en attente de confirmation'
+                        : invoice.validationLabel}
                     </span>
+                    {!invoice.isForecast && !invoice.hasPhoto && !invoice.locked && (
+                      <label className="focus-ring cursor-pointer text-sm font-semibold text-accent-cta hover:underline">
+                        {attachMutation.isPending && attachMutation.variables?.billId === invoice.id ? 'Envoi…' : 'Joindre le justificatif'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          aria-label={`Joindre la photo de la facture ${invoice.period}`}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) attachMutation.mutate({ billId: invoice.id, file })
+                            e.target.value = ''
+                          }}
+                        />
+                      </label>
+                    )}
                     {invoice.hasPhoto && (
                       <button
                         type="button"
@@ -159,25 +184,28 @@ export function InvoicesPage() {
                         Voir plus
                       </button>
                     )}
-                    {!invoice.isForecast && (
+                    {!invoice.isForecast && !invoice.locked && (
                       <button type="button" onClick={() => openEdit(invoice)} className="focus-ring text-sm font-semibold text-accent-cta hover:underline" aria-label={`Modifier la facture ${invoice.period}`}>
                         Modifier
                       </button>
                     )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        deleteMutation.reset()
-                        setDialog({ kind: 'delete', invoice })
-                      }}
-                      className="focus-ring text-sm font-semibold text-alert hover:underline"
-                      aria-label={`Supprimer la facture ${invoice.period}`}
-                    >
-                      Supprimer
-                    </button>
+                    {!invoice.locked && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          deleteMutation.reset()
+                          setDialog({ kind: 'delete', invoice })
+                        }}
+                        className="focus-ring text-sm font-semibold text-alert hover:underline"
+                        aria-label={`Supprimer la facture ${invoice.period}`}
+                      >
+                        Supprimer
+                      </button>
+                    )}
                   </div>
                 </div>
                 <OcrFieldList fields={invoice.fields} />
+                {attachMutation.isError && attachMutation.variables?.billId === invoice.id && <MutationError error={attachMutation.error} />}
                 {invoice.status === 'en_cours' && (
                   <div className="border-t border-border pt-3">
                     {confirmingId === invoice.id ? (
@@ -219,7 +247,14 @@ export function InvoicesPage() {
         >
           <form id="invoice-add-form" onSubmit={handleAddSubmit} className="flex flex-col gap-3">
             {monthAmountKwhFields}
-            <p className="text-xs text-text-secondary">Cette action sera enregistrée dans l’onglet Audit.</p>
+            <label className="flex items-center gap-2 text-sm text-text-primary">
+              <input type="checkbox" checked={bimonthly} onChange={(e) => setBimonthly(e.target.checked)} />
+              Facture bimestrielle (couvre ce mois et le suivant)
+            </label>
+            <p className="text-xs text-text-secondary">
+              Joignez ensuite la photo de la facture : elle n’entre dans vos relevés Nouankany qu’une fois validée par notre équipe.
+              Cette action sera enregistrée dans l’onglet Audit.
+            </p>
             <MutationError error={manualMutation.error} />
           </form>
         </Modal>

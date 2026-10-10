@@ -22,7 +22,7 @@ function toSession(result: BackendAuthResult): Session {
     // équipe) peuvent gérer des membres — voir app/api/v1/team/ côté backend.
     isTeamOwner: (profile === 'pme' || profile === 'industrie') && !result.user.owner_id,
     isTrial: result.user.is_trial,
-    isDemo: result.user.email.toLowerCase().endsWith('.demo'),
+    isDemo: Boolean(result.user.is_demo),
   }
 }
 

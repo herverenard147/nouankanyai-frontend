@@ -18,6 +18,8 @@ export interface BackendUser {
   platform_role: BackendPlatformRole
   owner_id: string | null
   is_trial: boolean
+  /** Compte de démonstration décidé par le serveur (jamais par l'adresse). */
+  is_demo?: boolean
   created_at: string
   last_sign_in_at: string | null
 }
@@ -222,7 +224,7 @@ export interface BackendAlertThresholds {
 }
 
 /** GET /api/v1/billing : ce que le compte paie à Nouankany (voir backend/billing/). */
-export type BillingTierId = 'decouverte' | 'essentiel' | 'optimum'
+export type BillingTierId = 'decouverte' | 'essentiel' | 'optimum' | 'decouverte_pro'
 export interface BackendBillingTier {
   id: BillingTierId
   nom: string
@@ -242,6 +244,10 @@ export interface BackendBillingContract {
   savings_share_pct: number | null
   baseline_kwh: number | null
   baseline_period: string | null
+  /** Ajustement IPMVP de la ligne de base (kWh), avec son motif. */
+  baseline_adjustment_kwh?: number | null
+  baseline_adjustment_note?: string | null
+  puissance_souscrite_kva?: number | null
   start_month: string | null
   end_month: string | null
   status: 'actif' | 'termine'
@@ -249,7 +255,8 @@ export interface BackendBillingContract {
 export interface BackendBillingStatement {
   id: string
   month: string
-  status: 'en_attente_facture' | 'a_payer' | 'paye'
+  /** « indicatif » : relevé calculé, pas une facture (facturation réelle pas encore ouverte). */
+  status: 'en_attente_facture' | 'indicatif' | 'a_payer' | 'paye'
   baseline_kwh: number | null
   actual_kwh: number | null
   savings_kwh: number | null
@@ -258,7 +265,7 @@ export interface BackendBillingStatement {
   savings_share_fcfa: number | null
   audit_fee_fcfa: number | null
   total_fcfa: number | null
-  detail: { formule?: string; etapes?: string[]; raison?: string; palier_nom?: string }
+  detail: { formule?: string; etapes?: string[]; raison?: string; palier_nom?: string; mention?: string; bareme_a_confirmer?: boolean; bareme_note?: string }
   paid_at: string | null
 }
 export interface BackendBilling {
@@ -266,6 +273,9 @@ export interface BackendBilling {
   contract: BackendBillingContract | null
   effective_tier: BillingTierId | null
   tiers: BackendBillingTier[]
+  /** Palier gratuit d'une PME sans contrat. */
+  pme_free_tier?: BackendBillingTier
+  real_billing_enabled?: boolean
   defaults: { audit_fee_fcfa: number; saas_fee_fcfa: number; savings_share_pct: number }
   statements: BackendBillingStatement[]
   estimated_ai_savings: {
@@ -285,10 +295,13 @@ export interface BackendContractPayload {
   savings_share_pct?: number
   baseline_kwh?: number
   baseline_period?: string
+  baseline_adjustment_kwh?: number | null
+  baseline_adjustment_note?: string
+  puissance_souscrite_kva?: number | null
   start_month?: string
 }
 
-export type BackendBillSource = 'manuel' | 'ocr' | 'ocr-mock' | 'statistique'
+export type BackendBillSource = 'manuel' | 'ocr' | 'ocr-mock' | 'statistique' | 'demo'
 // Renseignés uniquement pour source="ocr"/"ocr-mock" (extraction NouankanyAI, voir
 // backend/app/ai/nouankany_vision.py) : le modèle vision détecte lui-même s'il a lu
 // une facture CIE papier ou un reçu de paiement numérique (Wave, Mobile Money,
@@ -307,12 +320,31 @@ export interface BackendElectricityBill {
   payment_operator: string | null
   payment_reference: string | null
   has_photo: boolean
+  /** 2 pour une facture bimestrielle : ses kWh sont répartis sur deux mois. */
+  period_months?: number
+  /** Une facture n'entre dans un relevé qu'une fois validée par un administrateur. */
+  validation_status?: 'en_attente' | 'validee' | 'rejetee'
   created_at: string
 }
 export interface BackendNewManualBill {
   month: string
   amount_xof: number
   kwh_consumed?: number
+  period_months?: number
+}
+export interface BackendPendingBill {
+  id: string
+  month: string
+  period_months: number
+  kwh_consumed: number | null
+  amount_xof: number | null
+  source: BackendBillSource
+  document_type: BackendBillDocumentType | null
+  has_photo: boolean
+  validation_status: 'en_attente' | 'validee' | 'rejetee'
+  user_id: string
+  user_nom: string
+  user_email: string
 }
 export interface BackendBillPhoto {
   photo_data_url: string

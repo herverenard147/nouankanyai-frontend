@@ -63,6 +63,9 @@ function ContractEditor({ billing, userId }: { billing: BackendBilling; userId: 
     audit_fee_fcfa: String(c?.audit_fee_fcfa ?? d.audit_fee_fcfa),
     saas_fee_fcfa: String(c?.saas_fee_fcfa ?? d.saas_fee_fcfa),
     savings_share_pct: String(c?.savings_share_pct ?? d.savings_share_pct),
+    baseline_adjustment_kwh: c?.baseline_adjustment_kwh != null ? String(c.baseline_adjustment_kwh) : '',
+    baseline_adjustment_note: c?.baseline_adjustment_note ?? '',
+    puissance_souscrite_kva: c?.puissance_souscrite_kva != null ? String(c.puissance_souscrite_kva) : '',
   })
   const field = (key: keyof typeof form) => ({ value: form[key], onChange: (e: { target: { value: string } }) => setForm((f) => ({ ...f, [key]: e.target.value })) })
   function submit(event: FormEvent) {
@@ -75,6 +78,9 @@ function ContractEditor({ billing, userId }: { billing: BackendBilling; userId: 
       audit_fee_fcfa: Number(form.audit_fee_fcfa),
       saas_fee_fcfa: Number(form.saas_fee_fcfa),
       savings_share_pct: Number(form.savings_share_pct),
+      baseline_adjustment_kwh: form.baseline_adjustment_kwh ? Number(form.baseline_adjustment_kwh) : null,
+      baseline_adjustment_note: form.baseline_adjustment_note || undefined,
+      puissance_souscrite_kva: form.puissance_souscrite_kva ? Number(form.puissance_souscrite_kva) : null,
     })
   }
   return (
@@ -85,6 +91,9 @@ function ContractEditor({ billing, userId }: { billing: BackendBilling; userId: 
       <TextField label="Frais d’audit (FCFA)" type="number" min="0" {...field('audit_fee_fcfa')} />
       <TextField label="Redevance mensuelle (FCFA)" type="number" min="0" {...field('saas_fee_fcfa')} />
       <TextField label="Part des économies (30 à 50 %)" type="number" min="30" max="50" step="1" {...field('savings_share_pct')} />
+      <TextField label="Puissance souscrite (kVA)" type="number" min="0" step="any" {...field('puissance_souscrite_kva')} />
+      <TextField label="Ajustement de la ligne de base (kWh, IPMVP)" type="number" step="any" {...field('baseline_adjustment_kwh')} />
+      <TextField label="Motif de l’ajustement" {...field('baseline_adjustment_note')} required={Boolean(form.baseline_adjustment_kwh)} />
       <div className="flex flex-col gap-2 sm:col-span-3">
         <Button type="submit" className="w-fit" disabled={saveContract.isPending}>
           {saveContract.isPending ? 'Enregistrement…' : c ? 'Enregistrer le contrat' : 'Créer le contrat'}
