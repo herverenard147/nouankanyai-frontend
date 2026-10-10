@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineButton'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
-import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
-import { ApiError } from '@/lib/apiClient'
+import { useAutoResolveMachine } from '@/hooks/queries/useMachineCrud'
 import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
+import { AllowedLink } from '@/routes/AllowedLink'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
 
 interface ActionAlertCardProps {
@@ -30,7 +30,10 @@ interface AutoAlertCardProps {
 }
 
 export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
-  const resolveMutation = useResolveMachine()
+  // Hook appelé sans condition (règle React) : machineId/severity sont inertes
+  // pour la variante 'auto', qui ne rend jamais le bouton plus bas.
+  const isAction = props.variant === 'action'
+  const autoResolve = useAutoResolveMachine(isAction ? props.alert.machineId : '', isAction ? props.alert.severity : 'faible')
 
   if (props.variant === 'action') {
     const { alert, compact, admin } = props
@@ -63,17 +66,33 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             Source : <ProvenanceBadge value={alert.provenance} className="lowercase" />
             {alert.basis && <span>· {alert.basis}</span>}
           </p>
-          {!admin && resolveMutation.isError && (
-            <ApiErrorMessage
-              message={resolveMutation.error instanceof ApiError ? resolveMutation.error.message : 'Échec de la vérification.'}
-              className="mt-2 text-sm text-alert"
-            />
+          {!admin && autoResolve.status === 'error' && (
+            <ApiErrorMessage message="Échec de la vérification." className="mt-2 text-sm text-alert" />
           )}
-          {!admin && resolveMutation.isSuccess && resolveMutation.data && !resolveMutation.data.resolved && (
+          {!admin && autoResolve.lastResult && !autoResolve.lastResult.resolved && autoResolve.status !== 'needs_human' && (
             <p className="mt-2 text-sm text-alert">
-              Nouvelle mesure : température {formatNumberFr(resolveMutation.data.temperature_c, 1)}
-              {NARROW_NBSP}°C, vibration {formatNumberFr(resolveMutation.data.vibration_hz, 1)}
-              {NARROW_NBSP}Hz, l&rsquo;anomalie persiste encore. Réessayez une fois l&rsquo;intervention terminée.
+              Nouvelle mesure : température {formatNumberFr(autoResolve.lastResult.temperature_c, 1)}
+              {NARROW_NBSP}°C, vibration {formatNumberFr(autoResolve.lastResult.vibration_hz, 1)}
+              {NARROW_NBSP}Hz, l&rsquo;anomalie persiste encore.{' '}
+              {autoResolve.autoEnabled
+                ? `Nouvel essai automatique ${autoResolve.attempt + 1}/${autoResolve.maxAttempts}…`
+                : 'Réessayez une fois l’intervention terminée.'}
+            </p>
+          )}
+          {!admin && autoResolve.status === 'needs_human' && autoResolve.lastResult && (
+            <p className="mt-2 text-sm text-alert">
+              Non résolu après {autoResolve.maxAttempts} tentatives automatiques (dernière mesure :{' '}
+              {formatNumberFr(autoResolve.lastResult.temperature_c, 1)}
+              {NARROW_NBSP}°C, {formatNumberFr(autoResolve.lastResult.vibration_hz, 1)}
+              {NARROW_NBSP}Hz) : une intervention humaine est nécessaire.
+            </p>
+          )}
+          {!admin && autoResolve.lastResult?.diagnostic?.probable_cause && (
+            <p className="mt-2 text-sm text-text-secondary">
+              Cause probable : {autoResolve.lastResult.diagnostic.probable_cause}
+              {autoResolve.lastResult.diagnostic.recommended_actions.length > 0 && (
+                <> — {autoResolve.lastResult.diagnostic.recommended_actions[0]}</>
+              )}
             </p>
           )}
         </div>
@@ -88,11 +107,15 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
           ) : (
             <button
               type="button"
-              disabled={resolveMutation.isPending}
-              onClick={() => resolveMutation.mutate(alert.machineId)}
+              disabled={autoResolve.status === 'retrying'}
+              onClick={() => autoResolve.trigger()}
               className="focus-ring inline-flex min-h-10 items-center justify-center bg-dark-bg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-dark-bg/90 disabled:opacity-60"
             >
-              {resolveMutation.isPending ? 'Vérification en cours…' : 'Vérifier et résoudre'}
+              {autoResolve.status === 'retrying'
+                ? autoResolve.autoEnabled
+                  ? `Tentative ${autoResolve.attempt}/${autoResolve.maxAttempts} en cours…`
+                  : 'Vérification en cours…'
+                : 'Vérifier et résoudre'}
             </button>
           )}
         </div>
@@ -109,9 +132,9 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
       <p className="text-sm text-text-secondary">{alert.detail}</p>
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-text-secondary">
         <span className="tabular-nums">{alert.timestamp}</span>
-        <Link to="/app/journal" className="focus-ring text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
+        <AllowedLink to="/app/journal" className="focus-ring text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
           Voir le journal
-        </Link>
+        </AllowedLink>
       </div>
     </div>
   )

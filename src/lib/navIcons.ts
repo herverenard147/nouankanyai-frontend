@@ -5,7 +5,9 @@ import {
   ClipboardList,
   Cog,
   Cpu,
+  FileText,
   HeartPulse,
+  Inbox,
   LayoutGrid,
   Lightbulb,
   ListChecks,
@@ -18,6 +20,7 @@ import {
   Speaker,
   TrendingUp,
   Users,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -32,7 +35,8 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   '/app/conseils': Lightbulb,
   '/app/recommandations': ListChecks,
   '/app/factures': Receipt,
-  '/app/rapports': Percent,
+  '/app/facturation': Percent,
+  '/app/rapports': FileText,
   '/app/plan-action': ListTodo,
   '/app/journal': ScrollText,
   '/app/audit': ShieldCheck,
@@ -43,4 +47,6 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   '/app/admin/modeles': Cpu,
   '/app/admin/utilisateurs': Users,
   '/app/admin/leads': ClipboardList,
+  '/app/admin/messages': Inbox,
+  '/app/admin/facturation': Wallet,
 }

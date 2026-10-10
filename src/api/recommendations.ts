@@ -1,5 +1,5 @@
-import { getCachedMachines, rawRecommend } from '@/api/rawBackend'
-import { formatFcfaAmount } from '@/api/backendHelpers'
+import { getCachedMachines, getCachedRecommend } from '@/api/rawBackend'
+import { formatFcfa } from '@/lib/formatters'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { Advice, Profile } from '@/types/domain'
 
@@ -12,7 +12,7 @@ import type { Advice, Profile } from '@/types/domain'
 export async function fetchRecommendations(_profile: Profile): Promise<Advice[]> {
   const machines = await getCachedMachines()
   if (machines.length === 0) return []
-  const { recommendations } = await rawRecommend(machines)
+  const { recommendations } = await getCachedRecommend(machines)
 
   return recommendations
     .filter((rec) => rec.type === 'optimisation' || rec.type === 'efficacite')
@@ -20,7 +20,7 @@ export async function fetchRecommendations(_profile: Profile): Promise<Advice[]>
       rank: String(i + 1).padStart(2, '0'),
       title: rec.title,
       detail: frenchNumbersWithUnits(`${rec.description} ${rec.action}`),
-      impactLabel: rec.gain_fcfa > 0 ? `−${formatFcfaAmount(rec.gain_fcfa)}` : rec.severity,
+      impactLabel: rec.gain_fcfa > 0 ? `−${formatFcfa(rec.gain_fcfa)}` : rec.severity,
       impactKind: rec.gain_fcfa > 0 ? ('gain' as const) : ('severity' as const),
       provenance: 'synthetique' as const,
       machineId: rec.machine_id,

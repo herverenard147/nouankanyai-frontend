@@ -151,10 +151,10 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   affiché et édité dans sa forme réelle plutôt que forcé dans l'ancienne union
   `Thresholds` (global/per-equipment/multi-level), qui ne correspond à aucune
   de ces trois formes ici.
-- **Facturation** (`/app/rapports`) : le backend distingue la facturation
-  Gain-Share (commission Nouankany, `/api/facturation`) des factures
-  d'électricité du client (`/api/bills`, page `/app/factures`) — deux concepts
-  différents, deux pages différentes.
+- **Facturation** (`/app/facturation`, `/api/v1/billing`) : ce que le client
+  paie à Nouankany (contrat PME/Industrie ou palier ménage) est distinct de ses
+  factures d'électricité (`/api/bills`, page `/app/factures`). `/app/rapports`
+  génère les rapports énergétiques (`/api/v1/reports/generate`).
 - **Sans donnée honnête disponible** : `fetchActionPlan` et `fetchResolutions`
   renvoient `[]` (pas de "plan d'action mensuel" ni de résolution
   d'anomalie marquée côté backend aujourd'hui) plutôt qu'une valeur inventée —
@@ -222,8 +222,8 @@ doivent être révoquées/régénérées côté backend indépendamment de ce d�
 ## Vérification effectuée
 
 **Chaque route du backend a été exercée en direct** (curl, avec les comptes de
-démo réels) au moins une fois, à l'exception de `POST /api/anomaly` (legacy,
-confirmé cassé — bug préexistant `numpy.bool_`, hors périmètre). Ça inclut les
+démo réels) au moins une fois (`POST /api/anomaly`, alors cassée, a été
+supprimée le 2026-10-08). Ça inclut les
 mutations (créer un site/une machine, simuler/réinitialiser une machine,
 mettre à jour les seuils, générer une prévision de facture et confirmer un
 montant réel, promouvoir/rétrograder un rôle admin, recharger les modèles ML,

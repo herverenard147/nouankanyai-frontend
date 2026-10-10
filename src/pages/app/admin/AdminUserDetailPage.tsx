@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineButton'
+import { AdminBillingSection } from '@/components/billing/AdminBillingSection'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
@@ -13,12 +14,10 @@ import {
   useAdminUsers,
   usePromoteUser,
   useUserAlerts,
-  useUserFacturation,
   useUserMachines,
   useUserManagementMutations,
   useUserPredictions,
 } from '@/hooks/queries/useAdminUsers'
-import { formatFcfa } from '@/lib/formatters'
 import { useSessionStore } from '@/store/sessionStore'
 
 const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
@@ -39,7 +38,6 @@ export function AdminUserDetailPage() {
   const user = usersQuery.data?.find((u) => u.id === userId)
 
   const machinesQuery = useUserMachines(userId ?? null)
-  const facturationQuery = useUserFacturation(userId ?? null)
   const predictionsQuery = useUserPredictions(userId ?? null)
   const alertsQuery = useUserAlerts(userId ?? null)
   const promoteMutation = usePromoteUser()
@@ -338,28 +336,9 @@ export function AdminUserDetailPage() {
             </ul>
           </MetricState>
         </section>
-        <section className={SECTION}>
-          <h3 className="text-sm font-medium text-text-secondary">Commission (mois en cours)</h3>
-          <MetricState status={facturationQuery.status}>
-            {facturationQuery.data && (
-              <ul className="flex flex-col gap-1.5 text-sm text-text-primary">
-                <li className="flex justify-between border-b border-border pb-1.5">
-                  <span>Économies brutes</span>
-                  <span className="tabular-nums">{formatFcfa(facturationQuery.data.grossSavingsThisMonth)}</span>
-                </li>
-                <li className="flex justify-between border-b border-border pb-1.5">
-                  <span>Commission (10 %)</span>
-                  <span className="tabular-nums">{formatFcfa(facturationQuery.data.gainShareThisMonth)}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>Factures enregistrées</span>
-                  <span className="tabular-nums">{facturationQuery.data.billCount}</span>
-                </li>
-              </ul>
-            )}
-          </MetricState>
-        </section>
       </div>
+
+      {user.platformRole === null && !user.ownerId && <AdminBillingSection userId={user.id} />}
 
       <section className={SECTION}>
         <h3 className="text-sm font-medium text-text-secondary">Prédiction (heure suivante, par équipement)</h3>

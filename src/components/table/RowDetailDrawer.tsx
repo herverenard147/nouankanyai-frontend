@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 import { Button } from '@/components/ui/Button'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
@@ -6,7 +7,7 @@ import { onEscape } from '@/lib/a11y'
 import type { Provenance } from '@/types/domain'
 import type { TableColumn } from '@/components/table/DataTable'
 
-interface RowDetailDrawerProps<T extends { id: string; provenance: Provenance }> {
+interface RowDetailDrawerProps<T extends { id: string; provenance: Provenance; photo_data_url?: string | null }> {
   row: T | null
   columns: TableColumn<T>[]
   title: string
@@ -14,10 +15,12 @@ interface RowDetailDrawerProps<T extends { id: string; provenance: Provenance }>
   onEdit?: () => void
   onDelete?: () => void
   deletePending?: boolean
+  /** Contenu propre à la ressource, affiché sous les champs (ex. outils d'une machine). */
+  children?: ReactNode
 }
 
 /** Fiche détail d'une ligne de table (équipement, machine), ouverte au clic sur la ligne. */
-export function RowDetailDrawer<T extends { id: string; provenance: Provenance }>({
+export function RowDetailDrawer<T extends { id: string; provenance: Provenance; photo_data_url?: string | null }>({
   row,
   columns,
   title,
@@ -25,6 +28,7 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance }
   onEdit,
   onDelete,
   deletePending,
+  children,
 }: RowDetailDrawerProps<T>) {
   if (!row) return null
 
@@ -49,6 +53,9 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance }
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
+        {row.photo_data_url && (
+          <img src={row.photo_data_url} alt={`Photo : ${title}`} className="h-40 w-full rounded-card object-cover" />
+        )}
         <dl className="flex flex-col gap-3 text-sm">
           {columns.map((col) => (
             <div key={String(col.key)} className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-2">
@@ -58,6 +65,7 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance }
           ))}
         </dl>
         <ProvenanceBadge value={row.provenance} className="w-fit" />
+        {children}
         {(onEdit || onDelete) && (
           <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-4">
             {onEdit && (

@@ -4,11 +4,18 @@ import type { FormEvent } from 'react'
 import { Button } from '@/components/ui/Button'
 import { ConfirmEditModal, Modal, MutationError, SelectField, type FieldChange } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
+import { useQuery } from '@tanstack/react-query'
+
+import { rawEquipmentCatalog } from '@/api/rawBackend'
+import { ComboboxField } from '@/components/ui/ComboboxField'
+import { catalogSuggestions } from '@/lib/equipmentCatalog'
+import { MachinePhotoCapture } from '@/components/machines/MachinePhotoCapture'
+import { useSessionStore } from '@/store/sessionStore'
 import { useAddMachine, useUpdateMachine } from '@/hooks/queries/useMachineCrud'
 import { useSites } from '@/hooks/queries/useSites'
 import { formatNumberFr } from '@/lib/formatters'
 import { priorityLabel } from '@/api/backendHelpers'
-import type { BackendMachine } from '@/types/backend'
+import type { BackendMachine, BackendMachinePhotoExtraction } from '@/types/backend'
 
 interface MachineFormDrawerProps {
   /** Machine existante à modifier, ou `null` pour un ajout. */
@@ -31,10 +38,20 @@ const PRIORITIES = [
  */
 export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDrawerProps) {
   const isEdit = machine !== null
+  const profile = useSessionStore((s) => s.session?.profile)
+  // Catalogue d'équipements pour les suggestions (Ménage : référentiel domestique seul).
+  const segment = profile === 'menage' ? 'menage' : undefined
+  const catalog = useQuery({
+    queryKey: ['equipment-catalog', segment ?? 'tous'],
+    queryFn: () => rawEquipmentCatalog(segment),
+    staleTime: Infinity,
+    enabled: profile !== undefined && profile !== 'admin',
+  })
   const sitesQuery = useSites()
   const addMutation = useAddMachine()
   const updateMutation = useUpdateMachine()
-  const [step, setStep] = useState<'form' | 'confirm'>('form')
+  const [step, setStep] = useState<'form' | 'confirm' | 'photo'>('form')
+  const [categorieNonReconnue, setCategorieNonReconnue] = useState(false)
 
   const [form, setForm] = useState({
     nom: machine?.nom ?? '',
@@ -45,7 +62,22 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     power_kw: machine?.power_kw != null ? String(machine.power_kw) : '',
     priority: machine?.priority ?? 'moyenne',
     site_id: machine?.site_id ?? '',
+    photo_data_url: undefined as string | undefined,
   })
+
+  function handlePhotoExtracted(extracted: BackendMachinePhotoExtraction['extracted'], photoDataUrl: string) {
+    setForm((f) => ({
+      ...f,
+      nom: extracted.nom_suggere ?? f.nom,
+      categorie: extracted.categorie ?? f.categorie,
+      marque: extracted.marque ?? f.marque,
+      modele: extracted.modele ?? f.modele,
+      power_kw: extracted.puissance_nominale_kw != null ? String(extracted.puissance_nominale_kw) : f.power_kw,
+      photo_data_url: photoDataUrl,
+    }))
+    setCategorieNonReconnue(!extracted.categorie_connue)
+    setStep('form')
+  }
   const siteName = (id: string) => sitesQuery.data?.find((site) => site.id === id)?.nom ?? 'Non associé'
 
   const changes: FieldChange[] = machine
@@ -90,6 +122,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           numero_serie: form.numero_serie || undefined,
           power_kw,
           site_id: form.site_id || undefined,
+          photo_data_url: form.photo_data_url,
         },
         { onSuccess: onClose },
       )
@@ -100,6 +133,18 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     event.preventDefault()
     if (isEdit) setStep('confirm')
     else save()
+  }
+
+  if (step === 'photo') {
+    return (
+      <Modal title="Ajouter par photo" description="Les champs reconnus pré-rempliront le formulaire ; à vérifier avant l'ajout." onClose={onClose} width="lg" actions={
+        <Button type="button" variant="outline" onClick={() => setStep('form')}>
+          Revenir au formulaire
+        </Button>
+      }>
+        <MachinePhotoCapture onExtracted={handlePhotoExtracted} />
+      </Modal>
+    )
   }
 
   if (step === 'confirm' && machine) {
@@ -115,6 +160,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     )
   }
 
+  const suggestions = catalogSuggestions(catalog.data, form)
   const title = isEdit ? `Modifier « ${machine?.nom} »` : `Ajouter ${itemLabel}`
   const pending = addMutation.isPending
 
@@ -136,6 +182,14 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
       }
     >
       <form id="machine-form" onSubmit={handleSubmit} className="flex flex-col gap-3">
+        {!isEdit && (
+          <Button type="button" variant="outline" onClick={() => setStep('photo')} className="self-start">
+            Ajouter par photo
+          </Button>
+        )}
+        {categorieNonReconnue && (
+          <p className="text-xs text-text-secondary">Catégorie non reconnue automatiquement — vérifiez/complétez les champs.</p>
+        )}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <TextField label="Nom" required value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} />
           {isEdit ? (
@@ -143,9 +197,27 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           ) : (
             <TextField label="Numéro de série" value={form.numero_serie} onChange={(e) => setForm((f) => ({ ...f, numero_serie: e.target.value }))} />
           )}
-          <TextField label="Catégorie" value={form.categorie} onChange={(e) => setForm((f) => ({ ...f, categorie: e.target.value }))} />
-          <TextField label="Marque" value={form.marque} onChange={(e) => setForm((f) => ({ ...f, marque: e.target.value }))} />
-          <TextField label="Modèle" value={form.modele} onChange={(e) => setForm((f) => ({ ...f, modele: e.target.value }))} />
+          <ComboboxField label="Catégorie" value={form.categorie} onChange={(value) => setForm((f) => ({ ...f, categorie: value }))} options={suggestions.categories} />
+          <ComboboxField label="Marque" value={form.marque} onChange={(value) => setForm((f) => ({ ...f, marque: value }))} options={suggestions.marques} />
+          <ComboboxField
+            label="Modèle"
+            value={form.modele}
+            onChange={(value) => setForm((f) => ({ ...f, modele: value }))}
+            options={suggestions.modeles}
+            onSelect={(option) => {
+              // Un modèle du catalogue remplit aussi catégorie, marque et puissance.
+              const choice = suggestions.findModel(option.value)
+              if (choice)
+                setForm((f) => ({
+                  ...f,
+                  nom: f.nom || `${choice.categorie} ${choice.marque} ${choice.modele}`,
+                  categorie: choice.categorie,
+                  marque: choice.marque,
+                  modele: choice.modele,
+                  power_kw: String(choice.puissance_kw),
+                }))
+            }}
+          />
           <TextField
             label="Puissance nominale (kW)"
             type="number"

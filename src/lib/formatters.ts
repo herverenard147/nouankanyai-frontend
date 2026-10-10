@@ -22,14 +22,6 @@ export function formatFcfa(value: number): string {
   return `${formatNumberFr(value)}${NARROW_NBSP}FCFA`
 }
 
-export function formatKwh(value: number, decimals: 0 | 1 = 0): string {
-  return `${formatNumberFr(value, decimals)}${NARROW_NBSP}kWh`
-}
-
-export function formatPercent(value: number, decimals: 0 | 1 = 0): string {
-  return `${formatNumberFr(value, decimals)}${NARROW_NBSP}%`
-}
-
 /** Horodatage UTC du backend (ISO sans fuseau) → « 01/10/2026 01:12:09 », heure UTC. */
 export function formatUtcDateTime(iso: string | null | undefined): string {
   if (!iso) return '—'

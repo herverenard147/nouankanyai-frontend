@@ -1,5 +1,5 @@
-import { getCachedMachines, rawRecommend } from '@/api/rawBackend'
-import { formatFcfaAmount } from '@/api/backendHelpers'
+import { getCachedMachines, getCachedRecommend } from '@/api/rawBackend'
+import { formatFcfa } from '@/lib/formatters'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { Advice, Profile } from '@/types/domain'
 
@@ -10,7 +10,7 @@ export function adviceSectionTitle(_profile: Profile): string {
 export async function fetchAdvice(_profile: Profile): Promise<Advice[]> {
   const machines = await getCachedMachines()
   if (machines.length === 0) return []
-  const { recommendations } = await rawRecommend(machines)
+  const { recommendations } = await getCachedRecommend(machines)
 
   // Conseils = exactement les mêmes éléments qu'Alertes (voir src/api/alerts.ts),
   // ni plus ni moins : un conseil de dépannage n'a de sens que pour un problème
@@ -22,7 +22,7 @@ export async function fetchAdvice(_profile: Profile): Promise<Advice[]> {
       rank: String(i + 1).padStart(2, '0'),
       title: rec.title,
       detail: frenchNumbersWithUnits(`${rec.description} ${rec.action}`),
-      impactLabel: rec.gain_fcfa > 0 ? `−${formatFcfaAmount(rec.gain_fcfa)}` : rec.severity,
+      impactLabel: rec.gain_fcfa > 0 ? `−${formatFcfa(rec.gain_fcfa)}` : rec.severity,
       impactKind: rec.gain_fcfa > 0 ? ('gain' as const) : ('severity' as const),
       provenance: 'synthetique' as const,
       machineId: rec.machine_id,

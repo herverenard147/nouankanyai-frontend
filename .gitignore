@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Playwright (voir playwright.config.ts) — sorties de run, jamais du code source.
+test-results
+playwright-report
+blob-report
+playwright/.cache
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

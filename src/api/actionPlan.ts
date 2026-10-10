@@ -1,5 +1,5 @@
-import { formatFcfaAmount } from '@/api/backendHelpers'
-import { rawImportPlanItems, rawPlanItems, rawPlanSummary, getCachedMachines, rawRecommend } from '@/api/rawBackend'
+import { formatFcfa } from '@/lib/formatters'
+import { rawImportPlanItems, rawPlanItems, rawPlanSummary, getCachedMachines, getCachedRecommend } from '@/api/rawBackend'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { BackendPlanItem, BackendPlanStatus } from '@/types/backend'
 import type { ActionPlanItem, ActionPlanSummary, PlanStatus, Profile } from '@/types/domain'
@@ -18,7 +18,7 @@ export function toPlanItem(item: BackendPlanItem): ActionPlanItem {
     title: item.title,
     detail: frenchNumbersWithUnits(item.description ?? ''),
     gain,
-    amountLabel: gain > 0 ? `−${formatFcfaAmount(gain)}` : '',
+    amountLabel: gain > 0 ? `−${formatFcfa(gain)}` : '',
     status: item.status as BackendPlanStatus,
     statusLabel: PLAN_STATUS_LABEL[item.status],
     // Le gain vient du moteur de recommandation (jeu de données synthétique) : jamais une mesure.
@@ -36,7 +36,7 @@ export async function fetchActionPlan(profile: Profile): Promise<ActionPlanItem[
   if (items.length === 0) {
     const machines = await getCachedMachines()
     if (machines.length > 0) {
-      const { recommendations } = await rawRecommend(machines)
+      const { recommendations } = await getCachedRecommend(machines)
       const priced = recommendations.filter((r) => (r.type === 'optimisation' || r.type === 'efficacite') && r.gain_fcfa > 0)
       if (priced.length > 0) {
         await rawImportPlanItems(
@@ -57,8 +57,8 @@ export async function fetchActionPlan(profile: Profile): Promise<ActionPlanItem[
 export async function fetchPlanSummary(_profile: Profile): Promise<ActionPlanSummary> {
   const summary = await rawPlanSummary()
   return {
-    potentialLabel: formatFcfaAmount(summary.potential_fcfa),
-    doneLabel: formatFcfaAmount(summary.done_fcfa),
+    potentialLabel: formatFcfa(summary.potential_fcfa),
+    doneLabel: formatFcfa(summary.done_fcfa),
     openCount: summary.counts.a_faire + summary.counts.en_cours,
     doneCount: summary.counts.fait,
     totalCount: summary.total_items,

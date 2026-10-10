@@ -9,7 +9,7 @@ import { fetchConsumptionSeries } from '@/api/consumption'
 import { fetchEquipmentTable } from '@/api/equipment'
 import { addManualInvoice, confirmInvoiceActual, fetchInvoices, generateForecastInvoice } from '@/api/invoices'
 import { fetchJournal } from '@/api/journal'
-import { fetchKpi, kpiIdsFor } from '@/api/kpis'
+import { fetchKpiSet, kpiIdsFor } from '@/api/kpis'
 import { fetchMachinesTable } from '@/api/machinesTable'
 import { fetchPredictionsBundle } from '@/api/prediction'
 import {
@@ -20,7 +20,7 @@ import {
   rawResetMachine,
   rawSimulateMachine,
   rawSites,
-  rawUserFacturation,
+  rawAdminUserBilling,
   rawUserMachines,
 } from '@/api/rawBackend'
 import { fetchThresholds, updateThresholds } from '@/api/settings'
@@ -32,14 +32,20 @@ import { useSessionStore } from '@/store/sessionStore'
  * VITE_API_BASE_URL, défaut http://localhost:8001) via les comptes de démo
  * réels créés pour cette vérification. Pas destiné à tourner en CI (dépend
  * d'un backend + Postgres locaux déjà démarrés) — usage ponctuel de vérification.
+ *
+ * Il ÉCRIT dans la base du backend (sites, machines, facture, seuils, rôle d'un
+ * compte de démo) : il ne tourne donc qu'à la demande, `SMOKE=1 npx vitest run
+ * src/test/backendIntegration.smoke.test.ts`, jamais par un simple `npm test`.
  */
+const smokeEnabled = Boolean((globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.SMOKE)
+const smoke = describe.skipIf(!smokeEnabled)
 
 async function loginAs(email: string, password: string) {
   const result = await useSessionStore.getState().login(email, password)
   if (!result.ok) throw new Error(`Login ${email} a échoué : ${result.message}`)
 }
 
-describe('intégration backend réel — compte Ménage', () => {
+smoke('intégration backend réel — compte Ménage', () => {
   beforeAll(async () => {
     await loginAs('aicha@menage.demo', 'demo1234')
   })
@@ -49,7 +55,7 @@ describe('intégration backend réel — compte Ménage', () => {
     expect(sites.length).toBeGreaterThan(0)
 
     for (const kpiId of kpiIdsFor('menage')) {
-      const kpi = await fetchKpi('menage', kpiId)
+      const kpi = (await fetchKpiSet('menage'))[kpiId]
       expect(kpi.label).toBeTruthy()
       expect(kpi.provenance).toBe('estime')
     }
@@ -109,7 +115,7 @@ describe('intégration backend réel — compte Ménage', () => {
   }, 30000)
 })
 
-describe('intégration backend réel — compte PME', () => {
+smoke('intégration backend réel — compte PME', () => {
   beforeAll(async () => {
     await loginAs('contact@boulangerie-awale.demo', 'demo1234')
   })
@@ -155,7 +161,7 @@ describe('intégration backend réel — compte PME', () => {
   }, 30000)
 })
 
-describe('intégration backend réel — compte Industrie', () => {
+smoke('intégration backend réel — compte Industrie', () => {
   beforeAll(async () => {
     await loginAs('exploitation@yopougon-l2.demo', 'demo1234')
   })
@@ -169,14 +175,14 @@ describe('intégration backend réel — compte Industrie', () => {
   }, 30000)
 })
 
-describe('intégration backend réel — compte Admin', () => {
+smoke('intégration backend réel — compte Admin', () => {
   beforeAll(async () => {
     await loginAs('admin@nouankany.demo', 'demo1234')
   })
 
   it('KPI admin, panneaux ML, utilisateurs et journal renvoient des données réelles', async () => {
     for (const kpiId of kpiIdsFor('admin')) {
-      const kpi = await fetchKpi('admin', kpiId)
+      const kpi = (await fetchKpiSet('admin'))[kpiId]
       expect(kpi.provenance).toBe('telemetrie_systeme')
     }
 
@@ -201,8 +207,8 @@ describe('intégration backend réel — compte Admin', () => {
 
     const machines = await rawUserMachines(menageUser!.id)
     expect(machines.length).toBeGreaterThan(0)
-    const facturation = await rawUserFacturation(menageUser!.id)
-    expect(facturation).toHaveProperty('billCount')
+    const billing = await rawAdminUserBilling(menageUser!.id)
+    expect(billing.segment).toBe('menage')
   }, 30000)
 
   it('promotion/rétrogradation réelle d’un utilisateur (superadmin uniquement), puis restauration', async () => {

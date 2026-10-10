@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { computeYTicks, formatFcfa, formatKwh, formatNumberFr, formatPercent } from '@/lib/formatters'
+import { computeYTicks, formatFcfa, formatNumberFr } from '@/lib/formatters'
 
 describe('formatNumberFr', () => {
   it('formats thousands with a dot separator', () => {
@@ -12,11 +12,9 @@ describe('formatNumberFr', () => {
   })
 })
 
-describe('formatFcfa / formatKwh / formatPercent', () => {
-  it('appends the right unit', () => {
+describe('formatFcfa', () => {
+  it('appends the unit after a narrow no-break space', () => {
     expect(formatFcfa(18800)).toBe('18.800\u202fFCFA')
-    expect(formatKwh(142)).toBe('142\u202fkWh')
-    expect(formatPercent(29)).toBe('29\u202f%')
   })
 })
 

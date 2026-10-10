@@ -25,9 +25,10 @@ compte : ne pas contourner `src/lib/overviewLevels.ts`.
 
 ## Mise en ligne : lire `MISE_EN_LIGNE.md`
 
-`MISE_EN_LIGNE.md` (racine) dit quel projet Vercel (`nouankany-staging-frontend`) et quel service Railway
+`MISE_EN_LIGNE.md` (racine) dit quel projet Vercel (`nouankany-staging-frontend`) et quel service Render
 (`nouankany-staging-backend`) sont les bons, le projet Vercel relié par erreur au dépôt backend (`nouankanyai-frontend`), l'ordre
-de déploiement (backend d'abord), CORS, la création des données de démonstration et les tests à faire.
+de déploiement (Lambda si configurée, migrations, backend, puis frontend), CORS, la création des données de démonstration et
+les tests à faire.
 
 ## Faire tourner les deux en local
 
@@ -118,17 +119,18 @@ Render, repo `herverenard147/nouankanyai-frontend`) :
 
 ## Autres pièges déjà documentés dans README.md (rappel, pas de détail ici)
 
-- Ne pas brancher `POST /api/anomaly` (legacy, bug `numpy.bool_` connu côté
-  backend) — utiliser `POST /api/v1/ml/detect-anomaly`.
+- Les routes `/api/anomaly`, `/api/chat`, `/api/facturation` et `/api/v1/ml/detect-anomaly` n'existent plus (supprimées
+  le 2026-10-08) : la détection passe par `/api/recommend` (diagnostic par mesure), l'assistant par
+  `/api/v1/assistant/chat`, la facturation par `/api/v1/billing`.
 - Ne jamais inventer une donnée : pas de donnée réelle disponible →
   `MetricState` en état vide (voir `fetchActionPlan`/`fetchResolutions`), pas
   une valeur bouchée.
 - Toute nouvelle donnée affichée porte un badge de provenance
   (`estimé`/`synthétique`/`télémétrie système`/`mesuré`), jamais codé en dur.
-- `backend/.env` (dans l'autre dépôt) contient des clés déjà commitées avant
-  `.gitignore` — hors périmètre de ce dépôt, ne pas tenter de les faire
-  tourner depuis ici.
+- `backend/.env` (dans l'autre dépôt) n'est plus suivi par git depuis le
+  2026-10-08, mais ses clés restent dans l'historique : leur régénération est
+  une action du propriétaire, hors de ce dépôt.
 
 ## Fusion du boîtier : lire d'abord
 
-`docs/FUSION_BOITIER_LIRE_EN_PREMIER.md` (copie de celui du dépôt backend) est **prioritaire** : ordre de fusion des PR du boîtier (backend d'abord), erreurs rencontrées, vérifications à faire **avant** d'agir. Il a été écrit par une session cloud sans accès à cette machine : le valider avant de s'y fier. Hébergement actuel : Render ; `MISE_EN_LIGNE.md` mentionne encore Fly.io et est périmé sur ce point.
+`docs/FUSION_BOITIER_LIRE_EN_PREMIER.md` (copie de celui du dépôt backend) est **prioritaire** : ordre de fusion des PR du boîtier (backend d'abord), erreurs rencontrées, vérifications à faire **avant** d'agir. Il a été écrit par une session cloud sans accès à cette machine : le valider avant de s'y fier. Hébergement actuel : backend sur Render, frontend sur Vercel (voir `MISE_EN_LIGNE.md`).

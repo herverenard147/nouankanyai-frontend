@@ -18,6 +18,7 @@ export async function fetchMachinesTable(_profile: Profile): Promise<{ title: st
       // Les relevés température/vibration/pression sont simulés côté backend
       // (aucun capteur branché) : jamais présentés comme "estimés".
       provenance: 'synthetique' as const,
+      photo_data_url: m.photo_data_url ?? null,
     })),
   }
 }

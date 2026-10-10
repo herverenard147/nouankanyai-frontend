@@ -12,7 +12,6 @@ const DEFAULT_LEVEL_BY_PROFILE: Record<Profile, Level> = {
 
 interface LevelState {
   levelByProfile: Partial<Record<Profile, Level>>
-  getLevel: (profile: Profile) => Level
   setLevel: (profile: Profile, level: Level) => void
 }
 
@@ -24,9 +23,8 @@ interface LevelState {
  */
 export const useLevelStore = create<LevelState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       levelByProfile: {},
-      getLevel: (profile) => get().levelByProfile[profile] ?? DEFAULT_LEVEL_BY_PROFILE[profile],
       setLevel: (profile, level) =>
         set((state) => ({ levelByProfile: { ...state.levelByProfile, [profile]: level } })),
     }),
