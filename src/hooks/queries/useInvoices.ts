@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import {
   addManualInvoice,
+  attachInvoicePhoto,
   confirmInvoiceActual,
   deleteInvoice,
   fetchInvoicePhoto,
@@ -28,6 +29,14 @@ export function useAddManualInvoice(profile: Profile) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: addManualInvoice,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['invoices', profile] }),
+  })
+}
+
+export function useAttachInvoicePhoto(profile: Profile) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ billId, file }: { billId: string; file: File }) => attachInvoicePhoto(billId, file),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['invoices', profile] }),
   })
 }

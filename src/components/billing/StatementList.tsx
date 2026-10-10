@@ -5,6 +5,7 @@ import type { BackendBillingStatement } from '@/types/backend'
 
 export const STATEMENT_STATUS_LABEL: Record<BackendBillingStatement['status'], string> = {
   en_attente_facture: 'En attente de la facture CIE',
+  indicatif: 'Relevé indicatif',
   a_payer: 'À payer',
   paye: 'Payé',
 }
@@ -29,6 +30,8 @@ export function StatementList({ statements, action }: { statements: BackendBilli
             </ol>
           )}
           {s.detail.raison && <p className="text-text-secondary">{s.detail.raison}</p>}
+          {s.detail.mention && <p className="text-xs font-semibold text-text-secondary">{s.detail.mention}</p>}
+          {s.detail.bareme_a_confirmer && s.detail.bareme_note && <p className="text-xs text-text-secondary">{s.detail.bareme_note}</p>}
           {s.detail.palier_nom && <p className="text-text-secondary">Abonnement {s.detail.palier_nom}</p>}
           {action?.(s)}
         </li>

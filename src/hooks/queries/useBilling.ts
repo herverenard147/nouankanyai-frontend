@@ -4,6 +4,8 @@ import {
   rawAdminApproveTier,
   rawAdminComputeStatement,
   rawAdminMarkPaid,
+  rawAdminPendingBills,
+  rawAdminValidateBill,
   rawAdminSaveContract,
   rawAdminTierRequests,
   rawAdminUnpaid,
@@ -15,6 +17,18 @@ import type { BackendContractPayload, BillingTierId } from '@/types/backend'
 export const useBilling = () => useQuery({ queryKey: ['billing'], queryFn: rawBilling })
 export const useUnpaidStatements = () => useQuery({ queryKey: ['admin-unpaid'], queryFn: rawAdminUnpaid })
 export const useTierRequests = () => useQuery({ queryKey: ['admin-tier-requests'], queryFn: rawAdminTierRequests })
+export const usePendingBills = () => useQuery({ queryKey: ['admin-pending-bills'], queryFn: rawAdminPendingBills })
+
+/** Validation d'une facture CIE par un admin : elle seule fait entrer la facture dans les relevés. */
+export function useValidateBill() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: ({ billId, decision }: { billId: string; decision: 'validee' | 'rejetee' }) => rawAdminValidateBill(billId, decision),
+    onSuccess: () => {
+      for (const key of ['admin-pending-bills', 'admin-unpaid', 'admin-user-billing']) void client.invalidateQueries({ queryKey: [key] })
+    },
+  })
+}
 
 export function useRequestTier() {
   const client = useQueryClient()

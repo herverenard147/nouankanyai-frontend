@@ -39,6 +39,11 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
           consommation actuelle. Ensuite : une redevance de {formatFcfa(d.saas_fee_fcfa)} par mois et {formatNumberFr(d.savings_share_pct)} % des
           économies réellement mesurées sur vos factures CIE. Un mois sans économie, vous ne payez que la redevance.
         </p>
+        {billing.effective_tier === 'decouverte_pro' && billing.pme_free_tier && (
+          <p className="text-sm text-text-secondary">
+            En attendant, votre compte est sur le palier gratuit {billing.pme_free_tier.nom} : {billing.pme_free_tier.fonctionnalites.join(', ')}.
+          </p>
+        )}
         {isTrial && (
           <p className="text-sm text-text-secondary">
             Compte d’essai : aucun montant ne vous est facturé. Les économies estimées ci-dessous viennent de vos données de démonstration.

@@ -77,6 +77,7 @@ import type {
   BackendMediaAnalysis,
   ReportFormat,
   ReportType,
+  BackendPendingBill,
 } from '@/types/backend'
 
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
@@ -155,6 +156,16 @@ export const rawAdminComputeStatement = (userId: string, month: string) =>
 export const rawAdminMarkPaid = (statementId: string) => api.post<BackendBillingStatement>(`/api/v1/billing/admin/statements/${statementId}/paid`)
 export const rawAdminUnpaid = () => api.get<BackendUnpaidStatement[]>('/api/v1/billing/admin/unpaid')
 export const rawAdminTierRequests = () => api.get<BackendTierRequest[]>('/api/v1/billing/admin/tier-requests')
+export const rawAdminPendingBills = () => api.get<BackendPendingBill[]>('/api/v1/billing/admin/bills/pending')
+export const rawAdminBillPhoto = (billId: string) => api.get<{ photo_data_url: string }>(`/api/v1/billing/admin/bills/${billId}/photo`)
+export const rawAdminValidateBill = (billId: string, decision: 'validee' | 'rejetee') =>
+  api.post<BackendPendingBill>(`/api/v1/billing/admin/bills/${billId}/validate`, { decision })
+/** Justificatif (photo de la facture CIE) joint à une facture saisie à la main. */
+export const rawAttachBillPhoto = (billId: string, file: File) => {
+  const form = new FormData()
+  form.append('file', file)
+  return api.postForm<BackendElectricityBill>(`/api/bills/${billId}/photo`, form)
+}
 
 export const rawBills = () => api.get<BackendElectricityBill[]>('/api/bills')
 export const rawAddManualBill = (payload: BackendNewManualBill) =>
