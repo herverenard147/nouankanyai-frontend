@@ -78,6 +78,7 @@ import type {
   ReportFormat,
   ReportType,
   BackendPendingBill,
+  BackendCollectionStatus,
 } from '@/types/backend'
 
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
@@ -352,6 +353,7 @@ export const rawGenerateReport = (reportType: ReportType, exportFormat: ReportFo
   api.postBlob('/api/v1/reports/generate', { report_type: reportType, export_format: exportFormat })
 export const rawContactMessages = () => api.get<BackendContactMessage[]>('/api/v1/contact')
 export const rawWaitlistEntries = () => api.get<BackendWaitlistEntry[]>('/api/v1/waitlist')
+export const rawMlCollection = () => api.get<BackendCollectionStatus>('/api/v1/ml/collecte')
 export const rawMlDrift = (window = 500) => api.get<BackendDriftReport>(`/api/v1/ml/drift?window=${window}`)
 export const rawMlDriftLog = (window = 500) =>
   api.post<{ status: string; log_file: string; report: BackendDriftReport }>(`/api/v1/ml/drift/log?window=${window}`)

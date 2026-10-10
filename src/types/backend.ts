@@ -81,7 +81,9 @@ export interface BackendCatalogModel {
   kwh_an?: number | null
   classe?: string | null
   source?: string
-  confiance?: 'fabricant' | 'eprel' | 'etiquette_ci' | 'revendeur' | 'estimee'
+  confiance?: 'fabricant' | 'eprel' | 'energystar' | 'etiquette_ci' | 'revendeur' | 'estimee'
+  /** Identifiant de la fiche du référentiel, renvoyé à l'ajout pour relier l'appareil. */
+  reference_id?: string
 }
 export interface BackendCatalogBrand {
   efficacite: 'faible' | 'haute' | 'inconnue'
@@ -99,6 +101,8 @@ export interface BackendNewMachinePayload {
   quantite?: number
   site_id?: string
   photo_data_url?: string
+  /** Fiche du référentiel choisie dans le catalogue. */
+  reference_id?: string
 }
 
 /** Réponse de POST /api/machines/extract-photo : champs potentiellement `null`
@@ -769,6 +773,15 @@ export interface BackendMediaAnalysis {
 
 export type ReportType = 'daily' | 'weekly' | 'monthly' | 'energy_audit' | 'anomaly_report' | 'performance_report'
 export type ReportFormat = 'pdf' | 'docx' | 'xlsx' | 'pptx'
+
+/** GET /api/v1/ml/collecte : mesures réelles envoyées par les boîtiers, seules à servir au réentraînement. */
+export interface BackendCollectionStatus {
+  releves_reels: number
+  machines_mesurees: number
+  machines_avec_un_mois: number
+  seuil_reentrainement: { machines: number; heures_par_machine: number; couverture: number }
+  pret_pour_reentrainement: boolean
+}
 
 /** GET /api/v1/ml/drift (administrateurs) */
 export interface BackendDriftFeature {

@@ -1,4 +1,4 @@
-import { getCachedAdminMetrics, getCachedMlModels, rawGeminiMetrics, rawMlReload } from '@/api/rawBackend'
+import { getCachedAdminMetrics, getCachedMlModels, rawGeminiMetrics, rawMlCollection, rawMlReload } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { AdminPanel } from '@/types/domain'
 
@@ -8,7 +8,7 @@ function datasetLabel(dataset: string | null): string {
 }
 
 export function adminPanelIds(): string[] {
-  return ['xgboost', 'isolation-forest', 'gemini']
+  return ['collecte', 'xgboost', 'isolation-forest', 'gemini']
 }
 
 async function xgboostPanel(): Promise<AdminPanel> {
@@ -71,8 +71,28 @@ async function geminiPanel(): Promise<AdminPanel> {
   }
 }
 
+/** Avancement de la collecte de mesures réelles : le modèle ne sera réentraîné sur des données
+ * claires qu'une fois le seuil atteint (scripts/export_training_data.py). */
+async function collectionPanel(): Promise<AdminPanel> {
+  const c = await rawMlCollection()
+  const seuil = c.seuil_reentrainement
+  return {
+    id: 'collecte',
+    title: 'Collecte de mesures réelles',
+    meta: 'mesures envoyées par les boîtiers, seules utilisées pour réentraîner',
+    badge: c.pret_pour_reentrainement ? 'prêt pour le réentraînement' : 'collecte en cours',
+    rows: [
+      { label: 'Relevés réels reçus', value: formatNumberFr(c.releves_reels, 0) },
+      { label: 'Appareils mesurés', value: String(c.machines_mesurees) },
+      { label: 'Appareils mesurés depuis un mois', value: `${c.machines_avec_un_mois} sur ${seuil.machines} nécessaires` },
+    ],
+  }
+}
+
 export async function fetchAdminPanel(panelId: string): Promise<AdminPanel> {
   switch (panelId) {
+    case 'collecte':
+      return collectionPanel()
     case 'xgboost':
       return xgboostPanel()
     case 'isolation-forest':
