@@ -180,10 +180,11 @@ validées. Le câblage frontend et la mise en ligne (frontend sur Vercel, backen
 
 ```bash
 # 1) Backend (dépôt herverenard147/nouankanyai ; PostgreSQL requis)
-DATABASE_URL=postgresql://… JWT_SECRET=… SUPERADMIN_EMAIL=admin@nouankany.demo \
+DATABASE_URL=postgresql://… JWT_SECRET=… \
 FRONTEND_URL=http://localhost:5173 AI_MODE=mock PORT=8001 python backend/main.py
 # 2) Comptes et données de démonstration (script de la PR NouanKanyAI#1, idempotent)
 python backend/scripts/seed_demo.py --with-alert --with-history   # + factures, équipe, plan, vérifications (PR NouanKanyAI#2)
+python backend/scripts/promote_admin.py --email admin@nouankany.demo --role superadmin   # rôle admin : jamais automatique
 # 3) Frontend
 npm run dev            # http://localhost:5173, VITE_API_BASE_URL=http://localhost:8001
 npm run test           # inclut le test d'intégration (13 tests) contre ce backend

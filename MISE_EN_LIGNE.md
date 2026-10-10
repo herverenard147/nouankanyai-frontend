@@ -39,14 +39,15 @@ Tout passe par l'API : **aucun accès direct à la base**, aucun dump (il contie
 
 ```bash
 # Local (PostgreSQL requis) : backend sur 8001, frontend sur 5173
-DATABASE_URL=postgresql://… JWT_SECRET=… SUPERADMIN_EMAIL=admin@nouankany.demo \
+DATABASE_URL=postgresql://… JWT_SECRET=… \
 FRONTEND_URL=http://localhost:5173 AI_MODE=mock PORT=8001 python backend/main.py
 python backend/scripts/seed_demo.py --with-alert --with-history   # http://localhost:8001 par défaut
+python backend/scripts/promote_admin.py --email admin@nouankany.demo --role superadmin   # rôle admin : jamais automatique
 ```
 
 - Crée les 4 comptes (mot de passe `demo1234`, public) : `aicha@menage.demo` (Ménage), `contact@boulangerie-awale.demo` (PME),
-  `exploitation@yopougon-l2.demo` (Industrie), `admin@nouankany.demo` (Admin, superadmin si `SUPERADMIN_EMAIL` était défini
-  **avant** l'inscription) ; leurs sites et machines ; avec `--with-alert` une alerte sur l'Industrie ; avec `--with-history` les
+  `exploitation@yopougon-l2.demo` (Industrie), `admin@nouankany.demo` (Admin, superadmin seulement après
+  `scripts/promote_admin.py`) ; leurs sites et machines ; avec `--with-alert` une alerte sur l'Industrie ; avec `--with-history` les
   factures, un membre d'équipe par compte pro, le plan d'action et deux vérifications. Idempotent (relançable).
 - Le script **refuse un hôte non local** sans `--allow-remote`. **Le lancer sur le staging seulement si le propriétaire
   le demande explicitement** (comptes à mot de passe public sur un site en ligne) ; **jamais sur une vraie production**.
