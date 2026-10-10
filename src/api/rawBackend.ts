@@ -210,7 +210,8 @@ export const rawPredict = (machine: BackendMachine, hoursAhead: number) =>
     false,
   )
 
-export const rawMlHealth = () => api.get<BackendMlHealth>('/api/v1/ml/health', false)
+// Jeton envoyé : la route est publique mais ne renvoie le détail (composants, versions) qu'à un administrateur.
+export const rawMlHealth = () => api.get<BackendMlHealth>('/api/v1/ml/health')
 export const rawMlModels = () => api.get<BackendMlModelInfo[]>('/api/v1/ml/models')
 export const rawMlReload = () => api.post<BackendMlReloadResult>('/api/v1/ml/reload')
 
