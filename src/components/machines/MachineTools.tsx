@@ -44,7 +44,7 @@ export function MachineTools({ machine }: { machine: BackendMachine }) {
         </Button>
         {analyze.data && (
           <p className={`text-sm ${analyze.data.status === 'ALERTE' ? 'text-alert' : 'text-text-secondary'}`} role="status">
-            {analyze.data.status === 'ALERTE' ? 'Danger détecté : ' : analyze.data.status === 'ERROR' ? 'Analyse impossible : ' : 'Rien d’anormal : '}
+            {analyze.data.provenance === 'simulation' ? 'Simulation, aucune image analysée : ' : analyze.data.status === 'ALERTE' ? 'Danger détecté : ' : analyze.data.status === 'ERROR' ? 'Analyse impossible : ' : 'Rien d’anormal : '}
             {analyze.data.description}
           </p>
         )}

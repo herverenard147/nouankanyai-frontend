@@ -2,6 +2,37 @@ import { useSessionStore } from '@/store/sessionStore'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8001').replace(/\/$/, '')
 
+const VALIDATION_MESSAGES: Record<string, string> = {
+  missing: 'champ obligatoire',
+  float_type: 'doit être un nombre',
+  float_parsing: 'doit être un nombre',
+  int_type: 'doit être un nombre entier',
+  int_parsing: 'doit être un nombre entier',
+  string_type: 'doit être un texte',
+  string_too_short: 'trop court',
+  string_too_long: 'trop long',
+  bool_type: 'doit être oui ou non',
+  greater_than_equal: 'valeur trop petite',
+  less_than_equal: 'valeur trop grande',
+  enum: 'valeur non autorisée',
+}
+
+/** Message lisible : texte du serveur tel quel, ou erreurs de validation FastAPI (422) traduites
+ * champ par champ, jamais le JSON brut (Volet 2, partie E). */
+function readableMessage(message: unknown): string {
+  if (typeof message === 'string') return message
+  if (Array.isArray(message)) {
+    return message
+      .map((item: { type?: string; loc?: unknown[]; msg?: string }) => {
+        const field = [...(item.loc ?? [])].reverse().find((part) => typeof part === 'string' && part !== 'body')
+        const text = (item.type && VALIDATION_MESSAGES[item.type]) ?? 'valeur invalide'
+        return field ? `${String(field)} : ${text}.` : `${text[0].toUpperCase()}${text.slice(1)}.`
+      })
+      .join(' ')
+  }
+  return 'Erreur inattendue du serveur.'
+}
+
 export class ApiError extends Error {
   status: number
   constructor(message: string, status: number) {
@@ -67,7 +98,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       useSessionStore.getState().logout()
     }
 
-    throw new ApiError(typeof message === 'string' ? message : JSON.stringify(message), response.status)
+    throw new ApiError(readableMessage(message), response.status)
   }
 
   if (data && typeof data === 'object' && 'error' in data && typeof data.error === 'string') {
@@ -102,7 +133,7 @@ async function requestBlob(path: string, method: 'GET' | 'POST', body?: unknown)
     const data = await response.json().catch(() => null)
     if (response.status === 401) useSessionStore.getState().logout()
     const message = data?.detail ?? data?.error?.message ?? `Erreur ${response.status}`
-    throw new ApiError(typeof message === 'string' ? message : JSON.stringify(message), response.status)
+    throw new ApiError(readableMessage(message), response.status)
   }
   const disposition = response.headers.get('content-disposition') ?? ''
   const match = /filename="?([^";]+)"?/i.exec(disposition)

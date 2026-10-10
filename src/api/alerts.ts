@@ -4,11 +4,11 @@ import type { BackendMachine } from '@/types/backend'
 import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types/domain'
 
 /**
- * Le backend n'a pas de registre d'alerte dédié : les deux registres du
- * design (action humaine requise / action automatique déjà exécutée) sont
- * dérivés de `/api/recommend`, qui classe déjà ses recommandations en
- * `auto_resolu` (délestage exécuté par l'IA) vs le reste (nécessite une
- * action humaine) — un mapping direct, pas une invention.
+ * Le backend n'a pas de registre d'alerte dédié : les alertes sont dérivées de
+ * `/api/recommend`. `auto_resolu` vaut toujours `false` depuis le Volet 2 (C3) :
+ * aucun délestage n'est exécuté par cette route, un délestage n'est « exécuté »
+ * qu'après une commande acquittée par le boîtier. La liste des actions
+ * automatiques reste donc vide tant qu'aucune n'est réellement faite.
  */
 async function fetchRecommendations() {
   const machines = await getCachedMachines()
@@ -73,7 +73,7 @@ export async function fetchAutoAlerts(profile: Profile): Promise<AutoAlert[]> {
       id: `${rec.machine_id}-${rec.type}-${i}`,
       title: rec.title,
       detail: `${rec.description} ${rec.action}`,
-      timestamp: 'délestage auto-exécuté, calculé à cet instant',
+      timestamp: 'action exécutée, calculée à cet instant',
       provenance: 'synthetique' as const,
     }))
 }

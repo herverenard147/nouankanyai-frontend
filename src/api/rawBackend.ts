@@ -170,6 +170,10 @@ export const rawUploadBillPhoto = (file: File) => {
 }
 export const rawBillPhoto = (billId: string) => api.get<BackendBillPhoto>(`/api/bills/${billId}/photo`)
 
+export function hasReading(machine: BackendMachine): boolean {
+  return machine.temperature_c !== null && machine.vibration_hz !== null && machine.pressure_bar !== null
+}
+
 function toSensorReading(machine: BackendMachine) {
   return {
     machine_id: machine.machine_id,
@@ -191,7 +195,8 @@ function toSensorReading(machine: BackendMachine) {
  * ou une machine qui change relance bien le calcul.
  */
 export const getCachedRecommend = (machines: BackendMachine[]) => {
-  const readings = machines.map(toSensorReading)
+  // Une machine sans relevé n'a rien à diagnostiquer (le backend l'ignore aussi).
+  const readings = machines.filter(hasReading).map(toSensorReading)
   return queryClient.fetchQuery({
     queryKey: ['recommend', readings],
     queryFn: () => api.post<{ recommendations: BackendRecommendation[]; count: number }>('/api/recommend', readings),

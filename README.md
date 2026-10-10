@@ -119,11 +119,11 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   `type === 'alerte'` uniquement — un vrai problème détecté
   (anomalie/surchauffe/vibration), en stricte correspondance : les deux pages
   montrent exactement les mêmes éléments, la première avec un bouton
-  « Marquer comme résolu » (re-mesure réelle, `POST
+  « Marquer comme résolu » (re-mesure simulée tant qu'aucun capteur n'est branché, `POST
   /api/machines/{id}/test`), la seconde avec les étapes de dépannage
   détaillées et un bouton « Lancer le diagnostic » (même endpoint). Le
-  délestage auto-exécuté (`auto_resolu`) vit exclusivement dans le Journal
-  (`AutoAlertCard`). `optimisation`/`efficacite` (des suggestions, pas des
+  champ `auto_resolu` vaut toujours `false` : aucun délestage n'est exécuté par
+  `/api/recommend` (Volet 2, C3). `optimisation`/`efficacite` (des suggestions, pas des
   problèmes — pas de sens à les « résoudre ») sont filtrées à part par
   `recommendations.ts` vers la page dédiée `/app/recommandations`, sans
   bouton de résolution.

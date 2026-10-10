@@ -3,6 +3,11 @@ import { getCachedMachines } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { MachineRow, Profile } from '@/types/domain'
 
+/** « — » pour une machine sans relevé : aucune valeur inventée. */
+function reading(value: number | null, unit: string): string {
+  return value === null ? '—' : `${formatNumberFr(value, 1)} ${unit}`
+}
+
 export async function fetchMachinesTable(_profile: Profile): Promise<{ title: string; rows: MachineRow[] }> {
   const machines = await getCachedMachines()
   return {
@@ -10,9 +15,9 @@ export async function fetchMachinesTable(_profile: Profile): Promise<{ title: st
     rows: machines.map((m) => ({
       id: m.machine_id,
       machine: m.nom,
-      temperature: `${formatNumberFr(m.temperature_c, 1)} °C`,
-      vibration: `${formatNumberFr(m.vibration_hz, 1)} Hz`,
-      pression: `${formatNumberFr(m.pressure_bar, 1)} bar`,
+      temperature: reading(m.temperature_c, '°C'),
+      vibration: reading(m.vibration_hz, 'Hz'),
+      pression: reading(m.pressure_bar, 'bar'),
       statut: statusLabel(m.status),
       priorite: priorityLabel(m.priority),
       // Les relevés température/vibration/pression sont simulés côté backend

@@ -55,9 +55,11 @@ export interface BackendMachine {
   site_id: string | null
   site_nom: string
   power_kw: number
-  temperature_c: number
-  vibration_hz: number
-  pressure_bar: number
+  // Vides tant qu'aucun relevé n'existe (le backend n'invente plus de mesures).
+  temperature_c: number | null
+  vibration_hz: number | null
+  pressure_bar: number | null
+  has_reading?: boolean
   status: string
   priority: string
   categorie: string | null
@@ -153,6 +155,8 @@ export interface BackendMachineDiagnostic {
 }
 
 export interface BackendMachineTestResult {
+  /** Aucun capteur réel : la mesure de vérification est toujours simulée. */
+  provenance: 'simulation'
   resolved: boolean
   temperature_c: number
   vibration_hz: number
@@ -711,6 +715,8 @@ export interface BackendBoitierPrice {
 
 /** POST /api/machines/{id}/analyze-media */
 export interface BackendMediaAnalysis {
+  /** "simulation" en mode AI_MODE=mock : rien n'a été analysé ni enregistré. */
+  provenance?: 'ia' | 'simulation'
   status: 'NORMAL' | 'ALERTE' | 'ERROR'
   description: string
   message?: string
