@@ -49,14 +49,15 @@ npm run lint          # oxlint
 ## Comptes de démonstration
 
 Comptes réels, créés via `POST /api/auth/signup` sur le backend (pas une liste
-statique locale) — affichés aussi dans l'encart de `/login`.
+statique locale). L'encart de `/login` les affiche en développement seulement, sans le compte
+admin.
 
 | Profil     | Email                                  | Mot de passe | `type_compte` backend |
 |------------|-----------------------------------------|--------------|------------------------|
 | Ménage     | `aicha@menage.demo`                     | `demo1234`   | `Ménage` |
 | PME        | `contact@boulangerie-awale.demo`        | `demo1234`   | `PME` |
 | Industrie  | `exploitation@yopougon-l2.demo`         | `demo1234`   | `Industrie` |
-| Admin      | `admin@nouankany.demo`                | `demo1234`   | `platform_role: superadmin` |
+| Admin      | `admin@nouankany.demo`                | `demo1234`   | `platform_role: superadmin`, donné par `backend/scripts/promote_admin.py` |
 
 Ces comptes n'existent que si vous les avez créés vous-même (signup) sur votre
 instance de backend — ils ne sont pas seedés automatiquement. Un nouveau compte
