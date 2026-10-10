@@ -2,13 +2,14 @@ name: Tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, feat/ci-tests]
   pull_request:
-    branches: [main]
+    branches: [main, feat/ci-tests]
 
 jobs:
   frontend-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +29,7 @@ jobs:
         run: |
           npx vitest run --reporter=default --reporter=junit --outputFile=/tmp/junit.xml
           python3 - <<'PYEOF'
+          import json
           import xml.etree.ElementTree as ET
           tree = ET.parse('/tmp/junit.xml')
           root = tree.getroot()
@@ -39,7 +41,8 @@ jobs:
           passed = tests - failures - errors - skipped
           print(f"Total: {tests}, passés: {passed}, sautés: {skipped}, échecs: {failures}, erreurs: {errors}")
           assert failures == 0 and errors == 0, f"{failures} échecs, {errors} erreurs"
-          assert passed >= 112, f"Seulement {passed} tests passés, 112 attendus"
+          baseline = json.load(open('.github/test-baseline.json'))['frontend_passed_min']
+          assert passed >= baseline, f"Seulement {passed} tests passés, {baseline} attendus"
           PYEOF
 
       - name: Linter
