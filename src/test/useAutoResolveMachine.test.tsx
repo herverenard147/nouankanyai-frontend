@@ -76,8 +76,9 @@ describe('useAutoResolveMachine', () => {
     act(() => hook.current.trigger())
     await vi.advanceTimersByTimeAsync(10_000)
 
+    // L'état final de React peut arriver un instant après l'avance du temps simulé.
+    await waitFor(() => expect(hook.current.status).toBe('resolved'))
     expect(rawTestMachine).toHaveBeenCalledTimes(3)
-    expect(hook.current.status).toBe('resolved')
     expect(localStorage.getItem('nouankany-auto-resolve:M3')).toBeNull()
   })
 
@@ -92,8 +93,8 @@ describe('useAutoResolveMachine', () => {
     act(() => hook.current.trigger())
     await vi.advanceTimersByTimeAsync(20_000)
 
+    await waitFor(() => expect(hook.current.status).toBe('needs_human'))
     expect(rawTestMachine).toHaveBeenCalledTimes(5)
-    expect(hook.current.status).toBe('needs_human')
     expect(hook.current.lastResult?.resolved).toBe(false)
   })
 
