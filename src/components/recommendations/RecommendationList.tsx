@@ -1,3 +1,4 @@
+import { Spinner } from '@/components/ui/Button'
 import { impactClassName } from '@/lib/severity'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
@@ -74,8 +75,9 @@ function RecommendationRow({ reco, showImpact, canApply }: { reco: Advice; showI
                 gainFcfa: reco.gainFcfa as number,
               })
             }
-            className="focus-ring shrink-0 text-sm font-semibold text-accent-cta hover:text-accent-cta-hover disabled:opacity-60"
+            className="focus-ring inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-accent-cta hover:text-accent-cta-hover disabled:opacity-60"
           >
+            {applyMutation.isPending && <Spinner />}
             {applyMutation.isPending ? 'Enregistrement…' : 'Marquer comme appliquée'}
           </button>
         ))}

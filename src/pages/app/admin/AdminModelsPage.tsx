@@ -135,7 +135,7 @@ function ColdStartPanel() {
         </div>
       </MetricState>
       <div className="flex flex-wrap items-center gap-3">
-        <Button type="button" variant="ghost" disabled={evaluate.isPending} onClick={() => evaluate.mutate()}>
+        <Button loading={evaluate.isPending} type="button" variant="ghost" disabled={evaluate.isPending} onClick={() => evaluate.mutate()}>
           {evaluate.isPending ? 'Réévaluation…' : 'Réévaluer maintenant'}
         </Button>
         <MutationError error={evaluate.error} />
@@ -165,7 +165,7 @@ function DriftPanel() {
       <MetricState status={query.status}>{query.data && <DriftTable report={query.data} />}</MetricState>
       {query.isError && <MutationError error={query.error} />}
       <div className="flex flex-wrap items-center gap-3">
-        <Button type="button" variant="ghost" disabled={archive.isPending || !query.data} onClick={() => archive.mutate()}>
+        <Button loading={archive.isPending} type="button" variant="ghost" disabled={archive.isPending || !query.data} onClick={() => archive.mutate()}>
           {archive.isPending ? 'Archivage…' : 'Archiver ce rapport'}
         </Button>
         {archive.isSuccess && <p className="text-sm text-confirm">Rapport archivé dans l&rsquo;historique de dérive.</p>}
@@ -214,7 +214,7 @@ export function AdminModelsPage() {
         Modèles de prédiction et de détection actifs, avec leurs métriques d&rsquo;entraînement les plus récentes.
       </p>
       <div className="flex items-center justify-between">
-        <Button type="button" variant="ghost" disabled={reloadMutation.isPending} onClick={() => reloadMutation.mutate()}>
+        <Button loading={reloadMutation.isPending} type="button" variant="ghost" disabled={reloadMutation.isPending} onClick={() => reloadMutation.mutate()}>
           {reloadMutation.isPending ? 'Rechargement…' : 'Recharger les modèles'}
         </Button>
         {reloadMutation.isSuccess && (

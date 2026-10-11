@@ -6,6 +6,7 @@ import { PredictionSummary } from '@/components/overview/PredictionSummary'
 import { ShortcutList } from '@/components/overview/ShortcutList'
 import { useShortcutCatalog } from '@/components/overview/useShortcutCatalog'
 import { DemoDataBanner } from '@/components/demo/DemoDataBanner'
+import { GettingStartedStrip } from '@/components/onboarding/GettingStartedStrip'
 import { MetricState } from '@/components/state/MetricState'
 import { OcrFieldList } from '@/components/upload/OcrFieldList'
 import { useInvoices } from '@/hooks/queries/useInvoices'
@@ -22,8 +23,9 @@ export function MenageOverview() {
   const blocks = menageOverviewBlocks()
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="stagger flex flex-col gap-5">
       <DemoDataBanner />
+      <GettingStartedStrip />
       <p className="text-sm text-text-secondary">
         Vue d&rsquo;ensemble de votre foyer : consommation, prédiction et dernière facture CIE en un coup d&rsquo;œil.
       </p>

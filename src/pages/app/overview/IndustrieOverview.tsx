@@ -5,6 +5,7 @@ import { PredictionSummary } from '@/components/overview/PredictionSummary'
 import { ShortcutList } from '@/components/overview/ShortcutList'
 import { useShortcutCatalog } from '@/components/overview/useShortcutCatalog'
 import { DemoDataBanner } from '@/components/demo/DemoDataBanner'
+import { GettingStartedStrip } from '@/components/onboarding/GettingStartedStrip'
 import { industrieOverviewBlocks, kpiTargets } from '@/lib/overviewLevels'
 import { useLevel } from '@/store/levelStore'
 
@@ -19,8 +20,9 @@ export function IndustrieOverview() {
   const catalog = useShortcutCatalog('industrie')
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="stagger flex flex-col gap-5">
       <DemoDataBanner />
+      <GettingStartedStrip />
       <p className="text-sm text-text-secondary">
         Vue d&rsquo;ensemble de votre site industriel : consommation, prédiction, machines suivies et plan d&rsquo;action
         en cours.

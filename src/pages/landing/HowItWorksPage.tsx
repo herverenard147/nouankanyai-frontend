@@ -88,7 +88,7 @@ function WaitlistForm() {
         placeholder="+225 01 02 03 04"
         className="sm:w-64"
       />
-      <Button type="submit" disabled={mutation.isPending}>
+      <Button loading={mutation.isPending} type="submit" disabled={mutation.isPending}>
         {mutation.isPending ? 'Envoi…' : 'Être informé à l’ouverture'}
       </Button>
       {mutation.isError && (

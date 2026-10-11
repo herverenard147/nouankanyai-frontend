@@ -2,6 +2,9 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useLocation, useSearchParams } from 'react-router-dom'
 
+import { CguContent } from '@/components/legal/CguContent'
+import { LegalModal } from '@/components/legal/LegalModal'
+import { PrivacyContent } from '@/components/legal/PrivacyContent'
 import { Button } from '@/components/ui/Button'
 import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
@@ -35,10 +38,13 @@ export function LoginPage() {
   const [nomError, setNomError] = useState<string | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
   const [status, setStatus] = useState<'idle' | 'loading'>('idle')
+  const [accepted, setAccepted] = useState(false)
+  const [openDoc, setOpenDoc] = useState<'cgu' | 'privacy' | null>(null)
 
   if (session) {
     const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? firstRouteFor(session.profile)
-    return <Navigate to={from} replace />
+    // Un compte tout juste créé commence par les premiers pas.
+    return <Navigate to={mode === 'signup' ? '/app/premiers-pas' : from} replace />
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -53,6 +59,10 @@ export function LoginPage() {
     setPasswordError(nextPasswordError)
     setNomError(nextNomError)
     if (nextEmailError || nextPasswordError || nextNomError) return
+    if (mode === 'signup' && !accepted) {
+      setFormError('Acceptez les conditions d’utilisation et la politique de confidentialité pour créer un compte.')
+      return
+    }
 
     setStatus('loading')
     const result =
@@ -141,9 +151,27 @@ export function LoginPage() {
             required
           />
           {mode === 'login' && (
-            <button type="button" disabled className="w-fit cursor-not-allowed text-sm text-text-tertiary" aria-disabled="true">
+            <Link to="/mot-de-passe-oublie" className="w-fit text-sm font-medium text-accent-cta hover:text-accent-cta-hover">
               Mot de passe oublié ?
-            </button>
+            </Link>
+          )}
+
+          {mode === 'signup' && (
+            <label className="flex items-start gap-3 text-sm text-text-secondary">
+              <input type="checkbox" className="mt-0.5 h-4 w-4" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
+              <span>
+                J&rsquo;accepte les{' '}
+                <button type="button" className="font-semibold text-accent-cta underline" onClick={() => setOpenDoc('cgu')}>
+                  conditions d&rsquo;utilisation
+                </button>{' '}
+                et la{' '}
+                <button type="button" className="font-semibold text-accent-cta underline" onClick={() => setOpenDoc('privacy')}>
+                  politique de confidentialité
+                </button>
+                . Si je supprime mon compte, mes données techniques sont gardées sans lien avec moi pour améliorer les
+                prévisions.
+              </span>
+            </label>
           )}
 
           {formError && (
@@ -162,6 +190,17 @@ export function LoginPage() {
             Retour à la landing
           </Link>
         </p>
+
+        {openDoc === 'cgu' && (
+          <LegalModal title="Conditions Générales d’Utilisation" onClose={() => setOpenDoc(null)}>
+            <CguContent />
+          </LegalModal>
+        )}
+        {openDoc === 'privacy' && (
+          <LegalModal title="Politique de confidentialité" onClose={() => setOpenDoc(null)}>
+            <PrivacyContent />
+          </LegalModal>
+        )}
 
         {/* En développement seulement : ces identifiants sont publics (constat C6 de l'audit du 2026-10-10). */}
         {import.meta.env.DEV && (

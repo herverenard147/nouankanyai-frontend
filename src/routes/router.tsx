@@ -4,18 +4,23 @@ import { AppLayout } from '@/layouts/AppLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { AuditRequestPage } from '@/pages/audit/AuditRequestPage'
 import { BoitierPage } from '@/pages/boitier/BoitierPage'
+import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
 import { LoginPage } from '@/pages/auth/LoginPage'
+import { ResetPasswordPage } from '@/pages/auth/ResetPasswordPage'
+import { VerifyEmailPage } from '@/pages/auth/VerifyEmailPage'
 import { HowItWorksPage } from '@/pages/landing/HowItWorksPage'
 import { LandingPage } from '@/pages/landing/LandingPage'
 import { BoitierDetailPage } from '@/pages/app/BoitierDetailPage'
 import { BoitiersPage } from '@/pages/app/BoitiersPage'
 import { AdvicePage } from '@/pages/app/AdvicePage'
+import { AssistantPage } from '@/pages/app/AssistantPage'
 import { AuditPage } from '@/pages/app/AuditPage'
 import { PlanActionPage } from '@/pages/app/PlanActionPage'
 import { AlertsPage } from '@/pages/app/AlertsPage'
 import { ConsumptionPage } from '@/pages/app/ConsumptionPage'
 import { EquipmentPage } from '@/pages/app/EquipmentPage'
 import { FacturationPage } from '@/pages/app/FacturationPage'
+import { GettingStartedPage } from '@/pages/app/GettingStartedPage'
 import { InvoicesPage } from '@/pages/app/InvoicesPage'
 import { JournalPage } from '@/pages/app/JournalPage'
 import { MachinesPage } from '@/pages/app/MachinesPage'
@@ -44,6 +49,9 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <LandingPage /> },
       { path: 'login', element: <LoginPage /> },
+      { path: 'mot-de-passe-oublie', element: <ForgotPasswordPage /> },
+      { path: 'reinitialiser-mot-de-passe', element: <ResetPasswordPage /> },
+      { path: 'confirmer-email', element: <VerifyEmailPage /> },
       { path: 'comment-ca-marche', element: <HowItWorksPage /> },
       { path: 'le-boitier', element: <BoitierPage /> },
       { path: 'demander-un-audit', element: <AuditRequestPage /> },
@@ -61,6 +69,7 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <AppIndexRedirect /> },
               { path: 'apercu', element: <OverviewPage /> },
+              { path: 'premiers-pas', element: <GettingStartedPage /> },
               { path: 'alertes', element: <AlertsPage /> },
               { path: 'consommation', element: <ConsumptionPage /> },
               { path: 'prediction', element: <PredictionPage /> },
@@ -77,6 +86,7 @@ export const router = createBrowserRouter([
               { path: 'boitier', element: <BoitiersPage /> },
               { path: 'boitier/:deviceId', element: <BoitierDetailPage /> },
               { path: 'parametres', element: <SettingsPage /> },
+              { path: 'assistant', element: <AssistantPage /> },
               { path: 'admin/boitiers', element: <AdminBoitiersPage /> },
               { path: 'admin/boitiers/:deviceId', element: <AdminBoitierDetailPage /> },
               { path: 'admin/sante', element: <AdminHealthPage /> },

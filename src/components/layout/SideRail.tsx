@@ -43,7 +43,7 @@ export function SideRail({ onNavigate }: SideRailProps) {
         </span>
       </Link>
 
-      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto" aria-label="Navigation principale">
+      <nav className="scrollbar-dark flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto" aria-label="Navigation principale">
         {entries.map((entry) => {
           const Icon = NAV_ICONS[entry.path]
           return (

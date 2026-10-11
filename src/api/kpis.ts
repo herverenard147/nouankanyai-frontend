@@ -13,6 +13,15 @@ const CLIENT_LABELS: Record<(typeof CLIENT_KPI_IDS)[number], string> = {
   'anomalies-actives': 'Machines en anomalie',
 }
 
+/** Vocabulaire du quotidien pour le seul profil Ménage (partie H1) : « appareils » plutôt que
+ * « machines », « à surveiller » plutôt qu'« anomalie ». PME, Industrie et Admin gardent les leurs. */
+const MENAGE_LABELS: typeof CLIENT_LABELS = {
+  'puissance-totale': 'Consommation en ce moment',
+  'machines-actives': 'Appareils en marche',
+  'economies-mois': 'Économies estimées ce mois',
+  'anomalies-actives': 'Appareils à surveiller',
+}
+
 const ADMIN_LABELS: Record<(typeof ADMIN_KPI_IDS)[number], string> = {
   'base-donnees': 'Base de données',
   uptime: 'Uptime du processus',
@@ -33,7 +42,8 @@ export function kpiMeta(profile: Profile, kpiId: string): { label: string; windo
     const window = kpiId === 'latence-moyenne' ? { label: '5 min' } : undefined
     return { label, window }
   }
-  return { label: CLIENT_LABELS[kpiId as (typeof CLIENT_KPI_IDS)[number]] }
+  const labels = profile === 'menage' ? MENAGE_LABELS : CLIENT_LABELS
+  return { label: labels[kpiId as (typeof CLIENT_KPI_IDS)[number]] }
 }
 
 export function kpiSectionTitle(profile: Profile): string {
@@ -46,7 +56,10 @@ function formatUptime(seconds: number): string {
   return days > 0 ? `${days} j ${hours} h` : `${hours} h`
 }
 
-async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
+async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>> {
+  const labels = profile === 'menage' ? MENAGE_LABELS : CLIENT_LABELS
+  const noun = profile === 'menage' ? 'appareil' : 'machine'
+  const plural = (count: number) => (count > 1 ? 's' : '')
   // Les 4 indicateurs client viennent des 2 mêmes requêtes (machines, facturation) : une seule fois pour
   // toute la bande, pas une fois par indicateur (KpiStrip montait 4 KpiTile, chacun refetchait tout).
   const [machines, billing] = await Promise.all([getCachedMachines(), rawBilling()])
@@ -59,23 +72,23 @@ async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
   return {
     'puissance-totale': {
       id: 'puissance-totale',
-      label: CLIENT_LABELS['puissance-totale'],
+      label: labels['puissance-totale'],
       value: formatNumberFr(totalPower, 1),
       unit: 'kW',
-      note: `${machines.length} machine${machines.length > 1 ? 's' : ''} enregistrée${machines.length > 1 ? 's' : ''}`,
+      note: `${machines.length} ${noun}${plural(machines.length)} ${noun === 'appareil' ? 'enregistré' : 'enregistrée'}${plural(machines.length)}`,
       provenance: 'synthetique',
     },
     'machines-actives': {
       id: 'machines-actives',
-      label: CLIENT_LABELS['machines-actives'],
+      label: labels['machines-actives'],
       value: String(activeMachines.length),
       unit: `/ ${machines.length}`,
-      note: alerteMachines.length > 0 ? `${alerteMachines.length} en alerte` : 'Aucune alerte active',
+      note: alerteMachines.length > 0 ? `${alerteMachines.length} ${profile === 'menage' ? 'à surveiller' : 'en alerte'}` : 'Aucune alerte active',
       provenance: 'synthetique',
     },
     'economies-mois': {
       id: 'economies-mois',
-      label: CLIENT_LABELS['economies-mois'],
+      label: labels['economies-mois'],
       // Indicatif : gains des seules actions réellement exécutées (plus les délestages jamais faits,
       // Volet 2 C3) ; la facturation se fait sur les économies mesurées.
       value: formatNumberFr(billing.estimated_ai_savings.month_total_fcfa),
@@ -85,9 +98,9 @@ async function fetchClientKpiSet(): Promise<Record<string, Kpi>> {
     },
     'anomalies-actives': {
       id: 'anomalies-actives',
-      label: CLIENT_LABELS['anomalies-actives'],
+      label: labels['anomalies-actives'],
       value: String(alerteMachines.length),
-      unit: alerteMachines.length > 1 ? 'machines' : 'machine',
+      unit: `${noun}${plural(alerteMachines.length)}`,
       note: alerteMachines.length > 0 ? alerteMachines.map((m) => m.nom).join(', ') : 'Aucune',
       provenance: 'synthetique',
     },
@@ -136,6 +149,6 @@ async function fetchAdminKpiSet(): Promise<Record<string, Kpi>> {
 /** Les 4 indicateurs de la bande KPI, en un seul aller-retour réseau (voir KpiStrip — chaque KpiTile lit ce
  * même cache react-query au lieu de refetcher sa propre valeur). */
 export function fetchKpiSet(profile: Profile): Promise<Record<string, Kpi>> {
-  return profile === 'admin' ? fetchAdminKpiSet() : fetchClientKpiSet()
+  return profile === 'admin' ? fetchAdminKpiSet() : fetchClientKpiSet(profile)
 }
 
