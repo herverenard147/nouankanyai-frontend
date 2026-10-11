@@ -14,6 +14,7 @@ import type { NavByProfile, RouteAccess } from '@/types/nav'
 export const NAV_BY_PROFILE: NavByProfile = {
   menage: [
     { path: '/app/apercu', label: "Vue d'ensemble" },
+    { path: '/app/premiers-pas', label: 'Premiers pas' },
     { path: '/app/alertes', label: 'Alertes' },
     { path: '/app/consommation', label: 'Conso & coûts' },
     { path: '/app/equipements', label: 'Équipements' },
@@ -28,6 +29,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
   ],
   pme: [
     { path: '/app/apercu', label: "Vue d'ensemble" },
+    { path: '/app/premiers-pas', label: 'Premiers pas' },
     { path: '/app/alertes', label: 'Alertes' },
     { path: '/app/consommation', label: 'Conso & coûts' },
     { path: '/app/equipements', label: 'Équipements' },
@@ -44,6 +46,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
   ],
   industrie: [
     { path: '/app/apercu', label: "Vue d'ensemble" },
+    { path: '/app/premiers-pas', label: 'Premiers pas' },
     { path: '/app/alertes', label: 'Alertes' },
     { path: '/app/machines', label: 'Machines' },
     { path: '/app/consommation', label: 'Conso & coûts' },
@@ -60,6 +63,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
   ],
   admin: [
     { path: '/app/apercu', label: "Vue d'ensemble" },
+    { path: '/app/premiers-pas', label: 'Premiers pas' },
     { path: '/app/alertes', label: 'Alertes' },
     { path: '/app/consommation', label: 'Conso & coûts' },
     { path: '/app/prediction', label: 'Prédiction' },

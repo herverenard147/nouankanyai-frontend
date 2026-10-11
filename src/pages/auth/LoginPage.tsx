@@ -43,7 +43,8 @@ export function LoginPage() {
 
   if (session) {
     const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? firstRouteFor(session.profile)
-    return <Navigate to={from} replace />
+    // Un compte tout juste créé commence par les premiers pas.
+    return <Navigate to={mode === 'signup' ? '/app/premiers-pas' : from} replace />
   }
 
   async function handleSubmit(event: FormEvent) {

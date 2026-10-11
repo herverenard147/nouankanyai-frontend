@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Percent,
   Receipt,
+  Rocket,
   ScrollText,
   SlidersHorizontal,
   Speaker,
@@ -27,6 +28,7 @@ import {
 /** Icône de chaque entrée de navigation, par chemin (remplace les lettres de NAV_BY_PROFILE). */
 export const NAV_ICONS: Record<string, LucideIcon> = {
   '/app/apercu': LayoutGrid,
+  '/app/premiers-pas': Rocket,
   '/app/alertes': Bell,
   '/app/machines': Cog,
   '/app/equipements': Boxes,

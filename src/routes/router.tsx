@@ -19,6 +19,7 @@ import { AlertsPage } from '@/pages/app/AlertsPage'
 import { ConsumptionPage } from '@/pages/app/ConsumptionPage'
 import { EquipmentPage } from '@/pages/app/EquipmentPage'
 import { FacturationPage } from '@/pages/app/FacturationPage'
+import { GettingStartedPage } from '@/pages/app/GettingStartedPage'
 import { InvoicesPage } from '@/pages/app/InvoicesPage'
 import { JournalPage } from '@/pages/app/JournalPage'
 import { MachinesPage } from '@/pages/app/MachinesPage'
@@ -67,6 +68,7 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <AppIndexRedirect /> },
               { path: 'apercu', element: <OverviewPage /> },
+              { path: 'premiers-pas', element: <GettingStartedPage /> },
               { path: 'alertes', element: <AlertsPage /> },
               { path: 'consommation', element: <ConsumptionPage /> },
               { path: 'prediction', element: <PredictionPage /> },
