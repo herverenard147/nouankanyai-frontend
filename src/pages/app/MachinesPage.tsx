@@ -20,6 +20,7 @@ import type { MachineRow } from '@/types/domain'
 // Mêmes paliers que dans IndustrieOverview — voir lib/overviewLevels.ts.
 const COLUMNS_BASE: TableColumn<MachineRow>[] = [
   { key: 'machine', label: 'Machine' },
+  { key: 'attendu', label: 'Attendu par jour' },
   { key: 'statut', label: 'Statut' },
   { key: 'priorite', label: 'Priorité' },
 ]
@@ -28,6 +29,7 @@ const COLUMNS_FULL: TableColumn<MachineRow>[] = [
   { key: 'temperature', label: 'Température' },
   { key: 'vibration', label: 'Vibration' },
   { key: 'pression', label: 'Pression' },
+  { key: 'attendu', label: 'Attendu par jour' },
   { key: 'statut', label: 'Statut' },
   { key: 'priorite', label: 'Priorité' },
 ]

@@ -18,6 +18,9 @@ export async function fetchMachinesTable(_profile: Profile): Promise<{ title: st
       temperature: reading(m.temperature_c, '°C'),
       vibration: reading(m.vibration_hz, 'Hz'),
       pression: reading(m.pressure_bar, 'bar'),
+      attendu: m.estimation_reference
+        ? `≈ ${formatNumberFr(m.estimation_reference.kwh_jour, 1)} kWh, ${formatNumberFr(m.estimation_reference.cout_jour_fcfa, 0)} FCFA (estimé)`
+        : '—',
       statut: statusLabel(m.status),
       priorite: priorityLabel(m.priority),
       // Les relevés température/vibration/pression sont simulés côté backend
