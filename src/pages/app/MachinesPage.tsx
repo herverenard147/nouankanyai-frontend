@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { BulkReadingsImport } from '@/components/import/BulkReadingsImport'
 import { MachineFormDrawer } from '@/components/machines/MachineFormDrawer'
 import { MachineTools } from '@/components/machines/MachineTools'
 import { MetricState } from '@/components/state/MetricState'
@@ -92,6 +93,7 @@ export function MachinesPage() {
           onCancel={() => setDeleting(null)}
         />
       )}
+      <BulkReadingsImport itemLabel="machine" />
     </div>
   )
 }

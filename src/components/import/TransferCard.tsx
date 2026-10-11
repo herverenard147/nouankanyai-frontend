@@ -13,14 +13,20 @@ const plural = (count: number, one: string, many: string) => `${formatNumberFr(c
  * Reprise, dans ce compte, des données exportées depuis un autre compte : aperçu, choix de ce qui
  * est repris, puis confirmation. Rien n'est écrasé, et la formule du compte reste respectée.
  */
-export function TransferCard() {
+interface TransferCardProps {
+  /** Support : compte du client qui reçoit les données. Absent : le compte connecté. */
+  targetUserId?: string
+  targetName?: string
+}
+
+export function TransferCard({ targetUserId, targetName }: TransferCardProps = {}) {
   const inputRef = useRef<HTMLInputElement>(null)
   const queryClient = useQueryClient()
   const [file, setFile] = useState<File | null>(null)
   const [include, setInclude] = useState<TransferSection[]>(ALL)
-  const preview = useMutation({ mutationFn: (args: { file: File; include: TransferSection[] }) => previewTransfer(args.file, args.include) })
+  const preview = useMutation({ mutationFn: (args: { file: File; include: TransferSection[] }) => previewTransfer(args.file, args.include, targetUserId) })
   const confirm = useMutation({
-    mutationFn: () => confirmTransfer(file as File, include),
+    mutationFn: () => confirmTransfer(file as File, include, targetUserId),
     onSuccess: () => queryClient.invalidateQueries(),
   })
 
@@ -53,10 +59,13 @@ export function TransferCard() {
 
   return (
     <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
-      <h2 className="text-section-title font-semibold text-text-primary">Reprendre les données d&rsquo;un autre compte</h2>
+      <h2 className="text-section-title font-semibold text-text-primary">
+        {targetUserId ? 'Reprendre un export dans ce compte' : 'Reprendre les données d’un autre compte'}
+      </h2>
       <p className="text-sm text-text-secondary">
-        Envoyez ici l&rsquo;archive téléchargée depuis « Mes données » de l&rsquo;autre compte. Vous choisissez ce qui est
-        repris ; rien de ce compte n&rsquo;est remplacé.
+        {targetUserId
+          ? `Envoyez l’archive exportée depuis un autre compte : ses données seront ajoutées au compte de ${targetName ?? 'ce client'}, qui verra l’intervention dans son historique. Rien n’est remplacé.`
+          : 'Envoyez ici l’archive téléchargée depuis « Mes données » de l’autre compte. Vous choisissez ce qui est repris ; rien de ce compte n’est remplacé.'}
       </p>
       <input
         ref={inputRef}
