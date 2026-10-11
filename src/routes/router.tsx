@@ -13,6 +13,7 @@ import { LandingPage } from '@/pages/landing/LandingPage'
 import { BoitierDetailPage } from '@/pages/app/BoitierDetailPage'
 import { BoitiersPage } from '@/pages/app/BoitiersPage'
 import { AdvicePage } from '@/pages/app/AdvicePage'
+import { AssistantPage } from '@/pages/app/AssistantPage'
 import { AuditPage } from '@/pages/app/AuditPage'
 import { PlanActionPage } from '@/pages/app/PlanActionPage'
 import { AlertsPage } from '@/pages/app/AlertsPage'
@@ -85,6 +86,7 @@ export const router = createBrowserRouter([
               { path: 'boitier', element: <BoitiersPage /> },
               { path: 'boitier/:deviceId', element: <BoitierDetailPage /> },
               { path: 'parametres', element: <SettingsPage /> },
+              { path: 'assistant', element: <AssistantPage /> },
               { path: 'admin/boitiers', element: <AdminBoitiersPage /> },
               { path: 'admin/boitiers/:deviceId', element: <AdminBoitierDetailPage /> },
               { path: 'admin/sante', element: <AdminHealthPage /> },

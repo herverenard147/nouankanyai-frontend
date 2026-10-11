@@ -143,7 +143,7 @@ export function AuditRequestPage() {
             </p>
           )}
 
-          <Button type="submit" disabled={mutation.isPending} className="w-full">
+          <Button loading={mutation.isPending} type="submit" disabled={mutation.isPending} className="w-full">
             {mutation.isPending ? 'Envoi…' : 'Envoyer la demande'}
           </Button>
         </form>

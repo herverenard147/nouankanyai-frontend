@@ -79,7 +79,7 @@ export function SitesCard() {
               <Button type="button" variant="outline" onClick={() => setAdding(false)}>
                 Annuler
               </Button>
-              <Button type="submit" form="site-form" disabled={createMutation.isPending}>
+              <Button loading={createMutation.isPending} type="submit" form="site-form" disabled={createMutation.isPending}>
                 {createMutation.isPending ? 'Ajout…' : 'Ajouter le site'}
               </Button>
             </>

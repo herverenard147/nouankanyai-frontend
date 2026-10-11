@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Button } from '@/components/ui/Button'
+import { Button, Spinner } from '@/components/ui/Button'
 import { Modal, MutationError } from '@/components/ui/Modal'
 import { useAdminMachineActions } from '@/hooks/queries/useAdminUsers'
 import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
@@ -21,8 +21,9 @@ export function AdminVerifyMachineButton({ machineId, subject }: { machineId: st
         type="button"
         disabled={verify.isPending}
         onClick={() => setConfirmOpen(true)}
-        className="focus-ring shrink-0 text-sm font-semibold text-accent-cta hover:text-accent-cta-hover disabled:opacity-60"
+        className="focus-ring inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-accent-cta hover:text-accent-cta-hover disabled:opacity-60"
       >
+        {verify.isPending && <Spinner />}
         {verify.isPending ? 'Vérification…' : 'Vérifier (support)'}
       </button>
 

@@ -51,7 +51,7 @@ function MessageForm() {
         />
       </div>
       <div>
-        <Button type="submit" disabled={mutation.isPending}>
+        <Button loading={mutation.isPending} type="submit" disabled={mutation.isPending}>
           {mutation.isPending ? 'Envoi…' : 'Envoyer'}
         </Button>
       </div>

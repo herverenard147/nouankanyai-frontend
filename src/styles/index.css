@@ -181,6 +181,22 @@
   .stagger > *:nth-child(6) { animation-delay: 300ms; }
   .stagger > *:nth-child(n + 7) { animation-delay: 360ms; }
 
+  /* Barre de défilement de la barre latérale : fine, toujours lisible sur le fond sombre. */
+  .scrollbar-dark {
+    scrollbar-width: thin;
+    scrollbar-color: #6b6f66 transparent;
+  }
+  .scrollbar-dark::-webkit-scrollbar {
+    width: 8px;
+  }
+  .scrollbar-dark::-webkit-scrollbar-thumb {
+    background-color: #6b6f66;
+    border-radius: 4px;
+  }
+  .scrollbar-dark::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
   /* Barres d'un graphique : elles poussent depuis la base à l'affichage. */
   .bar-grow {
     transform-origin: bottom;

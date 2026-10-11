@@ -4,6 +4,7 @@ import { X } from 'lucide-react'
 
 import { AssistantMessageText } from '@/components/assistant/AssistantMessageText'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
+import { Spinner } from '@/components/ui/Button'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useAssistantContext, useAssistantReply } from '@/hooks/queries/useAssistantReply'
 import { ApiError } from '@/lib/apiClient'
@@ -12,6 +13,8 @@ import type { Profile } from '@/types/domain'
 interface AssistantPanelProps {
   profile: Profile
   onClose: () => void
+  /** Vue dédiée (téléphone) : le panneau occupe toute la page. */
+  fullPage?: boolean
 }
 
 interface ChatMessage {
@@ -26,7 +29,7 @@ interface ChatMessage {
 
 const INITIAL_MESSAGE = 'Bonjour, je suis l’assistant Nouankany. Posez-moi une question sur vos équipements.'
 
-export function AssistantPanel({ profile, onClose }: AssistantPanelProps) {
+export function AssistantPanel({ profile, onClose, fullPage = false }: AssistantPanelProps) {
   const contextQuery = useAssistantContext(profile)
   const [messages, setMessages] = useState<ChatMessage[]>([{ id: 'initial', from: 'assistant', text: INITIAL_MESSAGE }])
   const [draft, setDraft] = useState('')
@@ -51,7 +54,11 @@ export function AssistantPanel({ profile, onClose }: AssistantPanelProps) {
 
   return (
     <div
-      className="flex w-[306px] max-w-[calc(100vw-3.5rem)] flex-col gap-3 rounded-assistant border border-border bg-card p-4 shadow-assistant-panel"
+      className={
+        fullPage
+          ? 'flex min-h-0 flex-1 flex-col gap-3'
+          : 'flex w-[380px] max-w-[calc(100vw-2rem)] flex-col gap-3 rounded-assistant border border-border bg-card p-4 shadow-assistant-panel lg:w-[440px] 2xl:w-[520px]'
+      }
       role="dialog"
       aria-label="Assistant Nouankany"
     >
@@ -72,7 +79,7 @@ export function AssistantPanel({ profile, onClose }: AssistantPanelProps) {
         </button>
       </div>
 
-      <div className="flex max-h-64 flex-col gap-2 overflow-y-auto">
+      <div className={`flex flex-col gap-2 overflow-y-auto ${fullPage ? 'min-h-0 flex-1' : 'max-h-[45vh] lg:max-h-[55vh]'}`}>
         {messages.map((message) => (
           <div
             key={message.id}
@@ -109,8 +116,11 @@ export function AssistantPanel({ profile, onClose }: AssistantPanelProps) {
         />
         <button
           type="submit"
-          className="focus-ring min-h-11 rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white hover:bg-accent-cta-hover"
+          disabled={replyMutation.isPending}
+          aria-busy={replyMutation.isPending || undefined}
+          className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white hover:bg-accent-cta-hover disabled:opacity-60"
         >
+          {replyMutation.isPending && <Spinner />}
           Envoyer
         </button>
       </form>

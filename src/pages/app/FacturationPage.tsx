@@ -5,7 +5,7 @@ import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { MutationError } from '@/components/ui/Modal'
-import { useBilling, useRequestTier } from '@/hooks/queries/useBilling'
+import { useBilling, useCancelTierRequest, useRequestTier } from '@/hooks/queries/useBilling'
 import { formatFcfa, formatNumberFr } from '@/lib/formatters'
 import { useSessionStore } from '@/store/sessionStore'
 import type { BackendBilling } from '@/types/backend'
@@ -89,20 +89,45 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
 
 function MenageSubscription({ billing }: { billing: BackendBilling }) {
   const request = useRequestTier()
-  const current = billing.effective_tier ?? 'decouverte'
+  const cancel = useCancelTierRequest()
+  // La formule du contrat, pas l'accès du moment : pendant un essai ou sur un compte de
+  // démonstration tout est ouvert, mais c'est cette formule qui reste ensuite.
+  const contractTier = billing.access?.tier ?? billing.contract?.tier ?? 'decouverte'
+  const reason = billing.access?.reason ?? null
   const requested = billing.contract?.requested_tier
+  const nameOf = (id: string | null | undefined) => billing.tiers.find((t) => t.id === id)?.nom ?? ''
+  const trialEnd = billing.access?.trial_ends_at ? new Date(billing.access.trial_ends_at).toLocaleDateString('fr-FR') : null
   return (
     <>
       <section className={SECTION}>
         <h1 className="text-section-title font-semibold text-text-primary">Abonnement</h1>
-        {requested && (
-          <p className="text-sm text-text-secondary" role="status">
-            Changement vers {billing.tiers.find((t) => t.id === requested)?.nom} demandé : il sera actif après validation par l’équipe Nouankany.
+        {reason === 'essai' && (
+          <p className="text-sm text-text-primary" role="status">
+            Essai gratuit{trialEnd ? ` jusqu’au ${trialEnd}` : ''} : toutes les fonctions sont ouvertes. Ensuite, votre formule sera{' '}
+            <strong>{nameOf(contractTier)}</strong>, sauf si vous en demandez une autre.
           </p>
+        )}
+        {reason === 'demonstration' && (
+          <p className="text-sm text-text-primary" role="status">
+            Compte de démonstration : toutes les fonctions sont ouvertes, quelle que soit la formule.
+          </p>
+        )}
+        <p className="text-sm text-text-secondary">
+          Un changement de formule se demande ici, puis l’équipe Nouankany le valide : le paiement en ligne n’est pas encore ouvert.
+        </p>
+        {requested && (
+          <div className="flex flex-wrap items-center gap-3" role="status">
+            <p className="text-sm text-text-primary">
+              Changement vers <strong>{nameOf(requested)}</strong> demandé : il sera actif après validation.
+            </p>
+            <Button type="button" variant="outline" loading={cancel.isPending} onClick={() => cancel.mutate()}>
+              Annuler la demande
+            </Button>
+          </div>
         )}
         <div className="grid gap-4 sm:grid-cols-3">
           {billing.tiers.map((tier) => (
-            <div key={tier.id} className={`flex flex-col gap-2 border p-4 ${tier.id === current ? 'border-text-primary' : 'border-border'}`}>
+            <div key={tier.id} className={`flex flex-col gap-2 border p-4 ${tier.id === contractTier ? 'border-text-primary' : 'border-border'}`}>
               <h2 className="font-semibold text-text-primary">{tier.nom}</h2>
               <p className="tabular-nums text-text-primary">{tier.prix_mensuel_fcfa === 0 ? 'Gratuit' : `${formatFcfa(tier.prix_mensuel_fcfa)} / mois`}</p>
               <ul className="flex flex-col gap-1 text-sm text-text-secondary">
@@ -110,17 +135,28 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
                   <li key={f}>{f}</li>
                 ))}
               </ul>
-              {tier.id === current ? (
-                <span className="mt-auto text-xs font-semibold text-text-secondary">Votre abonnement</span>
+              {tier.id === contractTier ? (
+                <span className="mt-auto text-xs font-semibold text-text-secondary">
+                  {reason === 'essai' ? 'Votre formule après l’essai' : 'Votre formule'}
+                </span>
+              ) : requested === tier.id ? (
+                <span className="mt-auto text-xs font-semibold text-confirm">Demande envoyée</span>
               ) : (
-                <Button type="button" variant="outline" className="mt-auto" disabled={request.isPending || requested === tier.id} onClick={() => request.mutate(tier.id)}>
-                  {requested === tier.id ? 'Demande envoyée' : `Passer à ${tier.nom}`}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-auto"
+                  loading={request.isPending && request.variables === tier.id}
+                  disabled={request.isPending}
+                  onClick={() => request.mutate(tier.id)}
+                >
+                  Demander {tier.nom}
                 </Button>
               )}
             </div>
           ))}
         </div>
-        <MutationError error={request.error} />
+        <MutationError error={request.error ?? cancel.error} />
       </section>
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Relevés</h2>

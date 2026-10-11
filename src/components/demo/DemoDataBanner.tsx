@@ -30,7 +30,7 @@ export function DemoDataBanner() {
           clairement identifié comme simulé, rien n&rsquo;est présenté comme une mesure réelle.
         </p>
       </div>
-      <Button type="button" disabled={seedMutation.isPending} onClick={() => seedMutation.mutate()}>
+      <Button loading={seedMutation.isPending} type="button" disabled={seedMutation.isPending} onClick={() => seedMutation.mutate()}>
         {seedMutation.isPending ? 'Génération…' : 'Charger des données de démonstration'}
       </Button>
       {seedMutation.isError && <p className="w-full text-sm text-alert">Échec du chargement des données.</p>}

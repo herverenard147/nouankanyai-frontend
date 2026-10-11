@@ -40,6 +40,13 @@ describe('Paramètres : supprimer mon compte', () => {
     useSessionStore.setState({ session: null })
   })
 
+  it('la confirmation se fait dans une fenêtre qui annonce le danger', () => {
+    renderSettings()
+    expect(screen.queryByRole('dialog')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: /Supprimer mon compte…/ }))
+    expect(screen.getByRole('dialog')).toHaveTextContent(/immédiate et ne peut pas être annulée/i)
+  })
+
   it('explique ce qui est effacé et ce qui est gardé', () => {
     renderSettings()
     expect(screen.getByText(/Gardé sans lien avec vous/i)).toBeInTheDocument()

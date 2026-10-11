@@ -39,7 +39,7 @@ export function MachineTools({ machine }: { machine: BackendMachine }) {
             event.target.value = ''
           }}
         />
-        <Button type="button" variant="outline" disabled={analyze.isPending} onClick={() => fileInput.current?.click()}>
+        <Button loading={analyze.isPending} type="button" variant="outline" disabled={analyze.isPending} onClick={() => fileInput.current?.click()}>
           {analyze.isPending ? 'Analyse en cours…' : 'Analyser une photo ou une vidéo'}
         </Button>
         {analyze.data && (
@@ -53,7 +53,7 @@ export function MachineTools({ machine }: { machine: BackendMachine }) {
 
       {inAlert && (
         <div className="flex flex-col gap-2">
-          <Button type="button" variant="outline" disabled={reset.isPending} onClick={() => reset.mutate(machine.machine_id)}>
+          <Button loading={reset.isPending} type="button" variant="outline" disabled={reset.isPending} onClick={() => reset.mutate(machine.machine_id)}>
             {reset.isPending ? 'Remise en état…' : 'Remettre en état normal'}
           </Button>
           <MutationError error={reset.error} />
@@ -62,7 +62,7 @@ export function MachineTools({ machine }: { machine: BackendMachine }) {
 
       {demoTools && !inAlert && (
         <div className="flex flex-col gap-2">
-          <Button type="button" variant="ghost" disabled={simulate.isPending} onClick={() => simulate.mutate(machine.machine_id)}>
+          <Button loading={simulate.isPending} type="button" variant="ghost" disabled={simulate.isPending} onClick={() => simulate.mutate(machine.machine_id)}>
             {simulate.isPending ? 'Simulation…' : 'Simuler une alerte (démo)'}
           </Button>
           <p className="text-xs text-text-secondary">Réservé aux comptes d’essai et de démonstration : crée une surchauffe fictive pour essayer « Vérifier et résoudre ».</p>

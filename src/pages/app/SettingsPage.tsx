@@ -160,7 +160,7 @@ function ProfileCard({ session }: { session: Session }) {
               <Button type="button" variant="outline" onClick={() => setDialog(null)}>
                 Annuler
               </Button>
-              <Button type="submit" form="password-form" disabled={changePasswordMutation.isPending}>
+              <Button loading={changePasswordMutation.isPending} type="submit" form="password-form" disabled={changePasswordMutation.isPending}>
                 {changePasswordMutation.isPending ? 'Enregistrement…' : 'Changer le mot de passe'}
               </Button>
             </>
@@ -260,7 +260,7 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
               <Button type="button" variant="outline" onClick={() => setAdding(false)}>
                 Annuler
               </Button>
-              <Button type="submit" form="member-form" disabled={createMutation.isPending}>
+              <Button loading={createMutation.isPending} type="submit" form="member-form" disabled={createMutation.isPending}>
                 {createMutation.isPending ? 'Ajout…' : 'Ajouter le membre'}
               </Button>
             </>
@@ -458,7 +458,7 @@ function EmailCard() {
             </div>
             {!me.email_verified && (
               <div className="flex flex-wrap items-center gap-3">
-                <Button type="button" variant="outline" disabled={resend.isPending || resend.isSuccess} onClick={() => resend.mutate()}>
+                <Button loading={resend.isPending} type="button" variant="outline" disabled={resend.isPending || resend.isSuccess} onClick={() => resend.mutate()}>
                   {resend.isSuccess ? 'Lien envoyé' : 'Renvoyer le lien de confirmation'}
                 </Button>
                 {resend.isSuccess && <span className="text-sm text-text-secondary">Vérifiez vos emails.</span>}
@@ -496,7 +496,7 @@ function ExportCard() {
         Téléchargez une archive de tout ce que la plateforme garde pour votre compte : sites, appareils, relevés,
         factures, plan d&rsquo;action et historique des actions. Les fichiers s&rsquo;ouvrent dans un tableur.
       </p>
-      <Button type="button" variant="outline" className="w-fit" disabled={mutation.isPending} onClick={() => mutation.mutate()}>
+      <Button loading={mutation.isPending} type="button" variant="outline" className="w-fit" disabled={mutation.isPending} onClick={() => mutation.mutate()}>
         {mutation.isPending ? 'Préparation…' : 'Télécharger mes données'}
       </Button>
       <MutationError error={mutation.error} />
@@ -520,6 +520,13 @@ function DeleteAccountCard({ isMember }: { isMember: boolean }) {
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
     if (ready) mutation.mutate()
+  }
+
+  function close() {
+    setOpen(false)
+    setPassword('')
+    setWord('')
+    mutation.reset()
   }
 
   return (
@@ -546,25 +553,32 @@ function DeleteAccountCard({ isMember }: { isMember: boolean }) {
           <li>Les accès des membres de votre équipe sont supprimés en même temps.</li>
         </ul>
       )}
-      {!open ? (
-        <Button type="button" variant="outline" className="w-fit" onClick={() => setOpen(true)}>
-          Supprimer mon compte…
-        </Button>
-      ) : (
-        <form onSubmit={handleSubmit} className="flex max-w-sm flex-col gap-3" noValidate>
-          <p className="text-sm font-medium text-alert">Cette action est définitive.</p>
-          <PasswordField label="Mot de passe" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <TextField label={`Saisissez ${DELETE_WORD} pour confirmer`} value={word} onChange={(e) => setWord(e.target.value)} required />
-          <MutationError error={mutation.error} />
-          <div className="flex gap-3">
-            <Button type="submit" disabled={!ready || mutation.isPending}>
-              {mutation.isPending ? 'Suppression…' : 'Supprimer définitivement'}
-            </Button>
-            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-              Annuler
-            </Button>
-          </div>
-        </form>
+      <Button type="button" variant="outline" className="w-fit" onClick={() => setOpen(true)}>
+        Supprimer mon compte…
+      </Button>
+      {open && (
+        <Modal
+          danger
+          title="Supprimer définitivement votre compte ?"
+          description="Cette action est immédiate et ne peut pas être annulée. Vous serez déconnecté et ne pourrez plus vous reconnecter."
+          onClose={close}
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={close} disabled={mutation.isPending}>
+                Annuler
+              </Button>
+              <Button type="submit" form="delete-account-form" loading={mutation.isPending} disabled={!ready} className="bg-alert hover:bg-alert/90">
+                Supprimer définitivement
+              </Button>
+            </>
+          }
+        >
+          <form id="delete-account-form" onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
+            <PasswordField label="Mot de passe" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <TextField label={`Saisissez ${DELETE_WORD} pour confirmer`} value={word} onChange={(e) => setWord(e.target.value)} required />
+            <MutationError error={mutation.error} />
+          </form>
+        </Modal>
       )}
     </section>
   )

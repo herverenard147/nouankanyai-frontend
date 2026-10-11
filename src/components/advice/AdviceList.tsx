@@ -1,3 +1,4 @@
+import { Spinner } from '@/components/ui/Button'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -66,8 +67,9 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
             type="button"
             disabled={resolveMutation.isPending}
             onClick={() => resolveMutation.mutate(advice.machineId as string)}
-            className="focus-ring inline-flex min-h-9 w-fit items-center justify-center rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover disabled:opacity-60"
+            className="focus-ring inline-flex min-h-9 w-fit items-center justify-center gap-2 rounded-control bg-accent-cta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-cta-hover disabled:opacity-60"
           >
+            {resolveMutation.isPending && <Spinner />}
             {resolveMutation.isPending ? 'Diagnostic en cours…' : 'Lancer le diagnostic'}
           </button>
         </div>

@@ -192,7 +192,7 @@ export function PlanActionPage() {
               <Button type="button" variant="outline" onClick={() => setDialog(null)}>
                 Annuler
               </Button>
-              <Button type="submit" form="plan-add-form" disabled={create.isPending}>
+              <Button loading={create.isPending} type="submit" form="plan-add-form" disabled={create.isPending}>
                 {create.isPending ? 'Ajout…' : 'Ajouter au plan'}
               </Button>
             </>

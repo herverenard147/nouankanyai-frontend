@@ -1,3 +1,4 @@
+import { Spinner } from '@/components/ui/Button'
 import { Link } from 'react-router-dom'
 
 import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineButton'
@@ -109,8 +110,10 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
               type="button"
               disabled={autoResolve.status === 'retrying'}
               onClick={() => autoResolve.trigger()}
-              className="focus-ring inline-flex min-h-10 items-center justify-center bg-dark-bg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-dark-bg/90 disabled:opacity-60"
+              aria-busy={autoResolve.status === 'retrying' || undefined}
+              className="focus-ring inline-flex min-h-10 items-center justify-center gap-2 bg-dark-bg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-dark-bg/90 disabled:opacity-60"
             >
+              {autoResolve.status === 'retrying' && <Spinner />}
               {autoResolve.status === 'retrying'
                 ? autoResolve.autoEnabled
                   ? `Tentative ${autoResolve.attempt}/${autoResolve.maxAttempts} en cours…`
