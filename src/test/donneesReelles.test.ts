@@ -26,13 +26,13 @@ function machine(overrides: Partial<BackendMachine> = {}): BackendMachine {
 describe('Machine sans relevé (M7)', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('le tableau affiche « — », pas une valeur', async () => {
+  it('le tableau affiche « - », pas une valeur', async () => {
     vi.mocked(getCachedMachines).mockResolvedValue([machine()])
     const { rows } = await fetchMachinesTable('pme')
-    expect(rows[0].temperature).toBe('—')
-    expect(rows[0].vibration).toBe('—')
-    expect(rows[0].pression).toBe('—')
-    expect(rows[0].attendu).toBe('—')
+    expect(rows[0].temperature).toBe('-')
+    expect(rows[0].vibration).toBe('-')
+    expect(rows[0].pression).toBe('-')
+    expect(rows[0].attendu).toBe('-')
   })
 
   it('affiche la consommation attendue quand l’appareil est relié à une fiche du référentiel', async () => {

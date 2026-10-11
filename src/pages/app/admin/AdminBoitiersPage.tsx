@@ -69,8 +69,8 @@ export function AdminBoitiersPage() {
                 <tbody>
                   {asks.map((ask) => (
                     <tr key={ask.id} className="border-t border-border">
-                      <td className="px-3 py-2.5 font-semibold text-text-primary">{ask.account ?? '—'}</td>
-                      <td className="px-3 py-2.5 text-text-primary">{ask.site_nom ?? '—'}</td>
+                      <td className="px-3 py-2.5 font-semibold text-text-primary">{ask.account ?? '-'}</td>
+                      <td className="px-3 py-2.5 text-text-primary">{ask.site_nom ?? '-'}</td>
                       <td className="px-3 py-2.5 tabular-nums">{ask.quantity}</td>
                       <td className="px-3 py-2.5 tabular-nums">{formatFcfa(ask.total_fcfa)}</td>
                       <td className="px-3 py-2.5 text-text-secondary">{ask.contact}</td>
@@ -129,16 +129,16 @@ export function AdminBoitiersPage() {
                     const connection = connectionOf(device)
                     return (
                       <tr key={device.id} className="border-t border-border">
-                        <td className="px-3 py-2.5 font-semibold text-text-primary">{device.account ?? '—'}</td>
+                        <td className="px-3 py-2.5 font-semibold text-text-primary">{device.account ?? '-'}</td>
                         <td className="px-3 py-2.5 text-text-primary">{device.nom}</td>
-                        <td className="px-3 py-2.5 text-text-primary">{device.site_nom ?? '—'}</td>
+                        <td className="px-3 py-2.5 text-text-primary">{device.site_nom ?? '-'}</td>
                         <td className="px-3 py-2.5 text-text-primary">{device.scope === 'account' ? 'Tout le compte' : 'Un site'}</td>
                         <td className="px-3 py-2.5 text-text-primary">{LANGUAGE_LABEL[device.language]}</td>
                         <td className={`px-3 py-2.5 font-semibold ${connection === 'en_ligne' ? 'text-confirm' : 'text-text-secondary'}`}>
                           {CONNECTION_LABEL[connection]}
                         </td>
                         <td className="px-3 py-2.5 tabular-nums text-text-secondary">{lastActivity(device)}</td>
-                        <td className="px-3 py-2.5 font-mono text-xs">{device.firmware_version ?? '—'}</td>
+                        <td className="px-3 py-2.5 font-mono text-xs">{device.firmware_version ?? '-'}</td>
                         <td className="px-3 py-2.5 tabular-nums">{device.commands_24h}</td>
                         <td className="px-3 py-2.5">
                           <Link to={`/app/admin/boitiers/${device.id}`} className="focus-ring font-semibold text-accent-cta">

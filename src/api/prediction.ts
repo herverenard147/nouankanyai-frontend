@@ -63,7 +63,7 @@ function toPrediction(title: string, granularity: PredictionGranularity, buckete
   const first = bucketed.series[0]
   return {
     title,
-    value: first ? first.displayValue : '—',
+    value: first ? first.displayValue : '-',
     unit,
     intervalLabel: `coût estimé ${GRANULARITY_INTERVAL_LABEL[granularity]} : ${formatNumberFr(bucketed.totalCostFcfa)} FCFA`,
     modelNote:
@@ -83,7 +83,7 @@ function toPrediction(title: string, granularity: PredictionGranularity, buckete
 export async function fetchPredictionsBundle(_profile: Profile, granularity: PredictionGranularity): Promise<PredictionsBundle> {
   const machines = await getCachedMachines()
   // Aucun équipement enregistré (compte neuf, ou Admin qui n'a pas de site propre) : état vide, pas une
-  // erreur réseau (DESIGN.md règle 1 — MetricState affiche « Aucune donnée pour le moment », jamais
+  // erreur réseau (DESIGN.md règle 1 : MetricState affiche « Aucune donnée pour le moment », jamais
   // « Indisponible » pour une absence de donnée légitime).
   if (machines.length === 0) {
     return { global: null, perDevice: [] }
@@ -106,7 +106,7 @@ export async function fetchPredictionsBundle(_profile: Profile, granularity: Pre
   const perDevice: Prediction[] = perMachine.map(({ machine, bucketed }) => toPrediction(machine.nom, granularity, bucketed))
 
   // Somme point par point : même horizon pour tous les appareils, donc même nombre
-  // de points prédits dans le même ordre — pas besoin de réaligner par date.
+  // de points prédits dans le même ordre : pas besoin de réaligner par date.
   const bucketCount = perMachine[0]?.bucketed.series.length ?? 0
   const globalValues = Array.from({ length: bucketCount }, (_, i) =>
     perMachine.reduce((sum, d) => sum + (d.bucketed.series[i]?.value ?? 0), 0),
@@ -119,7 +119,7 @@ export async function fetchPredictionsBundle(_profile: Profile, granularity: Pre
     displayValue: formatNumberFr(value, 1),
     percent: Math.round((value / max) * 100),
   }))
-  const global = toPrediction('Prédiction globale — tous les équipements', granularity, {
+  const global = toPrediction('Prédiction globale : tous les équipements', granularity, {
     series: globalSeries,
     totalCostFcfa: globalCostFcfa,
   })

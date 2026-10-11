@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 /**
  * Rendu minimal des réponses de l'Assistant : le système lui demande déjà de ne
  * jamais utiliser de markdown (voir system_prompt.jinja2, backend), mais un modèle
- * peut toujours en glisser malgré la consigne — ce composant est le filet de
+ * peut toujours en glisser malgré la consigne : ce composant est le filet de
  * sécurité côté frontend, pas le mécanisme principal. Gère seulement **gras** et
  * les puces "- ", sans dépendance markdown complète (inutile pour une bulle de
  * chat étroite, et ça éviterait d'afficher un tableau proprement de toute façon).

@@ -24,7 +24,7 @@ interface AdviceListProps {
    * badge de la sidebar à 0 (voir useNotificationBadges). */
   markSeenOnView?: boolean
   /** Limite le nombre de conseils affichés, avec un lien "Voir plus" vers
-   * /app/conseils au-delà — utilisé sur les pages Vue d'ensemble, même
+   * /app/conseils au-delà : utilisé sur les pages Vue d'ensemble, même
    * traitement que AlertSection.maxActionAlerts. Sans cette prop (page
    * /app/conseils elle-même), la liste complète s'affiche. */
   maxItems?: number
@@ -96,7 +96,7 @@ export function AdviceList({ profile, level, markSeenOnView, maxItems }: AdviceL
   const markAdviceSeen = useNotificationStore((s) => s.markAdviceSeen)
   const title = adviceSectionTitle(profile)
   // Le chiffrage d'impact (FCFA) est un raisonnement business, pas un
-  // "conseil direct" — masqué au niveau débutant (voir levelGating.ts).
+  // "conseil direct" : masqué au niveau débutant (voir levelGating.ts).
   const showImpact = levelAtLeast(level, 'amateur')
 
   useEffect(() => {

@@ -30,7 +30,7 @@ const ADMIN_LABELS: Record<(typeof ADMIN_KPI_IDS)[number], string> = {
 }
 
 /** Vitrine synchrone : le titre (et la fenêtre, pour l'admin) reste affiché même
- * pendant le chargement ou en cas d'échec de la query de valeur — voir CLAUDE.md
+ * pendant le chargement ou en cas d'échec de la query de valeur : voir CLAUDE.md
  * du backend, `LATENCY_WINDOW_SECONDS = 300` dans main.py pour la fenêtre admin. */
 export function kpiIdsFor(profile: Profile): string[] {
   return profile === 'admin' ? [...ADMIN_KPI_IDS] : [...CLIENT_KPI_IDS]
@@ -129,7 +129,7 @@ async function fetchAdminKpiSet(): Promise<Record<string, Kpi>> {
     'latence-moyenne': {
       id: 'latence-moyenne',
       label: ADMIN_LABELS['latence-moyenne'],
-      value: metrics.system.avg_latency_ms !== null ? formatNumberFr(metrics.system.avg_latency_ms) : '—',
+      value: metrics.system.avg_latency_ms !== null ? formatNumberFr(metrics.system.avg_latency_ms) : '-',
       unit: 'ms',
       note: `${formatNumberFr(metrics.system.sample_count)} échantillons sur cette fenêtre`,
       provenance: 'telemetrie_systeme',
@@ -146,7 +146,7 @@ async function fetchAdminKpiSet(): Promise<Record<string, Kpi>> {
   }
 }
 
-/** Les 4 indicateurs de la bande KPI, en un seul aller-retour réseau (voir KpiStrip — chaque KpiTile lit ce
+/** Les 4 indicateurs de la bande KPI, en un seul aller-retour réseau (voir KpiStrip : chaque KpiTile lit ce
  * même cache react-query au lieu de refetcher sa propre valeur). */
 export function fetchKpiSet(profile: Profile): Promise<Record<string, Kpi>> {
   return profile === 'admin' ? fetchAdminKpiSet() : fetchClientKpiSet(profile)

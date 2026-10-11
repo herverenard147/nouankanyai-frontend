@@ -20,7 +20,7 @@ export function toAuditEvent(event: BackendAuditEvent): AuditEvent {
   return {
     id: event.id,
     time: formatUtcDateTime(event.created_at),
-    actor: event.actor_nom ?? '—',
+    actor: event.actor_nom ?? '-',
     action: event.label,
     detail: frenchNumbersWithUnits(event.detail ?? ''),
     category: event.category,

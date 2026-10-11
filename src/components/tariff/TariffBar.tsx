@@ -10,7 +10,7 @@ const SEGMENTS = [
   { key: 'pointe', label: 'Pointe', flex: 1, colorVar: '--color-tariff-pointe' },
 ] as const
 
-/** Barre de paliers tarifaires CIE — signature visuelle récurrente du produit. */
+/** Barre de paliers tarifaires CIE : signature visuelle récurrente du produit. */
 export function TariffBar({ nowLabel, compact, showLabels = true }: TariffBarProps) {
   return (
     <div className="flex flex-col gap-2">

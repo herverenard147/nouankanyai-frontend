@@ -31,7 +31,7 @@ const PRIORITIES = [
 ]
 
 /**
- * Modale d'ajout/modification, partagée entre EquipmentPage (PME) et MachinesPage (Industrie) — même
+ * Modale d'ajout/modification, partagée entre EquipmentPage (PME) et MachinesPage (Industrie) : même
  * ressource backend (`/api/machines`). L'ajout s'enregistre directement ; la modification passe par une
  * seconde modale de validation (avant → après), voir DESIGN.md §8. (Le nom du fichier est historique : c'était
  * un tiroir.)
@@ -190,7 +190,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           </Button>
         )}
         {categorieNonReconnue && (
-          <p className="text-xs text-text-secondary">Catégorie non reconnue automatiquement — vérifiez/complétez les champs.</p>
+          <p className="text-xs text-text-secondary">Catégorie non reconnue automatiquement : vérifiez/complétez les champs.</p>
         )}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <TextField label="Nom" required value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} />

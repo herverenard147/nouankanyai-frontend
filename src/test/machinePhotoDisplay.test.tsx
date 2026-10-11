@@ -23,7 +23,7 @@ function row(overrides: Partial<EquipmentRow> = {}): EquipmentRow {
   }
 }
 
-describe('Photo de la machine dans la liste (boîte noire — contrat : afficher la photo si connue, jamais en inventer une)', () => {
+describe('Photo de la machine dans la liste (boîte noire : contrat : afficher la photo si connue, jamais en inventer une)', () => {
   it('affiche la photo de l’équipement quand elle est connue', () => {
     const { container } = render(
       <DataTable columns={columns} rows={[row({ photo_data_url: 'data:image/jpeg;base64,abc' })]} photoColumn />,
@@ -46,7 +46,7 @@ describe('Photo de la machine dans la liste (boîte noire — contrat : afficher
   })
 })
 
-describe('Photo de la machine dans la fiche détail (boîte blanche — s’appuie sur row.photo_data_url, le champ réel)', () => {
+describe('Photo de la machine dans la fiche détail (boîte blanche : s’appuie sur row.photo_data_url, le champ réel)', () => {
   it('affiche la photo en grand quand row.photo_data_url est renseigné', () => {
     render(
       <RowDetailDrawer

@@ -397,7 +397,7 @@ function ThresholdsCard() {
 }
 
 /**
- * Panneau de consentement unique pour l'autonomie de l'IA — demandé pour ne
+ * Panneau de consentement unique pour l'autonomie de l'IA : demandé pour ne
  * pas redemander à chaque clic sur « Vérifier et résoudre » si l'utilisateur
  * veut une relance automatique. Sauvegarde immédiate (pas de modal) : c'est
  * un réglage global, pas une action qui mérite une confirmation à deux temps

@@ -31,7 +31,7 @@ import { useSessionStore } from '@/store/sessionStore'
  * Smoke test d'intégration : appelle le vrai backend local (voir
  * VITE_API_BASE_URL, défaut http://localhost:8001) via les comptes de démo
  * réels créés pour cette vérification. Pas destiné à tourner en CI (dépend
- * d'un backend + Postgres locaux déjà démarrés) — usage ponctuel de vérification.
+ * d'un backend + Postgres locaux déjà démarrés) : usage ponctuel de vérification.
  *
  * Il ÉCRIT dans la base du backend (sites, machines, facture, seuils, rôle d'un
  * compte de démo) : il ne tourne donc qu'à la demande, `SMOKE=1 npx vitest run
@@ -45,7 +45,7 @@ async function loginAs(email: string, password: string) {
   if (!result.ok) throw new Error(`Login ${email} a échoué : ${result.message}`)
 }
 
-smoke('intégration backend réel — compte Ménage', () => {
+smoke('intégration backend réel : compte Ménage', () => {
   beforeAll(async () => {
     await loginAs('aicha@menage.demo', 'demo1234')
   })
@@ -95,7 +95,7 @@ smoke('intégration backend réel — compte Ménage', () => {
   it('facture : génère une prévision réelle puis confirme un montant réel', async () => {
     // generate_bill_forecast() est un upsert par mois côté backend : un appel
     // répété pour le même mois renvoie/actualise la même ligne plutôt que
-    // d'en créer une nouvelle — donc pas d'hypothèse sur son statut initial.
+    // d'en créer une nouvelle : donc pas d'hypothèse sur son statut initial.
     const forecast = await generateForecastInvoice()
     expect(forecast.id).toBeTruthy()
     const confirmed = await confirmInvoiceActual(forecast.id, 12345)
@@ -115,7 +115,7 @@ smoke('intégration backend réel — compte Ménage', () => {
   }, 30000)
 })
 
-smoke('intégration backend réel — compte PME', () => {
+smoke('intégration backend réel : compte PME', () => {
   beforeAll(async () => {
     await loginAs('contact@boulangerie-awale.demo', 'demo1234')
   })
@@ -161,7 +161,7 @@ smoke('intégration backend réel — compte PME', () => {
   }, 30000)
 })
 
-smoke('intégration backend réel — compte Industrie', () => {
+smoke('intégration backend réel : compte Industrie', () => {
   beforeAll(async () => {
     await loginAs('exploitation@yopougon-l2.demo', 'demo1234')
   })
@@ -175,7 +175,7 @@ smoke('intégration backend réel — compte Industrie', () => {
   }, 30000)
 })
 
-smoke('intégration backend réel — compte Admin', () => {
+smoke('intégration backend réel : compte Admin', () => {
   beforeAll(async () => {
     await loginAs('admin@nouankany.demo', 'demo1234')
   })

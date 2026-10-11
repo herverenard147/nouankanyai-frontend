@@ -8,7 +8,7 @@ import type { NavByProfile, RouteAccess } from '@/types/nav'
  * interdite, ou l'inverse.
  *
  * `profile` est dérivé de `type_compte` côté backend (voir
- * `lib/profileMapping.ts`), pas un champ natif du backend — le backend ne
+ * `lib/profileMapping.ts`), pas un champ natif du backend : le backend ne
  * connaît que `type_compte` (texte libre) et `platform_role` (accès admin).
  */
 export const NAV_BY_PROFILE: NavByProfile = {
@@ -92,7 +92,7 @@ export const ROUTE_ACCESS: RouteAccess = (
 }, {})
 
 /** Une route non listée dans NAV_BY_PROFILE (ex: /app/admin/utilisateurs/:id, fiche détail
- * ouverte depuis la page Utilisateurs) hérite de l'accès de son entrée de nav parente — sans
+ * ouverte depuis la page Utilisateurs) hérite de l'accès de son entrée de nav parente : sans
  * ce repli, ROUTE_ACCESS ne la connaît pas du tout et isRouteAllowed l'autoriserait par
  * défaut à TOUS les profils (le repli ALL_PROFILES ci-dessous est pensé pour des routes hors
  * nav type /app/parametres, pas pour un sous-chemin d'une route déjà restreinte). */

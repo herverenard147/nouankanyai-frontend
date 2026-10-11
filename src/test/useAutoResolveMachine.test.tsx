@@ -8,7 +8,7 @@ import type { BackendMachineTestResult } from '@/types/backend'
 
 /**
  * Boîte blanche sur useAutoResolveMachine : s'appuie sur les noms réels
- * (rawTestMachine, rawAlertThresholds) — complète machinePhotoCapture.*.test.tsx
+ * (rawTestMachine, rawAlertThresholds) : complète machinePhotoCapture.*.test.tsx
  * qui ne couvre pas ce hook.
  */
 vi.mock('@/api/rawBackend', () => ({

@@ -8,7 +8,7 @@ import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 /**
  * Bouton d'action support partagé entre la page Alertes de l'Admin (AlertCard) et la fiche
  * détail d'un utilisateur (AdminUserDetailPage) : relance une vraie vérification sur
- * l'équipement d'un AUTRE compte, jamais sans confirmation (RGPD — jamais un clic accidentel
+ * l'équipement d'un AUTRE compte, jamais sans confirmation (RGPD : jamais un clic accidentel
  * sur les données d'un utilisateur) ni sans trace (toujours enregistrée dans l'Audit du client).
  */
 export function AdminVerifyMachineButton({ machineId, subject }: { machineId: string; subject: string }) {

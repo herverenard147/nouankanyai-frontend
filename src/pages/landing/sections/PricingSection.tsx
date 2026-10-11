@@ -15,7 +15,7 @@ interface Tier {
   features: string[]
   /**
    * Ménage : un seul CTA, self-service direct vers l'inscription (déjà un
-   * essai gratuit). PME/Industrie : deux CTA — "Demander un audit" reste le
+   * essai gratuit). PME/Industrie : deux CTA : "Demander un audit" reste le
    * parcours commercial réel (vente consultative, voir Business Plan §9),
    * "Essayer gratuitement" ouvre en plus un compte self-service marqué
    * essai (`is_trial`) pour explorer le produit avec des données simulées

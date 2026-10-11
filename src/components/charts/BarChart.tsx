@@ -44,7 +44,7 @@ const SIZE_CONFIG: Record<
     defaultGapPx: 14,
     // max-w ajouté (30 sept) : sans plafond, une barre unique (peu de relevés,
     // ex. un compte tout juste créé) s'étire sur toute la largeur du graphique
-    // et écrase visuellement les graduations — même principe déjà appliqué
+    // et écrase visuellement les graduations : même principe déjà appliqué
     // côté landing (max-w-8).
     barWidthClass: 'flex-1 min-w-0 max-w-16',
     radiusClass: 'rounded-t-bar-dashboard',
@@ -73,7 +73,7 @@ const SIZE_CONFIG: Record<
 /**
  * Grammaire de graphique commune à la landing et au dashboard : axes gradués,
  * cadre, infobulle au survol (desktop) et au clic/toucher (pin, pour mobile).
- * L'état de survol/épinglage est local à chaque instance — contrairement à la
+ * L'état de survol/épinglage est local à chaque instance : contrairement à la
  * maquette d'origine où il était partagé entre les 3 graphiques de la landing.
  */
 export function BarChart({

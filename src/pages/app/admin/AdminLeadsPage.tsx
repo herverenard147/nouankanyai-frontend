@@ -39,10 +39,10 @@ export function AdminLeadsPage() {
                   <td className="px-4 py-3 text-text-primary">{lead.entreprise}</td>
                   <td className="px-4 py-3 text-text-primary">{lead.contact_nom}</td>
                   <td className="px-4 py-3 text-text-secondary">{lead.email}</td>
-                  <td className="px-4 py-3 tabular-nums text-text-secondary">{lead.telephone ?? '—'}</td>
+                  <td className="px-4 py-3 tabular-nums text-text-secondary">{lead.telephone ?? '-'}</td>
                   <td className="px-4 py-3 text-text-secondary">{SECTOR_LABEL[lead.secteur] ?? lead.secteur}</td>
                   <td className="px-4 py-3 text-xs font-semibold text-text-secondary">{STATUS_LABEL[lead.status] ?? lead.status}</td>
-                  <td className="max-w-xs px-4 py-3 text-text-secondary">{lead.message ?? '—'}</td>
+                  <td className="max-w-xs px-4 py-3 text-text-secondary">{lead.message ?? '-'}</td>
                 </tr>
               ))}
             </tbody>

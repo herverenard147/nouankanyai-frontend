@@ -28,7 +28,7 @@ type Dialog = 'role-form' | 'role-confirm' | 'rename-form' | 'rename-confirm' | 
 /**
  * Fiche détail d'un utilisateur, ouverte depuis Admin → Utilisateurs (DESIGN.md : « afficher
  * par utilisateur dans une page détail pour ne pas surcharger la page actuelle »). Regroupe ce
- * que l'Admin ne voit nulle part ailleurs — lui-même n'a pas d'équipement, de facture ni de
+ * que l'Admin ne voit nulle part ailleurs : lui-même n'a pas d'équipement, de facture ni de
  * prédiction en propre, contrairement aux 3 profils client.
  */
 export function AdminUserDetailPage() {
@@ -347,7 +347,7 @@ export function AdminUserDetailPage() {
             {predictionsQuery.data?.map((p) => (
               <li key={p.machineId} className="flex justify-between border-b border-border pb-1.5 text-text-primary">
                 <span>{p.nom}</span>
-                <span className="tabular-nums text-text-secondary">{p.nextHourValue ?? (p.error ? 'Indisponible' : '—')}</span>
+                <span className="tabular-nums text-text-secondary">{p.nextHourValue ?? (p.error ? 'Indisponible' : '-')}</span>
               </li>
             ))}
           </ul>

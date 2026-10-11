@@ -8,7 +8,7 @@ interface TariffSectionProps {
   profile: Profile
 }
 
-/** Barre de paliers tarifaires CIE, dans le bloc KPI — masquée pour l'Admin. */
+/** Barre de paliers tarifaires CIE, dans le bloc KPI : masquée pour l'Admin. */
 export function TariffSection({ profile }: TariffSectionProps) {
   if (!tariffShown(profile)) return null
   return <TariffSectionContent profile={profile} />

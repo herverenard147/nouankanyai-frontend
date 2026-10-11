@@ -18,10 +18,10 @@ export function TopBar() {
 
   const entries = NAV_BY_PROFILE[session.profile]
   const currentEntry = entries.find((e) => location.pathname === e.path || location.pathname.startsWith(`${e.path}/`))
-  // Niveau d'affichage réservé aux profils PME/Industrie (et Admin) — un
+  // Niveau d'affichage réservé aux profils PME/Industrie (et Admin) : un
   // ménage n'a qu'une seule densité d'info, pas de raison de lui proposer ce
   // choix. Sur mobile/tablette, le choix reste accessible uniquement depuis
-  // /app/parametres (pas ici, pour ne pas surcharger l'en-tête) — voir
+  // /app/parametres (pas ici, pour ne pas surcharger l'en-tête) : voir
   // SettingsPage.
   const showLevelSelector = session.profile !== 'menage'
 

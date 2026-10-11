@@ -76,7 +76,7 @@ export function useUploadInvoicePhoto(profile: Profile) {
 }
 
 /** Récupération à la demande (ouverture de la modale "Voir plus"), pas au
- * chargement de la liste — voir GET /api/bills/{id}/photo côté backend. */
+ * chargement de la liste : voir GET /api/bills/{id}/photo côté backend. */
 export function useInvoicePhoto(billId: string | null) {
   return useQuery({
     queryKey: ['invoice-photo', billId],

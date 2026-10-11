@@ -33,7 +33,7 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
     {
       key: 'montant',
       label: bill.is_forecast ? 'Montant prévu' : 'Montant TTC',
-      value: bill.amount ?? '—',
+      value: bill.amount ?? '-',
       provenance: bill.is_forecast ? 'synthetique' : 'estime',
       editable: false,
     },
@@ -52,7 +52,7 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
   }
   // Détail NouankanyAI (extraction par photo uniquement, voir document_type sur
   // BackendElectricityBill) : le type de document et, pour un paiement numérique,
-  // l'opérateur et la référence de transaction — jamais affichés pour une saisie
+  // l'opérateur et la référence de transaction : jamais affichés pour une saisie
   // manuelle ou une prévision, où ces champs sont toujours null côté backend.
   if (bill.document_type === 'recu_paiement_numerique') {
     fields.push({ key: 'type_document', label: 'Type de document', value: 'Reçu de paiement numérique', provenance: 'estime', editable: false })

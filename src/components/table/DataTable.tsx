@@ -16,7 +16,7 @@ interface DataTableProps<T extends { id: string; provenance: Provenance; photo_d
   searchPlaceholder?: string
   /** Colonne d'actions en fin de ligne (Modifier / Supprimer) ; un clic dessus n'ouvre pas la fiche détail. */
   renderActions?: (row: T) => ReactNode
-  /** Ajoute une vignette (`row.photo_data_url`) en première colonne — seulement pour les tables de machines/équipements. */
+  /** Ajoute une vignette (`row.photo_data_url`) en première colonne : seulement pour les tables de machines/équipements. */
   photoColumn?: boolean
 }
 
