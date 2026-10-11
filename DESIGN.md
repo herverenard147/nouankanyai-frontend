@@ -159,6 +159,14 @@ ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des 
 
 ## 5 bis. Premiers pas, mouvement et vocabulaire du Ménage (demande du propriétaire, 2026-10-11)
 
+- **Menu resserré du Ménage (partie H2, 2026-10-11)** : neuf entrées (Accueil, Premiers pas, Mes appareils, Ma consommation,
+  Mes factures, Conseils, À surveiller, Mon boîtier, Paramètres). « Facture prévue », « Abonnement », « Rapports » et
+  « Recommandations » n'ont plus d'entrée propre : elles portent `under` dans `navConfig.ts`, restent accessibles par leur
+  adresse et s'ouvrent depuis l'accueil, « Mes factures » et « Conseils » (qui affiche aussi les recommandations). Le menu
+  affiché vient de `visibleNav(profile)` ; PME, Industrie et Admin ne changent pas.
+- **Imports (partie I, 2026-10-11)** : la facture s'envoie en photo ou en PDF ; « Importer plusieurs factures » (page Factures)
+  et « Reprendre les données d'un autre compte » (Paramètres) suivent le même parcours : fichier, aperçu dans une modale,
+  confirmation. Rien n'est enregistré avant la confirmation.
 - **Premiers pas** (`/app/premiers-pas`, 2e entrée du menu de chaque profil) : les actions importantes du compte, chacune
   avec une phrase qui dit ce qu'elle fait. Étapes par profil dans `src/lib/gettingStarted.ts` (testé). Une étape se coche
   **d'après les données réelles du compte** (un site, un appareil, une facture envoyée…) ; une étape sans donnée mesurable se

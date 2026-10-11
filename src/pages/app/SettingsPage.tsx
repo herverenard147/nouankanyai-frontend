@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 
 import { LevelSelector } from '@/components/level/LevelSelector'
 import { SitesCard } from '@/components/settings/SitesCard'
+import { TransferCard } from '@/components/import/TransferCard'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, type FieldChange } from '@/components/ui/Modal'
@@ -619,6 +620,7 @@ export function SettingsPage() {
       {session.profile !== 'admin' && <AutomationCard />}
 
       {session.profile !== 'admin' && (session.profile === 'menage' || session.isTeamOwner) && <ExportCard />}
+      {session.profile !== 'admin' && (session.profile === 'menage' || session.isTeamOwner) && <TransferCard />}
       {session.profile !== 'admin' && (
         <DeleteAccountCard isMember={(session.profile === 'pme' || session.profile === 'industrie') && !session.isTeamOwner} />
       )}

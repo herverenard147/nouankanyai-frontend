@@ -8,7 +8,9 @@ import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, type FieldC
 import { TextField } from '@/components/ui/TextField'
 import { InvoicePhotoModal } from '@/components/upload/InvoicePhotoModal'
 import { OcrFieldList } from '@/components/upload/OcrFieldList'
+import { Link } from 'react-router-dom'
 import { UploadCard } from '@/components/upload/UploadCard'
+import { BulkInvoiceImport } from '@/components/import/BulkInvoiceImport'
 import {
   useAddManualInvoice,
   useAttachInvoicePhoto,
@@ -113,17 +115,26 @@ export function InvoicesPage() {
 
   return (
     <div className="flex flex-col gap-7">
+      {profile === 'menage' && (
+        <nav aria-label="Autres pages liées aux factures" className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+          <Link to="/app/facturation" className="focus-ring text-accent-cta hover:text-accent-cta-hover">Mon abonnement →</Link>
+          <Link to="/app/rapports" className="focus-ring text-accent-cta hover:text-accent-cta-hover">Mes rapports →</Link>
+        </nav>
+      )}
       <div className="grid gap-7 lg:grid-cols-3 lg:gap-8">
         <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
           <UploadCard
-            title="Ajouter une facture par photo"
-            caption="Photographiez votre facture CIE : le mois, le montant et la consommation sont extraits automatiquement."
+            title="Ajouter une facture par photo ou PDF"
+            caption="Photographiez votre facture CIE ou envoyez son PDF (5 pages au plus) : le mois, le montant et la consommation sont extraits automatiquement."
+            buttonLabel="Choisir une photo ou un PDF"
+            accept="image/*,application/pdf"
+            camera={false}
             onFileSelected={(file) => uploadMutation.mutate(file)}
             isUploading={uploadMutation.isPending}
           />
           {uploadMutation.isError && (
             <ApiErrorMessage
-              message={uploadMutation.error instanceof ApiError ? uploadMutation.error.message : "Échec de l'envoi de la photo."}
+              message={uploadMutation.error instanceof ApiError ? uploadMutation.error.message : "Échec de l'envoi du fichier."}
               className="text-sm text-alert"
             />
           )}
@@ -324,6 +335,8 @@ export function InvoicesPage() {
           onConfirm={() => deleteMutation.mutate(dialog.invoice.id, { onSuccess: () => setDialog(null) })}
         />
       )}
+
+      <BulkInvoiceImport profile={profile!} />
 
       {viewingPhotoOf && (
         <InvoicePhotoModal billId={viewingPhotoOf.id} period={viewingPhotoOf.period} onClose={() => setViewingPhotoOf(null)} />

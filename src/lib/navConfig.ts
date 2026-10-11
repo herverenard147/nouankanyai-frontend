@@ -12,20 +12,22 @@ import type { NavByProfile, RouteAccess } from '@/types/nav'
  * connaît que `type_compte` (texte libre) et `platform_role` (accès admin).
  */
 export const NAV_BY_PROFILE: NavByProfile = {
+  // Menu resserré (partie H2) : neuf entrées au vocabulaire du quotidien. Les pages marquées
+  // `under` restent accessibles par leur adresse et depuis la page indiquée, sans entrée propre.
   menage: [
-    { path: '/app/apercu', label: "Vue d'ensemble" },
+    { path: '/app/apercu', label: 'Accueil' },
     { path: '/app/premiers-pas', label: 'Premiers pas' },
-    { path: '/app/alertes', label: 'Alertes' },
-    { path: '/app/consommation', label: 'Conso & coûts' },
-    { path: '/app/equipements', label: 'Équipements' },
-    { path: '/app/prediction', label: 'Prédiction' },
-    { path: '/app/factures', label: 'Factures' },
-    { path: '/app/facturation', label: 'Abonnement' },
-    { path: '/app/rapports', label: 'Rapports' },
+    { path: '/app/equipements', label: 'Mes appareils' },
+    { path: '/app/consommation', label: 'Ma consommation' },
+    { path: '/app/factures', label: 'Mes factures' },
     { path: '/app/conseils', label: 'Conseils' },
-    { path: '/app/recommandations', label: 'Recommandations' },
-    { path: '/app/boitier', label: 'Boîtier' },
+    { path: '/app/alertes', label: 'À surveiller' },
+    { path: '/app/boitier', label: 'Mon boîtier' },
     { path: '/app/parametres', label: 'Paramètres' },
+    { path: '/app/prediction', label: 'Facture prévue', under: '/app/apercu' },
+    { path: '/app/facturation', label: 'Abonnement', under: '/app/factures' },
+    { path: '/app/rapports', label: 'Rapports', under: '/app/factures' },
+    { path: '/app/recommandations', label: 'Recommandations', under: '/app/conseils' },
   ],
   pme: [
     { path: '/app/apercu', label: "Vue d'ensemble" },
@@ -78,6 +80,11 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/admin/boitiers', label: 'Boîtiers' },
     { path: '/app/parametres', label: 'Paramètres' },
   ],
+}
+
+/** Entrées affichées dans le menu : toutes, sauf les pages rattachées à une autre (`under`). */
+export function visibleNav(profile: Profile) {
+  return NAV_BY_PROFILE[profile].filter((entry) => !entry.under)
 }
 
 const ALL_PROFILES: Profile[] = ['menage', 'pme', 'industrie', 'admin']
