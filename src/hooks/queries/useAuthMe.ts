@@ -21,5 +21,11 @@ export function useUpdateProfile() {
 }
 
 export function useChangePassword() {
-  return useMutation({ mutationFn: changePassword })
+  // Le serveur ferme toutes les sessions et renvoie une nouvelle paire de jetons pour celle-ci (Volet 5).
+  return useMutation({
+    mutationFn: changePassword,
+    onSuccess: (result) => {
+      if (result.token) useSessionStore.getState().setTokens(result.token, result.refresh_token)
+    },
+  })
 }

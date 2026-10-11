@@ -40,7 +40,10 @@ export interface BackendNewTeamMemberPayload {
 }
 
 export interface BackendAuthResult {
+  /** Jeton d'accès, valable 30 minutes. */
   token: string
+  /** Jeton de renouvellement à usage unique (30 jours), échangé par POST /api/auth/refresh. */
+  refresh_token?: string
   user: BackendUser
 }
 
