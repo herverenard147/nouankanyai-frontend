@@ -51,8 +51,29 @@ export interface TransferResult {
   factures_ignorees: { mois: string | null; raison: string }[]
 }
 
-export const previewTransfer = (file: File, include: TransferSection[]) =>
-  api.postForm<TransferPreview>('/api/v1/data/transfer/preview', fileForm(file, include))
+/** `targetUserId` : reprise faite par le support dans le compte d'un client (routes admin). */
+const transferPath = (step: 'preview' | 'import', targetUserId?: string) =>
+  targetUserId ? `/api/v1/data/admin/transfer/${targetUserId}/${step}` : `/api/v1/data/transfer/${step}`
 
-export const confirmTransfer = (file: File, include: TransferSection[]) =>
-  api.postForm<TransferResult>('/api/v1/data/transfer/import', fileForm(file, include))
+export const previewTransfer = (file: File, include: TransferSection[], targetUserId?: string) =>
+  api.postForm<TransferPreview>(transferPath('preview', targetUserId), fileForm(file, include))
+
+export const confirmTransfer = (file: File, include: TransferSection[], targetUserId?: string) =>
+  api.postForm<TransferResult>(transferPath('import', targetUserId), fileForm(file, include))
+
+export interface ReadingImportPreview {
+  acceptes: number
+  refuses: number
+  appareils: { code: string; nom: string; releves: number; du: string; au: string }[]
+  /** Au plus 200 lignes refusées sont détaillées ; `refuses` donne le total. */
+  rejected: { line: number; raison: string }[]
+}
+
+export async function downloadReadingTemplate(): Promise<void> {
+  const { blob, filename } = await api.getBlob('/api/v1/data/readings/template.csv')
+  saveBlob(blob, filename ?? 'modele-releves-nouankany.csv')
+}
+
+export const previewReadingImport = (file: File) => api.postForm<ReadingImportPreview>('/api/v1/data/readings/preview', fileForm(file))
+
+export const confirmReadingImport = (file: File) => api.postForm<{ imported: number; refuses: number }>('/api/v1/data/readings/import', fileForm(file))
