@@ -65,6 +65,9 @@ export interface BackendMachine {
   vibration_hz: number | null
   pressure_bar: number | null
   has_reading?: boolean
+  equipment_reference_id?: string | null
+  /** Consommation journalière attendue d'après la fiche du référentiel : toujours une estimation. */
+  estimation_reference?: { kwh_jour: number; cout_jour_fcfa: number; heures_par_jour: number; puissance_kw: number; provenance: 'estime'; source: string; confiance: string } | null
   status: string
   priority: string
   categorie: string | null

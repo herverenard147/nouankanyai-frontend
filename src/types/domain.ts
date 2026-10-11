@@ -172,6 +172,8 @@ export interface MachineRow {
   temperature: string
   vibration: string
   pression: string
+  /** Consommation attendue par jour d'après la fiche du référentiel (estimation), « — » sans fiche. */
+  attendu: string
   statut: string
   priorite: 'Haute' | 'Moyenne' | 'Basse'
   provenance: Provenance
