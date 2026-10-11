@@ -52,6 +52,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
   const updateMutation = useUpdateMachine()
   const [step, setStep] = useState<'form' | 'confirm' | 'photo'>('form')
   const [categorieNonReconnue, setCategorieNonReconnue] = useState(false)
+  const [errors, setErrors] = useState<{ nom?: string; power?: string; annee?: string }>({})
 
   const [form, setForm] = useState({
     nom: machine?.nom ?? '',
@@ -97,7 +98,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     : []
 
   function save() {
-    const power_kw = form.power_kw ? Number(form.power_kw) : undefined
+    const power_kw = form.power_kw ? Number(form.power_kw.replace(',', '.')) : undefined
     if (isEdit && machine) {
       updateMutation.mutate(
         {
@@ -135,8 +136,23 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     }
   }
 
+  /** Contrôle avant l'envoi : le serveur refuse les mêmes cas, mais le dire ici évite un aller-retour. */
+  function validate() {
+    const found: typeof errors = {}
+    if (!form.nom.trim()) found.nom = 'Donnez un nom à cet appareil.'
+    const power = Number(form.power_kw.replace(',', '.'))
+    if (!form.power_kw.trim()) found.power = 'Indiquez la puissance, ou choisissez un modèle proposé : elle se remplit seule.'
+    else if (!Number.isFinite(power) || power <= 0) found.power = 'La puissance doit être un nombre supérieur à 0.'
+    const year = Number(form.annee)
+    if (form.annee && (!Number.isInteger(year) || year < 1980 || year > new Date().getFullYear()))
+      found.annee = `Année entre 1980 et ${new Date().getFullYear()}.`
+    setErrors(found)
+    return Object.keys(found).length === 0
+  }
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
+    if (!validate()) return
     if (isEdit) setStep('confirm')
     else save()
   }
@@ -166,7 +182,17 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     )
   }
 
-  const suggestions = catalogSuggestions(catalog.data, form)
+  const suggestions = catalogSuggestions(catalog.data, form, profile === 'menage' ? 'menage' : 'autres')
+  const applyModel = (choice: NonNullable<ReturnType<typeof suggestions.findModel>>, keepName: boolean) =>
+    setForm((f) => ({
+      ...f,
+      nom: keepName && f.nom ? f.nom : `${choice.categorie} ${choice.marque} ${choice.modele}`,
+      categorie: choice.categorie,
+      marque: choice.marque,
+      modele: choice.modele,
+      power_kw: String(choice.puissance_kw),
+      reference_id: choice.reference_id,
+    }))
   const title = isEdit ? `Modifier « ${machine?.nom} »` : `Ajouter ${itemLabel}`
   const pending = addMutation.isPending
 
@@ -187,7 +213,11 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
         </>
       }
     >
-      <form id="machine-form" onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <form id="machine-form" onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
+        <p className="text-xs text-text-secondary">
+          <span aria-hidden="true" className="font-semibold text-alert">*</span> Champ obligatoire. Les autres champs proposent des
+          suggestions pendant la saisie ; vous restez libre d&rsquo;écrire autre chose.
+        </p>
         {!isEdit && (
           <Button type="button" variant="outline" onClick={() => setStep('photo')} className="self-start">
             Ajouter par photo
@@ -197,7 +227,19 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           <p className="text-xs text-text-secondary">Catégorie non reconnue automatiquement : vérifiez/complétez les champs.</p>
         )}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <TextField label="Nom" required value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} />
+          <ComboboxField
+            label="Nom"
+            required
+            error={errors.nom}
+            value={form.nom}
+            onChange={(value) => setForm((f) => ({ ...f, nom: value }))}
+            options={isEdit ? [] : suggestions.noms}
+            onSelect={(option) => {
+              // Un modèle du catalogue choisi par son nom remplit le reste du formulaire.
+              const choice = suggestions.findModel(option.value)
+              if (choice) applyModel(choice, false)
+            }}
+          />
           {isEdit ? (
             <SelectField label="Priorité" value={form.priority} onChange={(value) => setForm((f) => ({ ...f, priority: value }))} options={PRIORITIES} />
           ) : (
@@ -214,16 +256,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
             onSelect={(option) => {
               // Un modèle du catalogue remplit aussi catégorie, marque et puissance.
               const choice = suggestions.findModel(option.value)
-              if (choice)
-                setForm((f) => ({
-                  ...f,
-                  nom: f.nom || `${choice.categorie} ${choice.marque} ${choice.modele}`,
-                  categorie: choice.categorie,
-                  marque: choice.marque,
-                  modele: choice.modele,
-                  power_kw: String(choice.puissance_kw),
-                  reference_id: choice.reference_id,
-                }))
+              if (choice) applyModel(choice, true)
             }}
           />
           <TextField
@@ -231,6 +264,8 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
             type="number"
             step="0.1"
             min="0"
+            required
+            error={errors.power}
             value={form.power_kw}
             onChange={(e) => setForm((f) => ({ ...f, power_kw: e.target.value }))}
           />
@@ -242,6 +277,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
             type="number"
             min="1980"
             max={String(new Date().getFullYear())}
+            error={errors.annee}
             value={form.annee}
             onChange={(e) => setForm((f) => ({ ...f, annee: e.target.value }))}
           />

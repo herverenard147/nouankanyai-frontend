@@ -1,6 +1,7 @@
 import { clsx } from 'clsx'
 import { useId, useState } from 'react'
 import type { InputHTMLAttributes } from 'react'
+import { RequiredMark } from '@/components/ui/TextField'
 
 interface PasswordFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: string
@@ -15,9 +16,12 @@ export function PasswordField({ label, error, className, id, ...rest }: Password
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={fieldId} className="text-sm font-medium text-text-primary">
-        {label}
-      </label>
+      <div className="flex items-baseline gap-1">
+        <label htmlFor={fieldId} className="text-sm font-medium text-text-primary">
+          {label}
+        </label>
+        {rest.required && <RequiredMark />}
+      </div>
       <div className="relative">
         <input
           id={fieldId}
