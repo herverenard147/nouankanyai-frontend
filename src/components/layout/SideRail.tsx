@@ -1,9 +1,9 @@
 import { LogOut } from 'lucide-react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import { SensorDisclaimer } from '@/components/layout/SensorDisclaimer'
 import { useAlertsBadgeCount, useAdviceBadgeCount } from '@/hooks/useNotificationBadges'
-import { NAV_BY_PROFILE } from '@/lib/navConfig'
+import { NAV_BY_PROFILE, visibleNav } from '@/lib/navConfig'
 import { NAV_ICONS } from '@/lib/navIcons'
 import { useSessionStore } from '@/store/sessionStore'
 
@@ -26,13 +26,18 @@ function NavBadge({ count }: { count: number }) {
  * toujours visibles sans défiler la page.
  */
 export function SideRail({ onNavigate }: SideRailProps) {
+  const location = useLocation()
   const session = useSessionStore((s) => s.session)
   const logout = useSessionStore((s) => s.logout)
   const alertsBadge = useAlertsBadgeCount(session?.profile ?? 'menage')
   const adviceBadge = useAdviceBadgeCount(session?.profile ?? 'menage')
 
   if (!session) return null
-  const entries = NAV_BY_PROFILE[session.profile]
+  const entries = visibleNav(session.profile)
+  // Page ouverte sans entrée propre (menu resserré) : son entrée de rattachement reste surlignée.
+  const parentOfCurrent = NAV_BY_PROFILE[session.profile].find(
+    (entry) => entry.under && (location.pathname === entry.path || location.pathname.startsWith(`${entry.path}/`)),
+  )?.under
 
   return (
     <div className="flex h-full flex-col gap-4 bg-dark-bg px-2.5 py-4 text-dark-text">
@@ -53,7 +58,7 @@ export function SideRail({ onNavigate }: SideRailProps) {
               onClick={onNavigate}
               className={({ isActive }) =>
                 `focus-ring flex min-h-11 items-center gap-3 px-3.5 text-sm transition-colors ${
-                  isActive ? 'bg-dark-field font-semibold text-white' : 'text-dark-text hover:bg-dark-field/60'
+                  isActive || parentOfCurrent === entry.path ? 'bg-dark-field font-semibold text-white' : 'text-dark-text hover:bg-dark-field/60'
                 }`
               }
             >

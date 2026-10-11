@@ -106,7 +106,7 @@ export interface BoitierDetail {
   readings: Record<string, string>
 }
 
-const one = (value: number | null) => (value === null ? '—' : value.toFixed(1).replace('.', ','))
+const one = (value: number | null) => (value === null ? '-' : value.toFixed(1).replace('.', ','))
 
 export async function fetchBoitierDetail(id: string): Promise<BoitierDetail> {
   const [state, commands, machines] = await Promise.all([rawBoitierState(id), rawBoitierCommands(id), getCachedMachines().catch(() => [])])
@@ -122,5 +122,5 @@ export async function fetchAdminBoitierDetail(id: string): Promise<BoitierDetail
 }
 
 export function lastActivity(device: Pick<BackendAdminDevice, 'last_seen_at'>): string {
-  return device.last_seen_at ? formatUtcDateTime(device.last_seen_at).slice(0, 16) : '—'
+  return device.last_seen_at ? formatUtcDateTime(device.last_seen_at).slice(0, 16) : '-'
 }

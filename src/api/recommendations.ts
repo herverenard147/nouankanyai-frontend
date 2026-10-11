@@ -4,7 +4,7 @@ import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { Advice, Profile } from '@/types/domain'
 
 /**
- * Suggestions proactives (optimisation, efficacité) — jamais des alertes : pas de
+ * Suggestions proactives (optimisation, efficacité) : jamais des alertes : pas de
  * problème actif à corriger, donc pas de bouton "Marquer comme résolu" (voir
  * src/api/alerts.ts / advice.ts, qui ne gardent que type === 'alerte'). Même source
  * backend (/api/recommend), filtrée sur les deux types restants.

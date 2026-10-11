@@ -13,7 +13,7 @@ export type Provenance = 'mesure' | 'estime' | 'synthetique' | 'telemetrie_syste
 export interface Session {
   /** UUID du compte côté backend. */
   userId: string
-  /** Jeton JWT — envoyé en `Authorization: Bearer <token>` par l'API client. Valable 30 minutes. */
+  /** Jeton JWT : envoyé en `Authorization: Bearer <token>` par l'API client. Valable 30 minutes. */
   token: string
   /** Jeton de renouvellement à usage unique : l'API client l'échange en silence quand le jeton
    * d'accès expire (Volet 5). */
@@ -25,14 +25,14 @@ export interface Session {
   subtitle: string
   /**
    * Compte principal d'une équipe PME/Industrie (peut ajouter/retirer des
-   * membres) — toujours `false` pour un Ménage ou un Admin, et pour un
+   * membres) : toujours `false` pour un Ménage ou un Admin, et pour un
    * membre d'équipe (voir `TeamMember.isOwner` pour distinguer les entrées
    * dans la liste elle-même).
    */
   isTeamOwner: boolean
   /**
    * Compte créé via le bouton "Essayer gratuitement" (landing, PricingSection),
-   * jamais pour une inscription normale ou une demande d'audit — seul un
+   * jamais pour une inscription normale ou une demande d'audit : seul un
    * compte essai voit la bannière "Charger des données de démonstration"
    * (voir DemoDataBanner) sur un dashboard vide.
    */
@@ -56,7 +56,7 @@ export interface ActionAlert {
   id: string
   machineId: string
   level: string
-  /** Sévérité brute (voir ml/recommendation_engine.py) — distincte du diagnostic
+  /** Sévérité brute (voir ml/recommendation_engine.py) : distincte du diagnostic
    * à 4 niveaux renvoyé par POST /api/machines/{id}/test : sert uniquement à décider
    * si la relance automatique de « Vérifier et résoudre » est autorisée pour cette
    * alerte (jamais pour « critique », voir useAutoResolveMachine). */
@@ -144,7 +144,7 @@ export interface Advice {
   provenance: Provenance
   /** Identifiant de la machine concernée côté backend, pour lier une action à son équipement. */
   machineId?: string
-  /** Étapes de dépannage concrètes (voir backend/ml/troubleshooting_advice.py) — présent
+  /** Étapes de dépannage concrètes (voir backend/ml/troubleshooting_advice.py) : présent
    * uniquement pour les conseils de type alerte (anomalie/surchauffe/vibration). */
   troubleshooting?: string[]
   /** Référence stable (machine:type:titre) pour « Marquer comme appliquée » (Recommandations, PME/Industrie
@@ -172,7 +172,7 @@ export interface MachineRow {
   temperature: string
   vibration: string
   pression: string
-  /** Consommation attendue par jour d'après la fiche du référentiel (estimation), « — » sans fiche. */
+  /** Consommation attendue par jour d'après la fiche du référentiel (estimation), « - » sans fiche. */
   attendu: string
   statut: string
   priorite: 'Haute' | 'Moyenne' | 'Basse'
@@ -283,12 +283,12 @@ export interface AdminUser {
   /** Compte d'équipe (voir app/api/v1/team/, backend) : null si compte principal. */
   ownerId: string | null
   ownerName: string | null
-  /** Libellé affiché tel quel dans le tableau admin : "Compte principal", "Membre — {entreprise}", ou "—" (Ménage/Admin, non applicable). */
+  /** Libellé affiché tel quel dans le tableau admin : "Compte principal", "Membre : {entreprise}", ou "—" (Ménage/Admin, non applicable). */
   accountLabel: string
 }
 
 /** Prédiction compacte d'un équipement, pour la fiche détail d'un utilisateur côté Admin
- * (pas besoin du détail complet de Prediction — juste la valeur à l'heure suivante). */
+ * (pas besoin du détail complet de Prediction : juste la valeur à l'heure suivante). */
 export interface AdminMachinePrediction {
   machineId: string
   nom: string

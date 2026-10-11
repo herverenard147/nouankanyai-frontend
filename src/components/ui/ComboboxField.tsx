@@ -2,10 +2,14 @@ import { clsx } from 'clsx'
 import { useId, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 
+import { RequiredMark } from '@/components/ui/TextField'
+
 export interface ComboboxOption {
   value: string
   /** Texte secondaire affiché à droite de la suggestion (ex. « 1,1 kW »). */
   hint?: string
+  /** Autres mots qui doivent trouver cette suggestion (ex. « frigo » pour Réfrigérateur). */
+  keywords?: string
 }
 
 interface ComboboxFieldProps {
@@ -17,6 +21,8 @@ interface ComboboxFieldProps {
   options: ComboboxOption[]
   required?: boolean
   maxSuggestions?: number
+  /** Message d'erreur affiché sous le champ. */
+  error?: string
 }
 
 const plain = (text: string) =>
@@ -33,7 +39,7 @@ export function filterOptions(options: ComboboxOption[], query: string, limit: n
   const q = plain(query.trim())
   return options
     .filter((o) => {
-      const text = plain(o.value)
+      const text = plain(`${o.value} ${o.hint ?? ''} ${o.keywords ?? ''}`)
       return words.every((w) => text.includes(w))
     })
     .sort((a, b) => Number(plain(b.value).startsWith(q)) - Number(plain(a.value).startsWith(q)))
@@ -45,13 +51,15 @@ export function filterOptions(options: ComboboxOption[], query: string, limit: n
  * mot tapé). La saisie libre reste possible : une suggestion n'est qu'une aide, jamais imposée.
  * Flèches haut/bas pour parcourir, Entrée pour choisir, Échap pour fermer.
  */
-export function ComboboxField({ label, value, onChange, onSelect, options, required, maxSuggestions = 8 }: ComboboxFieldProps) {
+export function ComboboxField({ label, value, onChange, onSelect, options, required, maxSuggestions = 8, error }: ComboboxFieldProps) {
   const id = useId()
   const listId = `${id}-suggestions`
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(-1)
   const suggestions = filterOptions(options, value, maxSuggestions)
   const visible = open && suggestions.length > 0 && !(suggestions.length === 1 && suggestions[0].value === value)
+  // Rien ne correspond : on le dit, pour que l'absence de liste ne passe pas pour une panne.
+  const nothingFound = open && options.length > 0 && value.trim().length > 0 && suggestions.length === 0
 
   function choose(option: ComboboxOption) {
     onChange(option.value)
@@ -81,9 +89,12 @@ export function ComboboxField({ label, value, onChange, onSelect, options, requi
 
   return (
     <div className="relative flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-text-primary">
-        {label}
-      </label>
+      <div className="flex items-baseline gap-1">
+        <label htmlFor={id} className="text-sm font-medium text-text-primary">
+          {label}
+        </label>
+        {required && <RequiredMark />}
+      </div>
       <input
         id={id}
         role="combobox"
@@ -102,8 +113,18 @@ export function ComboboxField({ label, value, onChange, onSelect, options, requi
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         onKeyDown={onKeyDown}
-        className="focus-ring min-h-11 rounded-control border border-border bg-card px-3.5 py-3 text-sm text-text-primary placeholder:text-text-tertiary"
+        aria-invalid={error ? true : undefined}
+        className={clsx(
+          'focus-ring min-h-11 rounded-control border bg-card px-3.5 py-3 text-sm text-text-primary placeholder:text-text-tertiary',
+          error ? 'border-alert' : 'border-border',
+        )}
       />
+      {error && <p className="text-sm text-alert">{error}</p>}
+      {nothingFound && (
+        <p className="absolute top-full z-50 mt-1 w-full border border-border bg-card px-3.5 py-2 text-xs text-text-secondary shadow-assistant-panel">
+          Aucune suggestion pour cette saisie : vous pouvez la garder telle quelle.
+        </p>
+      )}
       {visible && (
         <ul id={listId} role="listbox" aria-label={`Suggestions : ${label}`} className="absolute top-full z-50 mt-1 max-h-64 w-full overflow-y-auto border border-border bg-card shadow-assistant-panel">
           {suggestions.map((option, index) => (

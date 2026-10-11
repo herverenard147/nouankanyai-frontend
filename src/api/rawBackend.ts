@@ -1,7 +1,7 @@
 /**
  * Appels bruts vers le backend réel, typés avec les formes exactes du wire
  * format (`types/backend.ts`). Les modules `api/*.ts` construisent les types
- * "vue" (`types/domain.ts`) au-dessus de ces fonctions — c'est ici, et
+ * "vue" (`types/domain.ts`) au-dessus de ces fonctions : c'est ici, et
  * seulement ici, que vit la connaissance du contrat HTTP réel.
  */
 import { api, saveBlob } from '@/lib/apiClient'
@@ -109,7 +109,7 @@ export const rawMachines = () => api.get<BackendMachine[]>('/api/machines')
  * Même donnée que `rawMachines()`, mais passée par le cache react-query
  * (`['machines']`, `staleTime` par défaut du client) : plusieurs widgets
  * indépendants (KPI, prédiction, alertes, machines suivies) en ont besoin sur
- * le même écran sans se parler entre eux — sans ce partage, chacun relance
+ * le même écran sans se parler entre eux : sans ce partage, chacun relance
  * son propre GET /api/machines et l'Aperçu Industrie en déclenche jusqu'à 4
  * en parallèle pour une donnée identique.
  */
@@ -264,7 +264,7 @@ export const rawPlatformConsumption = () => api.get<BackendPlatformConsumption>(
 export const rawAdminTestMachine = (machineId: string) =>
   api.post<BackendAdminMachineActionResult>(`/api/admin/machines/${machineId}/test`)
 
-/** Formulaire public "Demander un audit" — aucune authentification requise. */
+/** Formulaire public "Demander un audit" : aucune authentification requise. */
 export const rawCreateAuditRequest = (payload: BackendAuditRequestPayload) =>
   api.post<BackendAuditRequest>('/api/v1/leads', payload, false)
 

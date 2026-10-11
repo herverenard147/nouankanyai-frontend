@@ -8,9 +8,9 @@ export async function fetchEquipmentTable(_profile: Profile): Promise<{ title: s
     title: 'Équipements déclarés',
     rows: machines.map((m) => ({
       id: m.machine_id,
-      categorie: m.categorie ?? '—',
-      marque: m.marque ?? '—',
-      modele: m.modele ?? '—',
+      categorie: m.categorie ?? '-',
+      marque: m.marque ?? '-',
+      modele: m.modele ?? '-',
       site: m.site_nom,
       priorite: priorityLabel(m.priority),
       statut: statusLabel(m.status),

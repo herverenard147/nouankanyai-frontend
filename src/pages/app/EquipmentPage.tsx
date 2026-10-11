@@ -21,7 +21,7 @@ import { useSessionStore } from '@/store/sessionStore'
 import type { BackendMachine } from '@/types/backend'
 import type { EquipmentRow } from '@/types/domain'
 
-// Mêmes paliers que dans PmeOverview — voir le commentaire là-bas.
+// Mêmes paliers que dans PmeOverview : voir le commentaire là-bas.
 const COLUMNS_BASE: TableColumn<EquipmentRow>[] = [
   { key: 'categorie', label: 'Catégorie' },
   { key: 'site', label: 'Site' },

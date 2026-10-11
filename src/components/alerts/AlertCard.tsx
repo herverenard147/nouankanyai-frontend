@@ -12,14 +12,14 @@ import type { ActionAlert, AutoAlert } from '@/types/domain'
 interface ActionAlertCardProps {
   variant: 'action'
   alert: ActionAlert
-  /** Rendu minimal (une ligne, sans détail ni bouton résoudre) — utilisé sur
+  /** Rendu minimal (une ligne, sans détail ni bouton résoudre) : utilisé sur
    * les pages Vue d'ensemble où les alertes ne sont qu'un aperçu, la liste
    * complète et les actions vivant sur /app/alertes. */
   compact?: boolean
   /** Admin (alertes plateforme, tous comptes confondus) : l'alerte porte sur l'équipement
    * d'un AUTRE compte. "Vérifier et résoudre" appelle alors l'action support dédiée
    * (/api/admin/machines/{id}/test), jamais /api/machines/{id}/test (scopé sur le compte
-   * Admin lui-même, qui n'a pas cet équipement) — avec une modale de confirmation avant
+   * Admin lui-même, qui n'a pas cet équipement) : avec une modale de confirmation avant
    * d'agir sur les données d'un autre compte (RGPD : jamais un clic accidentel, l'action
    * reste de toute façon tracée dans l'Audit du client qu'elle soit confirmée ou non). */
   admin?: boolean
@@ -92,7 +92,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             <p className="mt-2 text-sm text-text-secondary">
               Cause probable : {autoResolve.lastResult.diagnostic.probable_cause}
               {autoResolve.lastResult.diagnostic.recommended_actions.length > 0 && (
-                <> — {autoResolve.lastResult.diagnostic.recommended_actions[0]}</>
+                <> : {autoResolve.lastResult.diagnostic.recommended_actions[0]}</>
               )}
             </p>
           )}

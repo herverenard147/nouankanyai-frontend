@@ -7,7 +7,7 @@ import type { Level } from '@/types/domain'
  * PME/Industrie/Admin choisissent le leur (persisté par profil dans
  * levelStore). Le niveau par défaut de chaque profil (voir
  * DEFAULT_LEVEL_BY_PROFILE dans levelStore.ts) correspond déjà à ce qu'il
- * voyait avant l'introduction de ce fichier — seul le fait de baisser son
+ * voyait avant l'introduction de ce fichier : seul le fait de baisser son
  * niveau simplifie réellement l'affichage, pas de régression pour qui n'y
  * touche jamais.
  */

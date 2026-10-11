@@ -28,7 +28,7 @@ export function toPlanItem(item: BackendPlanItem): ActionPlanItem {
 
 /**
  * Plan d'action du mois (PME/Industrie). Lu depuis `/api/v1/plan/items`. Tant que le plan est vide, on y reprend
- * les recommandations chiffrées du moteur (`/api/recommend`) — idempotent côté backend (même `source_ref` = ignoré).
+ * les recommandations chiffrées du moteur (`/api/recommend`) : idempotent côté backend (même `source_ref` = ignoré).
  */
 export async function fetchActionPlan(profile: Profile): Promise<ActionPlanItem[]> {
   if (profile !== 'pme' && profile !== 'industrie') return []

@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 
 import { LevelSelector } from '@/components/level/LevelSelector'
 import { SitesCard } from '@/components/settings/SitesCard'
+import { TransferCard } from '@/components/import/TransferCard'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, type FieldChange } from '@/components/ui/Modal'
@@ -397,7 +398,7 @@ function ThresholdsCard() {
 }
 
 /**
- * Panneau de consentement unique pour l'autonomie de l'IA — demandé pour ne
+ * Panneau de consentement unique pour l'autonomie de l'IA : demandé pour ne
  * pas redemander à chaque clic sur « Vérifier et résoudre » si l'utilisateur
  * veut une relance automatique. Sauvegarde immédiate (pas de modal) : c'est
  * un réglage global, pas une action qui mérite une confirmation à deux temps
@@ -619,6 +620,7 @@ export function SettingsPage() {
       {session.profile !== 'admin' && <AutomationCard />}
 
       {session.profile !== 'admin' && (session.profile === 'menage' || session.isTeamOwner) && <ExportCard />}
+      {session.profile !== 'admin' && (session.profile === 'menage' || session.isTeamOwner) && <TransferCard />}
       {session.profile !== 'admin' && (
         <DeleteAccountCard isMember={(session.profile === 'pme' || session.profile === 'industrie') && !session.isTeamOwner} />
       )}

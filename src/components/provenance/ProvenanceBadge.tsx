@@ -16,7 +16,7 @@ interface ProvenanceBadgeProps {
 
 /**
  * Une donnée est mesurée, estimée, ou synthétique, jamais inventée. Rendu sobre (DESIGN.md règle 2) : texte
- * gris discret en police normale, sans pastille ni couleur — la provenance reste visible sans ressembler à une
+ * gris discret en police normale, sans pastille ni couleur : la provenance reste visible sans ressembler à une
  * étiquette décorative. Toujours appelé avec le champ `provenance` d'un item de donnée, jamais une valeur
  * littérale codée dans le JSX.
  */

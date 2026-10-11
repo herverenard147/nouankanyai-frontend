@@ -9,7 +9,7 @@ interface InvoicePhotoModalProps {
   onClose: () => void
 }
 
-/** Affiche la photo originale d'une facture importée par photo — récupérée à
+/** Affiche la photo originale d'une facture importée par photo : récupérée à
  * la demande (voir useInvoicePhoto), pas incluse dans la liste des factures. */
 export function InvoicePhotoModal({ billId, period, onClose }: InvoicePhotoModalProps) {
   const photoQuery = useInvoicePhoto(billId)

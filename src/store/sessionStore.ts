@@ -20,7 +20,7 @@ function toSession(result: BackendAuthResult): Session {
     displayName: result.user.nom,
     subtitle: profile === 'admin' ? ACCOUNT_TYPE_LABELS.admin : result.user.type_compte,
     // Seuls les PME/Industrie sans owner_id (compte principal, pas membre d'une
-    // équipe) peuvent gérer des membres — voir app/api/v1/team/ côté backend.
+    // équipe) peuvent gérer des membres : voir app/api/v1/team/ côté backend.
     isTeamOwner: (profile === 'pme' || profile === 'industrie') && !result.user.owner_id,
     isTrial: result.user.is_trial,
     isDemo: Boolean(result.user.is_demo),
@@ -74,7 +74,7 @@ export const useSessionStore = create<SessionState>()(
       logout: () => {
         set({ session: null })
         // Le "vu" des alertes/conseils est par appareil (localStorage), pas par
-        // compte — sans ce reset, le compte suivant sur un poste partagé/démo
+        // compte : sans ce reset, le compte suivant sur un poste partagé/démo
         // hérite du "vu" du précédent (voir notificationStore.resetSeen).
         useNotificationStore.getState().resetSeen()
       },

@@ -19,7 +19,7 @@ async function fetchRecommendations() {
 
 export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]> {
   // Admin : alertes de TOUTE la plateforme (tous comptes), pas du compte Admin lui-même
-  // (qui n'a pas d'équipement en propre, voir GET /api/admin/alerts — corrige un scope
+  // (qui n'a pas d'équipement en propre, voir GET /api/admin/alerts : corrige un scope
   // erroné trouvé par audit, 2026-10-01 : la page se disait "tous profils confondus" mais
   // était en réalité toujours vide).
   if (profile === 'admin') {
@@ -44,7 +44,7 @@ export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]
   const { recommendations } = await fetchRecommendations()
   // Alertes = uniquement de vrais problèmes détectés (anomalie/surchauffe/
   // vibration), jamais optimisation/efficacité (des suggestions, pas des
-  // défauts — "Marquer comme résolu" n'a aucun sens pour elles, voir
+  // défauts : "Marquer comme résolu" n'a aucun sens pour elles, voir
   // src/api/recommendations.ts) ni délestage (déjà dans le Journal).
   return recommendations
     .filter((rec) => rec.type === 'alerte')
@@ -82,7 +82,7 @@ export async function fetchAutoAlerts(profile: Profile): Promise<AutoAlert[]> {
  * Historique : les vraies détections (AIAlert) enregistrées par machine, via
  * `/api/machines/{id}/history`. `is_resolved` ne bascule jamais à true côté
  * backend actuellement (aucune route ne le fait) : tout est donc classé
- * "action" — pas de fausse case "auto" pour ces entrées-là.
+ * "action" : pas de fausse case "auto" pour ces entrées-là.
  */
 export async function fetchAlertHistory(_profile: Profile): Promise<AlertHistoryEntry[]> {
   const machines = await getCachedMachines()

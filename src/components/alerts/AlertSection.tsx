@@ -11,7 +11,7 @@ interface AlertSectionProps {
   profile: Profile
   level: Level
   /** Limite le nombre d'alertes "action" affichées, avec un lien "Voir plus"
-   * vers /app/alertes au-delà — utilisé sur les pages Vue d'ensemble pour ne
+   * vers /app/alertes au-delà : utilisé sur les pages Vue d'ensemble pour ne
    * pas écraser les métriques KPI qui suivent. Sans cette prop (page
    * /app/alertes elle-même), la liste complète s'affiche. */
   maxActionAlerts?: number
@@ -21,7 +21,7 @@ interface AlertSectionProps {
  * Les deux registres d'alerte, jamais mélangés dans la même liste : action humaine
  * requise d'abord (élément dominant de la page), puis les actions automatiques déjà
  * exécutées sous leur propre intertitre. Ce second registre est un détail
- * d'audit, pas une action à traiter — masqué au niveau "débutant" pour ne pas
+ * d'audit, pas une action à traiter : masqué au niveau "débutant" pour ne pas
  * noyer l'essentiel (voir src/lib/levelGating.ts), et masqué également dès que
  * la liste d'action est plafonnée (Vue d'ensemble) : ce n'est déjà plus le
  * détail à montrer en priorité là où le plafond s'applique.

@@ -8,24 +8,26 @@ import type { NavByProfile, RouteAccess } from '@/types/nav'
  * interdite, ou l'inverse.
  *
  * `profile` est dérivé de `type_compte` côté backend (voir
- * `lib/profileMapping.ts`), pas un champ natif du backend — le backend ne
+ * `lib/profileMapping.ts`), pas un champ natif du backend : le backend ne
  * connaît que `type_compte` (texte libre) et `platform_role` (accès admin).
  */
 export const NAV_BY_PROFILE: NavByProfile = {
+  // Menu resserré (partie H2) : neuf entrées au vocabulaire du quotidien. Les pages marquées
+  // `under` restent accessibles par leur adresse et depuis la page indiquée, sans entrée propre.
   menage: [
-    { path: '/app/apercu', label: "Vue d'ensemble" },
+    { path: '/app/apercu', label: 'Accueil' },
     { path: '/app/premiers-pas', label: 'Premiers pas' },
-    { path: '/app/alertes', label: 'Alertes' },
-    { path: '/app/consommation', label: 'Conso & coûts' },
-    { path: '/app/equipements', label: 'Équipements' },
-    { path: '/app/prediction', label: 'Prédiction' },
-    { path: '/app/factures', label: 'Factures' },
-    { path: '/app/facturation', label: 'Abonnement' },
-    { path: '/app/rapports', label: 'Rapports' },
+    { path: '/app/equipements', label: 'Mes appareils' },
+    { path: '/app/consommation', label: 'Ma consommation' },
+    { path: '/app/factures', label: 'Mes factures' },
     { path: '/app/conseils', label: 'Conseils' },
-    { path: '/app/recommandations', label: 'Recommandations' },
-    { path: '/app/boitier', label: 'Boîtier' },
+    { path: '/app/alertes', label: 'À surveiller' },
+    { path: '/app/boitier', label: 'Mon boîtier' },
     { path: '/app/parametres', label: 'Paramètres' },
+    { path: '/app/prediction', label: 'Facture prévue', under: '/app/apercu' },
+    { path: '/app/facturation', label: 'Abonnement', under: '/app/factures' },
+    { path: '/app/rapports', label: 'Rapports', under: '/app/factures' },
+    { path: '/app/recommandations', label: 'Recommandations', under: '/app/conseils' },
   ],
   pme: [
     { path: '/app/apercu', label: "Vue d'ensemble" },
@@ -80,6 +82,11 @@ export const NAV_BY_PROFILE: NavByProfile = {
   ],
 }
 
+/** Entrées affichées dans le menu : toutes, sauf les pages rattachées à une autre (`under`). */
+export function visibleNav(profile: Profile) {
+  return NAV_BY_PROFILE[profile].filter((entry) => !entry.under)
+}
+
 const ALL_PROFILES: Profile[] = ['menage', 'pme', 'industrie', 'admin']
 
 export const ROUTE_ACCESS: RouteAccess = (
@@ -92,7 +99,7 @@ export const ROUTE_ACCESS: RouteAccess = (
 }, {})
 
 /** Une route non listée dans NAV_BY_PROFILE (ex: /app/admin/utilisateurs/:id, fiche détail
- * ouverte depuis la page Utilisateurs) hérite de l'accès de son entrée de nav parente — sans
+ * ouverte depuis la page Utilisateurs) hérite de l'accès de son entrée de nav parente : sans
  * ce repli, ROUTE_ACCESS ne la connaît pas du tout et isRouteAllowed l'autoriserait par
  * défaut à TOUS les profils (le repli ALL_PROFILES ci-dessous est pensé pour des routes hors
  * nav type /app/parametres, pas pour un sous-chemin d'une route déjà restreinte). */

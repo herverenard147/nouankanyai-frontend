@@ -9,7 +9,7 @@ interface MetricStateProps {
 /**
  * Corps d'une carte métrique : chargement / vide / indisponible / contenu.
  * La carte parente garde toujours son titre (et sa mention de fenêtre) visibles
- * autour de ce composant — jamais d'écran d'erreur global, un bloc à la fois.
+ * autour de ce composant : jamais d'écran d'erreur global, un bloc à la fois.
  */
 export function MetricState({ status, isEmpty, children }: MetricStateProps) {
   if (status === 'pending') {

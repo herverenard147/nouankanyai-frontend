@@ -41,13 +41,13 @@ export function AdminBoitierDetailPage() {
               </p>
               <DefinitionRows
                 rows={[
-                  ['Compte', device.account ?? '—'],
-                  ['Site', device.site_nom ?? '—'],
+                  ['Compte', device.account ?? '-'],
+                  ['Site', device.site_nom ?? '-'],
                   ['Rattachement', device.scope === 'account' ? 'Tout le compte' : 'Un site'],
                   ['Langue', LANGUAGE_LABEL[device.language]],
-                  ['Version du micrologiciel', device.firmware_version ?? '—'],
+                  ['Version du micrologiciel', device.firmware_version ?? '-'],
                   ['Identifiant', `${device.id.slice(0, 8)}…`],
-                  ['Dernière activité', device.last_seen_at ? `${lastActivity(device)} UTC` : '—'],
+                  ['Dernière activité', device.last_seen_at ? `${lastActivity(device)} UTC` : '-'],
                   ['Commandes, 24 h', String(device.commands_24h)],
                 ]}
               />
@@ -68,7 +68,7 @@ export function AdminBoitierDetailPage() {
             {confirming && (
               <ConfirmDeleteModal
                 title={`Révoquer « ${device.nom} » ?`}
-                description={`Compte : ${device.account ?? '—'}.`}
+                description={`Compte : ${device.account ?? '-'}.`}
                 consequences={[
                   'Le boîtier ne répondra plus et ne pourra plus éteindre d’appareil.',
                   'L’utilisateur devra demander un nouveau code pour le reconnecter.',

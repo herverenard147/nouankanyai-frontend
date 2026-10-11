@@ -8,7 +8,7 @@ import type { ActionAlert } from '@/types/domain'
 /**
  * Boîte noire, dérivée du contrat seul : quand la relance automatique atteint
  * son plafond sans résolution, le message affiché ne doit JAMAIS prétendre que
- * l'alerte est résolue — exigence explicite de l'utilisateur sur l'honnêteté
+ * l'alerte est résolue : exigence explicite de l'utilisateur sur l'honnêteté
  * de ce flux.
  */
 vi.mock('@/hooks/queries/useMachineCrud', () => ({
@@ -39,7 +39,7 @@ function renderCard() {
   )
 }
 
-describe('AlertCard — honnêteté du message needs_human', () => {
+describe('AlertCard : honnêteté du message needs_human', () => {
   it('ne prétend jamais que c’est résolu quand le plafond est atteint', () => {
     vi.mocked(useAutoResolveMachine).mockReturnValue({
       status: 'needs_human',

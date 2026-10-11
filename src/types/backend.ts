@@ -3,7 +3,7 @@
  * (herverenard147/NouanKanyAI, feature/merge-steph-ml-subsystem), vérifiées
  * endpoint par endpoint contre /docs et des appels réels. Utilisé uniquement
  * par la couche `api/` pour construire les types "vue" de `types/domain.ts`
- * que le reste de l'app consomme sans changement — voir api/README dans
+ * que le reste de l'app consomme sans changement : voir api/README dans
  * chaque module pour le mapping.
  */
 
@@ -78,6 +78,8 @@ export interface BackendMachine {
   marque: string | null
   modele: string | null
   numero_serie: string | null
+  /** Année de mise en service, facultative : sert à chiffrer le vieillissement. */
+  annee_mise_en_service?: number | null
   photo_data_url?: string | null
 }
 
@@ -105,6 +107,7 @@ export interface BackendNewMachinePayload {
   marque?: string
   modele?: string
   numero_serie?: string
+  annee_mise_en_service?: number
   quantite?: number
   site_id?: string
   photo_data_url?: string
@@ -134,6 +137,7 @@ export interface BackendMachineUpdatePayload {
   marque?: string
   modele?: string
   numero_serie?: string
+  annee_mise_en_service?: number
   priority?: string
   site_id?: string
 }
@@ -156,7 +160,7 @@ export interface BackendWaitlistJoinAck {
   email: string
 }
 
-/** Diagnostic déterministe (médiane/MAD/tendance, ml/diagnostic.py) — null tant que
+/** Diagnostic déterministe (médiane/MAD/tendance, ml/diagnostic.py) : null tant que
  * l'historique de la machine compte moins de 3 relevés. N'est jamais l'autorité de
  * décision (voir `resolved`, basé sur les seuils) : une information enrichie en plus. */
 export interface BackendMachineDiagnostic {
@@ -233,7 +237,7 @@ export interface BackendAlertThresholds {
   temperature_max_c: number
   vibration_max_hz: number
   surconsommation_ratio: number
-  /** Panneau « Automatisation IA » (Réglages) — jamais activé par défaut. */
+  /** Panneau « Automatisation IA » (Réglages) : jamais activé par défaut. */
   auto_resolve_enabled: boolean
 }
 
@@ -384,7 +388,7 @@ export interface BackendRecommendation {
   action: string
   gain_fcfa: number
   auto_resolu: boolean
-  /** Étapes de dépannage concrètes, adaptées à la catégorie de l'équipement — présent
+  /** Étapes de dépannage concrètes, adaptées à la catégorie de l'équipement : présent
    * seulement sur les recommandations de type "alerte" (anomalie/surchauffe/vibration),
    * absent pour optimisation/délestage/efficacité. */
   troubleshooting?: string[]

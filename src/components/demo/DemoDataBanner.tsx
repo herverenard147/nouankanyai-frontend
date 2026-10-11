@@ -6,10 +6,10 @@ import { useSessionStore } from '@/store/sessionStore'
 /**
  * Essai gratuit (PME/Industrie/Ménage) : un compte créé via le bouton
  * "Essayer gratuitement" (landing, PricingSection) n'a ni site, ni
- * équipement, ni facture — le dashboard est vide et ne montre rien du
+ * équipement, ni facture : le dashboard est vide et ne montre rien du
  * produit. Ce bandeau ne s'affiche que pour CES comptes précisément
  * (`session.isTrial`, jamais pour une inscription ou une connexion
- * normale) et seulement tant qu'ils sont vides — il disparaît dès que le
+ * normale) et seulement tant qu'ils sont vides : il disparaît dès que le
  * compte a des données, qu'elles viennent de ce bouton ou d'un ajout
  * manuel réel.
  */
