@@ -78,6 +78,8 @@ export interface BackendMachine {
   marque: string | null
   modele: string | null
   numero_serie: string | null
+  /** Année de mise en service, facultative : sert à chiffrer le vieillissement. */
+  annee_mise_en_service?: number | null
   photo_data_url?: string | null
 }
 
@@ -105,6 +107,7 @@ export interface BackendNewMachinePayload {
   marque?: string
   modele?: string
   numero_serie?: string
+  annee_mise_en_service?: number
   quantite?: number
   site_id?: string
   photo_data_url?: string
@@ -134,6 +137,7 @@ export interface BackendMachineUpdatePayload {
   marque?: string
   modele?: string
   numero_serie?: string
+  annee_mise_en_service?: number
   priority?: string
   site_id?: string
 }

@@ -59,6 +59,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     marque: machine?.marque ?? '',
     modele: machine?.modele ?? '',
     numero_serie: machine?.numero_serie ?? '',
+    annee: machine?.annee_mise_en_service ? String(machine.annee_mise_en_service) : '',
     power_kw: machine?.power_kw != null ? String(machine.power_kw) : '',
     priority: machine?.priority ?? 'moyenne',
     site_id: machine?.site_id ?? '',
@@ -88,6 +89,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
         { label: 'Marque', before: machine.marque ?? '', after: form.marque },
         { label: 'Modèle', before: machine.modele ?? '', after: form.modele },
         { label: 'Numéro de série', before: machine.numero_serie ?? '', after: form.numero_serie },
+        { label: 'Année de mise en service', before: machine.annee_mise_en_service ? String(machine.annee_mise_en_service) : '', after: form.annee },
         { label: 'Puissance', before: `${formatNumberFr(machine.power_kw, 1)} kW`, after: form.power_kw ? `${formatNumberFr(Number(form.power_kw), 1)} kW` : '' },
         { label: 'Priorité', before: priorityLabel(machine.priority), after: priorityLabel(form.priority) },
         { label: 'Site', before: siteName(machine.site_id ?? ''), after: siteName(form.site_id) },
@@ -106,6 +108,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
             marque: form.marque || undefined,
             modele: form.modele || undefined,
             numero_serie: form.numero_serie || undefined,
+            annee_mise_en_service: form.annee ? Number(form.annee) : undefined,
             power_kw,
             priority: form.priority,
             site_id: form.site_id || undefined,
@@ -121,6 +124,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           marque: form.marque || undefined,
           modele: form.modele || undefined,
           numero_serie: form.numero_serie || undefined,
+          annee_mise_en_service: form.annee ? Number(form.annee) : undefined,
           power_kw,
           site_id: form.site_id || undefined,
           photo_data_url: form.photo_data_url,
@@ -233,6 +237,14 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           {isEdit && (
             <TextField label="Numéro de série" value={form.numero_serie} onChange={(e) => setForm((f) => ({ ...f, numero_serie: e.target.value }))} />
           )}
+          <TextField
+            label="Année de mise en service (facultatif)"
+            type="number"
+            min="1980"
+            max={String(new Date().getFullYear())}
+            value={form.annee}
+            onChange={(e) => setForm((f) => ({ ...f, annee: e.target.value }))}
+          />
           <SelectField
             label="Site"
             value={form.site_id}
