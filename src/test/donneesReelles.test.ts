@@ -32,6 +32,16 @@ describe('Machine sans relevé (M7)', () => {
     expect(rows[0].temperature).toBe('—')
     expect(rows[0].vibration).toBe('—')
     expect(rows[0].pression).toBe('—')
+    expect(rows[0].attendu).toBe('—')
+  })
+
+  it('affiche la consommation attendue quand l’appareil est relié à une fiche du référentiel', async () => {
+    vi.mocked(getCachedMachines).mockResolvedValue([machine({
+      estimation_reference: { kwh_jour: 9.6, cout_jour_fcfa: 663, heures_par_jour: 8, puissance_kw: 1.2, provenance: 'estime', source: 'manuel', confiance: 'fabricant' },
+    })])
+    const { rows } = await fetchMachinesTable('pme')
+    expect(rows[0].attendu).toContain('9,6 kWh')
+    expect(rows[0].attendu).toContain('(estimé)')
   })
 
   it('aucune prévision n’est demandée pour elle', async () => {

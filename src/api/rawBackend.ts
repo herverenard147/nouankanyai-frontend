@@ -78,12 +78,13 @@ import type {
   ReportFormat,
   ReportType,
   BackendPendingBill,
+  BackendCollectionStatus,
 } from '@/types/backend'
 
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
 export const rawUpdateMe = (payload: { nom: string }) => api.patch<BackendUser>('/api/auth/me', payload)
 export const rawChangePassword = (payload: { current_password: string; new_password: string }) =>
-  api.post<{ status: string }>('/api/auth/change-password', payload)
+  api.post<{ status: string; token?: string; refresh_token?: string }>('/api/auth/change-password', payload)
 
 export const rawTeamMembers = () => api.get<BackendTeamMember[]>('/api/v1/team/members')
 export const rawCreateTeamMember = (payload: BackendNewTeamMemberPayload) =>
@@ -352,6 +353,7 @@ export const rawGenerateReport = (reportType: ReportType, exportFormat: ReportFo
   api.postBlob('/api/v1/reports/generate', { report_type: reportType, export_format: exportFormat })
 export const rawContactMessages = () => api.get<BackendContactMessage[]>('/api/v1/contact')
 export const rawWaitlistEntries = () => api.get<BackendWaitlistEntry[]>('/api/v1/waitlist')
+export const rawMlCollection = () => api.get<BackendCollectionStatus>('/api/v1/ml/collecte')
 export const rawMlDrift = (window = 500) => api.get<BackendDriftReport>(`/api/v1/ml/drift?window=${window}`)
 export const rawMlDriftLog = (window = 500) =>
   api.post<{ status: string; log_file: string; report: BackendDriftReport }>(`/api/v1/ml/drift/log?window=${window}`)

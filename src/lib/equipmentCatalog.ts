@@ -19,6 +19,7 @@ export interface CatalogModelChoice {
   marque: string
   modele: string
   puissance_kw: number
+  reference_id?: string
 }
 
 /**
@@ -38,7 +39,7 @@ export function catalogSuggestions(catalog: BackendEquipmentCatalog | undefined,
   for (const c of categories) {
     for (const [brand, info] of Object.entries(catalog[c])) {
       if (brandKey && brand !== brandKey) continue
-      for (const m of info.modeles) models.push({ categorie: c, marque: brand, modele: m.nom, puissance_kw: m.puissance_kw, estimee: m.confiance === 'estimee' })
+      for (const m of info.modeles) models.push({ categorie: c, marque: brand, modele: m.nom, puissance_kw: m.puissance_kw, estimee: m.confiance === 'estimee', reference_id: m.reference_id })
     }
   }
   const modeles: ComboboxOption[] = models.map((m) => ({

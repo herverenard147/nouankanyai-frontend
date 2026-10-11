@@ -13,8 +13,11 @@ export type Provenance = 'mesure' | 'estime' | 'synthetique' | 'telemetrie_syste
 export interface Session {
   /** UUID du compte côté backend. */
   userId: string
-  /** Jeton JWT — envoyé en `Authorization: Bearer <token>` par l'API client. */
+  /** Jeton JWT — envoyé en `Authorization: Bearer <token>` par l'API client. Valable 30 minutes. */
   token: string
+  /** Jeton de renouvellement à usage unique : l'API client l'échange en silence quand le jeton
+   * d'accès expire (Volet 5). */
+  refreshToken?: string
   profile: Profile
   /** Rôle plateforme brut (distinct de `profile`, qui vaut 'admin' pour admin ET superadmin). */
   platformRole: 'admin' | 'superadmin' | null
@@ -169,6 +172,8 @@ export interface MachineRow {
   temperature: string
   vibration: string
   pression: string
+  /** Consommation attendue par jour d'après la fiche du référentiel (estimation), « — » sans fiche. */
+  attendu: string
   statut: string
   priorite: 'Haute' | 'Moyenne' | 'Basse'
   provenance: Provenance

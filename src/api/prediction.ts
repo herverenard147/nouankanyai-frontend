@@ -9,7 +9,8 @@ import type { Prediction, PredictionGranularity, PredictionsBundle, PredictionSe
 const HORIZON_HOURS: Record<PredictionGranularity, number> = {
   heure: 24,
   jour: 24 * 7,
-  semaine: 24 * 7 * 4,
+  // 7 jours au plus : le serveur refuse au-delà (le modèle prédit l’heure suivante, Volet 5, M15).
+  semaine: 24 * 7,
 }
 // Nombre d'heures agrégées par barre du graphique.
 const BUCKET_HOURS: Record<PredictionGranularity, number> = {

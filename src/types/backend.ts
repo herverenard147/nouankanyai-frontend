@@ -40,7 +40,10 @@ export interface BackendNewTeamMemberPayload {
 }
 
 export interface BackendAuthResult {
+  /** Jeton d'accès, valable 30 minutes. */
   token: string
+  /** Jeton de renouvellement à usage unique (30 jours), échangé par POST /api/auth/refresh. */
+  refresh_token?: string
   user: BackendUser
 }
 
@@ -62,6 +65,9 @@ export interface BackendMachine {
   vibration_hz: number | null
   pressure_bar: number | null
   has_reading?: boolean
+  equipment_reference_id?: string | null
+  /** Consommation journalière attendue d'après la fiche du référentiel : toujours une estimation. */
+  estimation_reference?: { kwh_jour: number; cout_jour_fcfa: number; heures_par_jour: number; puissance_kw: number; provenance: 'estime'; source: string; confiance: string } | null
   status: string
   priority: string
   categorie: string | null
@@ -78,7 +84,9 @@ export interface BackendCatalogModel {
   kwh_an?: number | null
   classe?: string | null
   source?: string
-  confiance?: 'fabricant' | 'eprel' | 'etiquette_ci' | 'revendeur' | 'estimee'
+  confiance?: 'fabricant' | 'eprel' | 'energystar' | 'etiquette_ci' | 'revendeur' | 'estimee'
+  /** Identifiant de la fiche du référentiel, renvoyé à l'ajout pour relier l'appareil. */
+  reference_id?: string
 }
 export interface BackendCatalogBrand {
   efficacite: 'faible' | 'haute' | 'inconnue'
@@ -96,6 +104,8 @@ export interface BackendNewMachinePayload {
   quantite?: number
   site_id?: string
   photo_data_url?: string
+  /** Fiche du référentiel choisie dans le catalogue. */
+  reference_id?: string
 }
 
 /** Réponse de POST /api/machines/extract-photo : champs potentiellement `null`
@@ -463,6 +473,16 @@ export interface BackendAdminMetrics {
       dataset: string | null
       computed_at: string | null
     }
+    /** Modèle v2 (prévisions avec historique) : le gain sur la moyenne de chaque machine est la
+     * vraie mesure de son apport, le R² seul est trompeur. */
+    xgboost_v2?: {
+      r2?: number | null
+      mae_kw?: number | null
+      mae_moyenne_machine_kw?: number | null
+      gain_vs_moyenne_machine?: number | null
+      trained_at?: string | null
+      peak_hours?: number[] | null
+    }
   }
   system: {
     process_uptime_seconds: number
@@ -756,6 +776,15 @@ export interface BackendMediaAnalysis {
 
 export type ReportType = 'daily' | 'weekly' | 'monthly' | 'energy_audit' | 'anomaly_report' | 'performance_report'
 export type ReportFormat = 'pdf' | 'docx' | 'xlsx' | 'pptx'
+
+/** GET /api/v1/ml/collecte : mesures réelles envoyées par les boîtiers, seules à servir au réentraînement. */
+export interface BackendCollectionStatus {
+  releves_reels: number
+  machines_mesurees: number
+  machines_avec_un_mois: number
+  seuil_reentrainement: { machines: number; heures_par_machine: number; couverture: number }
+  pret_pour_reentrainement: boolean
+}
 
 /** GET /api/v1/ml/drift (administrateurs) */
 export interface BackendDriftFeature {
