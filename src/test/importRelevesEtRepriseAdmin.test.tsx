@@ -38,7 +38,7 @@ describe('import de relevés en lot', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Importer 2 relevés' }))
     await waitFor(() => expect(api.confirmReadingImport.mock.calls[0][0]).toBe(chosen))
     expect(await screen.findByText('Relevés importés')).toBeTruthy()
-    expect(screen.getByText(/ce sont vos valeurs, pas des mesures du boîtier/)).toBeTruthy()
+    expect(screen.getByText(/jamais présentées comme des mesures du boîtier/)).toBeTruthy()
   })
   it('rien d’acceptable : import impossible', async () => {
     api.previewReadingImport.mockResolvedValue({ acceptes: 0, refuses: 3, appareils: [], rejected: [{ line: 2, raison: 'date illisible' }] })

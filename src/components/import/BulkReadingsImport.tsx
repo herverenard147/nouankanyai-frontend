@@ -67,7 +67,7 @@ export function BulkReadingsImport({ itemLabel = 'appareil' }: { itemLabel?: str
           title={confirm.isSuccess ? 'Relevés importés' : 'Aperçu de l’import'}
           description={
             confirm.isSuccess
-              ? `${plural(confirm.data.imported, 'relevé ajouté', 'relevés ajoutés')}. Ils portent la mention « importé » : ce sont vos valeurs, pas des mesures du boîtier.`
+              ? `${plural(confirm.data.imported, 'relevé ajouté', 'relevés ajoutés')}. Ce sont vos valeurs déclarées : elles ne sont jamais présentées comme des mesures du boîtier.`
               : `${plural(data.acceptes, 'relevé', 'relevés')} à importer, ${plural(data.refuses, 'ligne refusée', 'lignes refusées')}. Rien n’est enregistré tant que vous n’avez pas confirmé.`
           }
           width="lg"
