@@ -13,7 +13,7 @@ export function AdminOverview() {
   const catalog = useShortcutCatalog('admin')
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="stagger flex flex-col gap-5">
       <p className="text-sm text-text-secondary">
         Vue d&rsquo;ensemble de la plateforme : alertes tous profils confondus et accès rapide aux outils
         d&rsquo;administration.

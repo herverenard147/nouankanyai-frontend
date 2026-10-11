@@ -201,7 +201,7 @@ export function AdminUserDetailPage() {
               <Button type="button" variant="outline" onClick={() => setDialog(null)}>
                 Annuler
               </Button>
-              <Button type="submit" form="reset-password-form" disabled={resetPassword.isPending}>
+              <Button loading={resetPassword.isPending} type="submit" form="reset-password-form" disabled={resetPassword.isPending}>
                 {resetPassword.isPending ? 'Enregistrement…' : 'Réinitialiser'}
               </Button>
             </>

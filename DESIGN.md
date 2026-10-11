@@ -157,6 +157,21 @@ Reste de la refonte du cadre : `NAV_BY_PROFILE` contient encore l'ancien champ `
 inutile — à supprimer avec `NavEntry.icon` ; `ActionPlanList`, `ResolutionsList`, `KpiGrid`, `PredictionPanel`
 ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des pages dédiées ou à supprimer).
 
+## 5 bis. Premiers pas, mouvement et vocabulaire du Ménage (demande du propriétaire, 2026-10-11)
+
+- **Premiers pas** (`/app/premiers-pas`, 2e entrée du menu de chaque profil) : les actions importantes du compte, chacune
+  avec une phrase qui dit ce qu'elle fait. Étapes par profil dans `src/lib/gettingStarted.ts` (testé). Une étape se coche
+  **d'après les données réelles du compte** (un site, un appareil, une facture envoyée…) ; une étape sans donnée mesurable se
+  coche quand sa page a été ouverte. Aucune case cochée d'office. Un compte tout juste créé arrive sur cette page.
+- **Rappel sur la vue d'ensemble** (`GettingStartedStrip`) : une ligne et une barre d'avancement, masquable, qui disparaît
+  quand tout est fait. Elle ne remet pas en cause la règle 3 (la vue tient sur un écran).
+- **Mouvement, dans les règles du §1** (ni dégradé, ni carte, ni ombre) : les blocs d'une page montent l'un après l'autre
+  (`.stagger`, `.rise-in`), les barres d'un graphique poussent depuis la base (`.bar-grow`), la barre d'avancement s'anime.
+  Tout est coupé par `prefers-reduced-motion`. S'applique aux quatre profils.
+- **Ménage** : ses indicateurs parlent d'« appareils » et d'« à surveiller » (`MENAGE_LABELS` dans `src/api/kpis.ts`) ;
+  PME, Industrie et Admin gardent « machines » et « anomalie ». Le reste de la partie H (menu réduit, montants en FCFA
+  partout) reste à faire.
+
 ## 6. Décisions en attente (ne pas trancher sans le propriétaire)
 
 1. ~~Part de 10 %~~ **Décidé, puis remplacé le 2026-10-08** : PME et Industrie paient audit, redevance et 40 % (30 à 50)

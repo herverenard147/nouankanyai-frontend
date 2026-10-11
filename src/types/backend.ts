@@ -20,6 +20,10 @@ export interface BackendUser {
   is_trial: boolean
   /** Compte de démonstration décidé par le serveur (jamais par l'adresse). */
   is_demo?: boolean
+  /** Adresse confirmée par le lien reçu par email. */
+  email_verified?: boolean
+  /** Avis non indispensables par email (relevé, alerte, abonnement). */
+  email_notifications?: boolean
   created_at: string
   last_sign_in_at: string | null
 }
@@ -282,6 +286,15 @@ export interface BackendBilling {
   segment: 'menage' | 'pme_industrie'
   contract: BackendBillingContract | null
   effective_tier: BillingTierId | null
+  /** Ce que le compte peut faire maintenant. `tier` : formule du contrat (celle qui reste après un essai). */
+  access?: {
+    tier: BillingTierId | null
+    reason: 'demonstration' | 'essai' | null
+    max_machines: number | null
+    assistant_ia: boolean
+    alertes_avancees: boolean
+    trial_ends_at?: string
+  }
   tiers: BackendBillingTier[]
   /** Palier gratuit d'une PME sans contrat. */
   pme_free_tier?: BackendBillingTier

@@ -9,6 +9,9 @@ import { RowActions } from '@/components/table/RowActions'
 import { RowDetailDrawer } from '@/components/table/RowDetailDrawer'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal } from '@/components/ui/Modal'
+import { Link } from 'react-router-dom'
+
+import { useBilling } from '@/hooks/queries/useBilling'
 import { useEquipmentTable } from '@/hooks/queries/useEquipmentTable'
 import { useDeleteMachine } from '@/hooks/queries/useMachineCrud'
 import { useRawMachines } from '@/hooks/queries/useRawMachines'
@@ -47,15 +50,28 @@ export function EquipmentPage() {
   const level = useLevel(profile)
   const columns = levelAtLeast(level, 'amateur') ? COLUMNS_FULL : COLUMNS_BASE
 
+  const maxMachines = useBilling().data?.access?.max_machines ?? null
+  const atLimit = maxMachines !== null && (rawQuery.data?.length ?? 0) >= maxMachines
+
   const rawOf = (id: string) => rawQuery.data?.find((m) => m.machine_id === id) ?? null
 
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-section-title font-semibold text-text-primary">{query.data?.title ?? 'Équipements déclarés'}</h1>
-        <Button type="button" onClick={() => setAdding(true)}>
-          Ajouter un équipement
-        </Button>
+        {/* Limite de la formule atteinte : le bouton n'est pas montré, on dit pourquoi et où changer. */}
+        {atLimit ? (
+          <p className="text-sm text-text-secondary">
+            Votre formule permet {maxMachines} appareils.{' '}
+            <Link to="/app/facturation" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+              Changer de formule
+            </Link>
+          </p>
+        ) : (
+          <Button type="button" onClick={() => setAdding(true)}>
+            Ajouter un équipement
+          </Button>
+        )}
       </div>
       <p className="text-sm text-text-secondary">Inventaire des équipements déclarés sur vos sites, utilisé pour estimer votre consommation en l’absence de capteur.</p>
       <MetricState status={query.status} isEmpty={query.data?.rows.length === 0}>

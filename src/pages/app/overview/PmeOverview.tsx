@@ -5,6 +5,7 @@ import { PredictionSummary } from '@/components/overview/PredictionSummary'
 import { ShortcutList } from '@/components/overview/ShortcutList'
 import { useShortcutCatalog } from '@/components/overview/useShortcutCatalog'
 import { DemoDataBanner } from '@/components/demo/DemoDataBanner'
+import { GettingStartedStrip } from '@/components/onboarding/GettingStartedStrip'
 import { kpiTargets, pmeOverviewBlocks } from '@/lib/overviewLevels'
 import { useLevel } from '@/store/levelStore'
 
@@ -15,8 +16,9 @@ export function PmeOverview() {
   const catalog = useShortcutCatalog('pme')
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="stagger flex flex-col gap-5">
       <DemoDataBanner />
+      <GettingStartedStrip />
       <p className="text-sm text-text-secondary">
         Vue d&rsquo;ensemble de votre activité : consommation, prédiction et équipements déclarés sur vos sites.
       </p>

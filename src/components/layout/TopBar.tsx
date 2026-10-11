@@ -26,7 +26,7 @@ export function TopBar() {
   const showLevelSelector = session.profile !== 'menage'
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 px-8 pb-3 pt-6">
+    <header className="flex w-full max-w-[1400px] flex-wrap items-center justify-between gap-3 px-4 pb-3 pt-6 sm:px-6 lg:px-8">
       <div className="flex items-center gap-3">
         <button
           type="button"

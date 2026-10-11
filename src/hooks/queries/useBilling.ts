@@ -10,6 +10,7 @@ import {
   rawAdminTierRequests,
   rawAdminUnpaid,
   rawBilling,
+  rawCancelTierRequest,
   rawRequestTier,
 } from '@/api/rawBackend'
 import type { BackendContractPayload, BillingTierId } from '@/types/backend'
@@ -27,6 +28,14 @@ export function useValidateBill() {
     onSuccess: () => {
       for (const key of ['admin-pending-bills', 'admin-unpaid', 'admin-user-billing']) void client.invalidateQueries({ queryKey: [key] })
     },
+  })
+}
+
+export function useCancelTierRequest() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: rawCancelTierRequest,
+    onSuccess: () => client.invalidateQueries({ queryKey: ['billing'] }),
   })
 }
 

@@ -11,7 +11,7 @@ export function AppLayout() {
   if (!session) return null
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-[1440px] bg-bg">
+    <div className="flex min-h-screen bg-bg">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-control focus:bg-accent-cta focus:px-4 focus:py-2 focus:text-white"
@@ -23,7 +23,7 @@ export function AppLayout() {
       </aside>
       <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <TopBar />
-        <main id="main-content" className="flex flex-1 flex-col gap-5 px-8 pb-24 pt-2">
+        <main id="main-content" className="flex w-full max-w-[1400px] flex-1 flex-col gap-5 px-4 pb-24 pt-2 sm:px-6 lg:px-8">
           <Outlet />
         </main>
       </div>

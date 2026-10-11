@@ -126,8 +126,9 @@ export function BarChart({
               >
                 <ChartTooltip text={bar.tip} visible={isActive} radiusClassName={config.tooltipRadiusClass} />
                 <div
-                  className={`w-full transition-colors duration-100 ease-out ${config.radiusClass}`}
+                  className={`bar-grow w-full transition-colors duration-100 ease-out ${config.radiusClass}`}
                   style={{
+                    animationDelay: `${Math.min(index * 18, 400)}ms`,
                     height: `${bar.percent}%`,
                     backgroundColor: isActive ? 'var(--color-accent-cta)' : 'var(--color-accent)',
                   }}

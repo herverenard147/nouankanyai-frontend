@@ -27,7 +27,7 @@ export function AdminBillingSection({ userId }: { userId: string }) {
             {query.data.segment === 'menage' ? <TierEditor billing={query.data} userId={userId} /> : <ContractEditor billing={query.data} userId={userId} />}
             <div className="flex flex-wrap items-end gap-3 border-t border-border pt-3">
               <TextField label="Mois (AAAA-MM)" value={month} onChange={(e) => setMonth(e.target.value)} pattern="\d{4}-\d{2}" />
-              <Button type="button" variant="outline" disabled={m.compute.isPending || !query.data.contract} onClick={() => m.compute.mutate(month)}>
+              <Button loading={m.compute.isPending} type="button" variant="outline" disabled={m.compute.isPending || !query.data.contract} onClick={() => m.compute.mutate(month)}>
                 {m.compute.isPending ? 'Calcul…' : 'Calculer le relevé'}
               </Button>
             </div>
@@ -95,7 +95,7 @@ function ContractEditor({ billing, userId }: { billing: BackendBilling; userId: 
       <TextField label="Ajustement de la ligne de base (kWh, IPMVP)" type="number" step="any" {...field('baseline_adjustment_kwh')} />
       <TextField label="Motif de l’ajustement" {...field('baseline_adjustment_note')} required={Boolean(form.baseline_adjustment_kwh)} />
       <div className="flex flex-col gap-2 sm:col-span-3">
-        <Button type="submit" className="w-fit" disabled={saveContract.isPending}>
+        <Button loading={saveContract.isPending} type="submit" className="w-fit" disabled={saveContract.isPending}>
           {saveContract.isPending ? 'Enregistrement…' : c ? 'Enregistrer le contrat' : 'Créer le contrat'}
         </Button>
         <MutationError error={saveContract.error} />
@@ -112,7 +112,7 @@ function TierEditor({ billing, userId }: { billing: BackendBilling; userId: stri
       {requested && (
         <div className="flex flex-wrap items-center gap-3">
           <p className="text-sm text-text-primary">Demande en attente : {billing.tiers.find((t) => t.id === requested)?.nom}</p>
-          <Button type="button" variant="outline" disabled={approveTier.isPending} onClick={() => approveTier.mutate()}>
+          <Button loading={approveTier.isPending} type="button" variant="outline" disabled={approveTier.isPending} onClick={() => approveTier.mutate()}>
             Valider
           </Button>
           <MutationError error={approveTier.error} />

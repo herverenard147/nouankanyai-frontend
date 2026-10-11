@@ -78,7 +78,7 @@ export function ReportsPage() {
             options={options.formats.map((f) => ({ value: f, label: FORMAT_LABELS[f] }))}
           />
         )}
-        <Button type="submit" disabled={generate.isPending} className="self-start">
+        <Button loading={generate.isPending} type="submit" disabled={generate.isPending} className="self-start">
           {generate.isPending ? 'Génération…' : `Télécharger le rapport ${TYPE_LABELS[reportType].toLowerCase()} (${FORMAT_LABELS[format]})`}
         </Button>
         <MutationError error={generate.error} />

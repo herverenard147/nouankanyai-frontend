@@ -36,6 +36,7 @@ type Dialog =
 export function InvoicesPage() {
   const profile = useSessionStore((s) => s.session?.profile)
   const invoicesQuery = useInvoices(profile!)
+  const hasRealInvoice = (invoicesQuery.data ?? []).some((invoice) => !invoice.isForecast)
   const uploadMutation = useUploadInvoicePhoto(profile!)
   const forecastMutation = useGenerateForecastInvoice(profile!)
   const manualMutation = useAddManualInvoice(profile!)
@@ -127,15 +128,18 @@ export function InvoicesPage() {
             />
           )}
         </section>
-        <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
-          <h2 className="text-section-title font-semibold text-text-primary">Générer une prévision de facture</h2>
-          <p className="text-sm text-text-secondary">
-            Basée sur l&rsquo;historique réel de vos factures (moyenne mobile, recalibrée à chaque écart mesuré).
-          </p>
-          <Button type="button" variant="outline" className="w-fit" disabled={forecastMutation.isPending} onClick={() => forecastMutation.mutate()}>
-            {forecastMutation.isPending ? 'Génération…' : 'Générer'}
-          </Button>
-        </section>
+        {hasRealInvoice && (
+          <section aria-label="Prévision de facture" className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
+            <h2 className="text-section-title font-semibold text-text-primary">Générer une prévision de facture</h2>
+            <p className="text-sm text-text-secondary">
+              Basée sur l&rsquo;historique réel de vos factures (moyenne mobile, recalibrée à chaque écart mesuré).
+            </p>
+            <Button loading={forecastMutation.isPending} type="button" variant="outline" className="w-fit" disabled={forecastMutation.isPending} onClick={() => forecastMutation.mutate()}>
+              {forecastMutation.isPending ? 'Génération…' : 'Générer'}
+            </Button>
+            <MutationError error={forecastMutation.error} />
+          </section>
+        )}
         <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
           <h2 className="text-section-title font-semibold text-text-primary">Ajouter une facture manuellement</h2>
           <p className="text-sm text-text-secondary">Saisissez le mois, le montant et la consommation d’une facture que vous avez déjà reçue.</p>
@@ -211,7 +215,7 @@ export function InvoicesPage() {
                     {confirmingId === invoice.id ? (
                       <form onSubmit={(e) => handleConfirmSubmit(e, invoice.id)} className="flex flex-wrap items-end gap-2">
                         <TextField label="Montant réel (FCFA)" type="number" value={actualAmount} onChange={(e) => setActualAmount(e.target.value)} required />
-                        <Button type="submit" disabled={confirmMutation.isPending}>
+                        <Button loading={confirmMutation.isPending} type="submit" disabled={confirmMutation.isPending}>
                           {confirmMutation.isPending ? 'Confirmation…' : 'Confirmer'}
                         </Button>
                       </form>
@@ -239,7 +243,7 @@ export function InvoicesPage() {
               <Button type="button" variant="outline" onClick={() => setDialog(null)}>
                 Annuler
               </Button>
-              <Button type="submit" form="invoice-add-form" disabled={manualMutation.isPending}>
+              <Button loading={manualMutation.isPending} type="submit" form="invoice-add-form" disabled={manualMutation.isPending}>
                 {manualMutation.isPending ? 'Ajout…' : 'Ajouter la facture'}
               </Button>
             </>
