@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, type FieldChange } from '@/components/ui/Modal'
 import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+
+import { resendVerification, setEmailNotifications } from '@/api/account'
 import { useAuthMe, useChangePassword, useUpdateProfile } from '@/hooks/queries/useAuthMe'
 import { useCreateTeamMember, useDeleteTeamMember, useTeamMembers } from '@/hooks/queries/useTeam'
 import { useThresholds, useUpdateThresholds } from '@/hooks/queries/useThresholds'
@@ -433,6 +436,57 @@ function AutomationCard() {
   )
 }
 
+function EmailCard() {
+  const query = useAuthMe()
+  const queryClient = useQueryClient()
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['auth-me'] })
+  const resend = useMutation({ mutationFn: resendVerification, onSuccess: refresh })
+  const toggle = useMutation({ mutationFn: setEmailNotifications, onSuccess: refresh })
+  const me = query.data
+
+  return (
+    <section className={SECTION}>
+      <h2 className="text-section-title font-semibold text-text-primary">Emails</h2>
+      <MetricState status={query.status}>
+        {me && (
+          <>
+            <div className={ROW}>
+              <span className="text-text-secondary">Adresse</span>
+              <span className="font-medium text-text-primary">
+                {me.email} : {me.email_verified ? 'confirmée' : 'non confirmée'}
+              </span>
+            </div>
+            {!me.email_verified && (
+              <div className="flex flex-wrap items-center gap-3">
+                <Button type="button" variant="outline" disabled={resend.isPending || resend.isSuccess} onClick={() => resend.mutate()}>
+                  {resend.isSuccess ? 'Lien envoyé' : 'Renvoyer le lien de confirmation'}
+                </Button>
+                {resend.isSuccess && <span className="text-sm text-text-secondary">Vérifiez vos emails.</span>}
+              </div>
+            )}
+            <label className="flex items-start gap-3 text-sm text-text-primary">
+              <input
+                type="checkbox"
+                className="mt-0.5 h-4 w-4"
+                checked={me.email_notifications ?? true}
+                disabled={toggle.isPending}
+                onChange={(e) => toggle.mutate(e.target.checked)}
+              />
+              <span>
+                Recevoir les avis par email : nouveau relevé, alerte critique sur un appareil, changement d&rsquo;abonnement.
+                <span className="mt-1 block text-xs text-text-secondary">
+                  Les emails de sécurité (mot de passe oublié, confirmation d&rsquo;adresse) partent toujours.
+                </span>
+              </span>
+            </label>
+          </>
+        )}
+      </MetricState>
+      <MutationError error={resend.error ?? toggle.error} />
+    </section>
+  )
+}
+
 export function SettingsPage() {
   const session = useSessionStore((s) => s.session)
   const logout = useSessionStore((s) => s.logout)
@@ -444,6 +498,7 @@ export function SettingsPage() {
   return (
     <div className="flex flex-col gap-7">
       <ProfileCard session={session} />
+      <EmailCard />
 
       {session.profile !== 'menage' && (
         <section className={SECTION}>

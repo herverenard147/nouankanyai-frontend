@@ -20,6 +20,10 @@ export interface BackendUser {
   is_trial: boolean
   /** Compte de démonstration décidé par le serveur (jamais par l'adresse). */
   is_demo?: boolean
+  /** Adresse confirmée par le lien reçu par email. */
+  email_verified?: boolean
+  /** Avis non indispensables par email (relevé, alerte, abonnement). */
+  email_notifications?: boolean
   created_at: string
   last_sign_in_at: string | null
 }

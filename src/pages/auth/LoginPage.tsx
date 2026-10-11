@@ -141,9 +141,9 @@ export function LoginPage() {
             required
           />
           {mode === 'login' && (
-            <button type="button" disabled className="w-fit cursor-not-allowed text-sm text-text-tertiary" aria-disabled="true">
+            <Link to="/mot-de-passe-oublie" className="w-fit text-sm font-medium text-accent-cta hover:text-accent-cta-hover">
               Mot de passe oublié ?
-            </button>
+            </Link>
           )}
 
           {formError && (
