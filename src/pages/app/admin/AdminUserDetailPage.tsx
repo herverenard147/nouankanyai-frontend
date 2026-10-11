@@ -1,4 +1,5 @@
 import { ArrowLeft } from 'lucide-react'
+import { TransferCard } from '@/components/import/TransferCard'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
@@ -372,6 +373,9 @@ export function AdminUserDetailPage() {
           </ul>
         </MetricState>
       </section>
+
+      {/* Support : reprendre dans ce compte un export fourni par le client (changement de compte, fusion). */}
+      {!isSelf && <TransferCard targetUserId={user.id} targetName={user.name} />}
     </div>
   )
 }
