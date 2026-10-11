@@ -8,7 +8,7 @@ interface SingleMeasureChartProps {
 
 /**
  * Graphique horaire quand un seul relevé existe : 24 créneaux, une barre, les autres heures vides, à largeur
- * fixe — au lieu d'une barre unique étirée sur toute la bande (DESIGN.md règle 11).
+ * fixe : au lieu d'une barre unique étirée sur toute la bande (DESIGN.md règle 11).
  */
 export function SingleMeasureChart({ label, percent, tip }: SingleMeasureChartProps) {
   const hour = Math.min(23, Math.max(0, Number.parseInt(label.split(':')[0] ?? '0', 10) || 0))

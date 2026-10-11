@@ -7,7 +7,7 @@ import { useAdminPlatformConsumption, useUserMachines } from '@/hooks/queries/us
 import { formatNumberFr } from '@/lib/formatters'
 
 /**
- * Vue Admin de la page Conso & coûts : même raisonnement que AdminPlatformPrediction — l'Admin
+ * Vue Admin de la page Conso & coûts : même raisonnement que AdminPlatformPrediction : l'Admin
  * n'a pas d'équipement en propre, donc pas de courbe de consommation pour son propre compte.
  * Répartition de la puissance active actuelle par compte, détail par équipement dans une
  * modale (chargé à la demande, seulement à l'ouverture).

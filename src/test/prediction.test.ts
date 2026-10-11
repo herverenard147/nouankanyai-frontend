@@ -6,7 +6,7 @@ function hourlyPoints(count: number, kwPerHour: number, costPerHour: number) {
   return Array.from({ length: count }, () => ({ predicted_kw: kwPerHour, cost_fcfa: costPerHour }))
 }
 
-describe('bucketize — vue "heure"', () => {
+describe('bucketize : vue "heure"', () => {
   it('garde un point par heure sans agrégation', () => {
     const { series, totalCostFcfa } = bucketize(hourlyPoints(24, 2, 100), 'heure')
     expect(series).toHaveLength(24)
@@ -22,7 +22,7 @@ describe('bucketize — vue "heure"', () => {
   })
 })
 
-describe('bucketize — vue "jour"', () => {
+describe('bucketize : vue "jour"', () => {
   it('agrège 24 points horaires en un seul point journalier (somme = énergie kWh)', () => {
     const { series, totalCostFcfa } = bucketize(hourlyPoints(24, 2, 100), 'jour')
     expect(series).toHaveLength(1)
@@ -37,7 +37,7 @@ describe('bucketize — vue "jour"', () => {
   })
 })
 
-describe('bucketize — vue "semaine"', () => {
+describe('bucketize : vue "semaine"', () => {
   it('agrège 168 points horaires en un seul point hebdomadaire', () => {
     const { series } = bucketize(hourlyPoints(24 * 7, 3, 0), 'semaine')
     expect(series).toHaveLength(1)
@@ -45,7 +45,7 @@ describe('bucketize — vue "semaine"', () => {
   })
 })
 
-describe('bucketize — cas vide', () => {
+describe('bucketize : cas vide', () => {
   it("ne plante pas sur une liste de points vide (division par max=0 protégée)", () => {
     const { series, totalCostFcfa } = bucketize([], 'heure')
     expect(series).toEqual([])

@@ -22,7 +22,7 @@ export function PredictionPage() {
   const [granularity, setGranularity] = useState<PredictionGranularity>('heure')
   // L'Admin n'utilise pas la plateforme comme un compte des 3 autres profils (pas d'équipement
   // en propre) : sa page Prédiction appelait /api/predict sur son propre compte, toujours vide
-  // (bug trouvé par audit, 2026-10-01) — hook conditionnel plutôt qu'appelé puis ignoré, pour
+  // (bug trouvé par audit, 2026-10-01) : hook conditionnel plutôt qu'appelé puis ignoré, pour
   // ne jamais lancer la requête par compte en plus de la requête plateforme.
   const query = usePredictionsBundle(profile ?? 'menage', granularity, { enabled: profile !== 'admin' })
   const showModelDetails = levelAtLeast(level, 'technique')

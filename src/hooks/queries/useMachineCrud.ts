@@ -16,7 +16,7 @@ import type { BackendMachineTestResult, BackendMachineUpdatePayload, BackendNewM
 
 /**
  * Équipements (PME) et machines (Industrie) sont la même ressource backend
- * (`/api/machines`, voir equipment.ts/machinesTable.ts) — on invalide les deux
+ * (`/api/machines`, voir equipment.ts/machinesTable.ts) : on invalide les deux
  * query keys après toute mutation, peu importe la page d'où elle vient. Les
  * alertes (alerts-action/alerts-auto) et l'historique en dérivent aussi (voir
  * api/alerts.ts) : une résolution de machine doit les rafraîchir également,
@@ -38,7 +38,7 @@ function invalidateMachineQueries(queryClient: ReturnType<typeof useQueryClient>
 }
 
 /** Reconnaissance de l'appareil à partir d'une photo (pré-remplissage du formulaire
- * d'ajout) — ne touche jamais la liste des machines, pas d'invalidation de cache. */
+ * d'ajout) : ne touche jamais la liste des machines, pas d'invalidation de cache. */
 /** Analyse d'une photo ou d'une vidéo de la machine (POST /api/machines/{id}/analyze-media) :
  * une menace détectée passe la machine en alerte, d'où l'invalidation. */
 export function useAnalyzeMachineMedia() {
@@ -100,7 +100,7 @@ export function useDeleteMachine() {
 
 /**
  * Reprend une lecture capteur fraîche sur la machine et relance l'analyse
- * côté backend (mêmes seuils que ceux qui ont généré l'alerte) — ne marque
+ * côté backend (mêmes seuils que ceux qui ont généré l'alerte) : ne marque
  * résolu que si cette nouvelle lecture est effectivement normale. Le
  * résultat (`resolved`) doit être lu par l'appelant : un `isSuccess` de la
  * mutation ne veut PAS dire que l'alerte est levée, seulement que le test a
@@ -143,7 +143,7 @@ function writeStoredAutoResolveLoop(machineId: string, loop: StoredAutoResolveLo
     localStorage.setItem(autoResolveStorageKey(machineId), JSON.stringify(loop))
   } catch {
     // Navigation privée / quota dépassé : la reprise après interruption est une
-    // commodité, pas une garantie — la boucle continue simplement sans persister.
+    // commodité, pas une garantie : la boucle continue simplement sans persister.
   }
 }
 
@@ -157,17 +157,17 @@ function clearStoredAutoResolveLoop(machineId: string) {
 
 /**
  * Relance automatique de « Vérifier et résoudre » (POST /api/machines/{id}/test)
- * jusqu'à résolution — sauf pour une alerte critique (jamais de boucle, une
+ * jusqu'à résolution : sauf pour une alerte critique (jamais de boucle, une
  * intervention humaine est supposée immédiate) ou si l'utilisateur n'a pas
  * activé l'automatisation (panneau « Automatisation IA », Réglages) : dans ces
  * deux cas, `trigger()` ne fait qu'un seul essai, comportement identique à
  * l'ancien `useResolveMachine`. Plafonné à `MAX_AUTO_ATTEMPTS` essais espacés de
- * `RETRY_DELAY_MS` ; au-delà sans résolution, `needs_human` — jamais présenté
+ * `RETRY_DELAY_MS` ; au-delà sans résolution, `needs_human` : jamais présenté
  * comme résolu si ça ne l'est pas.
  *
  * Reprise après interruption : l'état de la boucle (machine, essai en cours) est
  * persisté en localStorage à chaque tentative et repris automatiquement au
- * montage si l'automatisation est toujours active pour cette machine — un
+ * montage si l'automatisation est toujours active pour cette machine : un
  * onglet fermé ou une page rechargée en plein cycle ne doit jamais obliger
  * l'utilisateur à recliquer depuis zéro.
  */

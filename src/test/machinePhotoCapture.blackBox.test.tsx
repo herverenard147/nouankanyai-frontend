@@ -6,11 +6,11 @@ import { MachineFormDrawer } from '@/components/machines/MachineFormDrawer'
 import type { BackendMachine } from '@/types/backend'
 
 /**
- * Type 1 — boîte noire : dérivé uniquement du contrat décrit dans le plan
+ * Type 1 : boîte noire : dérivé uniquement du contrat décrit dans le plan
  * (POST /api/machines/extract-photo -> {status, extracted: {...5 champs...},
  * photo_data_url}; "n'invente aucune valeur"; bouton réservé à l'ajout; une
  * catégorie non reconnue ne bloque jamais la soumission), sans s'appuyer sur
- * les noms de fonctions/caches internes — seulement sur la frontière réseau
+ * les noms de fonctions/caches internes : seulement sur la frontière réseau
  * (`@/api/rawBackend`), qui est la vraie frontière du contrat testé ici.
  */
 vi.mock('@/api/rawBackend', () => ({

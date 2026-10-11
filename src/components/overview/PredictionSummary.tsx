@@ -22,6 +22,7 @@ export function PredictionSummary({ profile, showModelName = false }: Prediction
 
   return (
     <section aria-label="Prédiction IA" className="flex min-w-0 flex-col gap-2">
+      {!query.data?.global && <h2 className="text-base font-bold text-text-primary">Prédiction</h2>}
       <MetricState status={query.status} isEmpty={!query.data?.global}>
         {query.data?.global && <PredictionBody prediction={query.data.global} showModelName={showModelName} />}
       </MetricState>

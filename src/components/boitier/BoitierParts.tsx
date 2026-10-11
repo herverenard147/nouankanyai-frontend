@@ -79,7 +79,7 @@ export function CommandsTable({ commands, status }: { commands: BackendDeviceCom
               {commands.map((command) => (
                 <tr key={command.id} className="border-t border-border">
                   <td className="px-3 py-2.5 tabular-nums text-text-secondary">{formatUtcDateTime(command.created_at).slice(0, 16)}</td>
-                  <td className="px-3 py-2.5 text-text-primary">{command.machine_nom ?? '—'}</td>
+                  <td className="px-3 py-2.5 text-text-primary">{command.machine_nom ?? '-'}</td>
                   <td className="px-3 py-2.5 text-text-secondary">{COMMAND_VIA_LABEL[command.requested_via]}</td>
                   <td className="px-3 py-2.5 text-text-primary">
                     {COMMAND_RESULT_LABEL[command.status]}

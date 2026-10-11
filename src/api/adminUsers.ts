@@ -5,7 +5,7 @@ import type { AdminUser } from '@/types/domain'
 function accountLabel(profile: ReturnType<typeof deriveProfile>, ownerName: string | null): string {
   if (ownerName) return `Membre : ${ownerName}`
   if (profile === 'pme' || profile === 'industrie') return 'Compte principal'
-  return '—'
+  return '-'
 }
 
 export async function fetchAdminUsers(): Promise<AdminUser[]> {
@@ -30,7 +30,7 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
   })
 }
 
-/** Superadmin uniquement — un admin ordinaire reçoit un 403 (voir CLAUDE.md du backend). */
+/** Superadmin uniquement : un admin ordinaire reçoit un 403 (voir CLAUDE.md du backend). */
 export function promoteUser(targetUserId: string, makeAdmin: boolean) {
   return rawUpdateUserRole(targetUserId, makeAdmin ? 'admin' : null)
 }

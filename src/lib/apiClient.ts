@@ -44,7 +44,7 @@ export class ApiError extends Error {
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   body?: unknown
-  /** Corps déjà prêt à l'envoi (ex: FormData pour un upload) — n'est pas JSON.stringify. */
+  /** Corps déjà prêt à l'envoi (ex: FormData pour un upload) : n'est pas JSON.stringify. */
   rawBody?: FormData
   auth?: boolean
 }
@@ -54,7 +54,7 @@ interface RequestOptions {
  * pas au niveau de chaque appelant :
  * - certaines routes renvoient un 200 OK avec `{"error": "..."}` au lieu d'un
  *   vrai statut HTTP d'erreur (ex: /api/machines/{id}/simulate sur une machine
- *   introuvable) — on les traite comme des échecs ici ;
+ *   introuvable) : on les traite comme des échecs ici ;
  * - les erreurs FastAPI standard arrivent en `{"detail": "..."}`.
  */
 let refreshing: Promise<boolean> | null = null
@@ -114,7 +114,7 @@ async function request<T>(path: string, options: RequestOptions = {}, retried = 
   if (!response.ok) {
     // Deux formats d'erreur coexistent : `{"detail": "..."}` (routes legacy,
     // HTTPException standard) et `{"error": {"code","message",...}}` (routes
-    // /api/v1/ml/*, StandardErrorResponse — voir app/api/handlers.py).
+    // /api/v1/ml/*, StandardErrorResponse : voir app/api/handlers.py).
     const message = data?.detail ?? data?.error?.message ?? data?.error ?? `Erreur ${response.status}`
 
     // Token expiré/révoqué : sans ça, l'utilisateur reste sur les pages

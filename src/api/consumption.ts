@@ -6,7 +6,7 @@ import type { ConsumptionSeries, Profile } from '@/types/domain'
  * Le backend n'a pas de série de consommation agrégée par compte : on prend
  * l'historique réel de relevés (`sensor_metrics`) de la machine la plus
  * significative, et on répartit la puissance actuelle par machine pour le
- * détail "par poste" — les deux à partir de données réellement enregistrées,
+ * détail "par poste" : les deux à partir de données réellement enregistrées,
  * pas d'une série recalculée après coup.
  */
 export async function fetchConsumptionSeries(_profile: Profile): Promise<ConsumptionSeries[]> {

@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 /**
  * Fait défiler vers l'élément dont l'id correspond au hash de l'URL, à chaque
- * changement de hash — y compris quand ce changement vient d'une navigation
+ * changement de hash : y compris quand ce changement vient d'une navigation
  * client-side depuis une autre page (ex: NavBar/Footer sur /comment-ca-marche
  * qui pointent vers /#probleme). React Router ne fait pas ce défilement
  * automatiquement pour une navigation SPA (contrairement à un vrai chargement

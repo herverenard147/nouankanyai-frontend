@@ -17,7 +17,7 @@ import { useLevel } from '@/store/levelStore'
 import type { BackendMachine } from '@/types/backend'
 import type { MachineRow } from '@/types/domain'
 
-// Mêmes paliers que dans IndustrieOverview — voir lib/overviewLevels.ts.
+// Mêmes paliers que dans IndustrieOverview : voir lib/overviewLevels.ts.
 const COLUMNS_BASE: TableColumn<MachineRow>[] = [
   { key: 'machine', label: 'Machine' },
   { key: 'attendu', label: 'Attendu par jour' },

@@ -8,7 +8,7 @@ import { formatNumberFr } from '@/lib/formatters'
 
 /**
  * Vue Admin de la page Prédiction : l'Admin n'a pas d'équipement en propre (voir
- * fetchPredictionsBundle), donc pas de courbe à afficher pour son propre compte — à la place,
+ * fetchPredictionsBundle), donc pas de courbe à afficher pour son propre compte : à la place,
  * un compte = une ligne, triée par puissance prévue, avec le détail par équipement dans une
  * modale (DESIGN.md §8 : modale pour afficher un détail sans surcharger la page), pas une
  * nouvelle page.
@@ -37,7 +37,7 @@ export function AdminPlatformPrediction() {
               <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">{row.ownerNom}</span>
               <span className="shrink-0 text-xs text-text-secondary">{row.machines.length} équipement{row.machines.length > 1 ? 's' : ''}</span>
               <span className="shrink-0 font-mono text-sm font-semibold tabular-nums text-text-primary">
-                {row.totalNextHourKw !== null ? `${formatNumberFr(row.totalNextHourKw, 1)} kW` : '—'}
+                {row.totalNextHourKw !== null ? `${formatNumberFr(row.totalNextHourKw, 1)} kW` : '-'}
               </span>
             </button>
           ))}
@@ -55,7 +55,7 @@ export function AdminPlatformPrediction() {
             {open.machines.map((m) => (
               <div key={m.machineId} className="flex items-center justify-between gap-3 border-t border-border py-2.5 text-sm">
                 <span className="min-w-0 flex-1 truncate text-text-primary">{m.nom}</span>
-                <span className="shrink-0 font-mono tabular-nums text-text-secondary">{m.nextHourValue ?? m.error ?? '—'}</span>
+                <span className="shrink-0 font-mono tabular-nums text-text-secondary">{m.nextHourValue ?? m.error ?? '-'}</span>
               </div>
             ))}
           </div>

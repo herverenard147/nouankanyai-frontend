@@ -111,7 +111,7 @@ function cell(column: keyof typeof COLUMN_LABEL, event: import('@/types/domain')
     case 'time':
       return event.time
     case 'account':
-      return event.account ?? '—'
+      return event.account ?? '-'
     case 'actor':
       return event.actor
     case 'action':

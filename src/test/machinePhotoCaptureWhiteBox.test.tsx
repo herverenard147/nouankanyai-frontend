@@ -6,7 +6,7 @@ import { useExtractMachinePhoto } from '@/hooks/queries/useMachineCrud'
 import type { BackendMachinePhotoExtraction } from '@/types/backend'
 
 /**
- * Type 2 — boîte blanche : s'appuie sur le nom réel du hook
+ * Type 2 : boîte blanche : s'appuie sur le nom réel du hook
  * (`useExtractMachinePhoto`, voir src/hooks/queries/useMachineCrud.ts) tel
  * qu'implémenté, par opposition au test boîte noire qui ne regarde que le
  * contrat déclaré dans le plan.

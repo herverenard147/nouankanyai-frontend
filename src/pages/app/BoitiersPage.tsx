@@ -103,7 +103,7 @@ export function BoitiersPage() {
                             {LIGHT_SHORT[light]}
                           </span>
                         ) : (
-                          '—'
+                          '-'
                         )}
                       </td>
                       <td
@@ -111,7 +111,7 @@ export function BoitiersPage() {
                       >
                         {CONNECTION_LABEL[connection]}
                       </td>
-                      {columns.site && <td className="px-3 py-2.5 text-text-primary">{device.site_nom ?? '—'}</td>}
+                      {columns.site && <td className="px-3 py-2.5 text-text-primary">{device.site_nom ?? '-'}</td>}
                       {columns.site && <td className="px-3 py-2.5 text-text-primary">{device.scope === 'account' ? 'Tout le compte' : 'Un site'}</td>}
                       {columns.lastActivity && (
                         <td className="px-3 py-2.5 tabular-nums text-text-secondary">{lastActivity({ last_seen_at: device.last_seen_at })}</td>
@@ -153,7 +153,7 @@ function WaitingRequests({ requests, onCancel }: { requests: BackendDeviceReques
       {requests.map((request) => (
         <div key={request.id} className="flex flex-wrap items-center justify-between gap-3 text-sm text-text-secondary">
           <span>
-            {request.quantity} boîtier{request.quantity > 1 ? 's' : ''} pour le site « {request.site_nom ?? '—'} » · {formatFcfa(request.total_fcfa)} · demandé
+            {request.quantity} boîtier{request.quantity > 1 ? 's' : ''} pour le site « {request.site_nom ?? '-'} » · {formatFcfa(request.total_fcfa)} · demandé
             le {formatUtcDateTime(request.created_at).slice(0, 10)}
           </span>
           <button type="button" onClick={() => onCancel(request.id)} className="focus-ring font-semibold text-accent-cta">
@@ -187,8 +187,8 @@ function EmptyOrWaiting({ waiting, delivered, onRequest, onCode, onCancel, cance
         </div>
         <p className="max-w-[62ch] text-sm text-text-secondary">
           {isDelivered
-            ? `Votre boîtier pour le site « ${request.site_nom ?? '—'} » a été livré. Demandez maintenant le code qui le relie à votre compte.`
-            : `Demande du ${formatUtcDateTime(request.created_at).slice(0, 10)} pour le site « ${request.site_nom ?? '—'} ». Prix : ${formatFcfa(request.total_fcfa)}. L’équipe Nouankany vous contactera pour la livraison. Vous n’avez rien d’autre à faire pour l’instant.`}
+            ? `Votre boîtier pour le site « ${request.site_nom ?? '-'} » a été livré. Demandez maintenant le code qui le relie à votre compte.`
+            : `Demande du ${formatUtcDateTime(request.created_at).slice(0, 10)} pour le site « ${request.site_nom ?? '-'} ». Prix : ${formatFcfa(request.total_fcfa)}. L’équipe Nouankany vous contactera pour la livraison. Vous n’avez rien d’autre à faire pour l’instant.`}
         </p>
         <div className="mt-2 flex flex-col gap-2 border-t border-border pt-4">
           {!isDelivered && (

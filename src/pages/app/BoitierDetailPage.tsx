@@ -115,7 +115,7 @@ export function BoitierDetailPage() {
                           <tr key={machine.code} className="border-t border-border">
                             <td className="px-3 py-2.5 font-semibold text-text-primary">{machine.nom}</td>
                             <td className={`px-3 py-2.5 font-semibold ${STATE_CLASS[machine.state]}`}>{MACHINE_STATE_LABEL[machine.state]}</td>
-                            {blocks.readings && <td className="px-3 py-2.5 tabular-nums text-text-primary">{detail.data?.readings[machine.code] ?? '—'}</td>}
+                            {blocks.readings && <td className="px-3 py-2.5 tabular-nums text-text-primary">{detail.data?.readings[machine.code] ?? '-'}</td>}
                             <td className="px-3 py-2.5 text-text-primary">
                               {blocks.chooseMachines ? (
                                 <label className="inline-flex items-center gap-2">
@@ -139,7 +139,7 @@ export function BoitierDetailPage() {
                                 'Non'
                               )}
                             </td>
-                            {blocks.technical && <td className="px-3 py-2.5 text-text-secondary">{machine.controllable ? 'Simulé' : '—'}</td>}
+                            {blocks.technical && <td className="px-3 py-2.5 text-text-secondary">{machine.controllable ? 'Simulé' : '-'}</td>}
                             <td className="px-3 py-2.5">
                               {machine.controllable && machine.state !== 'arrete' && (
                                 <Button
@@ -199,9 +199,9 @@ export function BoitierDetailPage() {
                 <DefinitionRows
                   rows={[
                     ['Identifiant', `${device.id.slice(0, 8)}…`],
-                    ['Rattachement', extended ? 'Tout le compte' : `Site « ${device.site_nom ?? '—'} »`],
+                    ['Rattachement', extended ? 'Tout le compte' : `Site « ${device.site_nom ?? '-'} »`],
                     ['Langue', LANGUAGE_LABEL[device.language]],
-                    ['Dernière activité', device.last_seen_at ? `${lastActivity({ last_seen_at: device.last_seen_at })} UTC` : '—'],
+                    ['Dernière activité', device.last_seen_at ? `${lastActivity({ last_seen_at: device.last_seen_at })} UTC` : '-'],
                   ]}
                 />
               </BoitierSectionBlock>
@@ -226,8 +226,8 @@ export function BoitierDetailPage() {
                 changes={[
                   {
                     label: 'Portée',
-                    before: extended ? 'Tout le compte' : `Site « ${device.site_nom ?? '—'} »`,
-                    after: extended ? `Site « ${device.site_nom ?? '—'} »` : 'Tout le compte',
+                    before: extended ? 'Tout le compte' : `Site « ${device.site_nom ?? '-'} »`,
+                    after: extended ? `Site « ${device.site_nom ?? '-'} »` : 'Tout le compte',
                   },
                 ]}
                 pending={update.isPending}

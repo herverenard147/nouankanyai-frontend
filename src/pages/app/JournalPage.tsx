@@ -51,7 +51,7 @@ export function JournalPage() {
               {filtered.map((entry) => (
                 <tr key={entry.id} className="border-t border-border">
                   <td className="px-4 py-3 tabular-nums text-text-secondary">{entry.time}</td>
-                  {showAccount && <td className="px-4 py-3 text-text-secondary">{entry.account ?? '—'}</td>}
+                  {showAccount && <td className="px-4 py-3 text-text-secondary">{entry.account ?? '-'}</td>}
                   <td className="px-4 py-3 text-text-primary">{entry.type}</td>
                   <td className="px-4 py-3 text-text-secondary">{entry.detail}</td>
                 </tr>

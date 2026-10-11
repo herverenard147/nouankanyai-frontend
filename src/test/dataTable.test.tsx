@@ -7,7 +7,7 @@ import { RowDetailDrawer } from '@/components/table/RowDetailDrawer'
 
 /**
  * Comportement générique pré-existant de DataTable/RowDetailDrawer (tri,
- * recherche, clic de ligne, actions, fermeture) — jamais couvert avant
+ * recherche, clic de ligne, actions, fermeture) : jamais couvert avant
  * (constaté en répondant à la question "tes tests prennent-ils en compte
  * les fonctionnalités qui existaient déjà ?"). Ne touche pas à
  * photoColumn/photo_data_url, déjà couvert par machinePhotoDisplay.test.tsx.

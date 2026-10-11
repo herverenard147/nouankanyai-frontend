@@ -147,9 +147,9 @@ export function ConfirmEditModal({ subject, changes, pending, error, onConfirm, 
           {changes.map((change) => (
             <div key={change.label} className="grid grid-cols-[1fr_1.5rem_1fr] items-baseline gap-x-2 gap-y-1 border-t border-border py-2.5 text-sm sm:grid-cols-[8.5rem_1fr_1.5rem_1fr]">
               <dt className="col-span-3 text-text-secondary sm:col-span-1">{change.label}</dt>
-              <dd className="break-words text-text-tertiary line-through">{change.before || '—'}</dd>
+              <dd className="break-words text-text-tertiary line-through">{change.before || '-'}</dd>
               <dd aria-hidden="true">→</dd>
-              <dd className="break-words font-semibold text-text-primary">{change.after || '—'}</dd>
+              <dd className="break-words font-semibold text-text-primary">{change.after || '-'}</dd>
             </div>
           ))}
         </dl>
