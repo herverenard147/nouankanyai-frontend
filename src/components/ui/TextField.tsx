@@ -7,6 +7,15 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string
 }
 
+/** Étoile des champs obligatoires. Hors du libellé : les lecteurs d'écran annoncent déjà « obligatoire ». */
+export function RequiredMark() {
+  return (
+    <span aria-hidden="true" title="Champ obligatoire" className="text-sm font-semibold text-alert">
+      *
+    </span>
+  )
+}
+
 export function TextField({ label, error, className, id, ...rest }: TextFieldProps) {
   const autoId = useId()
   const fieldId = id ?? autoId
@@ -14,9 +23,12 @@ export function TextField({ label, error, className, id, ...rest }: TextFieldPro
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={fieldId} className="text-sm font-medium text-text-primary">
-        {label}
-      </label>
+      <div className="flex items-baseline gap-1">
+        <label htmlFor={fieldId} className="text-sm font-medium text-text-primary">
+          {label}
+        </label>
+        {rest.required && <RequiredMark />}
+      </div>
       <input
         id={fieldId}
         className={clsx(
