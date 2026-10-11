@@ -47,25 +47,52 @@ export function PrivacyContent() {
 
       <section>
         <h3 className="text-sm font-semibold text-text-primary">5. Durée de conservation</h3>
+        <ul className="mt-2 flex list-disc flex-col gap-1.5 pl-5">
+          <li>Compte actif : vos données sont gardées tant que le compte existe.</li>
+          <li>
+            Compte supprimé : votre nom, votre adresse, vos photos, les noms de vos sites et appareils, vos
+            conversations et vos notes sont effacés de la plateforme.
+          </li>
+          <li>
+            Identité de l&rsquo;abonné et pièces comptables (relevés de facturation) : 10 ans après la fin du service,
+            dans une archive protégée, comme la loi l&rsquo;impose.
+          </li>
+          <li>
+            Historique des actions du compte : gardé pour la même durée, lisible par un administrateur seulement, en
+            cas de litige ou de demande légale. Chaque consultation est tracée.
+          </li>
+          <li>Demandes d&rsquo;audit, liste d&rsquo;attente, messages de contact et journaux techniques : 3 ans.</li>
+          <li>Sauvegardes de la base : 90 jours au plus.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3 className="text-sm font-semibold text-text-primary">6. Données techniques gardées sans lien avec vous</h3>
         <p className="mt-2">
-          Les données d&rsquo;un compte actif sont conservées tant que le compte existe. En cas de suppression
-          d&rsquo;un compte membre, l&rsquo;historique d&rsquo;audit associé est détaché plutôt que supprimé, pour la
-          traçabilité des actions déjà effectuées. Les demandes d&rsquo;audit et inscriptions à la liste d&rsquo;attente
-          sont conservées jusqu&rsquo;à leur traitement par l&rsquo;équipe, ou votre demande de suppression.
+          Quand un compte est supprimé, les caractéristiques des appareils, les relevés et les consommations sont
+          gardés sous un identifiant neuf, sans table de correspondance avec l&rsquo;ancien compte. Ces données ne
+          permettent plus de remonter à vous. Elles servent à améliorer les prévisions et n&rsquo;apparaissent jamais
+          dans l&rsquo;espace d&rsquo;un autre client. La localisation est ramenée à la commune ou au pays.
         </p>
       </section>
 
       <section>
-        <h3 className="text-sm font-semibold text-text-primary">6. Destinataires</h3>
+        <h3 className="text-sm font-semibold text-text-primary">7. Destinataires et hébergement</h3>
         <p className="mt-2">
           Vos données sont accessibles à l&rsquo;équipe Nouankany dans le cadre du service, et, pour un compte membre
-          PME/Industrie, aux autres comptes de la même équipe (mêmes équipements, mêmes données opérationnelles, voir
-          les CGU). Elles ne sont ni vendues, ni transmises à des tiers à des fins publicitaires.
+          PME/Industrie, aux autres comptes de la même équipe (voir les CGU). Elles ne sont ni vendues, ni transmises à
+          des tiers à des fins publicitaires.
+        </p>
+        <p className="mt-2">
+          La plateforme s&rsquo;appuie sur des prestataires techniques situés hors de Côte d&rsquo;Ivoire : hébergement
+          de l&rsquo;application et de la base de données, calcul des prévisions, envoi des emails, et un service
+          d&rsquo;intelligence artificielle pour la lecture des factures, l&rsquo;analyse des photos et
+          l&rsquo;assistant. Ils ne reçoivent que les données nécessaires à leur tâche.
         </p>
       </section>
 
       <section>
-        <h3 className="text-sm font-semibold text-text-primary">7. Stockage technique local</h3>
+        <h3 className="text-sm font-semibold text-text-primary">8. Stockage technique local</h3>
         <p className="mt-2">
           La plateforme conserve votre session de connexion et vos préférences d&rsquo;affichage dans le stockage
           local de votre navigateur (localStorage), propre à votre appareil, pas de cookie tiers de suivi
@@ -74,20 +101,21 @@ export function PrivacyContent() {
       </section>
 
       <section>
-        <h3 className="text-sm font-semibold text-text-primary">8. Vos droits</h3>
+        <h3 className="text-sm font-semibold text-text-primary">9. Vos droits</h3>
         <p className="mt-2">
-          Conformément au RGPD et à la loi ivoirienne relative à la protection des données à caractère personnel, vous
-          disposez d&rsquo;un droit d&rsquo;accès, de rectification, d&rsquo;effacement et d&rsquo;opposition sur vos
-          données. Pour l&rsquo;exercer, contactez{' '}
+          Conformément à la loi ivoirienne n° 2013-450 relative à la protection des données à caractère personnel,
+          vous disposez d&rsquo;un droit d&rsquo;accès, de rectification, d&rsquo;effacement et d&rsquo;opposition. Vous
+          pouvez supprimer votre compte vous-même dans Paramètres, et couper les avis par email au même endroit. Pour
+          toute autre demande, contactez{' '}
           <a href="mailto:contact@nouankany.com" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
             contact@nouankany.com
           </a>
-          .
+          . Vous pouvez aussi saisir l&rsquo;autorité de protection, l&rsquo;ARTCI.
         </p>
       </section>
 
       <section>
-        <h3 className="text-sm font-semibold text-text-primary">9. Sécurité</h3>
+        <h3 className="text-sm font-semibold text-text-primary">10. Sécurité</h3>
         <p className="mt-2">
           Les mots de passe sont hachés, les échanges avec la plateforme sont chiffrés (HTTPS), et l&rsquo;accès aux
           données d&rsquo;un compte est réservé à ce compte et, le cas échéant, aux membres de la même équipe.

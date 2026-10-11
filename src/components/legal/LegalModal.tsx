@@ -28,7 +28,7 @@ export function LegalModal({ title, onClose, children }: LegalModalProps) {
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
-        <p className="text-sm text-text-secondary">Dernière mise à jour : 2026.</p>
+        <p className="text-sm text-text-secondary">Dernière mise à jour : octobre 2026.</p>
         <div className="flex flex-col gap-6 text-sm text-text-secondary">{children}</div>
       </div>
     </div>

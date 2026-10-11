@@ -1,4 +1,4 @@
-import { api } from '@/lib/apiClient'
+import { api, saveBlob } from '@/lib/apiClient'
 
 /** Mot de passe oublié, confirmation d'adresse et avis par email (backend : /api/v1/account). */
 export const forgotPassword = (email: string) =>
@@ -13,3 +13,13 @@ export const resendVerification = () => api.post<{ already_verified: boolean }>(
 
 export const setEmailNotifications = (enabled: boolean) =>
   api.patch<{ email_notifications: boolean }>('/api/v1/account/notifications', { email_notifications: enabled })
+
+/** Supprime le compte connecté : données personnelles effacées, données techniques anonymisées. */
+export const deleteAccount = (password: string, confirmation: string) =>
+  api.post<{ deleted: boolean }>('/api/v1/account/delete', { password, confirmation })
+
+/** Télécharge l'archive ZIP de toutes les données du compte. */
+export async function exportAccountData(): Promise<void> {
+  const { blob, filename } = await api.getBlob('/api/v1/account/export')
+  saveBlob(blob, filename ?? 'nouankany-export.zip')
+}

@@ -10,7 +10,7 @@ import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { resendVerification, setEmailNotifications } from '@/api/account'
+import { deleteAccount, exportAccountData, resendVerification, setEmailNotifications } from '@/api/account'
 import { useAuthMe, useChangePassword, useUpdateProfile } from '@/hooks/queries/useAuthMe'
 import { useCreateTeamMember, useDeleteTeamMember, useTeamMembers } from '@/hooks/queries/useTeam'
 import { useThresholds, useUpdateThresholds } from '@/hooks/queries/useThresholds'
@@ -487,6 +487,89 @@ function EmailCard() {
   )
 }
 
+function ExportCard() {
+  const mutation = useMutation({ mutationFn: exportAccountData })
+  return (
+    <section className={SECTION}>
+      <h2 className="text-section-title font-semibold text-text-primary">Mes données</h2>
+      <p className="text-sm text-text-secondary">
+        Téléchargez une archive de tout ce que la plateforme garde pour votre compte : sites, appareils, relevés,
+        factures, plan d&rsquo;action et historique des actions. Les fichiers s&rsquo;ouvrent dans un tableur.
+      </p>
+      <Button type="button" variant="outline" className="w-fit" disabled={mutation.isPending} onClick={() => mutation.mutate()}>
+        {mutation.isPending ? 'Préparation…' : 'Télécharger mes données'}
+      </Button>
+      <MutationError error={mutation.error} />
+    </section>
+  )
+}
+
+const DELETE_WORD = 'SUPPRIMER'
+
+function DeleteAccountCard({ isMember }: { isMember: boolean }) {
+  const logout = useSessionStore((s) => s.logout)
+  const [open, setOpen] = useState(false)
+  const [password, setPassword] = useState('')
+  const [word, setWord] = useState('')
+  const mutation = useMutation({
+    mutationFn: () => deleteAccount(password, word),
+    onSuccess: () => logout(),
+  })
+  const ready = password.length > 0 && word.trim().toUpperCase() === DELETE_WORD
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+    if (ready) mutation.mutate()
+  }
+
+  return (
+    <section className={SECTION}>
+      <h2 className="text-section-title font-semibold text-text-primary">Supprimer mon compte</h2>
+      {isMember ? (
+        <p className="text-sm text-text-secondary">
+          Vous supprimez seulement votre accès. Les données de l&rsquo;entreprise restent chez le titulaire du compte.
+        </p>
+      ) : (
+        <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-text-secondary">
+          <li>
+            <strong className="text-text-primary">Effacé :</strong> votre nom, votre adresse, votre mot de passe, les photos de factures
+            et d&rsquo;appareils, les noms de vos sites et appareils, vos conversations et vos notes.
+          </li>
+          <li>
+            <strong className="text-text-primary">Gardé sans lien avec vous :</strong> les caractéristiques des appareils, les relevés
+            et les consommations, pour améliorer les prévisions.
+          </li>
+          <li>
+            <strong className="text-text-primary">Gardé pour la durée légale :</strong> l&rsquo;historique des actions du compte et les
+            relevés de facturation, lisibles par un administrateur seulement.
+          </li>
+          <li>Les accès des membres de votre équipe sont supprimés en même temps.</li>
+        </ul>
+      )}
+      {!open ? (
+        <Button type="button" variant="outline" className="w-fit" onClick={() => setOpen(true)}>
+          Supprimer mon compte…
+        </Button>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex max-w-sm flex-col gap-3" noValidate>
+          <p className="text-sm font-medium text-alert">Cette action est définitive.</p>
+          <PasswordField label="Mot de passe" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <TextField label={`Saisissez ${DELETE_WORD} pour confirmer`} value={word} onChange={(e) => setWord(e.target.value)} required />
+          <MutationError error={mutation.error} />
+          <div className="flex gap-3">
+            <Button type="submit" disabled={!ready || mutation.isPending}>
+              {mutation.isPending ? 'Suppression…' : 'Supprimer définitivement'}
+            </Button>
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+              Annuler
+            </Button>
+          </div>
+        </form>
+      )}
+    </section>
+  )
+}
+
 export function SettingsPage() {
   const session = useSessionStore((s) => s.session)
   const logout = useSessionStore((s) => s.logout)
@@ -520,6 +603,11 @@ export function SettingsPage() {
 
       {session.profile !== 'admin' && <ThresholdsCard />}
       {session.profile !== 'admin' && <AutomationCard />}
+
+      {session.profile !== 'admin' && (session.profile === 'menage' || session.isTeamOwner) && <ExportCard />}
+      {session.profile !== 'admin' && (
+        <DeleteAccountCard isMember={(session.profile === 'pme' || session.profile === 'industrie') && !session.isTeamOwner} />
+      )}
 
       <button
         type="button"

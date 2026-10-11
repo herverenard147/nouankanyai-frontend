@@ -79,3 +79,25 @@ describe('Mot de passe oublié et confirmation d’adresse', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument()
   })
 })
+
+// Partie P : aucune information ni consentement n'était demandé à l'inscription.
+describe('Inscription : consentement', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('refuse de créer un compte sans accepter les conditions, sans appeler le serveur', () => {
+    const fetchMock = mockFetch(200, {})
+    at('/login?mode=signup', <LoginPage />)
+    fireEvent.change(screen.getByLabelText(/^Nom/i), { target: { value: 'Awa' } })
+    fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'awa@exemple.ci' } })
+    fireEvent.change(screen.getByLabelText(/^Mot de passe/i), { target: { value: 'secret-123' } })
+    fireEvent.click(screen.getByRole('button', { name: /Créer le compte/i }))
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(screen.getByRole('alert')).toHaveTextContent(/Acceptez les conditions/i)
+  })
+
+  it('ouvre la politique de confidentialité depuis le formulaire', () => {
+    at('/login?mode=signup', <LoginPage />)
+    fireEvent.click(screen.getByRole('button', { name: /politique de confidentialité/i }))
+    expect(screen.getByRole('dialog', { name: /Politique de confidentialité/i })).toHaveTextContent(/ARTCI/)
+  })
+})
