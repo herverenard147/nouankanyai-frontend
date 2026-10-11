@@ -388,6 +388,9 @@ export interface BackendRecommendation {
   action: string
   gain_fcfa: number
   auto_resolu: boolean
+  /** Conseils tirés du référentiel d'équipements : une estimation, pas une donnée simulée. */
+  alternative?: { marque: string; modele: string; inverter: boolean; source: string; confiance: string }
+  vieillissement?: { age_ans: number; surconsommation_pct: number }
   /** Étapes de dépannage concrètes, adaptées à la catégorie de l'équipement : présent
    * seulement sur les recommandations de type "alerte" (anomalie/surchauffe/vibration),
    * absent pour optimisation/délestage/efficacité. */
