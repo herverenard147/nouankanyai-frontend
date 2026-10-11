@@ -63,6 +63,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     priority: machine?.priority ?? 'moyenne',
     site_id: machine?.site_id ?? '',
     photo_data_url: undefined as string | undefined,
+    reference_id: undefined as string | undefined,
   })
 
   function handlePhotoExtracted(extracted: BackendMachinePhotoExtraction['extracted'], photoDataUrl: string) {
@@ -123,6 +124,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           power_kw,
           site_id: form.site_id || undefined,
           photo_data_url: form.photo_data_url,
+          reference_id: form.reference_id,
         },
         { onSuccess: onClose },
       )
@@ -202,7 +204,8 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           <ComboboxField
             label="Modèle"
             value={form.modele}
-            onChange={(value) => setForm((f) => ({ ...f, modele: value }))}
+            // Un modèle tapé à la main n'est plus relié à la fiche du référentiel choisie avant.
+            onChange={(value) => setForm((f) => ({ ...f, modele: value, reference_id: undefined }))}
             options={suggestions.modeles}
             onSelect={(option) => {
               // Un modèle du catalogue remplit aussi catégorie, marque et puissance.
@@ -215,6 +218,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
                   marque: choice.marque,
                   modele: choice.modele,
                   power_kw: String(choice.puissance_kw),
+                  reference_id: choice.reference_id,
                 }))
             }}
           />
