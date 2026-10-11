@@ -34,7 +34,7 @@ export default defineConfig({
     {
       command:
         'cd "../NouanKanyAI/backend" && ' +
-        'JWT_SECRET=test-secret AI_MODE=mock PORT=8001 FRONTEND_URL=http://localhost:5173 EMAIL_BACKEND=memory ' +
+        'JWT_SECRET=test-secret AI_MODE=mock PORT=8001 FRONTEND_URL=http://localhost:5173 EMAIL_BACKEND=memory RATE_LIMIT_ENABLED=0 ' +
         `DATABASE_URL='${e2eDatabaseUrl}' ` +
         '.venv/bin/python main.py',
       url: 'http://localhost:8001/docs',
