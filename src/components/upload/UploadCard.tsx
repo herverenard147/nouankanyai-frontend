@@ -11,6 +11,10 @@ interface UploadCardProps {
   /** Par défaut : libellé facture (usage d'origine, InvoicesPage). */
   buttonLabel?: string
   busyLabel?: string
+  /** Types de fichier acceptés. Par défaut : une photo, prise directement avec l'appareil. */
+  accept?: string
+  /** Ouvre directement l'appareil photo sur téléphone. À couper quand un PDF est aussi accepté. */
+  camera?: boolean
 }
 
 /** Encart d'envoi de photo générique (facture, appareil…) : ouvre le sélecteur de
@@ -22,6 +26,8 @@ export function UploadCard({
   isUploading,
   buttonLabel = 'Prendre la facture en photo',
   busyLabel = 'Analyse en cours…',
+  accept = 'image/*',
+  camera = true,
 }: UploadCardProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -44,8 +50,8 @@ export function UploadCard({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
-        capture="environment"
+        accept={accept}
+        capture={camera ? 'environment' : undefined}
         onChange={handleChange}
         className="sr-only"
         aria-hidden="true"
