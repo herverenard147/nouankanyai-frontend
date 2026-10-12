@@ -35,6 +35,10 @@ function invalidateMachineQueries(queryClient: ReturnType<typeof useQueryClient>
   queryClient.invalidateQueries({ queryKey: ['alerts-auto'] })
   queryClient.invalidateQueries({ queryKey: ['alerts-history'] })
   queryClient.invalidateQueries({ queryKey: ['anomalies-open'] })
+  // Un problème résolu retire aussi son conseil : sans cela le conseil restait affiché sous un
+  // message vert « résolu » (retour du propriétaire, 2026-10-12).
+  queryClient.invalidateQueries({ queryKey: ['advice'] })
+  queryClient.invalidateQueries({ queryKey: ['recommendations'] })
 }
 
 /** Reconnaissance de l'appareil à partir d'une photo (pré-remplissage du formulaire

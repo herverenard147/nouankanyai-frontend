@@ -10,8 +10,21 @@ const NUMBER_WITH_UNIT = /(\d+)(?:\.(\d+))?\s?(°C|Hz|bar|kW|kWh|FCFA)/g
 // Score du détecteur d'anomalie : "score: -0.1264" (nombre signé, sans unité).
 const SCORE = /(score\s?:\s?)(-?)(\d+)\.(\d+)/gi
 
+// Noms de mesure du backend (« vibration_hz ») : jamais montrés tels quels.
+const MEASURE_NAMES: Record<string, string> = {
+  temperature_c: 'température',
+  vibration_hz: 'vibration',
+  pressure_bar: 'pression',
+  power_kw: 'puissance',
+}
+const MEASURE_NAME = /\b(temperature_c|vibration_hz|pressure_bar|power_kw)\b/g
+// « depuis 0 relevés » ne dit rien : la précision n'est gardée qu'à partir d'un relevé.
+const SINCE_ZERO = /,? depuis 0 relevés?/g
+
 export function frenchNumbersWithUnits(text: string): string {
   return text
+    .replace(MEASURE_NAME, (name: string) => MEASURE_NAMES[name] ?? name)
+    .replace(SINCE_ZERO, '')
     .replace(SCORE, (_match, label: string, sign: string, integer: string, decimals: string) => `${label}${sign ? '−' : ''}${integer},${decimals}`)
     .replace(NUMBER_WITH_UNIT, (_match, integer: string, decimals: string | undefined, unit: string) =>
     `${integer}${decimals ? `,${decimals}` : ''}${NARROW_NBSP}${unit}`,
