@@ -1,5 +1,5 @@
 import { formatFcfa } from '@/lib/formatters'
-import { getCachedAdminMetrics, rawBilling, getCachedMachines } from '@/api/rawBackend'
+import { getCachedAdminMetrics, rawBilling, getCachedMachines, getCachedRecommend } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { Kpi, KpiWindow, Profile } from '@/types/domain'
 
@@ -65,7 +65,10 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
   const [machines, billing] = await Promise.all([getCachedMachines(), rawBilling()])
   const lastStatement = billing.statements.find((s) => s.total_fcfa !== null)
   const activeMachines = machines.filter((m) => m.status === 'actif')
-  const alerteMachines = machines.filter((m) => m.status === 'alerte')
+  // Une machine est en anomalie si son statut le dit OU si le diagnostic liste une alerte pour elle :
+  // la vue d'ensemble affichait « Aucune alerte active » à côté d'une alerte listée (audit du 2026-10-12).
+  const diagnosed = await alertedMachineIds(machines)
+  const alerteMachines = machines.filter((m) => m.status === 'alerte' || diagnosed.has(m.machine_id))
   // Puissance tirée des relevés simulés (aucun capteur branché) : provenance « synthétique » (M20).
   const totalPower = machines.reduce((sum, m) => sum + m.power_kw, 0)
 
@@ -104,6 +107,17 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
       note: alerteMachines.length > 0 ? alerteMachines.map((m) => m.nom).join(', ') : 'Aucune',
       provenance: 'synthetique',
     },
+  }
+}
+
+/** Machines pour lesquelles le moteur de recommandation liste une alerte. Sans réponse du moteur, aucune. */
+async function alertedMachineIds(machines: Awaited<ReturnType<typeof getCachedMachines>>): Promise<Set<string>> {
+  if (machines.length === 0) return new Set()
+  try {
+    const { recommendations } = await getCachedRecommend(machines)
+    return new Set(recommendations.filter((rec) => rec.type === 'alerte').map((rec) => rec.machine_id))
+  } catch {
+    return new Set()
   }
 }
 
