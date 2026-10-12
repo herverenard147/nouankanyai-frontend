@@ -41,7 +41,11 @@ export function OcrFieldList({ fields }: OcrFieldListProps) {
                 Corriger
               </button>
             )}
-            <ProvenanceBadge value={field.provenance} />
+            {field.statusLabel === undefined ? (
+              <ProvenanceBadge value={field.provenance} />
+            ) : (
+              field.statusLabel && <span className="whitespace-nowrap text-xs text-text-secondary">{field.statusLabel}</span>
+            )}
           </div>
         </div>
       ))}

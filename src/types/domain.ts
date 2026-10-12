@@ -240,6 +240,8 @@ export interface OcrField {
   label: string
   value: string
   provenance: Provenance
+  /** Remplace le badge de provenance quand il est défini : état de vérification d'un champ de facture. */
+  statusLabel?: string
   editable: boolean
 }
 

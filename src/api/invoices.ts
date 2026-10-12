@@ -13,13 +13,21 @@ import { formatFcfa, formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 import type { BackendElectricityBill } from '@/types/backend'
 import type { InvoiceRecord, OcrField, Profile } from '@/types/domain'
 
+// D'où vient la facture, dit simplement : une photo lue ou une saisie ne sont pas des « estimations ».
 const SOURCE_LABEL: Record<BackendElectricityBill['source'], string> = {
-  manuel: 'estimé',
-  ocr: 'estimé',
-  'ocr-mock': 'estimé',
-  statistique: 'synthétique',
-  demo: 'démonstration',
+  manuel: 'Saisie à la main',
+  ocr: 'Lue sur la photo',
+  'ocr-mock': 'Lecture simulée',
+  statistique: 'Calculée par le modèle',
+  demo: 'Démonstration',
 }
+
+// État de vérification affiché à côté de chaque valeur d'une facture réelle.
+const FIELD_STATUS_LABEL = {
+  en_attente: 'À valider',
+  validee: 'Vérifié',
+  rejetee: 'Rejetée',
+} as const
 
 const VALIDATION_LABEL = {
   en_attente: 'En attente de validation',
@@ -28,7 +36,9 @@ const VALIDATION_LABEL = {
 } as const
 
 function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
-  const fields: OcrField[] = [
+  // Une prévision garde son badge de provenance (synthétique) ; une facture réelle porte son état de vérification.
+  const statusLabel = bill.is_forecast ? undefined : FIELD_STATUS_LABEL[bill.validation_status ?? 'en_attente']
+  const rawFields: OcrField[] = [
     { key: 'periode', label: 'Période facturée', value: bill.month, provenance: 'estime', editable: false },
     {
       key: 'montant',
@@ -39,10 +49,10 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
     },
   ]
   if (bill.kwh_consumed !== null) {
-    fields.push({ key: 'kwh', label: 'Consommation', value: `${formatNumberFr(bill.kwh_consumed)}${NARROW_NBSP}kWh`, provenance: 'estime', editable: false })
+    rawFields.push({ key: 'kwh', label: 'Consommation', value: `${formatNumberFr(bill.kwh_consumed)}${NARROW_NBSP}kWh`, provenance: 'estime', editable: false })
   }
   if (bill.actual_amount_xof !== null) {
-    fields.push({
+    rawFields.push({
       key: 'reel',
       label: 'Montant réel confirmé',
       value: formatFcfa(bill.actual_amount_xof),
@@ -55,20 +65,24 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
   // l'opérateur et la référence de transaction : jamais affichés pour une saisie
   // manuelle ou une prévision, où ces champs sont toujours null côté backend.
   if (bill.document_type === 'recu_paiement_numerique') {
-    fields.push({ key: 'type_document', label: 'Type de document', value: 'Reçu de paiement numérique', provenance: 'estime', editable: false })
+    rawFields.push({ key: 'type_document', label: 'Type de document', value: 'Reçu de paiement numérique', provenance: 'estime', editable: false })
     if (bill.payment_operator) {
-      fields.push({ key: 'operateur', label: 'Opérateur de paiement', value: bill.payment_operator, provenance: 'estime', editable: false })
+      rawFields.push({ key: 'operateur', label: 'Opérateur de paiement', value: bill.payment_operator, provenance: 'estime', editable: false })
     }
   } else if (bill.document_type === 'facture_papier') {
-    fields.push({ key: 'type_document', label: 'Type de document', value: 'Facture CIE papier', provenance: 'estime', editable: false })
+    rawFields.push({ key: 'type_document', label: 'Type de document', value: 'Facture CIE papier', provenance: 'estime', editable: false })
   }
   if ((bill.period_months ?? 1) > 1) {
-    fields.push({ key: 'duree', label: 'Durée couverte', value: `${bill.period_months} mois (bimestrielle)`, provenance: 'estime', editable: false })
+    rawFields.push({ key: 'duree', label: 'Durée couverte', value: `${bill.period_months} mois (bimestrielle)`, provenance: 'estime', editable: false })
   }
   if (bill.payment_reference) {
-    fields.push({ key: 'reference', label: 'Référence', value: bill.payment_reference, provenance: 'estime', editable: false })
+    rawFields.push({ key: 'reference', label: 'Référence', value: bill.payment_reference, provenance: 'estime', editable: false })
   }
-  fields.push({ key: 'source', label: 'Source', value: SOURCE_LABEL[bill.source] ?? bill.source, provenance: 'estime', editable: false })
+  // La ligne « Source » dit elle-même d'où vient la facture : pas de badge en plus.
+  const fields: OcrField[] = [
+    ...rawFields.map((field) => (statusLabel && field.provenance === 'estime' ? { ...field, statusLabel } : field)),
+    { key: 'source', label: 'Source', value: SOURCE_LABEL[bill.source] ?? bill.source, provenance: 'estime', statusLabel: '', editable: false },
+  ]
 
   return {
     id: bill.id,
