@@ -12,21 +12,56 @@ const VALIDATION_MESSAGES: Record<string, string> = {
   string_too_short: 'trop court',
   string_too_long: 'trop long',
   bool_type: 'doit être oui ou non',
+  greater_than: 'valeur trop petite',
   greater_than_equal: 'valeur trop petite',
+  less_than: 'valeur trop grande',
   less_than_equal: 'valeur trop grande',
   enum: 'valeur non autorisée',
+  string_pattern_mismatch: 'format non reconnu',
+}
+
+// Noms des champs du serveur, dits comme dans les formulaires : jamais « power_kw » à l'écran.
+const FIELD_LABELS: Record<string, string> = {
+  nom: 'Nom', email: 'Adresse email', message: 'Message', telephone: 'Téléphone', password: 'Mot de passe',
+  entreprise: 'Entreprise', contact_nom: 'Nom du contact', contact: 'Contact', notes: 'Précisions',
+  title: 'Titre', description: 'Détail', gain_estime_fcfa: 'Gain estimé', month: 'Mois',
+  amount_xof: 'Montant', actual_amount_xof: 'Montant réel', kwh_consumed: 'Consommation',
+  power_kw: 'Puissance', localisation: 'Localisation', quantity: 'Quantité',
+  temperature_max_c: 'Température max', vibration_max_hz: 'Vibration max', surconsommation_ratio: 'Ratio de surconsommation',
+}
+
+interface ValidationItem {
+  type?: string
+  loc?: unknown[]
+  msg?: string
+  ctx?: Record<string, unknown>
+}
+
+/** Une erreur de validation, dite avec sa limite quand le serveur la donne (« 5 000 caractères au plus »). */
+function validationText(item: ValidationItem): string {
+  const limit = (key: string) => (typeof item.ctx?.[key] === 'number' ? (item.ctx[key] as number).toLocaleString('fr-FR') : null)
+  // Règle écrite côté serveur, déjà en français : « Value error, Adresse email invalide ».
+  if (item.type === 'value_error' && item.msg) return item.msg.replace(/^Value error,\s*/, '').replace(/\.$/, '')
+  if (item.type === 'string_too_long' && limit('max_length')) return `${limit('max_length')} caractères au plus`
+  if (item.type === 'string_too_short' && limit('min_length')) return `${limit('min_length')} caractère${item.ctx?.min_length === 1 ? '' : 's'} au moins`
+  if (item.type === 'greater_than' && limit('gt')) return `doit être supérieur à ${limit('gt')}`
+  if (item.type === 'greater_than_equal' && limit('ge')) return `doit être au moins ${limit('ge')}`
+  if (item.type === 'less_than' && limit('lt')) return `doit être inférieur à ${limit('lt')}`
+  if (item.type === 'less_than_equal' && limit('le')) return `doit être au plus ${limit('le')}`
+  return (item.type && VALIDATION_MESSAGES[item.type]) ?? 'valeur invalide'
 }
 
 /** Message lisible : texte du serveur tel quel, ou erreurs de validation FastAPI (422) traduites
  * champ par champ, jamais le JSON brut (Volet 2, partie E). */
-function readableMessage(message: unknown): string {
+export function readableMessage(message: unknown): string {
   if (typeof message === 'string') return message
   if (Array.isArray(message)) {
     return message
-      .map((item: { type?: string; loc?: unknown[]; msg?: string }) => {
+      .map((item: ValidationItem) => {
         const field = [...(item.loc ?? [])].reverse().find((part) => typeof part === 'string' && part !== 'body')
-        const text = (item.type && VALIDATION_MESSAGES[item.type]) ?? 'valeur invalide'
-        return field ? `${String(field)} : ${text}.` : `${text[0].toUpperCase()}${text.slice(1)}.`
+        const text = validationText(item)
+        const label = field ? (FIELD_LABELS[String(field)] ?? String(field)) : null
+        return label ? `${label} : ${text}.` : `${text[0].toUpperCase()}${text.slice(1)}.`
       })
       .join(' ')
   }

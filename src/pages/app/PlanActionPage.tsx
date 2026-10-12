@@ -1,3 +1,4 @@
+import { LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 
 import { PLAN_STATUS_LABEL } from '@/api/actionPlan'
@@ -53,10 +54,10 @@ export function PlanActionPage() {
 
   const fields = (
     <div className="flex flex-col gap-3">
-      <TextField label="Titre de l’action" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} required />
-      <TextField label="Détail" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
+      <TextField label="Titre de l’action" maxLength={LIMITS.name} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} required />
+      <TextField label="Détail" maxLength={LIMITS.message} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
       <div className="grid gap-3 sm:grid-cols-2">
-        <TextField label="Gain estimé (FCFA)" type="number" min="0" value={form.gain} onChange={(e) => setForm((f) => ({ ...f, gain: e.target.value }))} />
+        <TextField label="Gain estimé (FCFA)" type="number" min="0" max={LIMITS.amountFcfa} value={form.gain} onChange={(e) => setForm((f) => ({ ...f, gain: e.target.value }))} />
         <SelectField label="Statut" value={form.status} onChange={(value) => setForm((f) => ({ ...f, status: value as PlanStatus }))} options={STATUS_OPTIONS} />
       </div>
     </div>

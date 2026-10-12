@@ -1,3 +1,4 @@
+import { LIMITS } from '@/lib/validation'
 import { SelectField } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
 import type { SiteChoice } from '@/lib/boitierForms'
@@ -11,8 +12,8 @@ export function SiteFields({ sites, value, onChange, label }: { sites: BackendSi
   if (sites.length === 0) {
     return (
       <div className="grid gap-3 sm:grid-cols-2">
-        <TextField label={`${label} : nom du site`} placeholder="Ex. Domicile, Boulangerie" value={value.newName} onChange={(e) => onChange({ ...value, newName: e.target.value })} />
-        <TextField label="Ville ou quartier" placeholder="Ex. Abidjan, Cocody" value={value.newLocation} onChange={(e) => onChange({ ...value, newLocation: e.target.value })} />
+        <TextField label={`${label} : nom du site`} maxLength={LIMITS.name} placeholder="Ex. Domicile, Boulangerie" value={value.newName} onChange={(e) => onChange({ ...value, newName: e.target.value })} />
+        <TextField label="Ville ou quartier" maxLength={LIMITS.location} placeholder="Ex. Abidjan, Cocody" value={value.newLocation} onChange={(e) => onChange({ ...value, newLocation: e.target.value })} />
       </div>
     )
   }

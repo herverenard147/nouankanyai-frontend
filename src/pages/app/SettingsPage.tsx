@@ -1,3 +1,4 @@
+import { EMAIL_INPUT, LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
@@ -133,7 +134,7 @@ function ProfileCard({ session }: { session: Session }) {
               if (nom.trim()) setDialog('name-confirm')
             }}
           >
-            <TextField label="Nom affiché" value={nom} onChange={(e) => setNom(e.target.value)} required />
+            <TextField label="Nom affiché" maxLength={LIMITS.name} value={nom} onChange={(e) => setNom(e.target.value)} required />
             <TextField label="Email" value={meQuery.data?.email ?? ''} disabled readOnly />
             <p className="text-xs text-text-secondary">L’email et le type de compte ne sont pas modifiables ici.</p>
           </form>
@@ -269,8 +270,8 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
         >
           <form id="member-form" onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div className="grid gap-3 sm:grid-cols-2">
-              <TextField label="Nom" value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} required />
-              <TextField label="Email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required />
+              <TextField label="Nom" maxLength={LIMITS.name} value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} required />
+              <TextField label="Email" {...EMAIL_INPUT} value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required />
             </div>
             <PasswordField label="Mot de passe initial" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} minLength={6} required />
             <p className="text-xs text-text-secondary">
@@ -374,9 +375,9 @@ function ThresholdsCard() {
             }}
           >
             <div className="grid gap-3 sm:grid-cols-3">
-              <TextField label="Température max (°C)" type="number" step="0.1" value={form.temperature_max_c} onChange={(e) => setForm((f) => ({ ...f, temperature_max_c: Number(e.target.value) }))} />
-              <TextField label="Vibration max (Hz)" type="number" step="0.1" value={form.vibration_max_hz} onChange={(e) => setForm((f) => ({ ...f, vibration_max_hz: Number(e.target.value) }))} />
-              <TextField label="Ratio de surconsommation" type="number" step="0.1" value={form.surconsommation_ratio} onChange={(e) => setForm((f) => ({ ...f, surconsommation_ratio: Number(e.target.value) }))} />
+              <TextField label="Température max (°C)" type="number" step="0.1" min="0.1" max={LIMITS.temperatureMaxC} required value={form.temperature_max_c} onChange={(e) => setForm((f) => ({ ...f, temperature_max_c: Number(e.target.value) }))} />
+              <TextField label="Vibration max (Hz)" type="number" step="0.1" min="0.1" max={LIMITS.vibrationMaxHz} required value={form.vibration_max_hz} onChange={(e) => setForm((f) => ({ ...f, vibration_max_hz: Number(e.target.value) }))} />
+              <TextField label="Ratio de surconsommation" type="number" step="0.1" min="1.1" max={LIMITS.overconsumptionRatio} required value={form.surconsommation_ratio} onChange={(e) => setForm((f) => ({ ...f, surconsommation_ratio: Number(e.target.value) }))} />
             </div>
             <p className="text-xs text-text-secondary">Au-delà de ces valeurs, un appareil passe en « Anomalie détectée » et une alerte apparaît.</p>
           </form>

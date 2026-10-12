@@ -1,3 +1,4 @@
+import { LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
@@ -143,6 +144,8 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     const power = Number(form.power_kw.replace(',', '.'))
     if (!form.power_kw.trim()) found.power = 'Indiquez la puissance, ou choisissez un modèle proposé : elle se remplit seule.'
     else if (!Number.isFinite(power) || power <= 0) found.power = 'La puissance doit être un nombre supérieur à 0.'
+    else if (power > LIMITS.powerKw) found.power = 'Cette puissance est trop élevée : indiquez-la en kW, pas en W (1 500 W = 1,5 kW).'
+    if (form.nom.trim().length > LIMITS.name) found.nom = `Le nom est trop long (${LIMITS.name} caractères au plus).`
     const year = Number(form.annee)
     if (form.annee && (!Number.isInteger(year) || year < 1980 || year > new Date().getFullYear()))
       found.annee = `Année entre 1980 et ${new Date().getFullYear()}.`

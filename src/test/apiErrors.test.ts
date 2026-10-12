@@ -18,7 +18,7 @@ describe('Messages d’erreur de validation', () => {
       { type: 'float_type', loc: ['body', 0, 'power_kw'], msg: 'Input should be a valid number' },
     ])
     const error = await api.post('/api/machines', {}, false).catch((e: Error) => e)
-    expect((error as Error).message).toBe('nom : champ obligatoire. power_kw : doit être un nombre.')
+    expect((error as Error).message).toBe('Nom : champ obligatoire. Puissance : doit être un nombre.')
     expect((error as Error).message).not.toContain('{')
   })
 

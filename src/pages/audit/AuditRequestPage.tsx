@@ -1,3 +1,4 @@
+import { FRENCH_VALIDITY, LIMITS, isValidEmail } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -27,14 +28,13 @@ export function AuditRequestPage() {
   const [emailError, setEmailError] = useState<string | null>(null)
 
   const mutation = useCreateAuditRequest()
-  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
     const nextEntrepriseError = entreprise.trim() ? null : "Le nom de l'entreprise est requis."
     const nextContactNomError = contactNom.trim() ? null : 'Le nom du contact est requis.'
-    const nextEmailError = EMAIL_RE.test(email) ? null : 'Entrez une adresse email valide.'
+    const nextEmailError = isValidEmail(email) ? null : 'Entrez une adresse email valide, par exemple vous@exemple.com.'
     setEntrepriseError(nextEntrepriseError)
     setContactNomError(nextContactNomError)
     setEmailError(nextEmailError)
@@ -101,6 +101,7 @@ export function AuditRequestPage() {
 
           <TextField
             label="Entreprise"
+            maxLength={LIMITS.name}
             value={entreprise}
             onChange={(e) => setEntreprise(e.target.value)}
             error={entrepriseError ?? undefined}
@@ -108,6 +109,7 @@ export function AuditRequestPage() {
           />
           <TextField
             label="Nom du contact"
+            maxLength={LIMITS.name}
             value={contactNom}
             onChange={(e) => setContactNom(e.target.value)}
             error={contactNomError ?? undefined}
@@ -116,12 +118,13 @@ export function AuditRequestPage() {
           <TextField
             label="Email professionnel"
             type="email"
+            maxLength={LIMITS.email}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             error={emailError ?? undefined}
             required
           />
-          <TextField label="Téléphone (optionnel)" type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} />
+          <TextField label="Téléphone (optionnel)" type="tel" maxLength={LIMITS.phone} value={telephone} onChange={(e) => setTelephone(e.target.value)} />
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="audit-message" className="text-sm font-medium text-text-primary">
@@ -129,6 +132,8 @@ export function AuditRequestPage() {
             </label>
             <textarea
               id="audit-message"
+          {...FRENCH_VALIDITY}
+              maxLength={LIMITS.message}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}

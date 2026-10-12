@@ -1,3 +1,4 @@
+import { EMAIL_INPUT, LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
@@ -73,7 +74,7 @@ function WaitlistForm() {
     <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:flex-wrap">
       <TextField
         label="Email"
-        type="email"
+        {...EMAIL_INPUT}
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -83,6 +84,7 @@ function WaitlistForm() {
       <TextField
         label="Téléphone (optionnel, pour un SMS)"
         type="tel"
+        maxLength={LIMITS.phone}
         value={telephone}
         onChange={(e) => setTelephone(e.target.value)}
         placeholder="+225 01 02 03 04"

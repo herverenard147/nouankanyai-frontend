@@ -1,3 +1,4 @@
+import { EMAIL_INPUT, FRENCH_VALIDITY, LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
@@ -27,10 +28,10 @@ function MessageForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <TextField label="Nom" required value={nom} onChange={(e) => setNom(e.target.value)} />
+      <TextField label="Nom" required maxLength={LIMITS.name} value={nom} onChange={(e) => setNom(e.target.value)} />
       <TextField
         label="Email"
-        type="email"
+        {...EMAIL_INPUT}
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -42,6 +43,8 @@ function MessageForm() {
         </label>
         <textarea
           id="contact-message"
+          {...FRENCH_VALIDITY}
+          maxLength={LIMITS.message}
           required
           rows={5}
           value={message}

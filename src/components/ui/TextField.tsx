@@ -1,3 +1,4 @@
+import { FRENCH_VALIDITY } from '@/lib/validation'
 import { clsx } from 'clsx'
 import type { InputHTMLAttributes } from 'react'
 import { useId } from 'react'
@@ -39,6 +40,14 @@ export function TextField({ label, error, className, id, ...rest }: TextFieldPro
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         {...rest}
+        onInvalid={(event) => {
+          FRENCH_VALIDITY.onInvalid(event)
+          rest.onInvalid?.(event)
+        }}
+        onInput={(event) => {
+          FRENCH_VALIDITY.onInput(event)
+          rest.onInput?.(event)
+        }}
       />
       {error && (
         <p id={errorId} className="text-sm text-alert">
