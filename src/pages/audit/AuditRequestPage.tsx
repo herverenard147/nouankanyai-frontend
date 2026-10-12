@@ -1,4 +1,4 @@
-import { LIMITS, isValidEmail } from '@/lib/validation'
+import { FRENCH_VALIDITY, LIMITS, isValidEmail } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -132,6 +132,7 @@ export function AuditRequestPage() {
             </label>
             <textarea
               id="audit-message"
+          {...FRENCH_VALIDITY}
               maxLength={LIMITS.message}
               value={message}
               onChange={(e) => setMessage(e.target.value)}

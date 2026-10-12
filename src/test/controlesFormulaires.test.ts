@@ -42,3 +42,43 @@ describe('Refus du serveur dits en français, avec la limite', () => {
     expect(text({ type: 'autre', loc: ['body', 'champ_inconnu'] })).toBe('champ_inconnu : valeur invalide.')
   })
 })
+
+describe('Message d’un champ invalide, écrit par nous', () => {
+  function input(attrs: Record<string, string>, value: string) {
+    const el = document.createElement('input')
+    for (const [name, v] of Object.entries(attrs)) el.setAttribute(name, v)
+    el.value = value
+    return el
+  }
+
+  it('champ obligatoire, courriel incomplet, nombre hors bornes', async () => {
+    const { frenchValidityMessage, FRENCH_VALIDITY, EMAIL_INPUT } = await import('@/lib/validation')
+    expect(frenchValidityMessage(input({ required: '' }, ''))).toBe('Ce champ est obligatoire.')
+    expect(frenchValidityMessage(input({ type: 'email', pattern: EMAIL_INPUT.pattern }, 'abc@def'))).toContain('adresse email complète')
+    expect(frenchValidityMessage(input({ type: 'number', min: '0' }, '-5'))).toBe('La valeur doit être au moins 0.')
+    expect(frenchValidityMessage(input({ type: 'number', max: '100000' }, '900000'))).toContain('au plus 100')
+    expect(frenchValidityMessage(input({ type: 'text' }, 'correct'))).toBe('')
+
+    const field = input({ required: '' }, '')
+    FRENCH_VALIDITY.onInvalid({ currentTarget: field })
+    expect(field.validationMessage).toBe('Ce champ est obligatoire.')
+    field.value = 'Awa'
+    FRENCH_VALIDITY.onInput({ currentTarget: field })
+    expect(field.checkValidity()).toBe(true)
+  })
+})
+
+describe('Machine en alerte sans diagnostic détaillé', () => {
+  it('figure dans la liste des alertes, une seule fois', async () => {
+    const { pendingDiagnosisAlerts } = await import('@/api/alerts')
+    const machines = [
+      { machine_id: 'M1', nom: 'Four de séchage', status: 'alerte' },
+      { machine_id: 'M2', nom: 'Compresseur', status: 'alerte' },
+      { machine_id: 'M3', nom: 'Groupe froid', status: 'actif' },
+    ] as Parameters<typeof pendingDiagnosisAlerts>[0]
+    const alerts = pendingDiagnosisAlerts(machines, new Set(['M2']))
+    expect(alerts.map((a) => a.machineId)).toEqual(['M1'])
+    expect(alerts[0].title).toBe('Anomalie signalée sur Four de séchage')
+    expect(alerts[0].detail).toContain('quelques relevés')
+  })
+})

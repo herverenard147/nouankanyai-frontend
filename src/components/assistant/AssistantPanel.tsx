@@ -1,4 +1,4 @@
-import { LIMITS } from '@/lib/validation'
+import { FRENCH_VALIDITY, LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { X } from 'lucide-react'
@@ -112,6 +112,7 @@ export function AssistantPanel({ profile, onClose, fullPage = false }: Assistant
           value={draft}
           maxLength={LIMITS.assistantMessage}
           onChange={(e) => setDraft(e.target.value)}
+          {...FRENCH_VALIDITY}
           placeholder="Poser une question"
           aria-label="Poser une question à l'assistant"
           className="focus-ring min-h-11 min-w-0 flex-1 rounded-control border border-border bg-card px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary"

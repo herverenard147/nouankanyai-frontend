@@ -1,4 +1,4 @@
-import { EMAIL_INPUT, LIMITS } from '@/lib/validation'
+import { EMAIL_INPUT, FRENCH_VALIDITY, LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
@@ -43,6 +43,7 @@ function MessageForm() {
         </label>
         <textarea
           id="contact-message"
+          {...FRENCH_VALIDITY}
           maxLength={LIMITS.message}
           required
           rows={5}

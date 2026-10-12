@@ -1,4 +1,4 @@
-import { LIMITS } from '@/lib/validation'
+import { FRENCH_VALIDITY, LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -84,6 +84,7 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
           </label>
           <textarea
             id="boitier-notes"
+          {...FRENCH_VALIDITY}
             rows={3}
             maxLength={500}
             placeholder="Ex. pièce, étage, repère pour le livreur"

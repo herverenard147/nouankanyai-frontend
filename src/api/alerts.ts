@@ -41,12 +41,12 @@ export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]
       }))
   }
 
-  const { recommendations } = await fetchRecommendations()
+  const { machines, recommendations } = await fetchRecommendations()
   // Alertes = uniquement de vrais problèmes détectés (anomalie/surchauffe/
   // vibration), jamais optimisation/efficacité (des suggestions, pas des
   // défauts : "Marquer comme résolu" n'a aucun sens pour elles, voir
   // src/api/recommendations.ts) ni délestage (déjà dans le Journal).
-  return recommendations
+  const diagnosed: ActionAlert[] = recommendations
     .filter((rec) => rec.type === 'alerte')
     .map((rec, i) => ({
       kind: 'action' as const,
@@ -57,6 +57,30 @@ export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]
       title: rec.title,
       detail: frenchNumbersWithUnits(rec.description),
       basis: frenchNumbersWithUnits(rec.action),
+      provenance: 'synthetique' as const,
+      ctaLabel: 'Voir les conseils',
+      ctaTarget: '/app/conseils',
+    }))
+  return [...diagnosed, ...pendingDiagnosisAlerts(machines, new Set(diagnosed.map((alert) => alert.machineId)))]
+}
+
+/**
+ * Une machine passée en alerte par « Vérifier et résoudre » n'a de diagnostic détaillé qu'après
+ * quelques relevés. Entre-temps elle était comptée en anomalie dans la vue d'ensemble sans apparaître
+ * dans la liste : elle y figure maintenant, avec ce que l'on sait, sans inventer de cause.
+ */
+export function pendingDiagnosisAlerts(machines: BackendMachine[], alreadyListed: Set<string>): ActionAlert[] {
+  return machines
+    .filter((machine) => machine.status === 'alerte' && !alreadyListed.has(machine.machine_id))
+    .map((machine) => ({
+      kind: 'action' as const,
+      id: `${machine.machine_id}-statut-alerte`,
+      machineId: machine.machine_id,
+      level: 'sévérité modérée',
+      severity: 'modérée' as const,
+      title: `Anomalie signalée sur ${machine.nom}`,
+      detail: 'Le dernier contrôle de cet appareil a relevé une valeur hors seuil. Le diagnostic détaillé demande encore quelques relevés.',
+      basis: 'Relancez la vérification de cet appareil après un moment.',
       provenance: 'synthetique' as const,
       ctaLabel: 'Voir les conseils',
       ctaTarget: '/app/conseils',

@@ -37,3 +37,32 @@ export function maxBillMonth(today: Date = new Date()): string {
   const limit = new Date(today.getFullYear(), today.getMonth() + LIMITS.billMonthsAhead, 1)
   return `${limit.getFullYear()}-${String(limit.getMonth() + 1).padStart(2, '0')}`
 }
+
+type Validatable = HTMLInputElement | HTMLTextAreaElement
+
+/** Message d'un champ invalide, écrit par nous : le navigateur affichait le sien, dans sa langue. */
+export function frenchValidityMessage(field: Validatable): string {
+  const v = field.validity
+  const number = (value: string) => Number(value).toLocaleString('fr-FR')
+  if (v.valueMissing) return 'Ce champ est obligatoire.'
+  if (v.typeMismatch || v.patternMismatch) {
+    return field.type === 'email' ? 'Entrez une adresse email complète, par exemple vous@exemple.com.' : 'Le format de cette valeur n’est pas reconnu.'
+  }
+  if (v.tooLong) return `${number(String(field.maxLength))} caractères au plus.`
+  if (v.tooShort) return `${number(String(field.minLength))} caractères au moins.`
+  if (field instanceof HTMLInputElement) {
+    if (v.rangeUnderflow) return field.type === 'month' ? 'Ce mois est trop ancien.' : `La valeur doit être au moins ${number(field.min)}.`
+    if (v.rangeOverflow) return field.type === 'month' ? 'Ce mois est trop loin dans le futur.' : `La valeur doit être au plus ${number(field.max)}.`
+    if (v.stepMismatch || v.badInput) return 'Entrez un nombre valide.'
+  }
+  return ''
+}
+
+/** À poser sur un champ : remplace la bulle du navigateur par notre message, effacé dès la saisie. */
+export const FRENCH_VALIDITY = {
+  onInvalid: (event: { currentTarget: Validatable }) => {
+    event.currentTarget.setCustomValidity('')
+    event.currentTarget.setCustomValidity(frenchValidityMessage(event.currentTarget))
+  },
+  onInput: (event: { currentTarget: Validatable }) => event.currentTarget.setCustomValidity(''),
+}
