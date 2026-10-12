@@ -226,7 +226,8 @@ export const rawPredict = (machine: BackendMachine, hoursAhead: number) =>
       pressure_bar: machine.pressure_bar,
       hours_ahead: hoursAhead,
     },
-    false,
+    // Avec le jeton : sans lui, le serveur ne sait pas à qui est la machine et renvoie une
+    // prévision générique, sans sa puissance nominale ni son historique (4 kW pour un four de 120 kW).
   )
 
 // Jeton envoyé : la route est publique mais ne renvoie le détail (composants, versions) qu'à un administrateur.
