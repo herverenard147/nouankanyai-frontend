@@ -38,6 +38,20 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
   // les conseils d'optimisation/efficacité n'ont rien à "diagnostiquer".
   const canDiagnose = Boolean(advice.machineId) && Boolean(advice.troubleshooting?.length)
 
+  // Problème résolu : le conseil n'a plus lieu d'être. Il ne reste que la confirmation, le temps
+  // que la liste se recharge sans lui (retour du propriétaire, 2026-10-12).
+  if (resolveMutation.isSuccess && resolveMutation.data?.resolved) {
+    return (
+      <article className="flex flex-col gap-1 border-b border-border py-4">
+        <p className="font-semibold text-text-primary">{advice.title}</p>
+        <p className="text-sm text-confirm">
+          Résolu. Nouvelle mesure simulée (aucun capteur branché) : température {formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration{' '}
+          {formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz, dans les seuils normaux. Ce conseil est retiré.
+        </p>
+      </article>
+    )
+  }
+
   return (
     <article className="flex flex-col gap-3 border-b border-border py-4">
       <div className="flex flex-wrap items-center gap-4">
@@ -81,10 +95,10 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
         />
       )}
       {resolveMutation.isSuccess && resolveMutation.data && (
-        <p className={`text-right text-sm ${resolveMutation.data.resolved ? 'text-confirm' : 'text-alert'}`}>
-          {resolveMutation.data.resolved
-            ? `Nouvelle mesure simulée (aucun capteur branché) : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz, dans les seuils normaux.`
-            : `Nouvelle mesure simulée (aucun capteur branché) : température ${formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration ${formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz, l’anomalie persiste. Suivez les étapes ci-dessus, puis réessayez.`}
+        <p className="text-right text-sm text-alert">
+          Nouvelle mesure simulée (aucun capteur branché) : température {formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration{' '}
+          {formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz. L&rsquo;anomalie est toujours là : une personne doit intervenir sur l&rsquo;appareil.
+          Suivez les étapes ci-dessus, puis relancez le diagnostic.
         </p>
       )}
     </article>
@@ -114,7 +128,7 @@ export function AdviceList({ profile, level, markSeenOnView, maxItems }: AdviceL
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
         <div className="flex flex-col border-t-2 border-text-primary">
           {visibleAdvice?.map((advice) => (
-            <AdviceCard key={advice.rank} advice={advice} showImpact={showImpact} />
+            <AdviceCard key={`${advice.machineId ?? ''}-${advice.title}`} advice={advice} showImpact={showImpact} />
           ))}
         </div>
       </MetricState>

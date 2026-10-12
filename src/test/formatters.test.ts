@@ -4,7 +4,7 @@ import { computeYTicks, formatFcfa, formatNumberFr } from '@/lib/formatters'
 
 describe('formatNumberFr', () => {
   it('formats thousands with a dot separator', () => {
-    expect(formatNumberFr(1240)).toBe('1.240')
+    expect(formatNumberFr(1240)).toBe('1\u202f240')
   })
 
   it('formats one decimal with a comma', () => {
@@ -14,7 +14,7 @@ describe('formatNumberFr', () => {
 
 describe('formatFcfa', () => {
   it('appends the unit after a narrow no-break space', () => {
-    expect(formatFcfa(18800)).toBe('18.800\u202fFCFA')
+    expect(formatFcfa(18800)).toBe('18\u202f800\u202fFCFA')
   })
 })
 

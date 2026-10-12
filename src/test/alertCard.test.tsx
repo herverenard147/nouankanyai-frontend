@@ -54,7 +54,7 @@ describe('AlertCard : honnêteté du message needs_human', () => {
     renderCard()
 
     expect(screen.getByText(/Non résolu après 5 tentatives automatiques/)).toBeInTheDocument()
-    expect(screen.getByText(/intervention humaine est nécessaire/i)).toBeInTheDocument()
+    expect(screen.getByText(/une personne doit intervenir sur l.appareil/i)).toBeInTheDocument()
     // Volet 2 (C4) : aucun capteur réel, la mesure est dite simulée.
     expect(screen.getByText(/dernière mesure simulée/i)).toBeInTheDocument()
     // Jamais de formulation affirmant une résolution (seul "Non résolu" est acceptable).
