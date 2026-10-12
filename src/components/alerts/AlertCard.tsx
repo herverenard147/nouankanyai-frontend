@@ -6,6 +6,7 @@ import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useAutoResolveMachine } from '@/hooks/queries/useMachineCrud'
 import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
+import { alertTone } from '@/lib/severity'
 import { AllowedLink } from '@/routes/AllowedLink'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
 
@@ -38,13 +39,18 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
 
   if (props.variant === 'action') {
     const { alert, compact, admin } = props
+    const tone = alertTone(alert.severity)
+    const diagnostic = autoResolve.lastResult?.diagnostic
+    // La carte affiche déjà la cause et le geste conseillé : le retour ne les répète pas.
+    const nextStep = diagnostic?.recommended_actions[0]
+    const nextStepIsNew = Boolean(nextStep) && !alert.basis?.includes(nextStep as string) && !alert.detail.includes(nextStep as string)
 
     if (compact) {
       return (
         <div className="flex items-center gap-2.5 border-t border-border py-2">
-          <span className="h-2 w-2 shrink-0 rounded-full bg-alert" aria-hidden="true" />
+          <span className={`h-2 w-2 shrink-0 rounded-full ${tone.bar}`} aria-hidden="true" />
           <p className="min-w-0 flex-1 truncate text-sm font-medium text-text-primary">{alert.title}</p>
-          <span className="shrink-0 text-xs font-semibold text-alert">{alert.level}</span>
+          <span className={`shrink-0 text-xs font-semibold ${tone.text}`}>{alert.level}</span>
           {alert.ctaTarget && (
             <Link to={alert.ctaTarget} className="focus-ring shrink-0 text-sm font-semibold text-accent-cta hover:text-accent-cta-hover">
               {alert.ctaLabel}
@@ -58,10 +64,10 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
     // faisaient « interface générée ») : filet rouge à gauche, texte, provenance en pied de carte.
     return (
       <div className="relative flex flex-col gap-3 border-t border-border py-4 pl-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-        <span className="absolute bottom-4 left-0 top-4 w-[3px] bg-alert" aria-hidden="true" />
+        <span className={`absolute bottom-4 left-0 top-4 w-[3px] ${tone.bar}`} aria-hidden="true" />
         <div className="min-w-0">
           <h3 className="text-[0.9375rem] font-bold text-text-primary">{alert.title}</h3>
-          <p className="mt-0.5 text-xs font-semibold text-alert">{alert.level} · une personne doit intervenir</p>
+          <p className={`mt-0.5 text-xs font-semibold ${tone.text}`}>{alert.level} · une personne doit intervenir</p>
           <p className="mt-1.5 text-sm text-text-secondary">{alert.detail}</p>
           <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-text-secondary">
             Source : <ProvenanceBadge value={alert.provenance} className="lowercase" />
@@ -74,10 +80,10 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             <p className="mt-2 text-sm text-alert">
               Nouvelle mesure simulée (aucun capteur branché) : température {formatNumberFr(autoResolve.lastResult.temperature_c, 1)}
               {NARROW_NBSP}°C, vibration {formatNumberFr(autoResolve.lastResult.vibration_hz, 1)}
-              {NARROW_NBSP}Hz, l&rsquo;anomalie persiste encore.{' '}
+              {NARROW_NBSP}Hz. L&rsquo;anomalie est toujours là.{' '}
               {autoResolve.autoEnabled
                 ? `Nouvel essai automatique ${autoResolve.attempt + 1}/${autoResolve.maxAttempts}…`
-                : 'Réessayez une fois l’intervention terminée.'}
+                : 'Elle ne se règle pas à distance : une personne doit intervenir sur l’appareil, puis relancer la vérification.'}
             </p>
           )}
           {!admin && autoResolve.status === 'needs_human' && autoResolve.lastResult && (
@@ -85,16 +91,11 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
               Non résolu après {autoResolve.maxAttempts} tentatives automatiques (dernière mesure simulée :{' '}
               {formatNumberFr(autoResolve.lastResult.temperature_c, 1)}
               {NARROW_NBSP}°C, {formatNumberFr(autoResolve.lastResult.vibration_hz, 1)}
-              {NARROW_NBSP}Hz) : une intervention humaine est nécessaire.
+              {NARROW_NBSP}Hz). Elle ne se règle pas à distance : une personne doit intervenir sur l&rsquo;appareil, puis relancer la vérification.
             </p>
           )}
-          {!admin && autoResolve.lastResult?.diagnostic?.probable_cause && (
-            <p className="mt-2 text-sm text-text-secondary">
-              Cause probable : {autoResolve.lastResult.diagnostic.probable_cause}
-              {autoResolve.lastResult.diagnostic.recommended_actions.length > 0 && (
-                <> : {autoResolve.lastResult.diagnostic.recommended_actions[0]}</>
-              )}
-            </p>
+          {!admin && autoResolve.lastResult && !autoResolve.lastResult.resolved && nextStepIsNew && (
+            <p className="mt-2 text-sm text-text-secondary">À faire sur place : {nextStep}</p>
           )}
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-4">
