@@ -1,4 +1,4 @@
 {
-  "frontend_passed_min": 178,
+  "frontend_passed_min": 180,
   "_note": "Mettre à jour cette valeur dans la même PR que tout ajout de tests."
 }
