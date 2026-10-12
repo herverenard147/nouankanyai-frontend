@@ -1,3 +1,4 @@
+import { LIMITS, maxBillMonth } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
@@ -107,9 +108,9 @@ export function InvoicesPage() {
 
   const monthAmountKwhFields = (
     <div className="grid gap-3 sm:grid-cols-3">
-      <TextField label="Mois" type="month" value={month} onChange={(e) => setMonth(e.target.value)} required />
-      <TextField label="Montant TTC (FCFA)" type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} required />
-      <TextField label="Consommation (kWh)" type="number" min="0" value={kwh} onChange={(e) => setKwh(e.target.value)} />
+      <TextField label="Mois" type="month" max={maxBillMonth()} value={month} onChange={(e) => setMonth(e.target.value)} required />
+      <TextField label="Montant TTC (FCFA)" type="number" min="1" max={LIMITS.amountFcfa} value={amount} onChange={(e) => setAmount(e.target.value)} required />
+      <TextField label="Consommation (kWh)" type="number" min="0" max={LIMITS.amountFcfa} value={kwh} onChange={(e) => setKwh(e.target.value)} />
     </div>
   )
 
@@ -225,7 +226,7 @@ export function InvoicesPage() {
                   <div className="border-t border-border pt-3">
                     {confirmingId === invoice.id ? (
                       <form onSubmit={(e) => handleConfirmSubmit(e, invoice.id)} className="flex flex-wrap items-end gap-2">
-                        <TextField label="Montant réel (FCFA)" type="number" value={actualAmount} onChange={(e) => setActualAmount(e.target.value)} required />
+                        <TextField label="Montant réel (FCFA)" type="number" min="0" max={LIMITS.amountFcfa} value={actualAmount} onChange={(e) => setActualAmount(e.target.value)} required />
                         <Button loading={confirmMutation.isPending} type="submit" disabled={confirmMutation.isPending}>
                           {confirmMutation.isPending ? 'Confirmation…' : 'Confirmer'}
                         </Button>

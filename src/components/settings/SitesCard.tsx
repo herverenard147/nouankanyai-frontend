@@ -1,3 +1,4 @@
+import { LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
@@ -86,8 +87,8 @@ export function SitesCard() {
           }
         >
           <form id="site-form" onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <TextField label="Nom" value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} required />
-            <TextField label="Localisation" value={form.localisation} onChange={(e) => setForm((f) => ({ ...f, localisation: e.target.value }))} required />
+            <TextField label="Nom" maxLength={LIMITS.name} value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} required />
+            <TextField label="Localisation" maxLength={LIMITS.location} value={form.localisation} onChange={(e) => setForm((f) => ({ ...f, localisation: e.target.value }))} required />
             <MutationError error={createMutation.error} />
           </form>
         </Modal>

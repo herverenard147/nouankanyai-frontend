@@ -1,3 +1,4 @@
+import { LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { X } from 'lucide-react'
@@ -109,6 +110,7 @@ export function AssistantPanel({ profile, onClose, fullPage = false }: Assistant
       <form onSubmit={handleSubmit} className="flex items-center gap-2">
         <input
           value={draft}
+          maxLength={LIMITS.assistantMessage}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Poser une question"
           aria-label="Poser une question à l'assistant"

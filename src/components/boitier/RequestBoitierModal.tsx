@@ -1,3 +1,4 @@
+import { LIMITS } from '@/lib/validation'
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -72,6 +73,7 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
         )}
         <TextField
           label="Contact pour la livraison"
+          maxLength={LIMITS.deliveryContact}
           placeholder={profile === 'menage' ? 'Numéro de téléphone' : 'Nom et numéro de téléphone'}
           value={contact}
           onChange={(e) => setContact(e.target.value)}
