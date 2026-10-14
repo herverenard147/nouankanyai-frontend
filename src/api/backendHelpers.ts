@@ -7,6 +7,8 @@ export function priorityLabel(priority: string): 'Haute' | 'Moyenne' | 'Basse' {
   return map[priority.toLowerCase()] ?? 'Moyenne'
 }
 
+const STATUS_LABEL: Record<string, string> = { actif: 'Opérationnel', alerte: 'Anomalie détectée', arrete: 'Éteint' }
+
 export function statusLabel(status: string): string {
-  return status === 'actif' ? 'Opérationnel' : status === 'alerte' ? 'Anomalie détectée' : capitalize(status)
+  return STATUS_LABEL[status] ?? capitalize(status)
 }
