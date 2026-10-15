@@ -19,6 +19,7 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+import { Boitier2D } from '@/components/boitier/Boitier2D'
 import { boitierState } from '@/components/boitier/boitierStates'
 import type { BoitierState } from '@/components/boitier/boitierStates'
 import { useReducedMotion } from '@/components/boitier/useReducedMotion'
@@ -236,10 +237,11 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
         className="absolute inset-0"
       />
       {!loaded && (
-        <p className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-dark-text" aria-hidden="true">
-          Chargement du modèle 3D…
-        </p>
-      )}
+          // Image fixe du prototype le temps que le modèle 3D arrive (jamais l'ancien schéma)
+          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+            <Boitier2D state={state} />
+          </div>
+        )}
     </div>
   )
 }

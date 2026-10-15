@@ -1,14 +1,19 @@
-import { useState } from 'react'
+import { Suspense, lazy, useCallback, useState } from 'react'
 
-import { BoitierViewer } from '@/components/boitier/BoitierViewer'
+import { Boitier2D } from '@/components/boitier/Boitier2D'
 import { BOITIER_PHRASES, BOITIER_STATES, boitierState } from '@/components/boitier/boitierStates'
 import type { BoitierState } from '@/components/boitier/boitierStates'
 import { Footer } from '@/pages/landing/sections/Footer'
 import { NavBar } from '@/pages/landing/sections/NavBar'
 
+// Vue éclatée (bibliothèque 3D et modèle chargés à la demande, seulement sur cette page).
+const BoitierEclate = lazy(() => import('@/components/boitier/BoitierEclate'))
+
 export function BoitierPage() {
   const [state, setState] = useState<BoitierState>('rouge')
   const info = boitierState(state)
+  const [no3d, setNo3d] = useState(false)
+  const onUnavailable = useCallback(() => setNo3d(true), [])
 
   return (
     <>
@@ -26,9 +31,17 @@ export function BoitierPage() {
 
             <div className="mt-14 grid items-start gap-12 lg:mt-16 lg:grid-cols-2 lg:gap-[72px]">
               <div className="bg-dark-field px-4 py-10 sm:px-8">
-                <BoitierViewer state={state} className="aspect-[4/3] w-full" />
+                {no3d ? (
+                  <Boitier2D state={state} />
+                ) : (
+                  <Suspense fallback={<Boitier2D state={state} />}>
+                    <BoitierEclate state={state} onUnavailable={onUnavailable} />
+                  </Suspense>
+                )}
                 <p className="mt-6 text-center text-sm text-dark-text">
-                  Vue 3D du prototype : glissez pour le faire tourner dans tous les sens, molette ou pincement pour zoomer. Choisissez un état à droite : l&rsquo;anneau prend sa couleur.
+                  Vue 3D du prototype : glissez pour le faire tourner dans tous les sens, molette pour zoomer. « Éclaté »
+                  sépare les pièces ; cliquez sur l&rsquo;une d&rsquo;elles pour la détailler. Choisissez un état à droite :
+                  l&rsquo;anneau prend sa couleur.
                 </p>
               </div>
 
