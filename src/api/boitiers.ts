@@ -102,7 +102,7 @@ export async function fetchBoitierRows(): Promise<BoitierRow[]> {
 export interface BoitierDetail {
   state: BackendDeviceState
   commands: BackendDeviceCommand[]
-  /** Dernier relevé par appareil (code → « 55,0 °C · 1,2 Hz »), lu depuis les machines du compte. */
+  /** Dernier relevé par appareil (code → « 1,2 kW · 4,0 °C »), lu depuis les machines du compte. */
   readings: Record<string, string>
 }
 
@@ -111,7 +111,12 @@ const one = (value: number | null) => (value === null ? '-' : value.toFixed(1).r
 export async function fetchBoitierDetail(id: string): Promise<BoitierDetail> {
   const [state, commands, machines] = await Promise.all([rawBoitierState(id), rawBoitierCommands(id), getCachedMachines().catch(() => [])])
   const readings: Record<string, string> = {}
-  for (const machine of machines) readings[machine.machine_id] = `${one(machine.temperature_c)} °C · ${one(machine.vibration_hz)} Hz`
+  // Dernier relevé : la puissance, et la température seulement si une sonde la mesure (jamais « - °C · - Hz »).
+  for (const machine of machines) {
+    const parts = [`${one(machine.power_kw)} kW`]
+    if (machine.temperature_c !== null) parts.push(`${one(machine.temperature_c)} °C`)
+    readings[machine.machine_id] = parts.join(' · ')
+  }
   return { state, commands, readings }
 }
 

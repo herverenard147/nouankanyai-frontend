@@ -27,17 +27,9 @@ export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]
     return recommendations
       .filter((rec) => rec.type === 'alerte')
       .map((rec, i) => ({
-        kind: 'action' as const,
-        id: `${rec.machine_id}-${rec.type}-${i}`,
-        machineId: rec.machine_id,
+        ...adminCard(rec, i),
+        tier: 'alerte' as const,
         level: `sévérité ${rec.severity}`,
-        severity: rec.severity,
-        title: `${rec.title} (${rec.owner_nom})`,
-        detail: frenchNumbersWithUnits(rec.description),
-        basis: frenchNumbersWithUnits(rec.action),
-        provenance: 'synthetique' as const,
-        ctaLabel: 'Voir le compte',
-        ctaTarget: `/app/admin/utilisateurs/${rec.owner_id}`,
       }))
   }
 
@@ -48,19 +40,7 @@ export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]
   // src/api/recommendations.ts) ni délestage (déjà dans le Journal).
   const diagnosed: ActionAlert[] = recommendations
     .filter((rec) => rec.type === 'alerte')
-    .map((rec, i) => ({
-      kind: 'action' as const,
-      id: `${rec.machine_id}-${rec.type}-${i}`,
-      machineId: rec.machine_id,
-      level: `sévérité ${rec.severity}`,
-      severity: rec.severity,
-      title: rec.title,
-      detail: frenchNumbersWithUnits(rec.description),
-      basis: frenchNumbersWithUnits(rec.action),
-      provenance: 'synthetique' as const,
-      ctaLabel: 'Voir les conseils',
-      ctaTarget: '/app/conseils',
-    }))
+    .map((rec, i) => ({ ...accountCard(rec, i), tier: 'alerte' as const, level: `sévérité ${rec.severity}` }))
   return [...diagnosed, ...pendingDiagnosisAlerts(machines, new Set(diagnosed.map((alert) => alert.machineId)))]
 }
 
@@ -75,6 +55,7 @@ export function pendingDiagnosisAlerts(machines: BackendMachine[], alreadyListed
     .map((machine) => ({
       kind: 'action' as const,
       id: `${machine.machine_id}-statut-alerte`,
+      tier: 'alerte' as const,
       machineId: machine.machine_id,
       level: 'sévérité modérée',
       severity: 'modérée' as const,
@@ -85,6 +66,56 @@ export function pendingDiagnosisAlerts(machines: BackendMachine[], alreadyListed
       ctaLabel: 'Voir les conseils',
       ctaTarget: '/app/conseils',
     }))
+}
+
+/**
+ * « À vérifier » : un écart à l'habitude SOUS le seuil (diagnostic « surveillance »), pas un danger établi. Liste à
+ * part, jamais comptée parmi les alertes (niveaux de signalement : une alerte dit qu'un seuil est franchi maintenant).
+ */
+export async function fetchToCheckAlerts(profile: Profile): Promise<ActionAlert[]> {
+  if (profile === 'admin') {
+    const { recommendations } = await rawPlatformAlerts()
+    return recommendations
+      .filter((rec) => rec.type === 'a_verifier')
+      .map((rec, i) => ({ ...adminCard(rec, i), tier: 'a_verifier' as const, level: 'à vérifier' }))
+  }
+  const { recommendations } = await fetchRecommendations()
+  return recommendations
+    .filter((rec) => rec.type === 'a_verifier')
+    .map((rec, i) => ({ ...accountCard(rec, i), tier: 'a_verifier' as const, level: 'à vérifier' }))
+}
+
+type AccountRec = Awaited<ReturnType<typeof getCachedRecommend>>['recommendations'][number]
+type PlatformRec = Awaited<ReturnType<typeof rawPlatformAlerts>>['recommendations'][number]
+
+function accountCard(rec: AccountRec, i: number) {
+  return {
+    kind: 'action' as const,
+    id: `${rec.machine_id}-${rec.type}-${i}`,
+    machineId: rec.machine_id,
+    severity: rec.severity,
+    title: rec.title,
+    detail: frenchNumbersWithUnits(rec.description),
+    basis: frenchNumbersWithUnits(rec.action),
+    provenance: 'synthetique' as const,
+    ctaLabel: 'Voir les conseils',
+    ctaTarget: '/app/conseils',
+  }
+}
+
+function adminCard(rec: PlatformRec, i: number) {
+  return {
+    kind: 'action' as const,
+    id: `${rec.machine_id}-${rec.type}-${i}`,
+    machineId: rec.machine_id,
+    severity: rec.severity,
+    title: `${rec.title} (${rec.owner_nom})`,
+    detail: frenchNumbersWithUnits(rec.description),
+    basis: frenchNumbersWithUnits(rec.action),
+    provenance: 'synthetique' as const,
+    ctaLabel: 'Voir le compte',
+    ctaTarget: `/app/admin/utilisateurs/${rec.owner_id}`,
+  }
 }
 
 export async function fetchAutoAlerts(profile: Profile): Promise<AutoAlert[]> {

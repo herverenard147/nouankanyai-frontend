@@ -25,6 +25,7 @@ export function EquipmentSummary({ columns, max = 5 }: { columns: PmeOverviewBlo
           <table className="w-full min-w-[34rem] border-collapse text-[0.8125rem]">
             <thead>
               <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                <th scope="col" className="py-1.5 pr-3">Équipement</th>
                 <th scope="col" className="py-1.5 pr-3">Catégorie</th>
                 {full && <th scope="col" className="py-1.5 pr-3">Marque</th>}
                 {full && <th scope="col" className="py-1.5 pr-3">Modèle</th>}
@@ -37,7 +38,8 @@ export function EquipmentSummary({ columns, max = 5 }: { columns: PmeOverviewBlo
             <tbody>
               {rows.map((row) => (
                 <tr key={row.id} className="border-t border-border">
-                  <td className="py-2 pr-3 font-semibold text-text-primary">{row.categorie}</td>
+                  <td className="py-2 pr-3 font-semibold text-text-primary">{row.nom}</td>
+                  <td className="py-2 pr-3">{row.categorie}</td>
                   {full && <td className="py-2 pr-3">{row.marque}</td>}
                   {full && <td className="py-2 pr-3">{row.modele}</td>}
                   <td className="py-2 pr-3">{row.site}</td>

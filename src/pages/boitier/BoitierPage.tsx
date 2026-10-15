@@ -28,7 +28,7 @@ export function BoitierPage() {
               <div className="bg-dark-field px-4 py-10 sm:px-8">
                 <BoitierViewer state={state} className="aspect-[4/3] w-full" />
                 <p className="mt-6 text-center text-sm text-dark-text">
-                  Vue 3D : glissez pour faire tourner le boîtier. L&rsquo;aspect définitif n&rsquo;est pas arrêté.
+                  Vue 3D du prototype : glissez pour le faire tourner dans tous les sens, molette ou pincement pour zoomer. Choisissez un état à droite : l&rsquo;anneau prend sa couleur.
                 </p>
               </div>
 

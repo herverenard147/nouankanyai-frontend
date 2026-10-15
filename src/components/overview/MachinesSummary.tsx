@@ -35,9 +35,8 @@ export function MachinesSummary({ columns, max = 5 }: MachinesSummaryProps) {
                 <th scope="col" className="py-1.5 pr-3 font-medium">Statut</th>
                 {full ? (
                   <>
+                    <th scope="col" className="py-1.5 pr-3 font-medium">Puissance</th>
                     <th scope="col" className="py-1.5 pr-3 font-medium">Temp.</th>
-                    <th scope="col" className="py-1.5 pr-3 font-medium">Vibration</th>
-                    <th scope="col" className="py-1.5 pr-3 font-medium">Pression</th>
                   </>
                 ) : (
                   <th scope="col" className="py-1.5 pr-3 font-medium">Priorité</th>
@@ -54,9 +53,8 @@ export function MachinesSummary({ columns, max = 5 }: MachinesSummaryProps) {
                     <td className={`py-2 pr-3 ${anomaly ? 'font-semibold text-alert' : 'text-text-primary'}`}>{row.statut}</td>
                     {full ? (
                       <>
+                        <td className="py-2 pr-3 font-mono tabular-nums">{row.puissance}</td>
                         <td className="py-2 pr-3 font-mono tabular-nums">{row.temperature}</td>
-                        <td className="py-2 pr-3 font-mono tabular-nums">{row.vibration}</td>
-                        <td className="py-2 pr-3 font-mono tabular-nums">{row.pression}</td>
                       </>
                     ) : (
                       <td className="py-2 pr-3">{row.priorite}</td>
