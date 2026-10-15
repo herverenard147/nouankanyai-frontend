@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AlertCard } from '@/components/alerts/AlertCard'
-import { useActionAlerts, useAutoAlerts } from '@/hooks/queries/useAlerts'
+import { useActionAlerts, useAutoAlerts, useToCheckAlerts } from '@/hooks/queries/useAlerts'
 import { levelAtLeast } from '@/lib/levelGating'
 import { useNotificationStore } from '@/store/notificationStore'
 import type { Level, Profile } from '@/types/domain'
@@ -28,6 +28,7 @@ interface AlertSectionProps {
  */
 export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionProps) {
   const actionQuery = useActionAlerts(profile)
+  const toCheckQuery = useToCheckAlerts(profile)
   const autoQuery = useAutoAlerts(profile)
   const markAlertsSeen = useNotificationStore((s) => s.markAlertsSeen)
   // Le registre "actions automatiques" n'a de sens que pour un compte précis (délestage sur
@@ -85,6 +86,22 @@ export function AlertSection({ profile, level, maxActionAlerts }: AlertSectionPr
         >
           Voir plus ({hiddenActionAlertsCount}) →
         </Link>
+      )}
+
+      {/* « À vérifier » : écarts à l'habitude sous le seuil, jamais mêlés aux alertes ni comptés avec elles ; page
+          complète seulement (pas dans l'aperçu plafonné de la Vue d'ensemble). */}
+      {maxActionAlerts === undefined && toCheckQuery.status === 'success' && toCheckQuery.data.length > 0 && (
+        <div className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
+          <div>
+            <p className="text-sm font-semibold text-text-primary">À vérifier</p>
+            <p className="text-sm text-text-secondary">
+              Ces appareils s&rsquo;écartent de leurs valeurs habituelles sans dépasser vos seuils : rien d&rsquo;urgent, gardez-les à l&rsquo;œil.
+            </p>
+          </div>
+          {toCheckQuery.data.map((alert) => (
+            <AlertCard key={alert.id} variant="action" alert={alert} admin={profile === 'admin'} />
+          ))}
+        </div>
       )}
 
       {showAutoBlock && (

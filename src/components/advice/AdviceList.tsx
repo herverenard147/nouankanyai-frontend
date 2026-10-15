@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { adviceSectionTitle } from '@/api/advice'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { levelAtLeast } from '@/lib/levelGating'
-import { formatNumberFr } from '@/lib/formatters'
+import { measuredReading } from '@/lib/formatters'
 import { impactClassName } from '@/lib/severity'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
@@ -45,8 +45,7 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
       <article className="flex flex-col gap-1 border-b border-border py-4">
         <p className="font-semibold text-text-primary">{advice.title}</p>
         <p className="text-sm text-confirm">
-          Résolu. Nouvelle mesure simulée (aucun capteur branché) : température {formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration{' '}
-          {formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz, dans les seuils normaux. Ce conseil est retiré.
+          Résolu. Nouvelle mesure simulée (aucun capteur branché) : {measuredReading(resolveMutation.data)}, dans les seuils normaux. Ce conseil est retiré.
         </p>
       </article>
     )
@@ -96,8 +95,7 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
       )}
       {resolveMutation.isSuccess && resolveMutation.data && (
         <p className="text-right text-sm text-alert">
-          Nouvelle mesure simulée (aucun capteur branché) : température {formatNumberFr(resolveMutation.data.temperature_c, 1)} °C, vibration{' '}
-          {formatNumberFr(resolveMutation.data.vibration_hz, 1)} Hz. L&rsquo;anomalie est toujours là : une personne doit intervenir sur l&rsquo;appareil.
+          Nouvelle mesure simulée (aucun capteur branché) : {measuredReading(resolveMutation.data)}. L&rsquo;anomalie est toujours là : une personne doit intervenir sur l&rsquo;appareil.
           Suivez les étapes ci-dessus, puis relancez le diagnostic.
         </p>
       )}

@@ -54,6 +54,9 @@ export interface TeamMember {
 export interface ActionAlert {
   kind: 'action'
   id: string
+  /** 'alerte' : seuil franchi maintenant, il faut agir ; 'a_verifier' : écart à l'habitude sous le seuil, à surveiller.
+   * Jamais mélangés : seuls les 'alerte' comptent dans les compteurs et le badge (niveaux de signalement). */
+  tier: 'alerte' | 'a_verifier'
   machineId: string
   level: string
   /** Sévérité brute (voir ml/recommendation_engine.py) : distincte du diagnostic
@@ -156,6 +159,8 @@ export interface Advice {
 
 export interface EquipmentRow {
   id: string
+  /** Nom donné par le client (« Four à sole ») : avant, seule la catégorie s'affichait. */
+  nom: string
   categorie: string
   marque: string
   modele: string
@@ -169,6 +174,8 @@ export interface EquipmentRow {
 export interface MachineRow {
   id: string
   machine: string
+  /** Dernière puissance mesurée (kW) : la mesure que tous nos capteurs donnent. */
+  puissance: string
   temperature: string
   vibration: string
   pression: string

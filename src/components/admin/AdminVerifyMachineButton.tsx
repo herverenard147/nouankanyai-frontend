@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Button, Spinner } from '@/components/ui/Button'
 import { Modal, MutationError } from '@/components/ui/Modal'
 import { useAdminMachineActions } from '@/hooks/queries/useAdminUsers'
-import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
+import { measuredReading } from '@/lib/formatters'
 
 /**
  * Bouton d'action support partagé entre la page Alertes de l'Admin (AlertCard) et la fiche
@@ -60,9 +60,7 @@ export function AdminVerifyMachineButton({ machineId, subject }: { machineId: st
       )}
       {verify.isSuccess && verify.data && !verify.data.resolved && (
         <p className="w-full text-xs text-alert">
-          Anomalie persistante (mesure simulée) : {formatNumberFr(verify.data.temperature_c, 1)}
-          {NARROW_NBSP}°C, {formatNumberFr(verify.data.vibration_hz, 1)}
-          {NARROW_NBSP}Hz.
+          Anomalie persistante (mesure simulée) : {measuredReading(verify.data)}.
         </p>
       )}
     </>

@@ -10,7 +10,11 @@ import type { AnomalyResolution, Profile } from '@/types/domain'
 export async function fetchResolutions(_profile: Profile): Promise<AnomalyResolution[]> {
   const rows = await rawResolutions()
   return rows.map((row) => {
-    const reading = `${formatNumberFr(row.temperature_c ?? 0, 1)}${NARROW_NBSP}°C · ${formatNumberFr(row.vibration_hz ?? 0, 1)}${NARROW_NBSP}Hz`
+    // Seulement les mesures que l'appareil a (souvent aucune température ni vibration : capteur électrique seul).
+    const parts: string[] = []
+    if (row.temperature_c !== null && row.temperature_c !== undefined) parts.push(`${formatNumberFr(row.temperature_c, 1)}${NARROW_NBSP}°C`)
+    if (row.vibration_hz !== null && row.vibration_hz !== undefined) parts.push(`${formatNumberFr(row.vibration_hz, 1)}${NARROW_NBSP}Hz`)
+    const reading = parts.length ? parts.join(' · ') : 'nouveau relevé'
     return {
       id: row.id,
       date: formatUtcDateTime(row.created_at),

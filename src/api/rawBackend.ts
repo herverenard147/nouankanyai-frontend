@@ -183,8 +183,14 @@ export const rawUploadBillPhoto = (file: File) => {
 }
 export const rawBillPhoto = (billId: string) => api.get<BackendBillPhoto>(`/api/bills/${billId}/photo`)
 
+/**
+ * Un appareil « mesuré » a au moins un relevé : souvent seulement électrique (le capteur prévu mesure la puissance,
+ * pas la température ni la vibration, 2026-10-15). Avant, il fallait les trois mesures, et un appareil suivi par un
+ * simple capteur électrique disparaissait des prévisions et des alertes.
+ */
 export function hasReading(machine: BackendMachine): boolean {
-  return machine.temperature_c !== null && machine.vibration_hz !== null && machine.pressure_bar !== null
+  if (machine.has_reading !== undefined) return machine.has_reading
+  return machine.temperature_c !== null || machine.vibration_hz !== null || machine.pressure_bar !== null
 }
 
 function toSensorReading(machine: BackendMachine) {

@@ -12,12 +12,12 @@ export async function fetchAdvice(_profile: Profile): Promise<Advice[]> {
   if (machines.length === 0) return []
   const { recommendations } = await getCachedRecommend(machines)
 
-  // Conseils = exactement les mêmes éléments qu'Alertes (voir src/api/alerts.ts),
+  // Conseils = exactement les mêmes éléments qu'Alertes et « À vérifier » (voir src/api/alerts.ts),
   // ni plus ni moins : un conseil de dépannage n'a de sens que pour un problème
-  // réellement détecté. Optimisation/efficacité vivent dans
+  // détecté ou un écart à l'habitude. Optimisation/efficacité vivent dans
   // src/api/recommendations.ts, le délestage auto-exécuté reste dans le Journal.
   return recommendations
-    .filter((rec) => rec.type === 'alerte')
+    .filter((rec) => rec.type === 'alerte' || rec.type === 'a_verifier')
     .map((rec, i) => ({
       rank: String(i + 1).padStart(2, '0'),
       title: rec.title,

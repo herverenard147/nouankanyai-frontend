@@ -5,7 +5,7 @@ import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineB
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useAutoResolveMachine } from '@/hooks/queries/useMachineCrud'
-import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
+import { measuredReading } from '@/lib/formatters'
 import { alertTone } from '@/lib/severity'
 import { AllowedLink } from '@/routes/AllowedLink'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
@@ -67,7 +67,9 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
         <span className={`absolute bottom-4 left-0 top-4 w-[3px] ${tone.bar}`} aria-hidden="true" />
         <div className="min-w-0">
           <h3 className="text-[0.9375rem] font-bold text-text-primary">{alert.title}</h3>
-          <p className={`mt-0.5 text-xs font-semibold ${tone.text}`}>{alert.level} · une personne doit intervenir</p>
+          <p className={`mt-0.5 text-xs font-semibold ${tone.text}`}>
+            {alert.tier === 'a_verifier' ? 'à vérifier · aucun seuil dépassé' : `${alert.level} · une personne doit intervenir`}
+          </p>
           <p className="mt-1.5 text-sm text-text-secondary">{alert.detail}</p>
           <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-text-secondary">
             Source : <ProvenanceBadge value={alert.provenance} className="lowercase" />
@@ -78,9 +80,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
           )}
           {!admin && autoResolve.lastResult && !autoResolve.lastResult.resolved && autoResolve.status !== 'needs_human' && (
             <p className="mt-2 text-sm text-alert">
-              Nouvelle mesure simulée (aucun capteur branché) : température {formatNumberFr(autoResolve.lastResult.temperature_c, 1)}
-              {NARROW_NBSP}°C, vibration {formatNumberFr(autoResolve.lastResult.vibration_hz, 1)}
-              {NARROW_NBSP}Hz. L&rsquo;anomalie est toujours là.{' '}
+              Nouvelle mesure simulée (aucun capteur branché) : {measuredReading(autoResolve.lastResult)}. L&rsquo;anomalie est toujours là.{' '}
               {autoResolve.autoEnabled
                 ? `Nouvel essai automatique ${autoResolve.attempt + 1}/${autoResolve.maxAttempts}…`
                 : 'Elle ne se règle pas à distance : une personne doit intervenir sur l’appareil, puis relancer la vérification.'}
@@ -89,9 +89,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
           {!admin && autoResolve.status === 'needs_human' && autoResolve.lastResult && (
             <p className="mt-2 text-sm text-alert">
               Non résolu après {autoResolve.maxAttempts} tentatives automatiques (dernière mesure simulée :{' '}
-              {formatNumberFr(autoResolve.lastResult.temperature_c, 1)}
-              {NARROW_NBSP}°C, {formatNumberFr(autoResolve.lastResult.vibration_hz, 1)}
-              {NARROW_NBSP}Hz). Elle ne se règle pas à distance : une personne doit intervenir sur l&rsquo;appareil, puis relancer la vérification.
+              {measuredReading(autoResolve.lastResult)}). Elle ne se règle pas à distance : une personne doit intervenir sur l&rsquo;appareil, puis relancer la vérification.
             </p>
           )}
           {!admin && autoResolve.lastResult && !autoResolve.lastResult.resolved && nextStepIsNew && (
@@ -119,7 +117,9 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
                 ? autoResolve.autoEnabled
                   ? `Tentative ${autoResolve.attempt}/${autoResolve.maxAttempts} en cours…`
                   : 'Vérification en cours…'
-                : 'Vérifier et résoudre'}
+                : alert.tier === 'a_verifier'
+                  ? 'Vérifier maintenant'
+                  : 'Vérifier et résoudre'}
             </button>
           )}
         </div>

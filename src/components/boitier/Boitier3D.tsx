@@ -1,26 +1,23 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
-  AdditiveBlending,
-  CanvasTexture,
-  CircleGeometry,
+  Box3,
   Color,
   DirectionalLight,
-  Group,
   HemisphereLight,
-  InstancedMesh,
   MathUtils,
   Mesh,
-  MeshBasicMaterial,
   MeshStandardMaterial,
-  Object3D,
+  PMREMGenerator,
   PerspectiveCamera,
-  PlaneGeometry,
-  PointLight,
   SRGBColorSpace,
   Scene,
+  Vector3,
   WebGLRenderer,
 } from 'three'
-import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
+import type { Material, Object3D } from 'three'
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 import { boitierState } from '@/components/boitier/boitierStates'
 import type { BoitierState } from '@/components/boitier/boitierStates'
@@ -28,44 +25,39 @@ import { useReducedMotion } from '@/components/boitier/useReducedMotion'
 
 interface Boitier3DProps {
   state: BoitierState
-  /** Appelé si le navigateur ne peut pas créer de contexte WebGL : l'appelant affiche alors le schéma 2D. */
+  /** Appelé si le navigateur ne peut pas créer de contexte WebGL ou charger le modèle : l'appelant affiche alors le schéma 2D. */
   onUnavailable: () => void
   className?: string
 }
 
-// Dimensions du boîtier (unités de la scène).
-const LARGEUR = 4.2
-const HAUTEUR = 2.3
-const PROFONDEUR = 2.2
-const LED_Y = 0.55
-const BASE_ROTATION = -0.5
+/** Modèle du prototype (boitier-3d/boitier_pi.py, rendu Blender exporté en glTF) : teinte anthracite, anneau lumineux. */
+const MODEL_URL = '/models/boitier-nouankany.glb'
 
-function radialTexture(stops: [number, string][]): CanvasTexture {
-  const canvas = document.createElement('canvas')
-  canvas.width = 128
-  canvas.height = 128
-  const ctx = canvas.getContext('2d')
-  if (ctx) {
-    const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64)
-    stops.forEach(([at, color]) => gradient.addColorStop(at, color))
-    ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, 128, 128)
-  }
-  const texture = new CanvasTexture(canvas)
-  texture.colorSpace = SRGBColorSpace
-  return texture
+/** Les pièces de l'anneau : leurs matériaux portent « __lens » (les 12 diodes et le diffuseur du capot). */
+function ringMaterials(root: Object3D): MeshStandardMaterial[] {
+  const found = new Set<MeshStandardMaterial>()
+  root.traverse((node) => {
+    const mesh = node as Mesh
+    if (!mesh.isMesh) return
+    const materials = (Array.isArray(mesh.material) ? mesh.material : [mesh.material]) as Material[]
+    materials.forEach((material) => {
+      if (material.name.includes('__lens') && material instanceof MeshStandardMaterial) found.add(material)
+    })
+  })
+  return [...found]
 }
 
 /**
- * Vue 3D du boîtier : corps arrondi, barre lumineuse et grille de haut-parleur sur la face avant.
- * La personne peut le faire tourner à la souris ou au doigt (glisser horizontalement). La lumière suit `state`.
- * Chargé à la demande (`BoitierViewer`) : la bibliothèque 3D n'alourdit que les pages qui montrent le boîtier.
+ * Vue 3D du boîtier (modèle du prototype, 15 octobre 2026) : la personne le fait tourner librement dans tous les sens
+ * (glisser), et zoome (molette ou pincement). L'anneau prend la couleur de `state` ; le blanc d'écoute pulse.
+ * Chargé à la demande (`BoitierViewer`) : la bibliothèque 3D et le modèle n'alourdissent que les pages qui le montrent.
  */
 export default function Boitier3D({ state, onUnavailable, className }: Boitier3DProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const stateRef = useRef<BoitierState>(state)
   const reducedRef = useRef(false)
   const reduced = useReducedMotion()
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     stateRef.current = state
@@ -93,111 +85,72 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
     canvas.style.width = '100%'
     canvas.style.height = '100%'
     canvas.style.display = 'block'
-    canvas.style.touchAction = 'pan-y'
+    canvas.style.touchAction = 'none'
+    canvas.style.cursor = 'grab'
     host.appendChild(canvas)
 
     const scene = new Scene()
-    const camera = new PerspectiveCamera(32, 1, 0.1, 50)
-    camera.position.set(0, 0.9, 8.2)
-    camera.lookAt(0, -0.05, 0)
-
-    // Lumières : une lumière d'ambiance, une principale, et une lumière colorée devant la barre lumineuse.
-    scene.add(new HemisphereLight(0xfff1e0, 0x1a1713, 1.1))
-    const key = new DirectionalLight(0xffffff, 1.6)
-    key.position.set(3, 4, 5)
+    // Reflets doux d'une pièce claire : sans eux, une coque anthracite paraît noire et plate sur fond sombre.
+    const pmrem = new PMREMGenerator(renderer)
+    const environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+    scene.environment = environment
+    scene.add(new HemisphereLight(0xffffff, 0x2a2622, 0.6))
+    const key = new DirectionalLight(0xffffff, 1.4)
+    key.position.set(0.5, 0.8, 0.6)
     scene.add(key)
-    const rim = new DirectionalLight(0xffd9b8, 0.6)
-    rim.position.set(-4, 2, -3)
+    const rim = new DirectionalLight(0xffe2c8, 0.8)
+    rim.position.set(-0.6, 0.4, -0.7)
     scene.add(rim)
-    const ledLight = new PointLight(0xffffff, 6, 7, 2)
-    ledLight.position.set(0, LED_Y, PROFONDEUR / 2 + 0.9)
-    scene.add(ledLight)
 
-    const box = new Group()
-    scene.add(box)
-
-    const disposables: { dispose: () => void }[] = []
-    const track = <T extends { dispose: () => void }>(item: T): T => {
-      disposables.push(item)
-      return item
-    }
-
-    // Corps.
-    const bodyMaterial = track(new MeshStandardMaterial({ color: 0x2b261e, roughness: 0.55, metalness: 0.12 }))
-    const body = new Mesh(track(new RoundedBoxGeometry(LARGEUR, HAUTEUR, PROFONDEUR, 6, 0.3)), bodyMaterial)
-    box.add(body)
-
-    // Cadre sombre de la barre lumineuse, puis la barre elle-même.
-    const darkMaterial = track(new MeshBasicMaterial({ color: 0x0e0c09 }))
-    const bezel = new Mesh(track(new RoundedBoxGeometry(3.2, 0.3, 0.08, 3, 0.04)), darkMaterial)
-    bezel.position.set(0, LED_Y, PROFONDEUR / 2 + 0.005)
-    box.add(bezel)
-
-    const ledMaterial = track(new MeshBasicMaterial({ color: 0xffffff }))
-    const led = new Mesh(track(new RoundedBoxGeometry(2.9, 0.15, 0.06, 3, 0.03)), ledMaterial)
-    led.position.set(0, LED_Y, PROFONDEUR / 2 + 0.03)
-    box.add(led)
-
-    // Halo autour de la barre.
-    const glowTexture = track(radialTexture([[0, 'rgba(255,255,255,1)'], [0.35, 'rgba(255,255,255,0.35)'], [1, 'rgba(255,255,255,0)']]))
-    const glowMaterial = track(
-      new MeshBasicMaterial({ map: glowTexture, color: 0xffffff, transparent: true, opacity: 0.6, blending: AdditiveBlending, depthWrite: false }),
-    )
-    const glow = new Mesh(track(new PlaneGeometry(5.2, 1.7)), glowMaterial)
-    glow.position.set(0, LED_Y, PROFONDEUR / 2 + 0.07)
-    box.add(glow)
-
-    // Grille du haut-parleur : 3 rangées de 9 trous.
-    const holes = new InstancedMesh(track(new CircleGeometry(0.06, 16)), darkMaterial, 27)
-    const dummy = new Object3D()
-    let index = 0
-    for (let row = 0; row < 3; row += 1) {
-      for (let col = 0; col < 9; col += 1) {
-        dummy.position.set((col - 4) * 0.3, -0.12 - row * 0.3, PROFONDEUR / 2 + 0.004)
-        dummy.updateMatrix()
-        holes.setMatrixAt(index, dummy.matrix)
-        index += 1
-      }
-    }
-    holes.instanceMatrix.needsUpdate = true
-    box.add(holes)
-
-    // Ombre portée simulée.
-    const shadowTexture = track(radialTexture([[0, 'rgba(0,0,0,0.55)'], [1, 'rgba(0,0,0,0)']]))
-    const shadow = new Mesh(
-      track(new PlaneGeometry(7, 3.4)),
-      track(new MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false })),
-    )
-    shadow.rotation.x = -Math.PI / 2
-    shadow.position.set(0, -HAUTEUR / 2 - 0.03, 0)
-    scene.add(shadow)
-
-    // Rotation à la main (glisser horizontalement) et mise en pause hors écran.
-    let targetY = BASE_ROTATION
-    let currentY = BASE_ROTATION
-    let dragging = false
-    let lastX = 0
+    const camera = new PerspectiveCamera(30, 1, 0.005, 20)
+    const controls = new TrackballControls(camera, canvas)
+    controls.rotateSpeed = 3.2
+    controls.zoomSpeed = 1.1
+    controls.noPan = true
+    controls.dynamicDampingFactor = 0.12
     let userTouched = false
-    const onDown = (event: PointerEvent) => {
-      dragging = true
+    const onStart = () => {
       userTouched = true
-      lastX = event.clientX
-      canvas.setPointerCapture(event.pointerId)
+      canvas.style.cursor = 'grabbing'
     }
-    const onMove = (event: PointerEvent) => {
-      if (!dragging) return
-      targetY += (event.clientX - lastX) * 0.01
-      lastX = event.clientX
+    const onEnd = () => {
+      canvas.style.cursor = 'grab'
     }
-    const onUp = (event: PointerEvent) => {
-      dragging = false
-      if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId)
-    }
-    canvas.addEventListener('pointerdown', onDown)
-    canvas.addEventListener('pointermove', onMove)
-    canvas.addEventListener('pointerup', onUp)
-    canvas.addEventListener('pointercancel', onUp)
-    canvas.style.cursor = 'grab'
+    controls.addEventListener('start', onStart)
+    controls.addEventListener('end', onEnd)
+
+    let ring: MeshStandardMaterial[] = []
+    let model: Object3D | null = null
+    let cancelled = false
+    new GLTFLoader().load(
+      MODEL_URL,
+      (gltf) => {
+        if (cancelled) return
+        model = gltf.scene
+        // Le fichier porte aussi l'animation de la vue éclatée : elle n'est pas jouée, le boîtier reste fermé.
+        const bounds = new Box3().setFromObject(model)
+        const center = bounds.getCenter(new Vector3())
+        const size = bounds.getSize(new Vector3()).length()
+        model.position.sub(center)
+        scene.add(model)
+        ring = ringMaterials(model)
+        // Vue de départ : un peu au-dessus, de trois quarts, pour voir l'anneau et la façade (ports USB).
+        const distance = size * 1.9
+        camera.position.set(distance * 0.55, distance * 0.45, distance * 0.7)
+        camera.near = size / 100
+        camera.far = size * 40
+        camera.updateProjectionMatrix()
+        controls.target.set(0, 0, 0)
+        controls.minDistance = size * 0.8
+        controls.maxDistance = size * 4
+        controls.update()
+        setLoaded(true)
+      },
+      undefined,
+      () => {
+        if (!cancelled) onUnavailable()
+      },
+    )
 
     const resize = () => {
       const { clientWidth, clientHeight } = host
@@ -205,6 +158,7 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
       renderer.setSize(clientWidth, clientHeight, false)
       camera.aspect = clientWidth / clientHeight
       camera.updateProjectionMatrix()
+      controls.handleResize()
     }
     const observer = new ResizeObserver(resize)
     observer.observe(host)
@@ -218,48 +172,55 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
 
     const current = new Color(boitierState(stateRef.current).led)
     const target = new Color()
-    const shown = new Color()
     let frame = 0
-    const start = performance.now()
+    let last = performance.now()
+    const start = last
 
     const tick = (now: number) => {
       frame = requestAnimationFrame(tick)
+      const dt = Math.min(0.05, (now - last) / 1000)
+      last = now
       if (!visible || document.hidden) return
       const t = (now - start) / 1000
       const still = reducedRef.current
 
-      // Léger balancement tant que la personne n'a pas pris la main.
-      if (!dragging && !userTouched && !still) targetY = BASE_ROTATION + Math.sin(t * 0.45) * 0.28
-      currentY = MathUtils.lerp(currentY, targetY, 0.1)
-      box.rotation.y = currentY
-      box.rotation.x = still ? 0.04 : 0.04 + Math.sin(t * 0.3) * 0.02
+      // Lente rotation tant que la personne n'a pas pris la main (jamais si elle préfère moins de mouvement).
+      if (model && !userTouched && !still) model.rotation.y += dt * 0.35
+      controls.update()
 
-      // La lumière glisse vers la couleur de l'état ; seule l'écoute pulse (environ 1 Hz, sans clignotement brusque).
+      // L'anneau glisse vers la couleur de l'état ; seule l'écoute pulse (environ 1 Hz, sans clignotement brusque).
       const info = boitierState(stateRef.current)
       target.set(info.led)
       current.lerp(target, 0.12)
-      const pulse = info.id === 'ecoute' && !still ? 0.7 + 0.3 * Math.sin(t * Math.PI * 2 * 0.9) : 1
-      shown.copy(current).multiplyScalar(pulse)
-      ledMaterial.color.copy(shown)
-      glowMaterial.color.copy(shown)
-      glowMaterial.opacity = 0.6 * pulse
-      ledLight.color.copy(current)
-      ledLight.intensity = 6 * pulse
+      const pulse = info.id === 'ecoute' && !still ? 0.65 + 0.35 * Math.sin(t * Math.PI * 2 * 0.9) : 1
+      // Teinte de base sombre : la couleur vient de l'émission, sinon le rouge tire vers le rose sous l'éclairage.
+      ring.forEach((material) => {
+        material.color.copy(current).multiplyScalar(0.25)
+        material.emissive.copy(current)
+        material.emissiveIntensity = MathUtils.lerp(0.4, 1.6, pulse)
+      })
 
       renderer.render(scene, camera)
     }
     frame = requestAnimationFrame(tick)
 
     return () => {
+      cancelled = true
       cancelAnimationFrame(frame)
       observer.disconnect()
       visibility.disconnect()
-      canvas.removeEventListener('pointerdown', onDown)
-      canvas.removeEventListener('pointermove', onMove)
-      canvas.removeEventListener('pointerup', onUp)
-      canvas.removeEventListener('pointercancel', onUp)
-      disposables.forEach((item) => item.dispose())
-      holes.dispose()
+      controls.removeEventListener('start', onStart)
+      controls.removeEventListener('end', onEnd)
+      controls.dispose()
+      scene.traverse((node) => {
+        const mesh = node as Mesh
+        if (!mesh.isMesh) return
+        mesh.geometry.dispose()
+        const materials = (Array.isArray(mesh.material) ? mesh.material : [mesh.material]) as Material[]
+        materials.forEach((material) => material.dispose())
+      })
+      environment.dispose()
+      pmrem.dispose()
       renderer.dispose()
       renderer.forceContextLoss()
       canvas.remove()
@@ -267,11 +228,18 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
   }, [onUnavailable])
 
   return (
-    <div
-      ref={hostRef}
-      role="img"
-      aria-label="Boîtier Nouankany en 3D : une barre lumineuse sur la face avant et une grille de haut-parleur. Glissez pour le faire tourner."
-      className={className}
-    />
+    <div className={`relative ${className ?? ''}`}>
+      <div
+        ref={hostRef}
+        role="img"
+        aria-label="Boîtier Nouankany en 3D : un cylindre anthracite, l'anneau lumineux sur le dessus. Glissez pour le faire tourner dans tous les sens, molette ou pincement pour zoomer."
+        className="absolute inset-0"
+      />
+      {!loaded && (
+        <p className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-dark-text" aria-hidden="true">
+          Chargement du modèle 3D…
+        </p>
+      )}
+    </div>
   )
 }

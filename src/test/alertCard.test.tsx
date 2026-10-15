@@ -20,6 +20,7 @@ import { useAutoResolveMachine } from '@/hooks/queries/useMachineCrud'
 const alert: ActionAlert = {
   kind: 'action',
   id: 'a1',
+  tier: 'alerte',
   machineId: 'M1',
   level: 'sévérité modérée',
   severity: 'modérée',

@@ -377,7 +377,9 @@ export interface BackendBillPhoto {
   photo_data_url: string
 }
 
-export type BackendRecommendationType = 'alerte' | 'optimisation' | 'délestage' | 'efficacite'
+/** 'alerte' : un seuil est franchi sur la dernière mesure ; 'a_verifier' : un écart à l'habitude SOUS le seuil, pas un
+ * danger établi (niveaux de signalement, 2026-10-15, ml/recommendation_engine.py). */
+export type BackendRecommendationType = 'alerte' | 'a_verifier' | 'optimisation' | 'délestage' | 'efficacite'
 export type BackendRecommendationSeverity = 'critique' | 'modérée' | 'faible'
 export interface BackendRecommendation {
   machine_id: string

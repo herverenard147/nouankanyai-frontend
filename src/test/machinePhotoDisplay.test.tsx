@@ -11,6 +11,7 @@ const columns: TableColumn<EquipmentRow>[] = [{ key: 'categorie', label: 'Catég
 function row(overrides: Partial<EquipmentRow> = {}): EquipmentRow {
   return {
     id: 'm1',
+    nom: 'Four',
     categorie: 'Cuisine',
     marque: 'Samsung',
     modele: 'X1',

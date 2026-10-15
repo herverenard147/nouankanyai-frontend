@@ -27,9 +27,10 @@ const COLUMNS_BASE: TableColumn<MachineRow>[] = [
 ]
 const COLUMNS_FULL: TableColumn<MachineRow>[] = [
   { key: 'machine', label: 'Machine' },
+  // Ce que nos capteurs mesurent : la puissance pour tous, la température là où une sonde est posée (froid,
+  // climatisation). Vibration et pression : aucun capteur prévu, colonnes retirées (2026-10-15).
+  { key: 'puissance', label: 'Puissance' },
   { key: 'temperature', label: 'Température' },
-  { key: 'vibration', label: 'Vibration' },
-  { key: 'pression', label: 'Pression' },
   { key: 'attendu', label: 'Attendu par jour' },
   { key: 'statut', label: 'Statut' },
   { key: 'priorite', label: 'Priorité' },
@@ -57,7 +58,7 @@ export function MachinesPage() {
         </Button>
       </div>
       <p className="text-sm text-text-secondary">{levelAtLeast(level, 'technique')
-          ? 'Ce qui se passe sur chaque appareil : température, vibration et pression relevées, comparées à vos seuils d’alerte. Un appareil qui dépasse un seuil passe en « Anomalie détectée » et apparaît dans Alertes.'
+          ? 'Ce qui se passe sur chaque appareil : puissance relevée et, là où une sonde est posée, température, comparées aux seuils de l’appareil. Un appareil qui dépasse un seuil passe en « Anomalie détectée » et apparaît dans Alertes.'
           : 'Les appareils de votre site, leur état et leur priorité d’intervention.'}</p>
       <MetricState status={query.status} isEmpty={query.data?.rows.length === 0}>
         {query.data && (
