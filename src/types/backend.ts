@@ -219,6 +219,8 @@ export interface BackendAlertEntry {
     cost_fcfa: number | null
     downtime_hours: number | null
     learning_eligible: boolean
+    /** Documentée par un technicien Nouankany en intervention (2026-10-16). */
+    by_technician?: boolean
     created_at: string | null
   } | null
 }

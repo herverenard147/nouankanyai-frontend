@@ -97,7 +97,9 @@ export function AlertsPage() {
                         )}
                       </p>
                     </div>
-                    <span className={`text-xs font-semibold ${alert.is_open ? 'text-alert' : 'text-text-secondary'}`}>{resolutionLabel(alert)}</span>
+                    <span className={`text-xs font-semibold ${alert.is_open ? 'text-alert' : 'text-text-secondary'}`}>{resolutionLabel(alert)}
+                      {alert.feedback?.by_technician ? ' · par un technicien Nouankany' : ''}
+                    </span>
                   </div>
                 )
               })}

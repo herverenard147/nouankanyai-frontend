@@ -30,6 +30,7 @@ import { RecommendationsPage } from '@/pages/app/RecommendationsPage'
 import { ReportsPage } from '@/pages/app/ReportsPage'
 import { SettingsPage } from '@/pages/app/SettingsPage'
 import { HelpPage } from '@/pages/app/HelpPage'
+import { InterventionAlertsPage } from '@/pages/app/InterventionAlertsPage'
 import { InterventionLayout, InterventionsPage } from '@/pages/app/InterventionsPage'
 import { SourceDetailPage, SourcesPage } from '@/pages/app/SourcesPage'
 import { AdminBoitierDetailPage } from '@/pages/app/admin/AdminBoitierDetailPage'
@@ -99,6 +100,7 @@ export const router = createBrowserRouter([
                 children: [
                   { index: true, element: <SourcesPage /> },
                   { path: 'sources/:deviceId', element: <SourceDetailPage /> },
+                  { path: 'alertes', element: <InterventionAlertsPage /> },
                 ],
               },
               { path: 'assistant', element: <AssistantPage /> },

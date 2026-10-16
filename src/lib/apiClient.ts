@@ -96,7 +96,8 @@ interface RequestOptions {
 let refreshing: Promise<boolean> | null = null
 
 /** Routes que le backend ouvre à un technicien en intervention (dépendance `get_install_scope`). */
-const INSTALL_ROUTES = ['/api/v1/boitiers', '/api/v1/intervention/installation']
+// Routes que le technicien appelle pour le compte du client : installation, et alertes (décision du 2026-10-16).
+const INSTALL_ROUTES = ['/api/v1/boitiers', '/api/v1/intervention/installation', '/api/v1/alerts']
 
 /** Échange le jeton de renouvellement contre une nouvelle paire, une seule fois même si plusieurs
  * requêtes reçoivent un 401 en même temps (Volet 5). Renvoie false si la session est fermée. */

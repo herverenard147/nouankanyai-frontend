@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 
+import { AlertNotifier } from '@/components/alerts/AlertNotifier'
 import { AssistantWidget } from '@/components/assistant/AssistantWidget'
 import { MobileDrawer } from '@/components/layout/MobileDrawer'
 import { SideRail } from '@/components/layout/SideRail'
@@ -28,6 +29,7 @@ export function AppLayout() {
         </main>
       </div>
       <MobileDrawer />
+      <AlertNotifier />
       <AssistantWidget profile={session.profile} />
     </div>
   )
