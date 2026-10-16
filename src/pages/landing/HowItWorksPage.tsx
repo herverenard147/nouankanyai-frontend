@@ -106,12 +106,12 @@ export function HowItWorksPage() {
       <NavBar />
       <main id="main-content">
         <section className="border-b border-border py-16">
-          <div className="mx-auto max-w-[47.5rem] px-6">
+          <div className="mx-auto max-w-[70rem] px-6">
             <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
               Comment ça marche
             </p>
             <h1 className="mt-2 text-h1 font-bold text-text-primary">Deux parcours, un seul produit</h1>
-            <p className="mt-4 text-lede text-text-secondary">
+            <p className="mt-4 max-w-[47.5rem] text-lede text-text-secondary">
               PME et Industrie sont en phase pilote active dès aujourd&rsquo;hui : audit, installation ciblée, puis
               6 à 9 mois de mesure avant généralisation. La formule Ménage arrive dans un second temps, une fois ce
               pilote industriel consolidé.
@@ -160,7 +160,7 @@ export function HowItWorksPage() {
               </Link>
               <Link
                 to="/demander-un-audit?type=pme"
-                className="focus-ring inline-flex min-h-11 items-center rounded-control border border-border px-5 py-3.5 text-sm font-semibold text-text-primary hover:bg-bg-elevated"
+                className="focus-ring inline-flex min-h-11 items-center rounded-control bg-accent-cta px-5 py-3.5 text-sm font-semibold text-white hover:bg-accent-cta-hover"
               >
                 Demander un audit PME
               </Link>
@@ -183,8 +183,7 @@ export function HowItWorksPage() {
                 repose sur votre facture et votre déclaration d&rsquo;équipements, pas sur une installation IoT.
               </p>
               <p className="mt-3 text-small-body text-text-secondary">
-                Ce segment ouvre après le pilote PME/Industrie, une fois la plateforme consolidée sur des cas
-                industriels réels.
+                Ce parcours n&rsquo;est pas encore disponible.
               </p>
               <WaitlistForm />
             </div>
