@@ -10,10 +10,10 @@ qui n'y est pas ou ce qui a changé depuis.
 ## Ce dépôt est un frontend seul, branché sur un backend séparé
 
 Le backend réel vit dans `../NouanKanyAI/` (dépôt git distinct,
-`herverenard147/nouankanyai`, branche `main` ; le frontend était branché sur
-`feature/merge-steph-ml-subsystem`). Ce dépôt-ci a maintenant un historique git
-(`herverenard147/nouankanyai-frontend`) : le travail de refonte design est sur la
-branche `claude/nouankany-design-propositions-5o9kyw` (PR en brouillon).
+`herverenard147/NouanKanyAI`, branche `main`). Ce dépôt-ci est
+`herverenard147/nouankanyai-frontend` : une branche et une PR par sujet, seul `main` est mis en
+ligne. Le dossier partagé local porte parfois des modifications d'une autre session : travailler
+dans une copie séparée (`git worktree`) partant de `origin/main`.
 
 ## Design et écrans : lire `DESIGN.md` avant de toucher à l'interface
 
@@ -26,9 +26,8 @@ compte : ne pas contourner `src/lib/overviewLevels.ts`.
 ## Mise en ligne : lire `MISE_EN_LIGNE.md`
 
 `MISE_EN_LIGNE.md` (racine) dit quel projet Vercel (`nouankany-staging-frontend`) et quel service Render
-(`nouankany-staging-backend`) sont les bons, le projet Vercel relié par erreur au dépôt backend (`nouankanyai-frontend`), l'ordre
-de déploiement (Lambda si configurée, migrations, backend, puis frontend), CORS, la création des données de démonstration et
-les tests à faire.
+(`nouankany-staging-backend-bm9s`) sont les bons, l'ordre de déploiement (Lambda, migrations, backend, puis frontend),
+CORS, la création des données de démonstration et les tests à faire.
 
 ## Faire tourner les deux en local
 
@@ -44,13 +43,13 @@ les tests à faire.
   entrer en collision avec un tout autre service déjà présent sur la machine
   sur ce port — vérifier `ss -ltnp | grep 8000` avant de supposer que ce qui
   écoute dessus est ce backend.
-- Comptes de démo : pas seedés automatiquement, à créer via `POST
-  /api/auth/signup` (ou le formulaire `/login` → « Créer un compte ») — voir
-  la liste dans `README.md`.
-- Aucun compte de service Postgres local n'était pré-configuré au moment de
-  la rédaction (pas de rôle correspondant à l'utilisateur système) : si
-  `psql`/le backend ne peuvent pas se connecter, demander à l'utilisateur le
-  `DATABASE_URL` local plutôt que de deviner des identifiants.
+- Comptes de démo : `python backend/scripts/seed_demo.py --with-alert --with-history`
+  (voir `README.md`).
+- Base locale : conteneur Docker PostgreSQL du projet (port 5434). Si le
+  backend ne peut pas se connecter, demander le `DATABASE_URL` local à
+  l'utilisateur plutôt que de deviner des identifiants.
+- Mettre `ALERT_SWEEP_MINUTES=0` au backend local quand on ne veut pas que le
+  balayage des alertes tourne (il envoie des emails).
 
 ## Vérification visuelle réelle
 
@@ -91,10 +90,10 @@ sélectionne la valeur résolue elle-même. Règle générale : dans un sélecte
 zustand, toujours retourner la donnée dont dépend le rendu, jamais une
 fonction qu'il faudra encore appeler après coup.
 
-## Déploiement Render : le scroll de scroll via `computer` ne marche pas dans un iframe, et `_redirects` est ignoré
+## Défilement dans un iframe, et `_redirects` ignoré par Render
 
-Deux pièges rencontrés en déployant `nouankany-staging-frontend` (static site
-Render, repo `herverenard147/nouankanyai-frontend`) :
+Deux pièges rencontrés quand le frontend était un static site Render (il est sur Vercel
+depuis) :
 
 1. Le `computer` tool (`scroll`) n'arrive pas à faire défiler le contenu d'un
    iframe injecté (technique ci-dessus) — l'événement wheel ne se propage pas
@@ -128,9 +127,4 @@ Render, repo `herverenard147/nouankanyai-frontend`) :
 - Toute nouvelle donnée affichée porte un badge de provenance
   (`estimé`/`synthétique`/`télémétrie système`/`mesuré`), jamais codé en dur.
 - `backend/.env` (dans l'autre dépôt) n'est plus suivi par git depuis le
-  2026-10-08, mais ses clés restent dans l'historique : leur régénération est
-  une action du propriétaire, hors de ce dépôt.
-
-## Fusion du boîtier : lire d'abord
-
-`docs/FUSION_BOITIER_LIRE_EN_PREMIER.md` (copie de celui du dépôt backend) est **prioritaire** : ordre de fusion des PR du boîtier (backend d'abord), erreurs rencontrées, vérifications à faire **avant** d'agir. Il a été écrit par une session cloud sans accès à cette machine : le valider avant de s'y fier. Hébergement actuel : backend sur Render, frontend sur Vercel (voir `MISE_EN_LIGNE.md`).
+  2026-10-08 ; les anciennes clés de son historique ne servent plus.

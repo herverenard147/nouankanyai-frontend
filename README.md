@@ -3,11 +3,10 @@
 Front-end fonctionnel de Nouankany : landing publique, connexion et dashboard
 multi-pages (Ménage, PME, Industrie, Portail Admin), **branché sur le backend réel**
 [`herverenard147/NouanKanyAI`](https://github.com/herverenard147/NouanKanyAI)
-(branche `feature/merge-steph-ml-subsystem`).
+(branche `main`). Seul `main` est mis en ligne (Vercel).
 
-Construit à partir du handoff de design dans `design_handoff_nouankanyai/` (source
-de vérité visuelle, non modifiée) en suivant `design_handoff_nouankanyai/PROMPT_CLAUDE_CODE.md`,
-puis intégré au backend réel en conservant l'architecture, les composants et les
+Construit au départ à partir du handoff de design d'août 2026 (`design_handoff_nouankanyai/`,
+gardé pour mémoire) ; les règles de design qui font foi aujourd'hui sont dans `DESIGN.md`. Puis intégré au backend réel en conservant l'architecture, les composants et les
 types déjà en place — voir « Couche d'adaptation » plus bas pour le détail du
 mapping entre le contrat du backend et ces types.
 
@@ -48,9 +47,9 @@ npm run lint          # oxlint
 
 ## Comptes de démonstration
 
-Comptes réels, créés via `POST /api/auth/signup` sur le backend (pas une liste
-statique locale). L'encart de `/login` les affiche en développement seulement, sans le compte
-admin.
+Comptes réels du backend local, créés par `python backend/scripts/seed_demo.py --with-alert --with-history`
+(idempotent). L'encart de `/login` les affiche en développement seulement, sans le compte admin. Sur le
+site en ligne, ces comptes ont des mots de passe propres (gardés hors dépôt) : `demo1234` n'y marche pas.
 
 | Profil     | Email                                  | Mot de passe | `type_compte` backend |
 |------------|-----------------------------------------|--------------|------------------------|
@@ -59,14 +58,13 @@ admin.
 | Industrie  | `exploitation@yopougon-l2.demo`         | `demo1234`   | `Industrie` |
 | Admin      | `admin@nouankany.demo`                | `demo1234`   | `platform_role: superadmin`, donné par `backend/scripts/promote_admin.py` |
 
-Ces comptes n'existent que si vous les avez créés vous-même (signup) sur votre
-instance de backend — ils ne sont pas seedés automatiquement. Un nouveau compte
-peut être créé directement depuis `/login` (bascule « Créer un compte »).
+Comptes de test avec un an de données (Ménage, PME, Industrie) : `python backend/scripts/seed_year.py`
+(voir son aide). Un nouveau compte peut aussi être créé depuis `/login` (bascule « Créer un compte »).
 
 Le backend n'a pas de champ "profil" natif : `src/lib/profileMapping.ts` dérive
 `menage | pme | industrie | admin` à partir de `type_compte` (texte libre saisi
 à l'inscription, valeurs reconnues : Ménage/PME/Industrie) et `platform_role`
-(`admin`/`superadmin` → toujours `admin`, prioritaire). La session
+(`admin`/`superadmin` → toujours `admin`, prioritaire ; `technicien` → profil technicien : Interventions, Documentation, Paramètres). La session
 (`sessionStore`, persistée en `localStorage`) porte le JWT réel du backend.
 
 ## Structure des dossiers
@@ -80,7 +78,8 @@ src/
 │   ├── auth/        Connexion + inscription
 │   ├── legal/        Stubs CGU / confidentialité
 │   └── app/          Les pages du dashboard (app/overview/ = 4 vues par
-│                       profil, app/admin/ = 3 pages réservées à l'Admin)
+│                       profil, app/admin/ = 9 pages réservées à l'Admin ;
+│                       sources de mesures, interventions, documentation)
 ├── components/       Composants transverses, inchangés par l'intégration
 │   (provenance, alerts, level, kpi, tariff, charts, prediction, advice, plan,
 │   anomalies, table, upload, assistant, state, layout, ui)
@@ -127,7 +126,13 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   problèmes — pas de sens à les « résoudre ») sont filtrées à part par
   `recommendations.ts` vers la page dédiée `/app/recommandations`, sans
   bouton de résolution.
-- **KPI** : dérivés de `/api/machines` + `/api/facturation` (client), ou de
+- **Registre des alertes** (`/app/alertes`, depuis le 2026-10-16) : la page lit
+  `GET /api/v1/alerts` (`useAlertRegistry`) : alertes ouvertes, dépassements prévus,
+  historique jamais effacé, et le volet « qu'avez-vous fait ? » (`AlertFeedbackForm`,
+  `POST /api/v1/alerts/{id}/feedback`) selon le niveau d'affichage. `AlertNotifier` relit les
+  alertes ouvertes chaque minute et annonce celles apparues pendant la visite. Le technicien
+  en intervention a son onglet Alertes (`InterventionAlertsPage`).
+- **KPI** : dérivés de `/api/machines` + `/api/v1/billing` (client), ou de
   `/api/admin/metrics.system` (admin).
 - **Prédiction** : `/api/predict` (XGBoost) est par machine — `prediction.ts`
   interroge chaque équipement du compte séparément puis agrège en une
@@ -138,28 +143,17 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   jour-de-semaine sur tout l'horizon demandé). L'aperçu compact des pages Vue
   d'ensemble (`PredictionPanel`) n'affiche que la prédiction globale, à
   l'heure.
-- **Anomalies** : la page dédiée `/app/anomalies` (Industrie) a été retirée —
-  elle lisait `machine.status` (un champ persisté, mis à jour seulement par
-  `/simulate`/`/reset`/`/test`), une source différente et pas forcément
-  synchronisée avec le score Isolation Forest recalculé par `/api/recommend`
-  à chaque affichage sur Alertes/Conseils, ce qui pouvait les contredire.
-  `ResolutionsList` (« Historique des résolutions d'anomalies », affichée sur
-  Vue d'ensemble Industrie) reste en place — elle dépend de `fetchResolutions`
-  (backend n'a aucun mécanisme pour marquer une résolution, renvoie toujours
-  `[]`), inchangée par ce retrait.
-- **Seuils** (`/app/parametres`) : le backend n'a qu'un seul jeu de seuils par
-  compte (`temperature_max_c`, `vibration_max_hz`, `surconsommation_ratio`),
-  affiché et édité dans sa forme réelle plutôt que forcé dans l'ancienne union
-  `Thresholds` (global/per-equipment/multi-level), qui ne correspond à aucune
-  de ces trois formes ici.
+- **Historique des résolutions** : `fetchResolutions` lit `GET /api/v1/plan/resolutions`
+  (écrit par « Vérifier » sur une machine) ; seules les mesures que l'appareil a sont affichées.
+- **Seuils** (`/app/parametres` et fiche d'un appareil) : seuils du compte
+  (`temperature_max_c`, `vibration_max_mm_s`, `surconsommation_ratio`), et réglage propre à
+  un appareil ; à défaut, le backend applique ceux de la famille de l'appareil.
 - **Facturation** (`/app/facturation`, `/api/v1/billing`) : ce que le client
   paie à Nouankany (contrat PME/Industrie ou palier ménage) est distinct de ses
   factures d'électricité (`/api/bills`, page `/app/factures`). `/app/rapports`
   génère les rapports énergétiques (`/api/v1/reports/generate`).
-- **Sans donnée honnête disponible** : `fetchActionPlan` et `fetchResolutions`
-  renvoient `[]` (pas de "plan d'action mensuel" ni de résolution
-  d'anomalie marquée côté backend aujourd'hui) plutôt qu'une valeur inventée —
-  `MetricState` affiche l'état vide, pas une erreur.
+- **Plan d'action** : `fetchActionPlan` lit `/api/v1/plan/items` et reprend les
+  recommandations chiffrées du moteur (`/items/import`, idempotent).
 - **Actions admin réelles** : `/app/admin/utilisateurs` a un drill-down par
   utilisateur (ses machines + sa facturation du mois, `GET
   /api/admin/users/{id}/machines|facturation`) et un bouton promouvoir/rétrograder
@@ -168,12 +162,10 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   modèles » (`POST /api/v1/ml/reload`) ; `/app/factures` a une action « la vraie
   facture est arrivée » pour confirmer le montant réel d'une prévision (`PATCH
   /api/bills/{id}/actual`).
-- **Panneaux Admin — métriques et observabilité des modèles IA** (`/app/admin/modeles`) :
-  Les panneaux de supervision des modèles (`src/api/adminModels.ts`) présentent les indicateurs opérationnels réels sans masquer l'état du backend :
-  * **Surveillance dérive : Non configurée** (le backend renvoie `"NORMAL"` en dur dans `GET /api/admin/metrics`, aucun algorithme de drift n'étant encore branché).
-  * **Alertes plateforme actives : <compteur>** (reflète la somme SQL des alertes et machines en alerte issue de `ml_health.isolation_forest_anomalies_detected`, et non une sortie d'inférence directe du modèle Isolation Forest).
-  * **R² : 0,990** (affiché avec 3 décimales au lieu de `1,0` pour refléter fidèlement le score XGBoost sans arrondi trompeur).
-  * **F1-score (R&D v2, non déployé) : 0.11 (recherche)** (annoté explicitement pour distinguer le modèle expérimental v2 du système opérationnel d'alertes clients).
+- **Modèles et observabilité** (`/app/admin/modeles`, Admin seulement) : métriques des modèles,
+  dérive (PSI, Kolmogorov-Smirnov), démarrage à froid, collecte de mesures réelles, appels Gemini,
+  rechargement des modèles. Le F1 du modèle v2 de détection est annoté « recherche » : il n'est pas
+  déployé.
 - **Profil** (`/app/parametres`) : `useAuthMe`/`GET /api/auth/me` affiche
   email, type de compte, membre depuis, dernière connexion ; le nom est
   modifiable (`PATCH /api/auth/me`, restreint au nom — `type_compte`
@@ -205,58 +197,25 @@ prévision statistique (`POST /api/bills/forecast`) et la saisie manuelle
 
 ## Provenance des données
 
-Chaque valeur affichée porte un badge de provenance (`estimé` pour les
-relevés machine actuels — aucun capteur physique réel n'est encore branché sur
-`sensor_metrics`, tout est simulé/déclaré —, `synthétique` pour les sorties de
-modèle ML, `télémétrie système` pour les métriques d'infrastructure de
-l'Admin ; `mesuré` reste supporté par `ProvenanceBadge` mais n'est utilisé
-nulle part). Le champ `provenance` est porté par chaque item de donnée dans
+Chaque valeur affichée porte un badge de provenance : `mesuré` pour une mesure reçue d'une
+source réelle (boîtier, passerelle, logiciel, capteur, fichier), `estimé` pour une valeur déclarée
+ou tirée du référentiel, `synthétique` pour une sortie de modèle ou un relevé simulé, `télémétrie
+système` pour les métriques d'infrastructure de l'Admin. Aucun capteur physique n'est encore
+branché : sur le site en ligne, les relevés restent simulés. Le champ `provenance` est porté par chaque item de donnée dans
 `src/types/domain.ts`, jamais codé en dur dans un composant.
 
-## Sécurité — constat fait pendant l'intégration, non corrigé (hors périmètre)
+## Sécurité
 
-`backend/.env` est suivi par git avec de vraies clés (Gemini, jeton d'accès
-Supabase) déjà commitées avant que `.gitignore` ne les exclue. Je n'ai pas
-réécrit l'historique git (hors périmètre, action destructive) : ces clés
-doivent être révoquées/régénérées côté backend indépendamment de ce dépôt.
+Le jeton de session vit dans le stockage du navigateur (`sessionStore`) : un passage en cookie
+protégé est reporté (il demande que l'API passe par le même domaine que le site). Les en-têtes de
+sécurité du site sont dans `vercel.json`.
 
-## Vérification effectuée
+## Vérification
 
-**Chaque route du backend a été exercée en direct** (curl, avec les comptes de
-démo réels) au moins une fois (`POST /api/anomaly`, alors cassée, a été
-supprimée le 2026-10-08). Ça inclut les
-mutations (créer un site/une machine, simuler/réinitialiser une machine,
-mettre à jour les seuils, générer une prévision de facture et confirmer un
-montant réel, promouvoir/rétrograder un rôle admin, recharger les modèles ML,
-upload photo facture et analyse média en mode mock), pas seulement les lectures.
-
-- `npm run build` (TypeScript + Vite) : aucune erreur.
-- `npm run test` : suite légère + `src/test/backendIntegration.smoke.test.ts`
-  (17 tests), qui se connecte au **vrai backend local** (comptes de démo
-  ci-dessus) et exerce, via le code frontend réel (pas des doubles), les
-  lectures ET les mutations câblées à l'UI : KPI, alertes, conseils,
-  prédiction, consommation, factures (génération de prévision + confirmation
-  de montant réel + saisie manuelle), équipements, cycle site → machine →
-  simulate → reset, machines, anomalies ouvertes, seuils (lecture + mise à
-  jour, restaurée après coup), assistant (`/api/chat`), panneaux admin,
-  rechargement des modèles ML, utilisateurs (liste + drill-down machines/
-  facturation + promotion/rétrogradation, restaurée après coup), journal.
-  Nécessite un backend + PostgreSQL locaux démarrés au préalable — pas
-  destiné à tourner en CI.
-- `npm run lint`.
-- CORS vérifié en conditions réelles (`Origin: http://localhost:5173` contre
-  le backend local, en-tête `access-control-allow-origin` confirmé en retour).
-
-**Pas branché à l'UI par choix produit, mais confirmé fonctionnel côté
-backend** : `POST /api/bills/upload-photo` et `POST /api/machines/{id}/analyze-media`
-(les deux testés en direct en `AI_MODE=mock`, réponses simulées cohérentes) —
-l'upload de facture par photo attend ReceiptFlow (voir plus haut) ; l'analyse
-média n'a pas d'équivalent dans le handoff de design d'origine, pas ajoutée
-sans direction produit.
-
-**Limite connue** : le rendu dans un vrai navigateur n'a pas pu être vérifié
-visuellement dans cet environnement (pas de Chrome disponible pour l'outillage
-de capture d'écran). La vérification s'est appuyée sur le build, les tests
-d'intégration contre le backend réel, le lint et une inspection manuelle du
-code — pas sur un test visuel réel. Un passage `npm run dev` + navigation
-manuelle est recommandé avant mise en production.
+- À chaque PR, la CI lance `tsc -b`, `vitest run`, `oxlint` et `vite build` ; le nombre minimal
+  de tests est dans `.github/test-baseline.json`. Au 2026-10-16 : 253 tests passent.
+- `src/test/backendIntegration.smoke.test.ts` exerce le vrai backend local (comptes de
+  `seed_demo.py`) : lectures et mutations câblées à l'interface. Il est sauté sans backend local
+  et ne tourne pas en CI.
+- Vérification visuelle : Claude in Chrome ou Playwright, à 390, 768, 1024 et 1440 px (voir
+  `CLAUDE.md`, pièges de redimensionnement).
