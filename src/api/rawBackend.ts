@@ -27,6 +27,9 @@ import type {
   BackendPlanStatus,
   BackendPlanSummary,
   BackendResolution,
+  BackendAlertEntry,
+  BackendAlertFeedbackIn,
+  BackendAlertStatus,
   BackendAlertThresholds,
   BackendAuditRequest,
   BackendAuditRequestPayload,
@@ -314,6 +317,10 @@ export const rawUpdatePlanItem = (itemId: string, payload: BackendPlanItemUpdate
   api.patch<BackendPlanItem>(`/api/v1/plan/items/${itemId}`, payload)
 export const rawDeletePlanItem = (itemId: string) => api.delete<null>(`/api/v1/plan/items/${itemId}`)
 export const rawResolutions = () => api.get<BackendResolution[]>('/api/v1/plan/resolutions')
+export const rawAlertRegistry = (status: BackendAlertStatus = 'toutes', limit = 100) =>
+  api.get<BackendAlertEntry[]>(`/api/v1/alerts?status=${status}&limit=${limit}`)
+export const rawAlertFeedback = (alertId: string, body: BackendAlertFeedbackIn) =>
+  api.post<BackendAlertEntry>(`/api/v1/alerts/${encodeURIComponent(alertId)}/feedback`, body)
 
 export type { BackendAuditEvent, BackendPlanStatus }
 

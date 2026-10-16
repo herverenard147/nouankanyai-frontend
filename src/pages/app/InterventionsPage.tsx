@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, Outlet, useParams } from 'react-router-dom'
+import { Link, Outlet, useParams, NavLink } from 'react-router-dom'
 
 import { BoitierSectionBlock, Th } from '@/components/boitier/BoitierParts'
 import { MetricState } from '@/components/state/MetricState'
@@ -89,6 +89,21 @@ export function InterventionLayout() {
           </Link>
         </p>
       </BoitierSectionBlock>
+      <nav aria-label="Rubriques de l’intervention" className="flex gap-px self-start border border-border bg-border text-sm font-semibold">
+        {[
+          ['Sources de mesures', ''],
+          ['Alertes', 'alertes'],
+        ].map(([label, sub]) => (
+          <NavLink
+            key={label}
+            to={`/app/interventions/${accountId}${sub ? `/${sub}` : ''}${window.location.search}`}
+            end
+            className={({ isActive }) => `focus-ring px-3 py-2 ${isActive ? 'bg-text-primary text-white' : 'bg-card text-text-primary hover:bg-bg-elevated'}`}
+          >
+            {label}
+          </NavLink>
+        ))}
+      </nav>
       {current === accountId ? <Outlet /> : null}
     </div>
   )

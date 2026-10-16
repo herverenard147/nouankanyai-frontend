@@ -83,14 +83,6 @@ export interface AutoAlert {
   journalRef?: string
 }
 
-export interface AlertHistoryEntry {
-  id: string
-  date: string
-  title: string
-  resolution: string
-  registre: 'action' | 'auto'
-}
-
 export interface KpiWindow {
   label: string
   sampleCount?: number

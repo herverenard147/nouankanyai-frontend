@@ -3,6 +3,7 @@ import { TransferCard } from '@/components/import/TransferCard'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import { MIN_PASSWORD_LENGTH } from '@/lib/validation'
 import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineButton'
 import { AdminBillingSection } from '@/components/billing/AdminBillingSection'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
@@ -212,7 +213,7 @@ export function AdminUserDetailPage() {
             id="reset-password-form"
             onSubmit={(event) => {
               event.preventDefault()
-              if (newPassword.length < 6) return
+              if (newPassword.length < MIN_PASSWORD_LENGTH) return
               resetPassword.mutate({ userId: user.id, newPassword }, { onSuccess: () => setDialog(null) })
             }}
             className="flex flex-col gap-3"
@@ -223,9 +224,9 @@ export function AdminUserDetailPage() {
               onChange={(event) => setNewPassword(event.target.value)}
               autoComplete="new-password"
               required
-              minLength={6}
+              minLength={MIN_PASSWORD_LENGTH}
             />
-            <p className="text-xs text-text-secondary">Au moins 6 caractères.</p>
+            <p className="text-xs text-text-secondary">Au moins {MIN_PASSWORD_LENGTH} caractères.</p>
             <MutationError error={resetPassword.error} />
           </form>
         </Modal>

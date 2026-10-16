@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 
+import { MIN_PASSWORD_LENGTH } from '@/lib/validation'
 import { resetPassword } from '@/api/account'
 import { Button } from '@/components/ui/Button'
 import { PasswordField } from '@/components/ui/PasswordField'
@@ -18,7 +19,7 @@ export function ResetPasswordPage() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    if (password.length < 6) return setError('Le mot de passe doit contenir au moins 6 caractères.')
+    if (password.length < MIN_PASSWORD_LENGTH) return setError(`Le mot de passe doit contenir au moins ${MIN_PASSWORD_LENGTH} caractères.`)
     if (password !== confirm) return setError('Les deux mots de passe ne sont pas identiques.')
     setError(null)
     setStatus('loading')

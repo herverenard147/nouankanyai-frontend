@@ -2,6 +2,9 @@
  * Limites de saisie, les mêmes que celles du serveur (`app/schemas/_validators.py` et `main.py`).
  * Le formulaire les applique avant l'envoi : l'utilisateur est prévenu sur le champ, sans aller-retour.
  */
+/** Longueur minimale d'un nouveau mot de passe, la même que le serveur (`auth.MIN_PASSWORD_LENGTH`). */
+export const MIN_PASSWORD_LENGTH = 8
+
 export const LIMITS = {
   name: 200,
   location: 300,

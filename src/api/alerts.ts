@@ -1,7 +1,7 @@
-import { rawMachineHistory, getCachedMachines, rawPlatformAlerts, getCachedRecommend } from '@/api/rawBackend'
+import { getCachedMachines, rawPlatformAlerts, getCachedRecommend } from '@/api/rawBackend'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { BackendMachine } from '@/types/backend'
-import type { ActionAlert, AlertHistoryEntry, AutoAlert, Profile } from '@/types/domain'
+import type { ActionAlert, AutoAlert, Profile } from '@/types/domain'
 
 /**
  * Le backend n'a pas de registre d'alerte dédié : les alertes sont dérivées de
@@ -131,30 +131,4 @@ export async function fetchAutoAlerts(profile: Profile): Promise<AutoAlert[]> {
       timestamp: 'action exécutée, calculée à cet instant',
       provenance: 'synthetique' as const,
     }))
-}
-
-/**
- * Historique : les vraies détections (AIAlert) enregistrées par machine, via
- * `/api/machines/{id}/history`. `is_resolved` ne bascule jamais à true côté
- * backend actuellement (aucune route ne le fait) : tout est donc classé
- * "action" : pas de fausse case "auto" pour ces entrées-là.
- */
-export async function fetchAlertHistory(_profile: Profile): Promise<AlertHistoryEntry[]> {
-  const machines = await getCachedMachines()
-  const histories = await Promise.all(machines.map((m) => rawMachineHistory(m.machine_id).catch(() => null)))
-  const entries: AlertHistoryEntry[] = []
-  histories.forEach((history, idx) => {
-    if (!history) return
-    const machine = machines[idx] as BackendMachine
-    history.alerts.forEach((alert, i) => {
-      entries.push({
-        id: `${machine.machine_id}-hist-${i}`,
-        date: new Date(alert.created_at).toLocaleString('fr-FR'),
-        title: `${alert.type_alerte}, ${machine.nom}`,
-        resolution: alert.action_recommandee,
-        registre: 'action',
-      })
-    })
-  })
-  return entries.sort((a, b) => b.date.localeCompare(a.date))
 }

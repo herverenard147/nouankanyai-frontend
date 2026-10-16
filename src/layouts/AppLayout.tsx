@@ -1,5 +1,7 @@
+import { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
 
+import { AlertNotifier } from '@/components/alerts/AlertNotifier'
 import { AssistantWidget } from '@/components/assistant/AssistantWidget'
 import { MobileDrawer } from '@/components/layout/MobileDrawer'
 import { SideRail } from '@/components/layout/SideRail'
@@ -24,10 +26,13 @@ export function AppLayout() {
       <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <TopBar />
         <main id="main-content" className="flex w-full max-w-[87.5rem] flex-1 flex-col gap-5 px-4 pb-24 pt-2 sm:px-6 lg:px-8">
-          <Outlet />
+          <Suspense fallback={<p className="py-10 text-sm text-text-secondary">Chargement…</p>}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
       <MobileDrawer />
+      <AlertNotifier />
       <AssistantWidget profile={session.profile} />
     </div>
   )

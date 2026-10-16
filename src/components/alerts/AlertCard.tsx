@@ -18,7 +18,7 @@ interface ActionAlertCardProps {
    * complète et les actions vivant sur /app/alertes. */
   compact?: boolean
   /** Admin (alertes plateforme, tous comptes confondus) : l'alerte porte sur l'équipement
-   * d'un AUTRE compte. "Vérifier et résoudre" appelle alors l'action support dédiée
+   * d'un AUTRE compte. "Vérifier maintenant" appelle alors l'action support dédiée
    * (/api/admin/machines/{id}/test), jamais /api/machines/{id}/test (scopé sur le compte
    * Admin lui-même, qui n'a pas cet équipement) : avec une modale de confirmation avant
    * d'agir sur les données d'un autre compte (RGPD : jamais un clic accidentel, l'action
@@ -117,9 +117,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
                 ? autoResolve.autoEnabled
                   ? `Tentative ${autoResolve.attempt}/${autoResolve.maxAttempts} en cours…`
                   : 'Vérification en cours…'
-                : alert.tier === 'a_verifier'
-                  ? 'Vérifier maintenant'
-                  : 'Vérifier et résoudre'}
+                : 'Vérifier maintenant'}
             </button>
           )}
         </div>

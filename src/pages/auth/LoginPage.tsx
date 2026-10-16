@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useLocation, useSearchParams } from 'react-router-dom'
 
+import { MIN_PASSWORD_LENGTH } from '@/lib/validation'
 import { CguContent } from '@/components/legal/CguContent'
 import { LegalModal } from '@/components/legal/LegalModal'
 import { PrivacyContent } from '@/components/legal/PrivacyContent'
@@ -53,7 +54,7 @@ export function LoginPage() {
 
     const nextEmailError = EMAIL_RE.test(email) ? null : 'Entrez une adresse email valide.'
     const nextPasswordError =
-      mode === 'signup' && password.length < 6 ? 'Le mot de passe doit contenir au moins 6 caractères.' : password.length === 0 ? 'Le mot de passe est requis.' : null
+      mode === 'signup' && password.length < MIN_PASSWORD_LENGTH ? `Le mot de passe doit contenir au moins ${MIN_PASSWORD_LENGTH} caractères.` : password.length === 0 ? 'Le mot de passe est requis.' : null
     const nextNomError = mode === 'signup' && nom.trim().length === 0 ? 'Le nom est requis.' : null
     setEmailError(nextEmailError)
     setPasswordError(nextPasswordError)

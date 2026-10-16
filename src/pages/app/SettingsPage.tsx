@@ -1,4 +1,4 @@
-import { EMAIL_INPUT, LIMITS } from '@/lib/validation'
+import { EMAIL_INPUT, LIMITS, MIN_PASSWORD_LENGTH } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
@@ -173,8 +173,8 @@ function ProfileCard({ session }: { session: Session }) {
           <form id="password-form" onSubmit={handlePasswordSubmit} className="flex flex-col gap-3">
             <PasswordField label="Mot de passe actuel" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
             <div className="grid gap-3 sm:grid-cols-2">
-              <PasswordField label="Nouveau mot de passe" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} minLength={6} required />
-              <PasswordField label="Confirmer le nouveau mot de passe" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} minLength={6} required />
+              <PasswordField label="Nouveau mot de passe" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} minLength={MIN_PASSWORD_LENGTH} required />
+              <PasswordField label="Confirmer le nouveau mot de passe" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} minLength={MIN_PASSWORD_LENGTH} required />
             </div>
             {passwordMismatch && <p className="text-sm text-alert">Les deux mots de passe ne correspondent pas.</p>}
             <p className="text-xs text-text-secondary">Le changement sera enregistré dans l’onglet Audit (jamais le mot de passe).</p>
@@ -275,7 +275,7 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
               <TextField label="Nom" maxLength={LIMITS.name} value={form.nom} onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))} required />
               <TextField label="Email" {...EMAIL_INPUT} value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required />
             </div>
-            <PasswordField label="Mot de passe initial" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} minLength={6} required />
+            <PasswordField label="Mot de passe initial" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} minLength={MIN_PASSWORD_LENGTH} required />
             <p className="text-xs text-text-secondary">
               Le membre aura accès aux mêmes machines, factures et alertes que vous. Vous seul pouvez ajouter ou retirer des membres. 4 membres maximum.
             </p>

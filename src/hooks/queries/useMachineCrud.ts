@@ -33,7 +33,7 @@ function invalidateMachineQueries(queryClient: ReturnType<typeof useQueryClient>
   queryClient.invalidateQueries({ queryKey: ['kpi-set'] })
   queryClient.invalidateQueries({ queryKey: ['alerts-action'] })
   queryClient.invalidateQueries({ queryKey: ['alerts-auto'] })
-  queryClient.invalidateQueries({ queryKey: ['alerts-history'] })
+  queryClient.invalidateQueries({ queryKey: ['alert-registry'] })
   queryClient.invalidateQueries({ queryKey: ['anomalies-open'] })
   // Un problème résolu retire aussi son conseil : sans cela le conseil restait affiché sous un
   // message vert « résolu » (retour du propriétaire, 2026-10-12).
