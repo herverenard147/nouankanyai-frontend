@@ -51,7 +51,7 @@ export function SourcesPage() {
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">Aucune source pour le moment. « Ajouter une source » vous guide selon votre installation.</p>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b-2 border-text-primary">

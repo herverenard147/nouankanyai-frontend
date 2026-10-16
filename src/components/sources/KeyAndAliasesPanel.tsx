@@ -87,7 +87,7 @@ export function AliasesPanel({ deviceId }: { deviceId: string }) {
         Le logiciel du client nomme ses appareils à sa façon (« COMP_01_kW »). Reliez chaque nom à l’appareil Nouankany. Une mesure sous un nom non relié est refusée, avec ce nom dans la raison.
       </p>
       <MetricState status={aliases.status}>
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-text-primary">

@@ -150,7 +150,7 @@ function HelpBlock({ block }: { block: Block }) {
       return <pre className="overflow-x-auto bg-dark-bg p-3 text-xs leading-relaxed text-dark-text">{block.text}</pre>
     case 'table':
       return (
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full border-collapse sm:min-w-[32rem] text-left text-sm">
             <thead>
               <tr className="border-b border-text-primary">

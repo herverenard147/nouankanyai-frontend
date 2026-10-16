@@ -46,7 +46,7 @@ export function MeterPointsPanel({ deviceId }: { deviceId: string }) {
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">Aucun compteur pour le moment.</p>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-[44rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-text-primary">

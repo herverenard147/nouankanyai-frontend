@@ -26,7 +26,7 @@ export function InterventionsPage() {
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">Aucun compte ouvert pour le moment. Le client l’ouvre depuis « Accès technicien » (Sources de mesures ou Paramètres).</p>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b-2 border-text-primary">

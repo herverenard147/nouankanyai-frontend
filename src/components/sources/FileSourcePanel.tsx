@@ -62,7 +62,7 @@ function ColumnsSection({ deviceId, saved, loaded }: { deviceId: string; saved: 
 
       {preview && (
         <>
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-text-primary">
@@ -215,7 +215,7 @@ function HistorySection({ deviceId }: { deviceId: string }) {
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">Aucun fichier reçu pour le moment.</p>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-text-primary">
