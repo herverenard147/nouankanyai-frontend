@@ -22,15 +22,15 @@ export function EquipmentSummary({ columns, max = 5 }: { columns: PmeOverviewBlo
       </div>
       <MetricState status={query.status} isEmpty={query.data?.rows.length === 0}>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[34rem] border-collapse text-[0.8125rem]">
+          <table className="w-full border-collapse sm:min-w-[34rem] text-[0.8125rem]">
             <thead>
               <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">
                 <th scope="col" className="py-1.5 pr-3">Équipement</th>
-                <th scope="col" className="py-1.5 pr-3">Catégorie</th>
-                {full && <th scope="col" className="py-1.5 pr-3">Marque</th>}
-                {full && <th scope="col" className="py-1.5 pr-3">Modèle</th>}
+                <th scope="col" className="hidden py-1.5 pr-3 sm:table-cell">Catégorie</th>
+                {full && <th scope="col" className="hidden py-1.5 pr-3 sm:table-cell">Marque</th>}
+                {full && <th scope="col" className="hidden py-1.5 pr-3 sm:table-cell">Modèle</th>}
                 <th scope="col" className="py-1.5 pr-3">Site</th>
-                {full && <th scope="col" className="py-1.5 pr-3">Priorité</th>}
+                {full && <th scope="col" className="hidden py-1.5 pr-3 sm:table-cell">Priorité</th>}
                 <th scope="col" className="py-1.5 pr-3">Statut</th>
                 <th scope="col" className="py-1.5">Provenance</th>
               </tr>
@@ -39,11 +39,11 @@ export function EquipmentSummary({ columns, max = 5 }: { columns: PmeOverviewBlo
               {rows.map((row) => (
                 <tr key={row.id} className="border-t border-border">
                   <td className="py-2 pr-3 font-semibold text-text-primary">{row.nom}</td>
-                  <td className="py-2 pr-3">{row.categorie}</td>
-                  {full && <td className="py-2 pr-3">{row.marque}</td>}
-                  {full && <td className="py-2 pr-3">{row.modele}</td>}
+                  <td className="hidden py-2 pr-3 sm:table-cell">{row.categorie}</td>
+                  {full && <td className="hidden py-2 pr-3 sm:table-cell">{row.marque}</td>}
+                  {full && <td className="hidden py-2 pr-3 sm:table-cell">{row.modele}</td>}
                   <td className="py-2 pr-3">{row.site}</td>
-                  {full && <td className="py-2 pr-3">{row.priorite}</td>}
+                  {full && <td className="hidden py-2 pr-3 sm:table-cell">{row.priorite}</td>}
                   <td className={`py-2 pr-3 ${isAnomaly(row) ? 'font-semibold text-alert' : ''}`}>{row.statut}</td>
                   <td className="py-2">
                     <ProvenanceBadge value={row.provenance} />

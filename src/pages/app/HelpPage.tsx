@@ -151,7 +151,7 @@ function HelpBlock({ block }: { block: Block }) {
     case 'table':
       return (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[32rem] border-collapse text-left text-sm">
+          <table className="w-full border-collapse sm:min-w-[32rem] text-left text-sm">
             <thead>
               <tr className="border-b border-text-primary">
                 {block.head.map((h) => (
