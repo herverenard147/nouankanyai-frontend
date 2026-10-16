@@ -77,7 +77,7 @@ const TIERS: Tier[] = [
 export function PricingSection() {
   return (
     <section id="formules" className="bg-dark-bg py-20 text-white lg:py-28">
-      <div className="mx-auto max-w-[1200px] px-6">
+      <div className="mx-auto max-w-[75rem] px-6">
         <h2 className="max-w-[20ch] text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em]">
           Un modèle qui se rentabilise avant de vous coûter
         </h2>

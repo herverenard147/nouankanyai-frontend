@@ -12,6 +12,7 @@ const INTRO: Record<Profile, string> = {
   pme: 'Les étapes qui comptent pour suivre votre activité, repérer les dépenses évitables et agir.',
   industrie: 'Les étapes qui comptent pour suivre vos machines, mesurer vos économies et piloter vos actions.',
   admin: 'Les outils à ouvrir en premier pour faire tourner la plateforme.',
+  technicien: 'Ce qu’il faut pour intervenir chez un client.',
 }
 
 /** Premiers pas : ce que fait chaque action importante, pour une personne qui vient de créer son compte. */
@@ -71,7 +72,7 @@ function Steps({ session }: { session: Session }) {
         })}
       </ol>
 
-      {session.profile !== 'admin' && (
+      {session.profile !== 'admin' && session.profile !== 'technicien' && (
         <p className="text-sm text-text-secondary">
           Une question ? L&rsquo;assistant, en bas à droite de chaque page, répond en français à partir de vos données.
         </p>

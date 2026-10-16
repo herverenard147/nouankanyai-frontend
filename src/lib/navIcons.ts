@@ -1,5 +1,6 @@
 import {
   Bell,
+  BookOpen,
   Boxes,
   ChartLine,
   ClipboardList,
@@ -22,6 +23,8 @@ import {
   TrendingUp,
   Users,
   Wallet,
+  Wrench,
+  Gauge,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -51,4 +54,7 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   '/app/admin/leads': ClipboardList,
   '/app/admin/messages': Inbox,
   '/app/admin/facturation': Wallet,
+  '/app/sources': Gauge,
+  '/app/aide': BookOpen,
+  '/app/interventions': Wrench,
 }

@@ -48,7 +48,7 @@ function RecommendationRow({ reco, showImpact, canApply }: { reco: Advice; showI
   return (
     <div className="flex flex-wrap items-center gap-4 border-b border-border py-4">
       <span className="text-lg font-semibold tabular-nums text-text-tertiary">{reco.rank}</span>
-      <div className="min-w-[200px] flex-1">
+      <div className="min-w-[16rem] flex-1">
         <p className="font-semibold text-text-primary">{reco.title}</p>
         <p className="text-sm text-text-secondary">{reco.detail}</p>
         {applyMutation.isError && (

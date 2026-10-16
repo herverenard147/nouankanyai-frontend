@@ -7,21 +7,23 @@ import {
   MathUtils,
   Mesh,
   MeshStandardMaterial,
+  Object3D,
   PMREMGenerator,
   PerspectiveCamera,
+  Quaternion,
   SRGBColorSpace,
   Scene,
   Vector3,
   WebGLRenderer,
 } from 'three'
-import type { Material, Object3D } from 'three'
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
+import type { Material } from 'three'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 import { Boitier2D } from '@/components/boitier/Boitier2D'
 import { boitierState } from '@/components/boitier/boitierStates'
 import type { BoitierState } from '@/components/boitier/boitierStates'
+import { attachDragRotation } from '@/components/boitier/dragRotation'
 import { useReducedMotion } from '@/components/boitier/useReducedMotion'
 
 interface Boitier3DProps {
@@ -33,6 +35,9 @@ interface Boitier3DProps {
 
 /** Modèle du prototype (boitier-3d/boitier_pi.py, rendu Blender exporté en glTF) : teinte anthracite, anneau lumineux. */
 const MODEL_URL = '/models/boitier-nouankany.glb'
+/** Même vue de départ que la page du boîtier : un peu au-dessus, de trois quarts. */
+const PITCH_START = (20 * Math.PI) / 180
+const YAW_START = (-35 * Math.PI) / 180
 
 /** Les pièces de l'anneau : leurs matériaux portent « __lens » (les 12 diodes et le diffuseur du capot). */
 function ringMaterials(root: Object3D): MeshStandardMaterial[] {
@@ -49,8 +54,8 @@ function ringMaterials(root: Object3D): MeshStandardMaterial[] {
 }
 
 /**
- * Vue 3D du boîtier (modèle du prototype, 15 octobre 2026) : la personne le fait tourner librement dans tous les sens
- * (glisser), et zoome (molette ou pincement). L'anneau prend la couleur de `state` ; le blanc d'écoute pulse.
+ * Vue 3D du boîtier (modèle du prototype, 15 octobre 2026) : la personne le fait tourner dans tous les sens (glisser),
+ * avec le même geste et la même vitesse que sur la page du boîtier (`dragRotation`), et zoome à la molette. L'anneau prend la couleur de `state` ; le blanc d'écoute pulse.
  * Chargé à la demande (`BoitierViewer`) : la bibliothèque 3D et le modèle n'alourdissent que les pages qui le montrent.
  */
 export default function Boitier3D({ state, onUnavailable, className }: Boitier3DProps) {
@@ -104,21 +109,40 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
     scene.add(rim)
 
     const camera = new PerspectiveCamera(30, 1, 0.005, 20)
-    const controls = new TrackballControls(camera, canvas)
-    controls.rotateSpeed = 3.2
-    controls.zoomSpeed = 1.1
-    controls.noPan = true
-    controls.dynamicDampingFactor = 0.12
     let userTouched = false
-    const onStart = () => {
-      userTouched = true
-      canvas.style.cursor = 'grabbing'
+    let pitch = PITCH_START
+    let yaw = YAW_START
+    let distance = 0.4
+    let minDistance = 0
+    let maxDistance = Infinity
+    const q = new Quaternion()
+    const qp = new Quaternion()
+    const qy = new Quaternion()
+    const X = new Vector3(1, 0, 0)
+    const Y = new Vector3(0, 1, 0)
+    const pivot = new Object3D()
+    scene.add(pivot)
+    const composeQ = () => {
+      qp.setFromAxisAngle(X, pitch)
+      qy.setFromAxisAngle(Y, yaw)
+      q.multiplyQuaternions(qp, qy)
+      pivot.quaternion.copy(q)
     }
-    const onEnd = () => {
-      canvas.style.cursor = 'grab'
-    }
-    controls.addEventListener('start', onStart)
-    controls.addEventListener('end', onEnd)
+    composeQ()
+    const detachDrag = attachDragRotation(canvas, host, {
+      rotate: (dx, dy) => {
+        yaw += Math.cos(pitch) >= 0 ? dx : -dx
+        pitch += dy
+        composeQ()
+      },
+      zoom: (factor) => {
+        distance = MathUtils.clamp(distance * factor, minDistance, maxDistance)
+      },
+      reduced: () => reducedRef.current,
+      onStart: () => {
+        userTouched = true
+      },
+    })
 
     let ring: MeshStandardMaterial[] = []
     let model: Object3D | null = null
@@ -133,18 +157,14 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
         const center = bounds.getCenter(new Vector3())
         const size = bounds.getSize(new Vector3()).length()
         model.position.sub(center)
-        scene.add(model)
+        pivot.add(model)
         ring = ringMaterials(model)
-        // Vue de départ : un peu au-dessus, de trois quarts, pour voir l'anneau et la façade (ports USB).
-        const distance = size * 1.9
-        camera.position.set(distance * 0.55, distance * 0.45, distance * 0.7)
+        distance = size * 1.9
+        minDistance = size * 0.8
+        maxDistance = size * 4
         camera.near = size / 100
         camera.far = size * 40
         camera.updateProjectionMatrix()
-        controls.target.set(0, 0, 0)
-        controls.minDistance = size * 0.8
-        controls.maxDistance = size * 4
-        controls.update()
         setLoaded(true)
       },
       undefined,
@@ -159,7 +179,6 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
       renderer.setSize(clientWidth, clientHeight, false)
       camera.aspect = clientWidth / clientHeight
       camera.updateProjectionMatrix()
-      controls.handleResize()
     }
     const observer = new ResizeObserver(resize)
     observer.observe(host)
@@ -186,8 +205,12 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
       const still = reducedRef.current
 
       // Lente rotation tant que la personne n'a pas pris la main (jamais si elle préfère moins de mouvement).
-      if (model && !userTouched && !still) model.rotation.y += dt * 0.35
-      controls.update()
+      if (model && !userTouched && !still) {
+        yaw += dt * 0.35
+        composeQ()
+      }
+      camera.position.set(0, 0, distance)
+      camera.lookAt(0, 0, 0)
 
       // L'anneau glisse vers la couleur de l'état ; seule l'écoute pulse (environ 1 Hz, sans clignotement brusque).
       const info = boitierState(stateRef.current)
@@ -210,9 +233,7 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
       cancelAnimationFrame(frame)
       observer.disconnect()
       visibility.disconnect()
-      controls.removeEventListener('start', onStart)
-      controls.removeEventListener('end', onEnd)
-      controls.dispose()
+      detachDrag()
       scene.traverse((node) => {
         const mesh = node as Mesh
         if (!mesh.isMesh) return
@@ -233,7 +254,7 @@ export default function Boitier3D({ state, onUnavailable, className }: Boitier3D
       <div
         ref={hostRef}
         role="img"
-        aria-label="Boîtier Nouankany en 3D : un cylindre anthracite, l'anneau lumineux sur le dessus. Glissez pour le faire tourner dans tous les sens, molette ou pincement pour zoomer."
+        aria-label="Boîtier Nouankany en 3D : un cylindre anthracite, l'anneau lumineux sur le dessus. Glissez pour le faire tourner dans tous les sens, molette pour zoomer."
         className="absolute inset-0"
       />
       {!loaded && (

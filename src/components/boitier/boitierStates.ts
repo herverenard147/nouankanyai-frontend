@@ -18,7 +18,7 @@ export interface BoitierStateInfo {
 
 export const WAKE_PHRASE = 'Hey Nouankany'
 
-const ASK_STATE = `${WAKE_PHRASE}, donne-moi l’état de mes appareils.`
+const ASK_STATE = `${WAKE_PHRASE}, tout va bien ?`
 
 /**
  * Les quatre lumières du boîtier. Le blanc pulsé signale l'écoute : le vert est réservé à « tout va bien »,
@@ -30,19 +30,19 @@ export const BOITIER_STATES: BoitierStateInfo[] = [
     id: 'ecoute',
     label: 'À l’écoute',
     led: '#ffffff',
-    meaning: `Lumière blanche pulsée : le boîtier vous écoute après « ${WAKE_PHRASE} ».`,
+    meaning: 'Lumière blanche pulsée : il vous écoute.',
     dialog: [{ who: 'Vous', text: `${WAKE_PHRASE}…` }],
   },
   {
     id: 'vert',
     label: 'Tout va bien',
     led: '#35c773',
-    meaning: 'Lumière verte : tous les appareils suivis sont dans leurs seuils.',
+    meaning: 'Lumière verte : vos appareils sont dans leurs seuils.',
     dialog: [
       { who: 'Vous', text: ASK_STATE },
       {
         who: 'Boîtier',
-        text: 'Tout va bien. Le climatiseur du salon, le réfrigérateur et le téléviseur sont dans leurs seuils. Rien à faire pour l’instant.',
+        text: 'Oui, tout va bien. Rien à faire.',
       },
     ],
   },
@@ -50,33 +50,28 @@ export const BOITIER_STATES: BoitierStateInfo[] = [
     id: 'orange',
     label: 'À surveiller',
     led: '#f2a20c',
-    meaning: 'Lumière orange : un appareil s’approche de son seuil d’alerte.',
+    meaning: 'Lumière orange : un appareil est à surveiller.',
     dialog: [
       { who: 'Vous', text: ASK_STATE },
       {
         who: 'Boîtier',
-        text: 'Le climatiseur du salon se rapproche de son seuil de température, je le surveille. Le réfrigérateur et le téléviseur sont normaux.',
+        text: 'Le climatiseur chauffe un peu. Je le surveille, je vous préviens si ça empire.',
       },
-      { who: 'Vous', text: 'Que dois-je faire ?' },
-      { who: 'Boîtier', text: 'Pour l’instant, rien d’obligatoire. Je vous préviens s’il dépasse son seuil.' },
     ],
   },
   {
     id: 'rouge',
     label: 'Action requise',
     led: '#ff4d5e',
-    meaning: 'Lumière rouge : un appareil dépasse son seuil, une action est nécessaire.',
+    meaning: 'Lumière rouge : un appareil a besoin de vous.',
     dialog: [
       { who: 'Vous', text: ASK_STATE },
       {
         who: 'Boîtier',
-        text: 'Le climatiseur du salon dépasse son seuil de température. Le réfrigérateur et le téléviseur sont normaux. Je vous conseille d’éteindre le climatiseur. Voulez-vous que je le fasse ?',
+        text: 'Le climatiseur force trop. Je l’éteins ?',
       },
-      { who: 'Vous', text: 'Oui, éteins-le.' },
-      {
-        who: 'Boîtier',
-        text: 'C’est fait, le climatiseur est éteint. Dites-moi quand vous voulez que je relance une vérification.',
-      },
+      { who: 'Vous', text: 'Oui.' },
+      { who: 'Boîtier', text: 'C’est fait.' },
     ],
   },
 ]

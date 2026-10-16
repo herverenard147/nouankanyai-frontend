@@ -82,5 +82,7 @@ export function kpiTargets(profile: Profile): Record<string, string> {
       return { 'puissance-totale': '/app/consommation', 'machines-actives': '/app/alertes', 'economies-mois': '/app/facturation', 'anomalies-actives': '/app/alertes' }
     case 'admin':
       return { 'base-donnees': '/app/admin/sante', uptime: '/app/admin/sante', 'latence-moyenne': '/app/admin/sante', 'machines-plateforme': '/app/admin/sante' }
+    case 'technicien':
+      return {}
   }
 }

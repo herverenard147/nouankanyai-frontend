@@ -16,7 +16,7 @@ export function NavBar() {
 
   return (
     <header className="sticky top-0 z-20 bg-dark-bg/95 text-white backdrop-blur-sm">
-      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-[75rem] items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-center gap-2">
           <img src="/logo.png" alt="Nouankany" className="h-[34px] w-[34px] object-contain" />
           <span className="text-[1.05rem] font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>

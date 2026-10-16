@@ -8,8 +8,8 @@ export function Hero() {
         alt=""
         className="absolute inset-0 -z-10 h-full w-full object-cover opacity-40"
       />
-      <div className="mx-auto flex min-h-[560px] max-w-[1200px] flex-col justify-end px-6 pb-16 pt-28 lg:min-h-[680px] lg:pb-20">
-        <div className="max-w-[880px]">
+      <div className="mx-auto flex min-h-[560px] max-w-[75rem] flex-col justify-end px-6 pb-16 pt-28 lg:min-h-[680px] lg:pb-20">
+        <div className="max-w-[55rem]">
           <h1 className="text-[clamp(2.5rem,7vw,5.25rem)] font-bold leading-[1.02] tracking-[-0.025em]">
             Pilotez la consommation électrique de votre site.
           </h1>

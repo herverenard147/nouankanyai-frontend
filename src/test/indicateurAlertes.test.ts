@@ -15,7 +15,7 @@ import { getCachedMachines, getCachedRecommend, rawBilling } from '@/api/rawBack
 function machine(overrides: Partial<BackendMachine> = {}): BackendMachine {
   return {
     machine_id: 'M1', nom: 'Compresseur', site_id: null, site_nom: 'Non associé', power_kw: 4,
-    temperature_c: 30, vibration_hz: 1, pressure_bar: 1, has_reading: true,
+    temperature_c: 30, vibration_mm_s: 1, pressure_bar: 1, has_reading: true,
     status: 'actif', priority: 'moyenne', categorie: null, marque: null, modele: null, numero_serie: null,
     ...overrides,
   }

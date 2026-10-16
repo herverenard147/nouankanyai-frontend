@@ -13,7 +13,7 @@ export const LIMITS = {
   amountFcfa: 100_000_000_000,
   powerKw: 100_000,
   temperatureMaxC: 1000,
-  vibrationMaxHz: 10_000,
+  vibrationMaxMmS: 100,
   overconsumptionRatio: 100,
   billMonthsAhead: 2,
 } as const

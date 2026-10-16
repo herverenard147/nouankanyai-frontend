@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom'
 
+import { errorHelp } from '@/data/aide/erreurs'
+import { useSessionStore } from '@/store/sessionStore'
+
 interface ApiErrorMessageProps {
   message: string
   className?: string
@@ -24,8 +27,23 @@ function labelFor(path: string): string {
  * audit"), jamais l'URL brute.
  */
 export function ApiErrorMessage({ message, className }: ApiErrorMessageProps) {
+  const profile = useSessionStore((s) => s.session?.profile)
   const match = message.match(/^(.*:\s)(\/\S+)$/)
-  if (!match) return <p className={className}>{message}</p>
+  if (!match) {
+    // Message expliqué dans la documentation de ce profil : « Que faire ? » ouvre sa fiche (page Aide).
+    const help = profile ? errorHelp(message, profile) : undefined
+    return (
+      <p className={className}>
+        {message}
+        {help && (
+          <>
+            {' '}
+            <HelpLink id={help.id} />
+          </>
+        )}
+      </p>
+    )
+  }
 
   const [, prefix, path] = match
   return (
@@ -35,5 +53,13 @@ export function ApiErrorMessage({ message, className }: ApiErrorMessageProps) {
         {labelFor(path)}
       </Link>
     </p>
+  )
+}
+
+export function HelpLink({ id }: { id: string }) {
+  return (
+    <Link to={`/app/aide#erreur-${id}`} className="whitespace-nowrap font-medium text-accent-cta underline underline-offset-2 hover:no-underline">
+      Que faire ?
+    </Link>
   )
 }

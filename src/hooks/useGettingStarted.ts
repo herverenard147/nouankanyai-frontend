@@ -17,7 +17,7 @@ import type { Session } from '@/types/domain'
  */
 export function useGettingStarted(session: Session): StartProgress & { isLoading: boolean } {
   const { profile } = session
-  const isClient = profile !== 'admin'
+  const isClient = profile !== 'admin' && profile !== 'technicien'
   const hasSites = profile === 'pme' || profile === 'industrie'
   const me = useAuthMe()
   const machines = useQuery({ queryKey: ['machines-raw'], queryFn: getCachedMachines, enabled: isClient })

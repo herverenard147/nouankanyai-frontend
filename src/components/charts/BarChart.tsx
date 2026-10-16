@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ChartTooltip } from '@/components/charts/ChartTooltip'
 import { onEnterOrSpace } from '@/lib/a11y'
@@ -92,6 +92,19 @@ export function BarChart({
   const config = SIZE_CONFIG[size]
   const activeKey = pinned ?? hovered
   const gap = gapPx ?? config.defaultGapPx
+  // Sur un écran étroit, les étiquettes de l'axe se chevaucheraient (24 heures sur un téléphone) : on n'en garde
+  // qu'une sur n, assez pour laisser ~40 px à chacune. Les barres et leurs infobulles restent toutes là.
+  const plotRef = useRef<HTMLDivElement>(null)
+  const [plotWidth, setPlotWidth] = useState(0)
+  useEffect(() => {
+    const el = plotRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(([entry]) => setPlotWidth(entry?.contentRect.width ?? 0))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+  const fitEvery = plotWidth > 0 ? Math.ceil(bars.length / Math.max(1, Math.floor(plotWidth / 40))) : 1
+  const labelEvery = Math.max(xLabelEvery, fitEvery)
 
   return (
     <div className="flex flex-col gap-2">
@@ -107,6 +120,7 @@ export function BarChart({
           ))}
         </div>
         <div
+          ref={plotRef}
           className="flex flex-1 items-end justify-evenly border-b border-l border-border px-3"
           style={{ height: config.plotHeightPx, paddingBottom: config.xLabelBandPx, gap }}
         >
@@ -133,7 +147,7 @@ export function BarChart({
                     backgroundColor: isActive ? 'var(--color-accent-cta)' : 'var(--color-accent)',
                   }}
                 />
-                {index % xLabelEvery === 0 && (
+                {index % labelEvery === 0 && (
                   <span
                     className="absolute left-1/2 whitespace-nowrap font-mono text-mono-axis text-text-tertiary"
                     style={{ bottom: -config.xLabelBandPx + 4, transform: 'translateX(-50%)' }}

@@ -6,18 +6,18 @@
  */
 import { NARROW_NBSP } from '@/lib/formatters'
 
-const NUMBER_WITH_UNIT = /(\d+)(?:\.(\d+))?\s?(°C|Hz|bar|kW|kWh|FCFA)/g
+const NUMBER_WITH_UNIT = /(\d+)(?:\.(\d+))?\s?(°C|mm\/s|Hz|bar|kW|kWh|FCFA)/g
 // Score du détecteur d'anomalie : "score: -0.1264" (nombre signé, sans unité).
 const SCORE = /(score\s?:\s?)(-?)(\d+)\.(\d+)/gi
 
-// Noms de mesure du backend (« vibration_hz ») : jamais montrés tels quels.
+// Noms de mesure du backend (« vibration_mm_s ») : jamais montrés tels quels.
 const MEASURE_NAMES: Record<string, string> = {
   temperature_c: 'température',
-  vibration_hz: 'vibration',
+  vibration_mm_s: 'vibration',
   pressure_bar: 'pression',
   power_kw: 'puissance',
 }
-const MEASURE_NAME = /\b(temperature_c|vibration_hz|pressure_bar|power_kw)\b/g
+const MEASURE_NAME = /\b(temperature_c|vibration_mm_s|pressure_bar|power_kw)\b/g
 // « depuis 0 relevés » ne dit rien : la précision n'est gardée qu'à partir d'un relevé.
 const SINCE_ZERO = /,? depuis 0 relevés?/g
 

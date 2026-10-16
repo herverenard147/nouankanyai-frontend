@@ -15,6 +15,7 @@ export const ACCOUNT_TYPE_LABELS: Record<Profile, string> = {
   // n'importe quel type_compte hérité de son inscription, jamais affiché tel quel (retour du propriétaire,
   // 2026-10-01 : "Admin Nouankany · Ménage" laissait croire que le volet admin ne montrait que le Ménage).
   admin: 'Administrateur',
+  technicien: 'Technicien Nouankany',
 }
 
 const TYPE_COMPTE_TO_PROFILE: Record<string, Profile> = {
@@ -29,6 +30,12 @@ const TYPE_COMPTE_TO_PROFILE: Record<string, Profile> = {
 
 export function deriveProfile(typeCompte: string, platformRole: BackendPlatformRole): Profile {
   if (platformRole === 'admin' || platformRole === 'superadmin') return 'admin'
+  if (platformRole === 'technicien') return 'technicien'
   const normalized = typeCompte.trim().toLowerCase()
   return TYPE_COMPTE_TO_PROFILE[normalized] ?? 'menage'
+}
+
+/** Compte client (ménage, PME, industrie) : ni administrateur, ni technicien Nouankany. */
+export function isClientProfile(profile: Profile): profile is 'menage' | 'pme' | 'industrie' {
+  return profile === 'menage' || profile === 'pme' || profile === 'industrie'
 }

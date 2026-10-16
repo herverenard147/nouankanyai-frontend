@@ -106,12 +106,12 @@ export function HowItWorksPage() {
       <NavBar />
       <main id="main-content">
         <section className="border-b border-border py-16">
-          <div className="mx-auto max-w-[760px] px-6">
+          <div className="mx-auto max-w-[70rem] px-6">
             <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
               Comment ça marche
             </p>
             <h1 className="mt-2 text-h1 font-bold text-text-primary">Deux parcours, un seul produit</h1>
-            <p className="mt-4 text-lede text-text-secondary">
+            <p className="mt-4 max-w-[47.5rem] text-lede text-text-secondary">
               PME et Industrie sont en phase pilote active dès aujourd&rsquo;hui : audit, installation ciblée, puis
               6 à 9 mois de mesure avant généralisation. La formule Ménage arrive dans un second temps, une fois ce
               pilote industriel consolidé.
@@ -120,7 +120,7 @@ export function HowItWorksPage() {
         </section>
 
         <section className="border-b border-border py-16">
-          <div className="mx-auto max-w-[1120px] px-6">
+          <div className="mx-auto max-w-[70rem] px-6">
             <div className="mb-10 flex flex-wrap items-center gap-3">
               <span className="w-fit rounded-pill bg-accent-cta px-3 py-1 text-xs font-semibold text-white">
                 Segment prioritaire
@@ -160,7 +160,7 @@ export function HowItWorksPage() {
               </Link>
               <Link
                 to="/demander-un-audit?type=pme"
-                className="focus-ring inline-flex min-h-11 items-center rounded-control border border-border px-5 py-3.5 text-sm font-semibold text-text-primary hover:bg-bg-elevated"
+                className="focus-ring inline-flex min-h-11 items-center rounded-control bg-accent-cta px-5 py-3.5 text-sm font-semibold text-white hover:bg-accent-cta-hover"
               >
                 Demander un audit PME
               </Link>
@@ -169,22 +169,21 @@ export function HowItWorksPage() {
         </section>
 
         <section className="py-16">
-          <div className="mx-auto max-w-[1120px] px-6">
+          <div className="mx-auto max-w-[70rem] px-6">
             <div className="mb-6 flex flex-wrap items-center gap-3">
               <span className="w-fit rounded-pill bg-bg-elevated px-3 py-1 text-xs font-semibold text-text-secondary">
                 Bientôt disponible
               </span>
               <h2 className="text-h2-section font-bold text-text-primary">Pour les Ménages</h2>
             </div>
-            <div className="max-w-[640px] rounded-card border border-border bg-card p-6">
+            <div className="max-w-[40rem] rounded-card border border-border bg-card p-6">
               <p className="text-small-body text-text-secondary">
                 Vous prenez en photo votre facture CIE. Nouankany prédit votre prochaine consommation et vous dit
                 précisément quoi éteindre ou décaler pour payer moins. Sans capteur pour commencer : ce parcours
                 repose sur votre facture et votre déclaration d&rsquo;équipements, pas sur une installation IoT.
               </p>
               <p className="mt-3 text-small-body text-text-secondary">
-                Ce segment ouvre après le pilote PME/Industrie, une fois la plateforme consolidée sur des cas
-                industriels réels.
+                Ce parcours n&rsquo;est pas encore disponible.
               </p>
               <WaitlistForm />
             </div>

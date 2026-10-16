@@ -14,20 +14,18 @@ export function ConstatSection() {
 
   return (
     <section id="probleme" className="border-y border-border bg-bg-elevated py-20 lg:py-28">
-      <div className="mx-auto max-w-[1200px] px-6">
+      <div className="mx-auto max-w-[75rem] px-6">
         <div className="grid items-end gap-8 lg:grid-cols-[6fr_5fr] lg:gap-16">
           <h2 className="text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
-            Un poste de coût qui pèse plus lourd, rarement piloté avec la même rigueur
+            L&rsquo;électricité coûte de plus en plus cher. Vous la pilotez&nbsp;?
           </h2>
           <p className="text-text-secondary">
-            Ménage, commerce ou site industriel : l&rsquo;électricité prend une part croissante des charges, le plus
-            souvent sans vision claire de qui consomme quoi, ni de ce qui peut réellement être évité. Nouankany donne
-            à chaque acteur une lecture structurée de sa consommation, pour décider avec des chiffres plutôt qu&rsquo;à
-            l&rsquo;aveugle sur la seule facture mensuelle.
+            Qui consomme quoi, et qu&rsquo;est-ce qui peut être évité&nbsp;? Nouankany vous le montre, chiffres à
+            l&rsquo;appui, au lieu d&rsquo;une simple facture en fin de mois.
           </p>
         </div>
 
-        <div className="mt-14 grid items-start gap-10 lg:mt-16 lg:grid-cols-[5fr_6fr] lg:gap-[72px]">
+        <div className="mt-14 grid items-start gap-10 md:grid-cols-[5fr_6fr] lg:mt-16 lg:gap-[4.5rem]">
           <div className="flex flex-col gap-10">
             {[tarif, demande].map((chart) => (
               <div key={chart.id} className="border-t-2 border-text-primary pt-5">

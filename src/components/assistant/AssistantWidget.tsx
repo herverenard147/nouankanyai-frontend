@@ -21,7 +21,7 @@ export function AssistantWidget({ profile }: AssistantWidgetProps) {
   const { pathname } = useLocation()
   const billing = useBilling()
 
-  if (profile === 'admin' || pathname === ASSISTANT_PAGE) return null
+  if (profile === 'admin' || profile === 'technicien' || pathname === ASSISTANT_PAGE) return null
   // Une action que la formule ne permet pas n'est pas montrée (retour du propriétaire, 2026-10-11).
   if (billing.data?.access && !billing.data.access.assistant_ia) return null
 

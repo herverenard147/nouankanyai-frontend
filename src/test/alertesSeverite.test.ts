@@ -15,7 +15,7 @@ describe('couleur d’une alerte selon sa sévérité', () => {
 
 describe('textes venus du serveur', () => {
   it('ne montre ni nom technique de mesure ni « depuis 0 relevés »', () => {
-    const text = frenchNumbersWithUnits('Mesure principale : vibration_hz (tendance hausse, depuis 0 relevés).')
+    const text = frenchNumbersWithUnits('Mesure principale : vibration_mm_s (tendance hausse, depuis 0 relevés).')
     expect(text).toBe('Mesure principale : vibration (tendance hausse).')
   })
 

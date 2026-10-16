@@ -69,11 +69,15 @@ describe('annonce et page du boîtier', () => {
         <BoitierPage />
       </MemoryRouter>,
     )
-    expect(screen.getByText(/Lumière rouge/)).toBeInTheDocument()
+    // Les quatre états restent dans la page (hauteur fixe) : seul celui choisi est visible.
+    const shown = (text: RegExp) => screen.getByText(text).parentElement
+    expect(shown(/Lumière rouge/)).not.toHaveClass('invisible')
+    expect(shown(/Lumière orange/)).toHaveClass('invisible')
     fireEvent.click(screen.getByRole('button', { name: 'À surveiller' }))
-    expect(screen.getByText(/Lumière orange/)).toBeInTheDocument()
+    expect(shown(/Lumière orange/)).not.toHaveClass('invisible')
+    expect(shown(/Lumière rouge/)).toHaveClass('invisible')
     fireEvent.click(screen.getByRole('button', { name: 'À l’écoute' }))
-    expect(screen.getByText(/Lumière blanche pulsée/)).toBeInTheDocument()
+    expect(shown(/Lumière blanche pulsée/)).not.toHaveClass('invisible')
   })
 
   it('affiche le schéma 2D quand le navigateur n’a pas de WebGL', () => {

@@ -1,0 +1,292 @@
+[
+  {
+    "id": "nk-onglet",
+    "type": "tab",
+    "label": "Nouankany : envoi des compteurs",
+    "disabled": false,
+    "info": "Modèle de repli Nouankany. Remplir le nœud « Réglages », régler la liaison Modbus, déployer. Documentation : Nouankany > Documentation > « Repli : modèle Node-RED »."
+  },
+  {
+    "id": "nk-note",
+    "type": "comment",
+    "z": "nk-onglet",
+    "name": "1. Remplir « Réglages »  2. Régler la liaison Modbus (RS485 ou réseau)  3. Déployer",
+    "info": "",
+    "x": 330,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "nk-demarrage",
+    "type": "inject",
+    "z": "nk-onglet",
+    "name": "Au démarrage",
+    "props": [],
+    "repeat": "",
+    "crontab": "",
+    "once": true,
+    "onceDelay": 0.5,
+    "topic": "",
+    "x": 140,
+    "y": 100,
+    "wires": [
+      [
+        "nk-reglages"
+      ]
+    ]
+  },
+  {
+    "id": "nk-reglages",
+    "type": "function",
+    "z": "nk-onglet",
+    "name": "Réglages",
+    "func": "// === À REMPLIR SUR PLACE (voir la documentation du technicien, « Repli : modèle Node-RED ») ===\nconst reglages = {\n    // Adresse de la plateforme Nouankany, sans « / » final\n    plateforme: 'https://ADRESSE-DE-LA-PLATEFORME',\n    // Source « Logiciel du client » créée sur la plateforme : identifiant et clé (affichés une seule fois)\n    identifiant: 'IDENTIFIANT-DE-LA-SOURCE',\n    cle: 'CLE-DE-LA-SOURCE',\n    // Un bloc par compteur. Appareil : machine_code (code Nouankany) OU external_ref (nom relié sur la plateforme).\n    // function : 4 (registres d'entrée, adresses 3xxxx) ou 3 (registres de maintien, 4xxxx).\n    // data_type : float32, float32_swapped, int32, uint32, int16, uint16.\n    // address : comptée depuis 0 (notice 30053 -> 52). scale : ramène à notre unité (W -> kW : 0.001).\n    compteurs: [\n        {\n            external_ref: 'COMPRESSEUR_1',\n            unitid: 1,\n            function: 4,\n            data_type: 'float32',\n            registers: {\n                power_kw: { address: 52, scale: 0.001 },\n                energy_kwh: { address: 72, scale: 1 },\n                voltage_v: { address: 0, scale: 1 },\n                current_a: { address: 6, scale: 1 },\n                power_factor: { address: 62, scale: 1, abs: true }\n            }\n        }\n    ]\n};\nflow.set('reglages', reglages);\nflow.set('lectures', {});\nnode.status({ fill: 'green', shape: 'dot', text: reglages.compteurs.length + ' compteur(s) réglé(s)' });\nreturn null;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 330,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "nk-minute",
+    "type": "inject",
+    "z": "nk-onglet",
+    "name": "Chaque minute",
+    "props": [],
+    "repeat": "60",
+    "crontab": "",
+    "once": true,
+    "onceDelay": 5,
+    "topic": "",
+    "x": 140,
+    "y": 180,
+    "wires": [
+      [
+        "nk-lecture"
+      ]
+    ]
+  },
+  {
+    "id": "nk-lecture",
+    "type": "function",
+    "z": "nk-onglet",
+    "name": "Demandes de lecture",
+    "func": "const reglages = flow.get('reglages');\nif (!reglages) { node.status({ fill: 'red', shape: 'ring', text: 'réglages absents' }); return null; }\nconst tick = new Date().toISOString();\nconst deuxRegistres = ['float32', 'float32_swapped', 'int32', 'uint32'];\nreglages.compteurs.forEach(function (compteur, i) {\n    Object.keys(compteur.registers).forEach(function (grandeur) {\n        const reg = compteur.registers[grandeur];\n        node.send({\n            topic: i + '|' + grandeur + '|' + tick,\n            payload: {\n                fc: compteur.function,\n                unitid: compteur.unitid,\n                address: reg.address,\n                quantity: deuxRegistres.indexOf(compteur.data_type) >= 0 ? 2 : 1\n            }\n        });\n    });\n});\nreturn null;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 340,
+    "y": 180,
+    "wires": [
+      [
+        "nk-modbus"
+      ]
+    ]
+  },
+  {
+    "id": "nk-modbus",
+    "type": "modbus-flex-getter",
+    "z": "nk-onglet",
+    "name": "Lire le compteur",
+    "showStatusActivities": true,
+    "showErrors": true,
+    "showWarnings": true,
+    "logIOActivities": false,
+    "server": "nk-liaison",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "keepMsgProperties": true,
+    "delayOnStart": false,
+    "startDelayTime": "",
+    "enableDeformedMessages": false,
+    "x": 560,
+    "y": 180,
+    "wires": [
+      [
+        "nk-conversion"
+      ],
+      []
+    ]
+  },
+  {
+    "id": "nk-conversion",
+    "type": "function",
+    "z": "nk-onglet",
+    "name": "Convertir en unités Nouankany",
+    "func": "const reglages = flow.get('reglages');\nconst morceaux = String(msg.topic || '').split('|');\nconst compteur = reglages && reglages.compteurs[Number(morceaux[0])];\nconst grandeur = morceaux[1];\nconst tick = morceaux[2];\nconst mots = Array.isArray(msg.payload) ? msg.payload : [];\nif (!compteur || !compteur.registers[grandeur] || mots.length === 0) return null;\nfunction lire(mots, type) {\n    const b = new ArrayBuffer(4);\n    const v = new DataView(b);\n    if (type === 'int16' || type === 'uint16') {\n        v.setUint16(0, mots[0] & 0xffff);\n        return type === 'int16' ? v.getInt16(0) : v.getUint16(0);\n    }\n    const fort = type === 'float32_swapped' ? mots[1] : mots[0];\n    const faible = type === 'float32_swapped' ? mots[0] : mots[1];\n    v.setUint16(0, fort & 0xffff);\n    v.setUint16(2, faible & 0xffff);\n    if (type === 'float32' || type === 'float32_swapped') return v.getFloat32(0);\n    return type === 'int32' ? v.getInt32(0) : v.getUint32(0);\n}\nconst reg = compteur.registers[grandeur];\nlet valeur = lire(mots, compteur.data_type) * (reg.scale || 1);\nif (reg.abs) valeur = Math.abs(valeur);\nif (!isFinite(valeur)) return null;\nconst lectures = flow.get('lectures') || {};\nconst cle = morceaux[0];\nif (!lectures[cle] || lectures[cle].recorded_at !== tick) lectures[cle] = { recorded_at: tick };\nlectures[cle][grandeur] = Math.round(valeur * 1000000) / 1000000;\nflow.set('lectures', lectures);\nreturn null;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 800,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "nk-envoi-minute",
+    "type": "inject",
+    "z": "nk-onglet",
+    "name": "Chaque minute (envoi)",
+    "props": [],
+    "repeat": "60",
+    "crontab": "",
+    "once": true,
+    "onceDelay": 40,
+    "topic": "",
+    "x": 160,
+    "y": 260,
+    "wires": [
+      [
+        "nk-envoi"
+      ]
+    ]
+  },
+  {
+    "id": "nk-envoi",
+    "type": "function",
+    "z": "nk-onglet",
+    "name": "Préparer l’envoi",
+    "func": "const reglages = flow.get('reglages');\nconst lectures = flow.get('lectures') || {};\nflow.set('lectures', {});\nconst readings = [];\nObject.keys(lectures).forEach(function (cle) {\n    const compteur = reglages.compteurs[Number(cle)];\n    const l = lectures[cle];\n    if (!compteur || typeof l.power_kw !== 'number') return; // la puissance (kW) est obligatoire\n    const r = { recorded_at: l.recorded_at, power_kw: l.power_kw };\n    if (compteur.machine_code) r.machine_code = compteur.machine_code; else r.external_ref = compteur.external_ref;\n    ['energy_kwh', 'voltage_v', 'current_a', 'power_factor'].forEach(function (k) { if (typeof l[k] === 'number') r[k] = l[k]; });\n    readings.push(r);\n});\nif (readings.length === 0) { node.status({ fill: 'yellow', shape: 'ring', text: 'aucune mesure lue cette minute' }); return null; }\nconst jeton = flow.get('jeton');\nconst mesures = {\n    method: 'POST',\n    url: reglages.plateforme + '/api/v1/boitier/measurements',\n    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (jeton ? jeton.valeur : '') },\n    payload: { readings: readings.slice(0, 500) }\n};\nif (jeton && jeton.expire > Date.now() + 60000) return [null, mesures];\nreturn [{\n    method: 'POST',\n    url: reglages.plateforme + '/api/v1/boitier/token',\n    headers: { 'Content-Type': 'application/json' },\n    payload: { device_id: reglages.identifiant, secret: reglages.cle },\n    readings: readings.slice(0, 500)\n}, null];",
+    "outputs": 2,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 370,
+    "y": 260,
+    "wires": [
+      [
+        "nk-http-jeton"
+      ],
+      [
+        "nk-http-mesures"
+      ]
+    ]
+  },
+  {
+    "id": "nk-http-jeton",
+    "type": "http request",
+    "z": "nk-onglet",
+    "name": "Demander un jeton",
+    "method": "use",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [],
+    "x": 580,
+    "y": 240,
+    "wires": [
+      [
+        "nk-jeton"
+      ]
+    ]
+  },
+  {
+    "id": "nk-jeton",
+    "type": "function",
+    "z": "nk-onglet",
+    "name": "Garder le jeton",
+    "func": "if (msg.statusCode !== 200 || !msg.payload || !msg.payload.token) {\n    const raison = msg.payload && msg.payload.detail ? msg.payload.detail : 'statut ' + msg.statusCode;\n    node.status({ fill: 'red', shape: 'ring', text: 'jeton refusé : ' + raison });\n    node.error('Jeton refusé : ' + raison + ' (identifiant ou clé ? voir la documentation)', msg);\n    return null;\n}\nconst reglages = flow.get('reglages');\nflow.set('jeton', { valeur: msg.payload.token, expire: Date.now() + (msg.payload.expires_in || 3600) * 1000 });\nreturn {\n    method: 'POST',\n    url: reglages.plateforme + '/api/v1/boitier/measurements',\n    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + msg.payload.token },\n    payload: { readings: msg.readings }\n};",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 780,
+    "y": 240,
+    "wires": [
+      [
+        "nk-http-mesures"
+      ]
+    ]
+  },
+  {
+    "id": "nk-http-mesures",
+    "type": "http request",
+    "z": "nk-onglet",
+    "name": "Envoyer les mesures",
+    "method": "use",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [],
+    "x": 600,
+    "y": 320,
+    "wires": [
+      [
+        "nk-resultat"
+      ]
+    ]
+  },
+  {
+    "id": "nk-resultat",
+    "type": "function",
+    "z": "nk-onglet",
+    "name": "Résultat",
+    "func": "if (msg.statusCode === 401) {\n    flow.set('jeton', null); // jeton expiré ou clé remplacée : un nouveau sera demandé à la prochaine minute\n    node.status({ fill: 'yellow', shape: 'ring', text: 'jeton refusé, nouvel essai à la prochaine minute' });\n    return null;\n}\nif (msg.statusCode !== 200 || !msg.payload) {\n    node.status({ fill: 'red', shape: 'ring', text: 'envoi refusé : statut ' + msg.statusCode });\n    node.error('Envoi refusé : ' + JSON.stringify(msg.payload), msg);\n    return null;\n}\nconst refus = msg.payload.rejected || [];\nnode.status({ fill: refus.length ? 'yellow' : 'green', shape: 'dot', text: msg.payload.accepted + ' gardée(s), ' + refus.length + ' refusée(s)' });\nrefus.forEach(function (r) { node.warn('Mesure refusée : ' + r.reason); });\nreturn null;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 800,
+    "y": 320,
+    "wires": []
+  },
+  {
+    "id": "nk-liaison",
+    "type": "modbus-client",
+    "name": "Liaison compteurs (à régler)",
+    "clienttype": "simpleser",
+    "bufferCommands": true,
+    "stateLogEnabled": false,
+    "queueLogEnabled": false,
+    "failureLogEnabled": true,
+    "tcpHost": "127.0.0.1",
+    "tcpPort": "502",
+    "tcpType": "DEFAULT",
+    "serialPort": "/dev/ttyUSB0",
+    "serialType": "RTU-BUFFERD",
+    "serialBaudrate": "9600",
+    "serialDatabits": "8",
+    "serialStopbits": "1",
+    "serialParity": "none",
+    "serialConnectionDelay": "100",
+    "serialAsciiResponseStartDelimiter": "0x3A",
+    "unit_id": "1",
+    "commandDelay": "1",
+    "clientTimeout": "1000",
+    "reconnectOnTimeout": true,
+    "reconnectTimeout": "2000",
+    "parallelUnitIdsAllowed": true,
+    "showErrors": false,
+    "showWarnings": true,
+    "showLogs": true
+  }
+]

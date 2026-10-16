@@ -7,7 +7,7 @@ const REPERES = [
 export function AboutSection() {
   return (
     <section id="apropos" className="bg-bg-elevated py-20 lg:py-28">
-      <div className="mx-auto grid max-w-[1200px] gap-12 px-6 lg:grid-cols-[4fr_7fr] lg:gap-[72px]">
+      <div className="mx-auto grid max-w-[75rem] gap-12 px-6 lg:grid-cols-[4fr_7fr] lg:gap-[4.5rem]">
         <div>
           <h3 className="text-xl font-bold tracking-[-0.01em] text-text-primary">Nouankany en bref</h3>
           <dl className="mt-5 border-b border-border">
