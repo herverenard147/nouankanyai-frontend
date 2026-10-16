@@ -15,6 +15,10 @@ Le backend réel vit dans `../NouanKanyAI/` (dépôt git distinct,
 ligne. Le dossier partagé local porte parfois des modifications d'une autre session : travailler
 dans une copie séparée (`git worktree`) partant de `origin/main`.
 
+## État du projet : `docs/SUIVI_TECHNIQUE.md` du dépôt backend
+
+À lire avant de revérifier quoi que ce soit (ce qui est en ligne, tests de référence, pièges, points ouverts).
+
 ## Design et écrans : lire `DESIGN.md` avant de toucher à l'interface
 
 `DESIGN.md` (racine) fixe les règles de design, la matrice profil × niveau

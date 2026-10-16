@@ -10,6 +10,13 @@ gardé pour mémoire) ; les règles de design qui font foi aujourd'hui sont dans
 types déjà en place — voir « Couche d'adaptation » plus bas pour le détail du
 mapping entre le contrat du backend et ces types.
 
+## Suivi du projet
+
+L'état vérifié du projet (ce qui est en ligne, ce qui est fait, pièges, points ouverts) est tenu dans le
+dépôt backend : `docs/SUIVI_TECHNIQUE.md`, avec le journal PR par PR `docs/JOURNAL_AVANCEMENT.md`.
+Ici : `DESIGN.md` (règles et état des écrans) et `MISE_EN_LIGNE.md` (déploiement). Au 2026-10-16,
+253 tests passent.
+
 ## Lancement
 
 Backend requis (voir son propre README pour l'installation complète : Python
