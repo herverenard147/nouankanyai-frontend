@@ -194,7 +194,7 @@ export interface BackendAlertEntry {
   machine_nom: string | null
   kind: string | null
   kind_label: string | null
-  level: 'alerte' | 'a_verifier' | 'ecart_prevision' | null
+  level: 'alerte' | 'a_verifier' | 'ecart_prevision' | 'anticipee' | null
   source: 'boitier' | 'moteur' | 'photo' | null
   title: string | null
   description: string | null
@@ -207,7 +207,7 @@ export interface BackendAlertEntry {
   closed_at: string | null
   closure_trigger: 'auto' | 'verification' | 'commande' | null
   closure_provenance: 'mesure' | 'simulation' | null
-  resolution: 'nouankany' | 'intervention' | 'seule' | 'fausse_alerte' | 'remplacee' | 'inconnue' | null
+  resolution: 'nouankany' | 'intervention' | 'seule' | 'fausse_alerte' | 'remplacee' | 'arrivee' | 'inconnue' | null
   needs_feedback: boolean
   feedback: {
     did_something: boolean

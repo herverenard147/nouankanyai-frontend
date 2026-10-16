@@ -20,6 +20,8 @@ export function resolutionLabel(alert: BackendAlertEntry): string {
       return 'Fausse alerte'
     case 'remplacee':
       return 'Devenue une alerte'
+    case 'arrivee':
+      return 'Le dépassement prévu est arrivé'
     default:
       return closureLabel(alert)
   }
@@ -29,12 +31,14 @@ export function resolutionLabel(alert: BackendAlertEntry): string {
 export function closureLabel(alert: BackendAlertEntry): string {
   if (alert.closure_trigger === 'verification') return 'Fermée après vérification, à documenter'
   if (alert.closure_trigger === 'commande') return 'Fermée après une coupure confirmée'
+  if (alert.level === 'anticipee') return 'Le dépassement prévu n’est pas arrivé, à documenter'
   return 'Revenue à la normale seule, à documenter'
 }
 
 export function levelLabel(level: BackendAlertEntry['level']): string {
   if (level === 'a_verifier') return 'à vérifier'
   if (level === 'ecart_prevision') return 'écart à la prévision'
+  if (level === 'anticipee') return 'dépassement prévu'
   return 'alerte'
 }
 

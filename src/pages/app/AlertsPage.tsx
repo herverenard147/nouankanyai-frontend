@@ -7,6 +7,7 @@ import { MetricState } from '@/components/state/MetricState'
 import { useAlertRegistry } from '@/hooks/queries/useAlertRegistry'
 import { alertProvenance, levelLabel, resolutionLabel } from '@/lib/alertRegistry'
 import { formatUtcDateTime } from '@/lib/formatters'
+import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import { useLevel } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 
@@ -21,6 +22,7 @@ export function AlertsPage() {
 
   if (!profile) return null
   const pending = toDocument.data?.filter((a) => !later.has(a.id)) ?? []
+  const anticipated = history.data?.filter((a) => a.is_open && a.level === 'anticipee') ?? []
 
   return (
     <div className="flex flex-col gap-7">
@@ -30,6 +32,32 @@ export function AlertsPage() {
           : 'Dérives détectées sur vos équipements : celles en cours, puis l’historique de toutes les alertes, jamais effacé.'}
       </p>
       <AlertSection profile={profile} level={level} />
+
+      {ownAccount && anticipated.length > 0 && (
+        <section className="flex flex-col gap-1 border-t-2 border-text-primary pt-4">
+          <h2 className="text-section-title font-semibold text-text-primary">Dépassements prévus</h2>
+          <p className="text-sm text-text-secondary">
+            Au rythme actuel, ces appareils vont dépasser leur seuil. Vérifiez-les avant que l&rsquo;alerte n&rsquo;arrive.
+          </p>
+          {anticipated.map((alert) => {
+            const provenance = alertProvenance(alert)
+            return (
+              <div key={alert.id} className="border-t border-border py-4">
+                <h3 className="text-[0.9375rem] font-bold text-text-primary">
+                  {alert.machine_nom ?? alert.machine_code} : {alert.kind_label ?? alert.title}
+                </h3>
+                {alert.description && <p className="mt-1 text-sm text-text-secondary">{frenchNumbersWithUnits(alert.description)}</p>}
+                {alert.reco.steps[0] && <p className="mt-1 text-sm text-text-secondary">À vérifier : {alert.reco.steps[0]}</p>}
+                {provenance && (
+                  <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-text-secondary">
+                    Source : <ProvenanceBadge value={provenance} className="lowercase" />
+                  </p>
+                )}
+              </div>
+            )
+          })}
+        </section>
+      )}
 
       {ownAccount && pending.length > 0 && (
         <section id="a-documenter" className="flex flex-col gap-1 border-t-2 border-text-primary pt-4">

@@ -45,6 +45,8 @@ describe('registre des alertes', () => {
     expect(resolutionLabel(alert({ closure_trigger: 'verification' }))).toBe('Fermée après vérification, à documenter')
     expect(resolutionLabel(alert({ resolution: 'nouankany' }))).toMatch(/^Résolue par Nouankany/)
     expect(resolutionLabel(alert({ is_open: true }))).toBe('En cours')
+    expect(resolutionLabel(alert({ level: 'anticipee' }))).toBe('Le dépassement prévu n’est pas arrivé, à documenter')
+    expect(resolutionLabel(alert({ level: 'anticipee', resolution: 'arrivee' }))).toBe('Le dépassement prévu est arrivé')
   })
 
   it('propose la cause indiquée, ou des causes propres à un écart de prévision', () => {
