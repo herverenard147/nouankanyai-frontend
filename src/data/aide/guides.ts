@@ -14,6 +14,7 @@ export type Block =
   | { kind: 'table'; head: string[]; rows: string[][] }
   | { kind: 'code'; text: string }
   | { kind: 'note'; text: string }
+  | { kind: 'download'; href: string; label: string }
 
 export interface Section {
   id: string
@@ -243,6 +244,7 @@ const MENAGE: Guide = {
             'Saisissez-le sur le boîtier. Il apparaît « En ligne » dans la liste.',
           ],
         },
+        { kind: 'p', text: 'Vous préférez qu’un technicien Nouankany l’installe ? Ouvrez-lui votre compte pour un jour (voir « Faire intervenir un technicien ») : il crée le boîtier, le connecte et vérifie vos appareils.' },
         {
           kind: 'table',
           head: ['Lumière', 'Ce qu’elle dit'],
@@ -351,6 +353,22 @@ const TECHNICIEN: Guide = {
       ],
     },
     {
+      id: 'menage',
+      title: 'Chez un ménage',
+      blocks: [
+        { kind: 'p', text: 'Un ménage a le boîtier qui parle, pas de passerelle. Il vous ouvre son compte comme un professionnel (Paramètres, « Accès technicien »).' },
+        {
+          kind: 'steps',
+          items: [
+            'Dans l’intervention, « Ajouter une source », « Je veux le boîtier qui parle » : nommez-le (« Boîtier du salon »). Si le compte n’a pas de site, le boîtier couvre tous ses appareils.',
+            'Le code s’affiche une fois (15 minutes) : saisissez-le sur le boîtier. Il passe « En ligne ».',
+            'Vérifiez que les appareils du foyer sont déclarés avec leur vraie puissance (plaque signalétique).',
+            'Montrez au client sa page « Mon boîtier » : c’est lui qui choisit les appareils que le boîtier peut éteindre, et les quatre lumières.',
+          ],
+        },
+      ],
+    },
+    {
       id: 'passerelle',
       title: 'Installer une passerelle',
       blocks: [
@@ -450,6 +468,35 @@ const TECHNICIEN: Guide = {
           ].join('\n'),
         },
         { kind: 'list', items: ['CSV (« ; » ou « , ») ou XLSX ; 20 Mo, 200 000 lignes et 60 colonnes au plus ; 60 fichiers par heure au plus.', 'Un fichier peut remonter jusqu’à un an : utile pour reprendre l’historique du client.', 'Redéposer un fichier ne crée jamais de doublon.'] },
+      ],
+    },
+    {
+      id: 'node-red',
+      title: 'Repli : modèle Node-RED',
+      blocks: [
+        { kind: 'p', text: 'Pour le client qui refuse notre passerelle mais a des compteurs Modbus sur son réseau et un ordinateur ou automate qui fait tourner Node-RED. Le modèle lit les compteurs chaque minute, convertit dans nos unités et envoie comme un « Logiciel du client ». À n’utiliser qu’en dernier recours : la passerelle reste la solution normale.' },
+        {
+          kind: 'steps',
+          items: [
+            'Sur la plateforme, créez une source « Logiciel du client » : notez l’identifiant et la clé. Dans « Noms du logiciel », reliez le nom de chaque compteur (par exemple COMPRESSEUR_1) à son appareil.',
+            'Sur la machine du client, installez Node-RED puis le module « node-red-contrib-modbus » (Menu, Gérer la palette, Installer).',
+            'Téléchargez le modèle (lien ci-dessous), puis dans Node-RED : Menu, Importer, choisissez le fichier.',
+            'Ouvrez le nœud « Réglages » : adresse de la plateforme, identifiant, clé, puis un bloc par compteur (nom relié ou code Nouankany, adresse esclave, fonction, type de donnée, registres et facteurs, comme pour un « Autre compteur »).',
+            'Ouvrez la liaison « Liaison compteurs (à régler) » : Serial pour un câble RS485 (port, vitesse, parité), ou TCP pour un compteur en réseau (adresse IP, port 502).',
+            'Déployez. Sous « Résultat », l’état affiche « N gardée(s), M refusée(s) » chaque minute ; les raisons des refus s’affichent dans le panneau de débogage (fiches d’erreur plus bas).',
+          ],
+        },
+        { kind: 'download', href: '/outils/nouankany-node-red.json', label: 'Télécharger le modèle Node-RED (nouankany-node-red.json)' },
+        {
+          kind: 'table',
+          head: ['Vous voyez', 'Ce que ça veut dire'],
+          rows: [
+            ['« jeton refusé : Boîtier inconnu ou secret invalide »', 'Identifiant ou clé faux, ou clé remplacée sur la plateforme : recopiez-les dans « Réglages » et redéployez.'],
+            ['« aucune mesure lue cette minute »', 'Le compteur ne répond pas ou la puissance n’est pas lue : vérifiez la liaison, l’adresse esclave et le registre de la puissance (obligatoire).'],
+            ['« Mesure refusée : unité attendue kW (des W ?) »', 'Facteur manquant : mettez 0.001 sur la puissance si le compteur donne des watts.'],
+          ],
+        },
+        { kind: 'note', text: 'Vérifié sur la version 5.60.2 du module Modbus, avec un compteur simulé en réseau : lecture, conversion, jeton, envoi, et arrêt net quand la clé est remplacée. Avec un vrai compteur, contrôlez les premières valeurs sur la plateforme avant de partir.' },
       ],
     },
     {

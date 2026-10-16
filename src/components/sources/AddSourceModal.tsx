@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Modal, MutationError, SelectField } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
 import { useInstallation, useSourceMutations } from '@/hooks/queries/useSources'
+import { useInterventionStore } from '@/store/interventionStore'
 import { useSessionStore } from '@/store/sessionStore'
 import type { BackendDeviceCreated, BackendSourceKind } from '@/types/backend'
 
@@ -30,12 +31,15 @@ export function AddSourceModal({ onClose, onCreated }: { onClose: () => void; on
   const [nom, setNom] = useState('')
   const [siteId, setSiteId] = useState('')
   const [created, setCreated] = useState<BackendDeviceCreated | null>(null)
+  // Technicien en intervention (chez un ménage, par exemple) : il installe le boîtier lui-même et reçoit son code ;
+  // un client, lui, passe par sa page Boîtier (demande, livraison, code).
+  const intervention = useInterventionStore((st) => st.accountId) !== null
 
   const sites = installation.data?.sites ?? []
 
   if (created) return <CreatedModal created={created} onClose={() => onCreated(created.id)} />
 
-  if (choice === null || choice === 'boitier' || choice === 'factures') {
+  if (choice === null || (choice === 'boitier' && !intervention) || choice === 'factures') {
     return (
       <Modal
         title="Comment vos mesures peuvent-elles nous arriver ?"
@@ -74,8 +78,10 @@ export function AddSourceModal({ onClose, onCreated }: { onClose: () => void; on
     )
   }
 
-  const kind: BackendSourceKind = choice
-  const ready = nom.trim().length > 0 && siteId !== ''
+  const kind: BackendSourceKind = choice === 'boitier' ? 'vocal' : choice
+  // Compte sans site (fréquent chez un ménage) : la source couvre tout le compte.
+  const noSite = installation.isSuccess && sites.length === 0
+  const ready = nom.trim().length > 0 && (siteId !== '' || noSite)
   return (
     <Modal
       title={`Ajouter : ${SOURCE_KIND_LABEL[kind].toLowerCase()}`}
@@ -90,7 +96,11 @@ export function AddSourceModal({ onClose, onCreated }: { onClose: () => void; on
             type="button"
             disabled={!ready}
             loading={create.isPending}
-            onClick={() => create.mutate({ nom: nom.trim(), kind, scope: 'site', site_id: siteId, language: 'fr' }, { onSuccess: setCreated })}
+            onClick={() =>
+              create.mutate(noSite ? { nom: nom.trim(), kind, scope: 'account', language: 'fr' } : { nom: nom.trim(), kind, scope: 'site', site_id: siteId, language: 'fr' }, {
+                onSuccess: setCreated,
+              })
+            }
           >
             Créer
           </Button>
@@ -99,8 +109,8 @@ export function AddSourceModal({ onClose, onCreated }: { onClose: () => void; on
     >
       <div className="flex flex-col gap-3.5">
         <TextField label="Nom" required maxLength={80} value={nom} onChange={(e) => setNom(e.target.value)} placeholder={PLACEHOLDER[kind]} />
-        {sites.length === 0 && installation.isSuccess ? (
-          <p className="text-sm text-alert">Aucun site sur ce compte : créez d’abord un site (Paramètres, rubrique Sites).</p>
+        {noSite ? (
+          <p className="text-sm text-text-secondary">Ce compte n’a pas de site : la source couvrira tous ses appareils.</p>
         ) : (
           <SelectField
             label="Site"
@@ -109,7 +119,7 @@ export function AddSourceModal({ onClose, onCreated }: { onClose: () => void; on
             options={[{ value: '', label: 'Choisir le site' }, ...sites.map((s) => ({ value: s.id, label: s.nom }))]}
           />
         )}
-        <p className="text-xs text-text-secondary">La source ne voit que les appareils de ce site.</p>
+        {!noSite && <p className="text-xs text-text-secondary">La source ne voit que les appareils de ce site.</p>}
         <MutationError error={create.error} />
       </div>
     </Modal>
@@ -140,7 +150,7 @@ function CreatedModal({ created, onClose }: { created: BackendDeviceCreated; onC
 
   return (
     <Modal
-      title={isCode ? 'Code d’appairage de la passerelle' : 'Identifiant et clé de la source'}
+      title={isCode ? `Code d’appairage ${created.kind === 'vocal' ? 'du boîtier' : 'de la passerelle'}` : 'Identifiant et clé de la source'}
       description="Affiché une seule fois : notez-le maintenant."
       onClose={onClose}
       actions={
@@ -157,7 +167,7 @@ function CreatedModal({ created, onClose }: { created: BackendDeviceCreated; onC
       {isCode ? (
         <div className="flex flex-col gap-2.5">
           <p className="w-fit border border-text-primary px-5 py-3 font-heading text-[2.25rem] font-bold leading-none tracking-[0.16em]">{created.pairing_code}</p>
-          <p className="text-sm text-text-primary">Saisissez ce code sur la passerelle « {created.nom} » dans les 15 minutes. Il ne sert qu’une fois.</p>
+          <p className="text-sm text-text-primary">Saisissez ce code sur {created.kind === 'vocal' ? 'le boîtier' : 'la passerelle'} « {created.nom} » dans les 15 minutes. Il ne sert qu’une fois.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-2.5">

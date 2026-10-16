@@ -38,7 +38,7 @@ describe('documentation de chaque acteur', () => {
     const titles = PROFILES.map((p) => GUIDES[p].title)
     expect(new Set(titles).size).toBe(PROFILES.length)
     const ids = (p: Profile) => GUIDES[p].sections.map((s) => s.id)
-    expect(ids('technicien')).toEqual(expect.arrayContaining(['regles', 'passerelle', 'autre-compteur', 'essai', 'logiciel', 'fichiers', 'verifier']))
+    expect(ids('technicien')).toEqual(expect.arrayContaining(['regles', 'menage', 'node-red', 'passerelle', 'autre-compteur', 'essai', 'logiciel', 'fichiers', 'verifier']))
     expect(ids('menage')).not.toContain('autre-compteur')
     expect(ids('menage')).toContain('boitier')
     expect(ids('pme')).toEqual(expect.arrayContaining(['sources', 'contrat', 'acces-technicien']))

@@ -140,6 +140,12 @@ function HelpBlock({ block }: { block: Block }) {
           ))}
         </ul>
       )
+    case 'download':
+      return (
+        <a href={block.href} download className="focus-ring w-fit text-sm font-medium text-accent-cta underline underline-offset-2">
+          {block.label}
+        </a>
+      )
     case 'code':
       return <pre className="overflow-x-auto bg-dark-bg p-3 text-xs leading-relaxed text-dark-text">{block.text}</pre>
     case 'table':

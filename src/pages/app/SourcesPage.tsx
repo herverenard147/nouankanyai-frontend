@@ -145,7 +145,11 @@ export function SourceDetailPage() {
             {kindOf(device) === 'fichier' && <FileSourcePanel deviceId={device.id} />}
             {(kindOf(device) === 'logiciel' || kindOf(device) === 'fichier') && <AliasesPanel deviceId={device.id} />}
             {kindOf(device) === 'vocal' && (
-              <p className="text-sm text-text-secondary">Un boîtier vocal se règle depuis la page Boîtier du compte.</p>
+              <p className="text-sm text-text-secondary">
+                {intervention
+                  ? 'Boîtier vocal : une fois le code saisi, il apparaît « En ligne ». Le client choisit lui-même, sur sa page « Mon boîtier », les appareils que le boîtier peut éteindre.'
+                  : 'Un boîtier vocal se règle depuis la page Boîtier du compte.'}
+              </p>
             )}
           </>
         )}
