@@ -1,7 +1,7 @@
 # Nouankany — DESIGN.md (dashboard et landing)
 
 Document d'orientation pour qui continue le design dans ce dépôt (Claude Code en local compris).
-Il dit **ce qui est fait**, **ce qui reste à faire** et **les règles à suivre** pour chaque écran et
+Mis à jour le 2026-10-16. Il dit **les règles à suivre**, ce qui est fait et ce qui reste à faire pour chaque écran et
 chaque type de compte. Il complète `CLAUDE.md` (pièges techniques) et `README.md` (structure, API).
 
 Les maquettes sont dans le canvas « Nouankany — Propositions de design »
@@ -96,10 +96,9 @@ conservé après rechargement. Sélecteur : `TopBar` (bureau), `Paramètres` (mo
 | Machines : colonnes | Machine, Statut, Priorité | idem | **+ Température, Vibration, Pression** |
 | Raccourcis | Conseils, Paliers tarifaires | idem | **Plan d'action, Historique des résolutions**, Paliers |
 
-### PME, Ménage, Admin — MAQUETTÉ (planches `H-*`, à valider), code À FAIRE
+### PME, Ménage, Admin : IMPLÉMENTÉ (`pmeOverviewBlocks`, `menageOverviewBlocks`, `adminOverviewBlocks` dans `src/lib/overviewLevels.ts`)
 
-Appliquer le même gabarit (en-tête, `KpiStrip`, bloc prédiction + alertes, bloc résumé + raccourcis) avec
-une fonction `…OverviewBlocks(level)` par profil dans `src/lib/overviewLevels.ts`, et son test.
+Même gabarit (en-tête, `KpiStrip`, bloc prédiction + alertes, bloc résumé + raccourcis), d'après les planches `H-*` :
 
 | Profil | Niveaux | Contenu proposé de la vue d'ensemble |
 |---|---|---|
@@ -126,36 +125,33 @@ Ménage : un seul niveau (débutant), pas d'Audit, pas de Plan d'action, pas de 
 
 ## 5. État écran par écran
 
-Légende : ✅ fait · ◐ cadre fait (barre latérale, en-tête) mais contenu à refaire · ☐ à faire. Les écrans « ◐ » et
-« ☐ » sont **maquettés** dans les planches `H-*` ; la maquette est la référence.
+Tous les écrans du tableau ci-dessous existent pour chaque profil, en filets (plus aucune page en cartes), avec les règles
+de niveau indiquées. Les écrans livrés depuis le 2026-10-15 (Sources de mesures, Interventions, Documentation, registre
+des Alertes, boîtier) ont été vérifiés dans un navigateur ; la conformité fine des autres écrans aux planches `H-*` n'a
+pas été revérifiée écran par écran depuis le 2026-10-09.
 
-| Écran (route) | Industrie | PME | Ménage | Admin | Gating par niveau déjà en place (à conserver) |
-|---|---|---|---|---|---|
-| Vue d'ensemble `/app/apercu` | ✅ | ☐ | ☐ | ☐ | voir §4 |
-| Alertes `/app/alertes` | ◐ | ◐ | ◐ | ◐ | registre « actions automatiques » dès amateur |
-| Machines `/app/machines` | ◐ | — | — | — | colonnes capteurs au niveau technique |
-| Équipements `/app/equipements` | — | ◐ | — | — | colonnes complètes dès amateur |
-| Conso & coûts `/app/consommation` | ◐ | ◐ | ◐ | ◐ | — |
-| Prédiction `/app/prediction` | ◐ | ◐ | ◐ | ◐ | détail du modèle au niveau technique |
-| Conseils `/app/conseils` | ◐ | ◐ | ◐ | — | impact chiffré dès amateur |
-| Recommandations `/app/recommandations` | ◐ | ◐ | ◐ | — | impact chiffré dès amateur |
-| Factures CIE `/app/factures` | ◐ | ◐ | ◐ | — | — |
-| Facturation / Abonnement `/app/facturation` | ✓ | ✓ | ✓ | — | contrat et relevés (PME, Industrie), paliers (Ménage) |
-| Rapports `/app/rapports` | ✓ | ✓ | ✓ | — | formats : PDF (Ménage), PDF/Excel (PME), tous (Industrie) |
-| Journal `/app/journal` | ◐ | — | — | ◐ | — |
-| **Audit** `/app/audit` (nouveau) | ☐ | ☐ | — | ☐ | colonnes et export selon le niveau (§4) |
-| **Plan d'action** `/app/plan-action` (nouveau) | ☐ | ☐ | — | — | historique des résolutions au niveau technique |
-| Paramètres `/app/parametres` | ◐ | ◐ | ◐ | ◐ | sélecteur de niveau (hors Ménage) |
-| Admin : santé, modèles, utilisateurs, demandes d'audit | — | — | — | ◐ | — |
-| Admin : messages et inscriptions, impayés et abonnements | — | — | — | ✓ | — |
+| Écran (route) | Profils | Règle de niveau à conserver |
+|---|---|---|
+| Vue d'ensemble `/app/apercu` | tous | voir §4 |
+| Alertes `/app/alertes` | tous (technicien : onglet Alertes en intervention) | retour « qu'avez-vous fait ? » selon le niveau (§13) |
+| Machines `/app/machines` | Industrie | colonnes de mesures au niveau technique |
+| Équipements `/app/equipements` | PME | colonnes complètes dès amateur |
+| Conso & coûts, Factures CIE | Ménage, PME, Industrie | aucune |
+| Prédiction `/app/prediction` | tous | détail du modèle au niveau technique (Admin seulement) |
+| Conseils, Recommandations | Ménage, PME, Industrie | impact chiffré dès amateur |
+| Facturation / Abonnement, Rapports | Ménage, PME, Industrie | contrat et relevés (PME, Industrie), paliers (Ménage) |
+| Journal | Industrie, Admin | aucune |
+| Audit `/app/audit` | PME, Industrie, Admin | colonnes et export selon le niveau (§4) |
+| Plan d'action `/app/plan-action` | PME, Industrie | historique des résolutions au niveau technique |
+| Sources de mesures `/app/sources` | PME, Industrie | §12 |
+| Interventions `/app/interventions` | technicien | §12 |
+| Documentation `/app/aide` | tous | §12 |
+| Paramètres `/app/parametres` | tous | sélecteur de niveau (hors Ménage) |
+| Admin : santé, modèles, utilisateurs, demandes d'audit, messages, impayés, boîtiers | Admin | aucune |
 
-Pour chaque écran « à faire » : en-tête (titre + sous-titre court), filets au lieu de cartes, provenance sur
-chaque donnée, états vides, mobile 390 px sans défilement horizontal, textes d'explication déplacés ou
-supprimés. **Ne pas changer** les règles de niveau ci-dessus sans les mettre à jour dans ce fichier.
-
-Reste de la refonte du cadre : `NAV_BY_PROFILE` contient encore l'ancien champ `icon` (lettres) devenu
-inutile — à supprimer avec `NavEntry.icon` ; `ActionPlanList`, `ResolutionsList`, `KpiGrid`, `PredictionPanel`
-ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des pages dédiées ou à supprimer).
+Pour chaque écran modifié : en-tête (titre + sous-titre court), filets au lieu de cartes, provenance sur
+chaque donnée, états vides, mobile 390 px sans défilement horizontal. **Ne pas changer** les règles de niveau
+ci-dessus sans les mettre à jour dans ce fichier.
 
 ## 5 bis. Premiers pas, mouvement et vocabulaire du Ménage (demande du propriétaire, 2026-10-11)
 
@@ -177,14 +173,14 @@ ne sont plus utilisés par la vue d'ensemble Industrie (à réutiliser pour des 
   (`.stagger`, `.rise-in`), les barres d'un graphique poussent depuis la base (`.bar-grow`), la barre d'avancement s'anime.
   Tout est coupé par `prefers-reduced-motion`. S'applique aux quatre profils.
 - **Ménage** : ses indicateurs parlent d'« appareils » et d'« à surveiller » (`MENAGE_LABELS` dans `src/api/kpis.ts`) ;
-  PME, Industrie et Admin gardent « machines » et « anomalie ». Le reste de la partie H (menu réduit, montants en FCFA
-  partout) reste à faire.
+  PME, Industrie et Admin gardent « machines » et « anomalie ». Menu du Ménage resserré (dix entrées avec
+  Documentation).
 
 ## 6. Décisions en attente (ne pas trancher sans le propriétaire)
 
 1. ~~Part de 10 %~~ **Décidé, puis remplacé le 2026-10-08** : PME et Industrie paient audit, redevance et 40 % (30 à 50)
    des économies mesurées ; la landing continue de dire « Structure définie lors de l'audit ».
-2. ~~Plan d'action et Audit~~ : maquettes validées, endpoints créés (PR NouanKanyAI#2, §9), **à brancher**.
+2. ~~Plan d'action et Audit~~ : maquettes validées, endpoints créés (PR NouanKanyAI#2, §9), branchés.
 3. ~~KPI « Part sur les économies » pour le Ménage~~ **Remplacé le 2026-10-08** : le Ménage paie un abonnement par palier
    (Découverte gratuit, Essentiel, Optimum) ; le KPI devient « Économies estimées ce mois », indicatif.
 4. ~~« Gratuit pour commencer »~~ **Décidé** : libellé retiré de la landing (offre pas encore ouverte). Aucun prix affiché pour
@@ -254,20 +250,8 @@ append-only ; un membre d'équipe écrit dans la piste de son propriétaire, l'a
 jamais l'action métier ; les gains du plan sont des **estimations** du moteur, jamais des économies mesurées ; les
 heures sont en UTC.
 
-### Reste à faire côté frontend (dans cet ordre)
-
-1. `src/api/audit.ts`, `src/api/plan.ts` (adaptateurs ; remplacer `fetchActionPlan`/`fetchResolutions`, aujourd'hui `[]`) ;
-   appliquer `frenchNumbersWithUnits` aux `detail` d'audit (le backend écrit « 45.0 kW »).
-2. Pages `AuditPage` et `PlanActionPage`, routes, `navConfig.ts` (« Audit » hors Ménage, « Plan d'action » PME/Industrie,
-   avant « Paramètres » / après « Recommandations »), icônes dans `navIcons.ts` ; niveaux dans `overviewLevels.ts`.
-3. Composant `Modal` (+ variantes `ConfirmEditModal`, `ConfirmDeleteModal`) et branchement sur machines/équipements,
-   factures, équipe, seuils, profil, plan, rôle utilisateur ; colonne « Actions » (Modifier / Supprimer) dans les tableaux.
-4. Restyler `ProvenanceBadge` (règle 2), carte d'alerte sobre (filet rouge à gauche, « Sévérité critique · une personne doit
-   intervenir », « Source : synthétique » en pied), graphique horaire à
-   une barre (règle 11), bouton « Assistant Nouankany » en bas à droite sans recouvrir le contenu.
-5. `formatters.ts` : passer à l'espace fine insécable U+202F (milliers et avant l'unité) et mettre à jour les tests
-   (`dashboardCorrections.test.ts` attend l'espace normale).
-6. Retirer `@fontsource/ibm-plex-mono` de `package.json` (import déjà retiré de `index.css`) et régénérer le lockfile.
+Côté frontend, tout est branché : `src/api/audit.ts`, `src/api/actionPlan.ts`, pages `AuditPage` et `PlanActionPage`,
+composant `Modal` et ses confirmations, espace fine insécable (U+202F) dans `formatters.ts`.
 
 ## 10. Boîtier (page publique `/le-boitier`, annonce sur l'accueil)
 
@@ -277,14 +261,15 @@ Maquettes : planches `I`, `I2` (page) et `J` (annonce + navbar) du canvas. Code 
 - **Quatre lumières** (`boitierStates.ts`) : vert « tout va bien », orange « un appareil s'approche de son seuil »
   (validé par le propriétaire), rouge « un appareil dépasse son seuil », **blanc pulsé = le boîtier écoute**. Le vert
   n'est jamais utilisé pour l'écoute, sinon un boîtier qui écoute pendant une alerte rouge passerait un instant au vert.
-- **Vue 3D** : `three`, chargée à la demande (`BoitierViewer` → `Boitier3D`, environ 135 kB gzip, seulement sur l'accueil
-  et la page boîtier). Repli : schéma 2D (`Boitier2D`) sans WebGL. `prefers-reduced-motion` : pas de balancement ni de
-  pulsation. L'aspect du boîtier est un schéma de principe : à remplacer par le prototype quand la photo arrive.
+- **Vue 3D** : le modèle du prototype (`public/models/boitier-nouankany.glb`), chargé à la demande, sur l'accueil et la
+  page boîtier ; rotation par glisser (même vitesse sur les deux pages), vue éclatée et clic sur les pièces sur la page
+  boîtier. Image fixe du prototype pendant le chargement et sans WebGL. `prefers-reduced-motion` : pas de balancement ni
+  de pulsation.
 - **Échanges affichés** : exemples d'illustration, sans aucun chiffre (test `boitier.test.tsx`). La liste des formulations
   comprises (`BOITIER_PHRASES`) doit rester alignée avec le routeur d'intentions du backend quand il existera.
 - **Pas d'annonce du SIREX** sur le site. Aucune modification de la landing côté Ménage (présenté au hackathon).
-- **Pas de backend branché** : la page est une démonstration. Les routes `/api/v1/boitier/*` sont décrites dans le
-  document d'architecture, elles n'existent pas encore.
+- **Page de démonstration** : la page publique n'appelle pas le backend. Les routes `/api/v1/boitier/*` existent et
+  servent le tableau de bord (§11) et les vrais boîtiers.
 
 ## 11. Boîtier dans le tableau de bord (`/app/boitier`, `/app/admin/boitiers`)
 
@@ -319,3 +304,16 @@ et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste**
   décision du propriétaire). Un guide par acteur (`src/data/aide/guides.ts`) et les messages d'erreur expliqués
   (`src/data/aide/erreurs.ts`) ; tout message reconnu à l'écran porte « Que faire ? » vers sa fiche (`ApiErrorMessage`).
   À tenir à jour avec le backend : un nouveau message d'erreur = une fiche.
+
+## 13. Alertes et capteurs d'appareils (2026-10-16)
+
+- **Registre** `/app/alertes` : alertes ouvertes, « Dépassements prévus » à part, historique jamais effacé avec la cause de
+  fermeture. Une alerte terminée sans cause connue demande « qu'avez-vous fait ? » : questions courtes au niveau débutant,
+  détail (coût, arrêt) au niveau technique ; « Plus tard » la masque pour la visite. Libellés dans `src/lib/alertRegistry.ts`.
+- **Notification** : `AlertNotifier` (clients seulement, hors intervention) relit les alertes ouvertes chaque minute tant
+  que l'onglet est visible ; une alerte apparue pendant la visite s'annonce dans un bandeau avec un lien « Voir ». Rien au
+  premier chargement.
+- **Technicien** : onglet Alertes en intervention (`InterventionAlertsPage`) ; ses réponses portent « documentée par un
+  technicien Nouankany ».
+- **Capteur d'un appareil** : ajouté depuis la fiche de l'appareil ; état du capteur, essai, coupure réelle quand il a un
+  relais. Une machine arrêtée s'affiche « Éteint ».
