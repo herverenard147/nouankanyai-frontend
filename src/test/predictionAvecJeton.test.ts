@@ -14,7 +14,7 @@ import { rawPredict } from '@/api/rawBackend'
 import { api } from '@/lib/apiClient'
 
 const machine = {
-  machine_id: 'M1', nom: 'Four', power_kw: 120, temperature_c: 35, vibration_hz: 1.5, pressure_bar: 1,
+  machine_id: 'M1', nom: 'Four', power_kw: 120, temperature_c: 35, vibration_mm_s: 1.5, pressure_bar: 1,
 } as BackendMachine
 
 describe('rawPredict', () => {

@@ -18,7 +18,7 @@ function toSession(result: BackendAuthResult): Session {
     profile,
     platformRole: result.user.platform_role,
     displayName: result.user.nom,
-    subtitle: profile === 'admin' ? ACCOUNT_TYPE_LABELS.admin : result.user.type_compte,
+    subtitle: profile === 'admin' || profile === 'technicien' ? ACCOUNT_TYPE_LABELS[profile] : result.user.type_compte,
     // Seuls les PME/Industrie sans owner_id (compte principal, pas membre d'une
     // équipe) peuvent gérer des membres : voir app/api/v1/team/ côté backend.
     isTeamOwner: (profile === 'pme' || profile === 'industrie') && !result.user.owner_id,

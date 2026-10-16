@@ -60,7 +60,7 @@ export function PairingModal({ profile, onClose }: { profile: Profile; onClose: 
   async function copy() {
     if (!created) return
     try {
-      await navigator.clipboard.writeText(created.pairing_code)
+      await navigator.clipboard.writeText(created.pairing_code ?? '')
       setCopied(true)
     } catch {
       setCopied(false)
@@ -87,9 +87,9 @@ export function PairingModal({ profile, onClose }: { profile: Profile; onClose: 
         <div className="flex flex-col items-start gap-3.5">
           <p
             className="border border-text-primary px-5 py-3 font-heading text-[2.5rem] font-bold leading-none tracking-[0.16em]"
-            aria-label={`Code : ${created.pairing_code.split('').join(' ')}`}
+            aria-label={`Code : ${(created.pairing_code ?? '').split('').join(' ')}`}
           >
-            {groupCode(created.pairing_code)}
+            {groupCode(created.pairing_code ?? '')}
           </p>
           <p className="text-sm text-text-primary">Entrez ce code sur le boîtier « {created.nom} » pour le connecter.</p>
           <p className="text-xs text-text-secondary">

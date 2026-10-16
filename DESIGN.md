@@ -304,3 +304,18 @@ et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste**
 - Pas encore branché : l'écran de demande n'impose pas qu'une demande ait été livrée avant de demander un code (volontaire :
   le propriétaire peut vouloir créer des boîtiers de test à la main).
 - Pas d'écran Industrie : boîtier ou tablette, décision en attente.
+
+## 12. Sources de mesures, accès technicien, documentation (2026-10-16)
+
+- **Sources de mesures** `/app/sources` (PME, Industrie) : liste des boîtiers, passerelles, logiciels et dépôts de fichiers ;
+  « Ajouter une source » demande « Comment vos mesures peuvent-elles nous arriver ? » (5 choix), puis nom et site, puis
+  le code d'appairage ou l'identifiant et la clé (affichés une fois). Fiche `/app/sources/:id` selon le type : compteurs
+  de la passerelle (essai, nouvel essai, retrait), clé et noms du logiciel, réglage des colonnes et historique des fichiers.
+  Formulaires purs dans `src/lib/sourceForms.ts` (testés).
+- **Accès technicien** : panneau sur Sources de mesures et dans Paramètres (titulaire du compte). Profil `technicien`
+  (`platform_role`) : menu Interventions, Documentation, Paramètres ; `/app/interventions/:accountId` ouvre l'installation
+  du client, l'en-tête `X-Intervention-Compte` part seul sur les routes d'installation (`apiClient`, `interventionStore`).
+- **Documentation** `/app/aide`, entrée « Documentation » dans le menu de **chaque** profil (le ménage passe à dix entrées,
+  décision du propriétaire). Un guide par acteur (`src/data/aide/guides.ts`) et les messages d'erreur expliqués
+  (`src/data/aide/erreurs.ts`) ; tout message reconnu à l'écran porte « Que faire ? » vers sa fiche (`ApiErrorMessage`).
+  À tenir à jour avec le backend : un nouveau message d'erreur = une fiche.

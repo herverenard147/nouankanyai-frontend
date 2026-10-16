@@ -8,6 +8,7 @@ const DEFAULT_LEVEL_BY_PROFILE: Record<Profile, Level> = {
   pme: 'amateur',
   industrie: 'technique',
   admin: 'technique',
+  technicien: 'technique',
 }
 
 interface LevelState {

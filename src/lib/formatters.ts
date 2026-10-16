@@ -47,7 +47,7 @@ export function computeYTicks(maxValue: number, maxPercent: number): string[] {
  * Relevé simulé par « Vérifier », avec seulement les mesures que l'appareil a (2026-10-15) : un appareil suivi par un
  * simple capteur électrique n'a ni température ni vibration. Ex. « 1,2 kW · 4,1 °C ».
  */
-export function measuredReading(r: { power_kw?: number | null; temperature_c?: number | null; vibration_hz?: number | null }): string {
+export function measuredReading(r: { power_kw?: number | null; temperature_c?: number | null; vibration_mm_s?: number | null }): string {
   const parts: string[] = []
   if (r.power_kw !== null && r.power_kw !== undefined) {
     // deux décimales sous 10 kW (une télévision : 0,12 kW), une au-delà
@@ -55,6 +55,6 @@ export function measuredReading(r: { power_kw?: number | null; temperature_c?: n
     parts.push(`${kw}${NARROW_NBSP}kW`)
   }
   if (r.temperature_c !== null && r.temperature_c !== undefined) parts.push(`${formatNumberFr(r.temperature_c, 1)}${NARROW_NBSP}°C`)
-  if (r.vibration_hz !== null && r.vibration_hz !== undefined) parts.push(`${formatNumberFr(r.vibration_hz, 1)}${NARROW_NBSP}Hz`)
+  if (r.vibration_mm_s !== null && r.vibration_mm_s !== undefined) parts.push(`${formatNumberFr(r.vibration_mm_s, 1)}${NARROW_NBSP}mm/s`)
   return parts.join(' · ')
 }

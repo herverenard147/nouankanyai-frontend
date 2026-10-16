@@ -13,7 +13,7 @@ export async function fetchResolutions(_profile: Profile): Promise<AnomalyResolu
     // Seulement les mesures que l'appareil a (souvent aucune température ni vibration : capteur électrique seul).
     const parts: string[] = []
     if (row.temperature_c !== null && row.temperature_c !== undefined) parts.push(`${formatNumberFr(row.temperature_c, 1)}${NARROW_NBSP}°C`)
-    if (row.vibration_hz !== null && row.vibration_hz !== undefined) parts.push(`${formatNumberFr(row.vibration_hz, 1)}${NARROW_NBSP}Hz`)
+    if (row.vibration_mm_s !== null && row.vibration_mm_s !== undefined) parts.push(`${formatNumberFr(row.vibration_mm_s, 1)}${NARROW_NBSP}mm/s`)
     const reading = parts.length ? parts.join(' · ') : 'nouveau relevé'
     return {
       id: row.id,

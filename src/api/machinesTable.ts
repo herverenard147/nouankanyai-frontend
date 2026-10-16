@@ -27,7 +27,7 @@ export async function fetchMachinesTable(_profile: Profile): Promise<{ title: st
       machine: m.nom,
       puissance: hasReading(m) ? reading(m.power_kw, 'kW') : '-',
       temperature: reading(m.temperature_c, '°C'),
-      vibration: reading(m.vibration_hz, 'Hz'),
+      vibration: reading(m.vibration_mm_s, 'mm/s'),
       pression: reading(m.pressure_bar, 'bar'),
       attendu: m.estimation_reference
         ? `≈ ${formatNumberFr(m.estimation_reference.kwh_jour, 1)} kWh, ${formatNumberFr(m.estimation_reference.cout_jour_fcfa, 0)} FCFA (estimé)`

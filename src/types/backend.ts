@@ -7,7 +7,7 @@
  * chaque module pour le mapping.
  */
 
-export type BackendPlatformRole = 'admin' | 'superadmin' | null
+export type BackendPlatformRole = 'admin' | 'superadmin' | 'technicien' | null
 
 export interface BackendUser {
   id: string
@@ -66,7 +66,7 @@ export interface BackendMachine {
   power_kw: number
   // Vides tant qu'aucun relevé n'existe (le backend n'invente plus de mesures).
   temperature_c: number | null
-  vibration_hz: number | null
+  vibration_mm_s: number | null
   pressure_bar: number | null
   has_reading?: boolean
   equipment_reference_id?: string | null
@@ -179,7 +179,7 @@ export interface BackendMachineTestResult {
   provenance: 'simulation'
   resolved: boolean
   temperature_c: number
-  vibration_hz: number
+  vibration_mm_s: number
   pressure_bar: number
   power_kw: number
   diagnostic: BackendMachineDiagnostic | null
@@ -210,7 +210,7 @@ export interface BackendMachineHistoryPoint {
   recorded_at: string
   power_kw: number
   temperature_c: number
-  vibration_hz: number
+  vibration_mm_s: number
   pressure_bar: number
 }
 export interface BackendMachineAlert {
@@ -235,7 +235,7 @@ export interface BackendMachineHistory {
 
 export interface BackendAlertThresholds {
   temperature_max_c: number
-  vibration_max_hz: number
+  vibration_max_mm_s: number
   surconsommation_ratio: number
   /** Panneau « Automatisation IA » (Réglages) : jamais activé par défaut. */
   auto_resolve_enabled: boolean
@@ -462,7 +462,7 @@ export interface BackendPlatformConsumption {
 export interface BackendAdminMachineActionResult {
   resolved: boolean
   temperature_c: number
-  vibration_hz: number
+  vibration_mm_s: number
   pressure_bar: number
   power_kw: number
   owner_id: string
@@ -670,7 +670,7 @@ export interface BackendResolution {
   machine_nom: string | null
   resolved: boolean
   temperature_c: number | null
-  vibration_hz: number | null
+  vibration_mm_s: number | null
   pressure_bar: number | null
   power_kw: number | null
 }
@@ -685,9 +685,13 @@ export interface BackendBillUpdatePayload {
 export type BackendBoitierLight = 'vert' | 'orange' | 'rouge' | 'aucune_donnee'
 export type BackendBoitierMachineState = 'vert' | 'orange' | 'rouge' | 'arrete' | 'inconnu'
 
+/** Type de source de mesures (backend `devices.kind`, 2026-10-16). */
+export type BackendSourceKind = 'vocal' | 'passerelle' | 'logiciel' | 'fichier'
+
 export interface BackendDevice {
   id: string
   nom: string
+  kind?: BackendSourceKind
   scope: 'site' | 'account'
   language: 'fr' | 'en'
   site_id: string | null
@@ -705,8 +709,11 @@ export interface BackendAdminDevice extends BackendDevice {
 }
 
 export interface BackendDeviceCreated extends BackendDevice {
-  pairing_code: string
-  pairing_expires_at: string
+  /** Boîtier ou passerelle : code d'appairage, montré une seule fois. */
+  pairing_code: string | null
+  pairing_expires_at: string | null
+  /** Logiciel du client ou fichiers : clé remise une seule fois. */
+  secret?: string | null
 }
 
 export interface BackendDeviceCreatePayload {
@@ -714,6 +721,7 @@ export interface BackendDeviceCreatePayload {
   site_id?: string | null
   scope?: 'site' | 'account'
   language?: 'fr' | 'en'
+  kind?: BackendSourceKind
 }
 
 export interface BackendDeviceUpdatePayload {
@@ -841,4 +849,119 @@ export interface BackendColdStartSegment {
   mape_reference: number | null
   last_test_at: string | null
   reason: string | null
+}
+
+
+// --- Sources de mesures (passerelle, logiciel du client, fichiers) et accès technicien (2026-10-16) ---
+
+export interface BackendMeterTemplate {
+  key: string
+  label: string
+  measures: string[]
+}
+
+export type BackendMeterStatus = 'a_tester' | 'actif' | 'a_verifier'
+
+export interface BackendMeterPoint {
+  id: string
+  machine_code: string | null
+  machine_nom: string | null
+  template: string
+  template_label: string
+  protocol: 'rtu' | 'tcp'
+  slave_id: number
+  host: string | null
+  port: number | null
+  baudrate: number | null
+  status: BackendMeterStatus
+  last_test_at: string | null
+  last_test_detail: string | null
+}
+
+export interface BackendMeterRegister {
+  address: number
+  scale: number
+  abs?: boolean
+}
+
+export interface BackendCustomMeterMap {
+  function: 3 | 4
+  data_type: 'float32' | 'float32_swapped' | 'int32' | 'uint32' | 'int16' | 'uint16'
+  registers: Partial<Record<'power_kw' | 'energy_kwh' | 'voltage_v' | 'current_a' | 'power_factor', BackendMeterRegister>>
+}
+
+export interface BackendMeterPointCreate {
+  machine_code: string
+  template: string
+  protocol: 'rtu' | 'tcp'
+  slave_id: number
+  host?: string | null
+  port?: number | null
+  baudrate?: number | null
+  custom_map?: BackendCustomMeterMap | null
+}
+
+export interface BackendSourceAlias {
+  external_ref: string
+  machine_code: string
+}
+
+export interface BackendKeyRenewed {
+  device_id: string
+  secret: string
+}
+
+export interface BackendFileMapping {
+  date_column: string
+  appliance_column?: string | null
+  machine_code?: string | null
+  utc_offset_hours?: number
+  power?: { column: string; unit: 'W' | 'kW' | 'MW' } | null
+  energy?: { column: string; unit: 'Wh' | 'kWh' | 'MWh'; kind: 'index' | 'intervalle'; interval_minutes?: number } | null
+  power_factor?: { column: string; percent: boolean } | null
+  voltage_column?: string | null
+  current_column?: string | null
+  temperature_column?: string | null
+  vibration_column?: string | null
+  pressure_column?: string | null
+}
+
+export interface BackendFilePreview {
+  columns: string[]
+  rows: string[][]
+  total_rows: number
+  mapping: BackendFileMapping | null
+}
+
+export interface BackendSourceFile {
+  id: string
+  filename: string | null
+  via: 'depot_automatique' | 'plateforme'
+  status: 'traite' | 'refuse'
+  lines: number
+  accepted: number
+  rejected: number
+  /** JSON : {"raison": "..."} pour un fichier refusé, {"refus": [{ligne, raison}]} sinon. */
+  detail: string | null
+  received_at: string | null
+}
+
+export interface BackendTechnicianAccess {
+  active: boolean
+  starts_at: string | null
+  expires_at: string | null
+  note: string | null
+}
+
+export interface BackendInterventionAccount {
+  id: string
+  nom: string
+  type_compte: string | null
+  expires_at: string
+  note: string | null
+}
+
+export interface BackendInstallation {
+  sites: { id: string; nom: string }[]
+  appareils: { code: string; nom: string; categorie: string | null; puissance_nominale_kw: number | null; site_id: string | null }[]
 }

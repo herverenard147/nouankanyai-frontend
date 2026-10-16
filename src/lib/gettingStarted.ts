@@ -193,6 +193,22 @@ export const STEPS_BY_PROFILE: Record<Profile, StartStep[]> = {
       check: 'membres',
     },
   ],
+  technicien: [
+    {
+      id: 'interventions',
+      title: 'Ouvrir un compte client',
+      what: 'Le client vous donne l’accès depuis son compte pour quelques jours. Ses comptes ouverts apparaissent ici.',
+      to: '/app/interventions',
+      cta: 'Voir les interventions',
+    },
+    {
+      id: 'aide',
+      title: 'Lire la procédure d’installation',
+      what: 'Passerelle, compteurs, logiciel du client, fichiers : chaque étape et chaque message d’erreur expliqués.',
+      to: '/app/aide',
+      cta: 'Ouvrir la documentation',
+    },
+  ],
   admin: [
     {
       id: 'sante',

@@ -1,3 +1,4 @@
+import { useInterventionStore } from '@/store/interventionStore'
 import { useSessionStore } from '@/store/sessionStore'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8001').replace(/\/$/, '')
@@ -27,7 +28,7 @@ const FIELD_LABELS: Record<string, string> = {
   title: 'Titre', description: 'Détail', gain_estime_fcfa: 'Gain estimé', month: 'Mois',
   amount_xof: 'Montant', actual_amount_xof: 'Montant réel', kwh_consumed: 'Consommation',
   power_kw: 'Puissance', localisation: 'Localisation', quantity: 'Quantité',
-  temperature_max_c: 'Température max', vibration_max_hz: 'Vibration max', surconsommation_ratio: 'Ratio de surconsommation',
+  temperature_max_c: 'Température max', vibration_max_mm_s: 'Vibration max', surconsommation_ratio: 'Ratio de surconsommation',
 }
 
 interface ValidationItem {
@@ -94,6 +95,9 @@ interface RequestOptions {
  */
 let refreshing: Promise<boolean> | null = null
 
+/** Routes que le backend ouvre à un technicien en intervention (dépendance `get_install_scope`). */
+const INSTALL_ROUTES = ['/api/v1/boitiers', '/api/v1/intervention/installation']
+
 /** Échange le jeton de renouvellement contre une nouvelle paire, une seule fois même si plusieurs
  * requêtes reçoivent un 401 en même temps (Volet 5). Renvoie false si la session est fermée. */
 function refreshSession(): Promise<boolean> {
@@ -126,6 +130,9 @@ async function request<T>(path: string, options: RequestOptions = {}, retried = 
   if (auth) {
     const token = useSessionStore.getState().session?.token
     if (token) headers.Authorization = `Bearer ${token}`
+    // Technicien en intervention : seulement sur les routes d'installation (le backend refuse ailleurs de toute façon).
+    const account = useInterventionStore.getState().accountId
+    if (account && INSTALL_ROUTES.some((prefix) => path.startsWith(prefix))) headers['X-Intervention-Compte'] = account
   }
 
   let requestBody: BodyInit | undefined

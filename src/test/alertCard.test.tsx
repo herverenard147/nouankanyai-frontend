@@ -46,7 +46,7 @@ describe('AlertCard : honnêteté du message needs_human', () => {
       status: 'needs_human',
       attempt: 5,
       maxAttempts: 5,
-      lastResult: { provenance: 'simulation', resolved: false, temperature_c: 70, vibration_hz: 50, pressure_bar: 2, power_kw: 3, diagnostic: null },
+      lastResult: { provenance: 'simulation', resolved: false, temperature_c: 70, vibration_mm_s: 50, pressure_bar: 2, power_kw: 3, diagnostic: null },
       error: null,
       trigger: vi.fn(),
       autoEnabled: true,

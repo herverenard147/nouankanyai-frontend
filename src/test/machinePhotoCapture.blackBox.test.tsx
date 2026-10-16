@@ -23,7 +23,7 @@ vi.mock('@/api/rawBackend', () => ({
   rawCreateSite: vi.fn().mockResolvedValue({}),
   // MachineFormDrawer -> useMachineCrud -> useAutoResolveMachine -> useThresholds,
   // importé transitivement même si ce test ne l'utilise pas.
-  rawAlertThresholds: vi.fn().mockResolvedValue({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: false }),
+  rawAlertThresholds: vi.fn().mockResolvedValue({ temperature_max_c: 60, vibration_max_mm_s: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: false }),
   rawUpdateAlertThresholds: vi.fn().mockResolvedValue({}),
 }))
 
@@ -45,7 +45,7 @@ const existingMachine: BackendMachine = {
   site_nom: '',
   power_kw: 1,
   temperature_c: 0,
-  vibration_hz: 0,
+  vibration_mm_s: 0,
   pressure_bar: 0,
   status: 'ok',
   priority: 'moyenne',

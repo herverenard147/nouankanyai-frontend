@@ -18,6 +18,8 @@ import { useCreateTeamMember, useDeleteTeamMember, useTeamMembers } from '@/hook
 import { useThresholds, useUpdateThresholds } from '@/hooks/queries/useThresholds'
 import { formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 import { useLevel, useLevelStore } from '@/store/levelStore'
+import { isClientProfile } from '@/lib/profileMapping'
+import { TechnicianAccessPanel } from '@/components/sources/TechnicianAccessPanel'
 import { useSessionStore } from '@/store/sessionStore'
 import type { Session } from '@/types/domain'
 
@@ -303,13 +305,13 @@ function ThresholdsCard() {
   const query = useThresholds()
   const mutation = useUpdateThresholds()
   const [step, setStep] = useState<'form' | 'confirm' | null>(null)
-  const [form, setForm] = useState({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: false })
+  const [form, setForm] = useState({ temperature_max_c: 60, vibration_max_mm_s: 7.1, surconsommation_ratio: 1.2, auto_resolve_enabled: false })
 
   const current = query.data
   const changes: FieldChange[] = current
     ? [
         { label: 'Température max', before: `${formatNumberFr(current.temperature_max_c, 1)}${NARROW_NBSP}°C`, after: `${formatNumberFr(form.temperature_max_c, 1)}${NARROW_NBSP}°C` },
-        { label: 'Vibration max', before: `${formatNumberFr(current.vibration_max_hz, 1)}${NARROW_NBSP}Hz`, after: `${formatNumberFr(form.vibration_max_hz, 1)}${NARROW_NBSP}Hz` },
+        { label: 'Vibration max', before: `${formatNumberFr(current.vibration_max_mm_s, 1)}${NARROW_NBSP}mm/s`, after: `${formatNumberFr(form.vibration_max_mm_s, 1)}${NARROW_NBSP}mm/s` },
         { label: 'Ratio de surconsommation', before: String(current.surconsommation_ratio).replace('.', ','), after: String(form.surconsommation_ratio).replace('.', ',') },
       ].filter((change) => change.before !== change.after)
     : []
@@ -326,7 +328,7 @@ function ThresholdsCard() {
             </div>
             <div className={ROW}>
               <dt className="text-text-secondary">Vibration max</dt>
-              <dd className="font-semibold text-text-primary">{formatNumberFr(current.vibration_max_hz, 1)}{NARROW_NBSP}Hz</dd>
+              <dd className="font-semibold text-text-primary">{formatNumberFr(current.vibration_max_mm_s, 1)}{NARROW_NBSP}mm/s</dd>
             </div>
             <div className={ROW}>
               <dt className="text-text-secondary">Ratio de surconsommation</dt>
@@ -376,7 +378,7 @@ function ThresholdsCard() {
           >
             <div className="grid gap-3 sm:grid-cols-3">
               <TextField label="Température max (°C)" type="number" step="0.1" min="0.1" max={LIMITS.temperatureMaxC} required value={form.temperature_max_c} onChange={(e) => setForm((f) => ({ ...f, temperature_max_c: Number(e.target.value) }))} />
-              <TextField label="Vibration max (Hz)" type="number" step="0.1" min="0.1" max={LIMITS.vibrationMaxHz} required value={form.vibration_max_hz} onChange={(e) => setForm((f) => ({ ...f, vibration_max_hz: Number(e.target.value) }))} />
+              <TextField label="Vibration max (mm/s)" type="number" step="0.1" min="0.1" max={LIMITS.vibrationMaxMmS} required value={form.vibration_max_mm_s} onChange={(e) => setForm((f) => ({ ...f, vibration_max_mm_s: Number(e.target.value) }))} />
               <TextField label="Ratio de surconsommation" type="number" step="0.1" min="1.1" max={LIMITS.overconsumptionRatio} required value={form.surconsommation_ratio} onChange={(e) => setForm((f) => ({ ...f, surconsommation_ratio: Number(e.target.value) }))} />
             </div>
             <p className="text-xs text-text-secondary">Au-delà de ces valeurs, un appareil passe en « Anomalie détectée » et une alerte apparaît.</p>
@@ -617,12 +619,13 @@ export function SettingsPage() {
         </>
       )}
 
-      {session.profile !== 'admin' && <ThresholdsCard />}
-      {session.profile !== 'admin' && <AutomationCard />}
+      {isClientProfile(session.profile) && <ThresholdsCard />}
+      {isClientProfile(session.profile) && <AutomationCard />}
+      {isClientProfile(session.profile) && <TechnicianAccessPanel />}
 
-      {session.profile !== 'admin' && (session.profile === 'menage' || session.isTeamOwner) && <ExportCard />}
-      {session.profile !== 'admin' && (session.profile === 'menage' || session.isTeamOwner) && <TransferCard />}
-      {session.profile !== 'admin' && (
+      {isClientProfile(session.profile) && (session.profile === 'menage' || session.isTeamOwner) && <ExportCard />}
+      {isClientProfile(session.profile) && (session.profile === 'menage' || session.isTeamOwner) && <TransferCard />}
+      {isClientProfile(session.profile) && (
         <DeleteAccountCard isMember={(session.profile === 'pme' || session.profile === 'industrie') && !session.isTeamOwner} />
       )}
 

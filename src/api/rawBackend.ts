@@ -190,7 +190,7 @@ export const rawBillPhoto = (billId: string) => api.get<BackendBillPhoto>(`/api/
  */
 export function hasReading(machine: BackendMachine): boolean {
   if (machine.has_reading !== undefined) return machine.has_reading
-  return machine.temperature_c !== null || machine.vibration_hz !== null || machine.pressure_bar !== null
+  return machine.temperature_c !== null || machine.vibration_mm_s !== null || machine.pressure_bar !== null
 }
 
 function toSensorReading(machine: BackendMachine) {
@@ -202,7 +202,7 @@ function toSensorReading(machine: BackendMachine) {
     modele: machine.modele ?? undefined,
     power_kw: machine.power_kw,
     temperature_c: machine.temperature_c,
-    vibration_hz: machine.vibration_hz,
+    vibration_mm_s: machine.vibration_mm_s,
     pressure_bar: machine.pressure_bar,
     priority: machine.priority,
   }
@@ -228,7 +228,7 @@ export const rawPredict = (machine: BackendMachine, hoursAhead: number) =>
     {
       machine_id: machine.machine_id,
       temperature_c: machine.temperature_c,
-      vibration_hz: machine.vibration_hz,
+      vibration_mm_s: machine.vibration_mm_s,
       pressure_bar: machine.pressure_bar,
       hours_ahead: hoursAhead,
     },

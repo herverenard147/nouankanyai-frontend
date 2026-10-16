@@ -12,7 +12,7 @@ import type { NavByProfile, RouteAccess } from '@/types/nav'
  * connaît que `type_compte` (texte libre) et `platform_role` (accès admin).
  */
 export const NAV_BY_PROFILE: NavByProfile = {
-  // Menu resserré (partie H2) : neuf entrées au vocabulaire du quotidien. Les pages marquées
+  // Menu resserré (partie H2) : neuf entrées au vocabulaire du quotidien, plus « Documentation » (2026-10-16). Les pages marquées
   // `under` restent accessibles par leur adresse et depuis la page indiquée, sans entrée propre.
   menage: [
     { path: '/app/apercu', label: 'Accueil' },
@@ -24,6 +24,8 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/alertes', label: 'À surveiller' },
     { path: '/app/boitier', label: 'Mon boîtier' },
     { path: '/app/parametres', label: 'Paramètres' },
+    // Documentation dans le menu de chaque compte (demande du propriétaire, 2026-10-16 : dixième entrée du ménage).
+    { path: '/app/aide', label: 'Documentation' },
     { path: '/app/prediction', label: 'Facture prévue', under: '/app/apercu' },
     { path: '/app/facturation', label: 'Abonnement', under: '/app/factures' },
     { path: '/app/rapports', label: 'Rapports', under: '/app/factures' },
@@ -43,8 +45,10 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/facturation', label: 'Facturation Nouankany' },
     { path: '/app/rapports', label: 'Rapports' },
     { path: '/app/audit', label: 'Audit' },
+    { path: '/app/sources', label: 'Sources de mesures' },
     { path: '/app/boitier', label: 'Boîtier' },
     { path: '/app/parametres', label: 'Paramètres' },
+    { path: '/app/aide', label: 'Documentation' },
   ],
   industrie: [
     { path: '/app/apercu', label: "Vue d'ensemble" },
@@ -61,7 +65,9 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/rapports', label: 'Rapports' },
     { path: '/app/journal', label: 'Journal' },
     { path: '/app/audit', label: 'Audit' },
+    { path: '/app/sources', label: 'Sources de mesures' },
     { path: '/app/parametres', label: 'Paramètres' },
+    { path: '/app/aide', label: 'Documentation' },
   ],
   admin: [
     { path: '/app/apercu', label: "Vue d'ensemble" },
@@ -79,6 +85,13 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/audit', label: 'Audit' },
     { path: '/app/admin/boitiers', label: 'Boîtiers' },
     { path: '/app/parametres', label: 'Paramètres' },
+    { path: '/app/aide', label: 'Documentation' },
+  ],
+  // Personne de Nouankany qui installe chez les clients : ses interventions et sa documentation, rien d'autre.
+  technicien: [
+    { path: '/app/interventions', label: 'Interventions' },
+    { path: '/app/aide', label: 'Documentation' },
+    { path: '/app/parametres', label: 'Paramètres' },
   ],
 }
 
@@ -87,7 +100,7 @@ export function visibleNav(profile: Profile) {
   return NAV_BY_PROFILE[profile].filter((entry) => !entry.under)
 }
 
-const ALL_PROFILES: Profile[] = ['menage', 'pme', 'industrie', 'admin']
+const ALL_PROFILES: Profile[] = ['menage', 'pme', 'industrie', 'admin', 'technicien']
 
 export const ROUTE_ACCESS: RouteAccess = (
   Object.entries(NAV_BY_PROFILE) as [Profile, (typeof NAV_BY_PROFILE)[Profile]][]

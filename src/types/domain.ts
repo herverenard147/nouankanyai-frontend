@@ -1,4 +1,5 @@
-export type Profile = 'menage' | 'pme' | 'industrie' | 'admin'
+// « technicien » : personne de Nouankany qui installe chez les clients (platform_role, 2026-10-16).
+export type Profile = 'menage' | 'pme' | 'industrie' | 'admin' | 'technicien'
 
 export type Level = 'debutant' | 'amateur' | 'technique'
 
@@ -20,7 +21,7 @@ export interface Session {
   refreshToken?: string
   profile: Profile
   /** Rôle plateforme brut (distinct de `profile`, qui vaut 'admin' pour admin ET superadmin). */
-  platformRole: 'admin' | 'superadmin' | null
+  platformRole: 'admin' | 'superadmin' | 'technicien' | null
   displayName: string
   subtitle: string
   /**
@@ -194,7 +195,7 @@ export interface AnomalyResolution {
   date: string
   machineLabel: string
   resolved: boolean
-  /** « Résolue : 24,9 °C · 45,8 Hz, sous les seuils » ou « L’anomalie persiste : … ». */
+  /** « Résolue : 24,9 °C · 2,4 mm/s, sous les seuils » ou « L’anomalie persiste : … ». */
   resultLabel: string
   provenance: Provenance
 }
@@ -288,7 +289,7 @@ export interface AdminUser {
   isDeleted: boolean
   lastLogin: string
   provenance: Provenance
-  platformRole: 'admin' | 'superadmin' | null
+  platformRole: 'admin' | 'superadmin' | 'technicien' | null
   /** Compte d'équipe (voir app/api/v1/team/, backend) : null si compte principal. */
   ownerId: string | null
   ownerName: string | null

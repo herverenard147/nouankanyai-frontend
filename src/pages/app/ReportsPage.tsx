@@ -27,7 +27,7 @@ const FORMAT_LABELS: Record<ReportFormat, string> = {
 
 /** Ce que chaque type de compte peut générer : le Ménage veut un bilan lisible, l'Industrie
  * des documents à retravailler ou présenter. */
-export const REPORT_OPTIONS: Record<Exclude<Profile, 'admin'>, { types: ReportType[]; formats: ReportFormat[] }> = {
+export const REPORT_OPTIONS: Record<Exclude<Profile, 'admin' | 'technicien'>, { types: ReportType[]; formats: ReportFormat[] }> = {
   menage: { types: ['monthly'], formats: ['pdf'] },
   pme: { types: ['monthly', 'weekly', 'energy_audit'], formats: ['pdf', 'xlsx'] },
   industrie: {

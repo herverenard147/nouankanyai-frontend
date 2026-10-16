@@ -10,7 +10,7 @@ export function AssistantPage() {
   const navigate = useNavigate()
   const billing = useBilling()
   if (!session) return null
-  if (session.profile === 'admin' || (billing.data?.access && !billing.data.access.assistant_ia)) return <Navigate to="/app/apercu" replace />
+  if (session.profile === 'admin' || session.profile === 'technicien' || (billing.data?.access && !billing.data.access.assistant_ia)) return <Navigate to="/app/apercu" replace />
 
   return (
     <div className="flex h-[calc(100dvh-11rem)] min-h-[320px] max-w-3xl flex-col">

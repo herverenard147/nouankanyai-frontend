@@ -29,6 +29,9 @@ import { PredictionPage } from '@/pages/app/PredictionPage'
 import { RecommendationsPage } from '@/pages/app/RecommendationsPage'
 import { ReportsPage } from '@/pages/app/ReportsPage'
 import { SettingsPage } from '@/pages/app/SettingsPage'
+import { HelpPage } from '@/pages/app/HelpPage'
+import { InterventionLayout, InterventionsPage } from '@/pages/app/InterventionsPage'
+import { SourceDetailPage, SourcesPage } from '@/pages/app/SourcesPage'
 import { AdminBoitierDetailPage } from '@/pages/app/admin/AdminBoitierDetailPage'
 import { AdminBoitiersPage } from '@/pages/app/admin/AdminBoitiersPage'
 import { AdminHealthPage } from '@/pages/app/admin/AdminHealthPage'
@@ -86,6 +89,18 @@ export const router = createBrowserRouter([
               { path: 'boitier', element: <BoitiersPage /> },
               { path: 'boitier/:deviceId', element: <BoitierDetailPage /> },
               { path: 'parametres', element: <SettingsPage /> },
+              { path: 'sources', element: <SourcesPage /> },
+              { path: 'sources/:deviceId', element: <SourceDetailPage /> },
+              { path: 'aide', element: <HelpPage /> },
+              { path: 'interventions', element: <InterventionsPage /> },
+              {
+                path: 'interventions/:accountId',
+                element: <InterventionLayout />,
+                children: [
+                  { index: true, element: <SourcesPage /> },
+                  { path: 'sources/:deviceId', element: <SourceDetailPage /> },
+                ],
+              },
               { path: 'assistant', element: <AssistantPage /> },
               { path: 'admin/boitiers', element: <AdminBoitiersPage /> },
               { path: 'admin/boitiers/:deviceId', element: <AdminBoitierDetailPage /> },

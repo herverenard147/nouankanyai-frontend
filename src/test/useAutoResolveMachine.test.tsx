@@ -20,7 +20,7 @@ vi.mock('@/api/rawBackend', () => ({
 import { rawAlertThresholds, rawTestMachine } from '@/api/rawBackend'
 
 function result(resolved: boolean, extra: Partial<BackendMachineTestResult> = {}): BackendMachineTestResult {
-  return { provenance: 'simulation', resolved, temperature_c: 50, vibration_hz: 10, pressure_bar: 1, power_kw: 2, diagnostic: null, ...extra }
+  return { provenance: 'simulation', resolved, temperature_c: 50, vibration_mm_s: 10, pressure_bar: 1, power_kw: 2, diagnostic: null, ...extra }
 }
 
 function wrapper({ children }: { children: ReactNode }) {
@@ -39,7 +39,7 @@ describe('useAutoResolveMachine', () => {
   })
 
   it('sévérité critique : un seul essai, jamais de boucle, même si l’automatisation est activée', async () => {
-    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: true })
+    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_mm_s: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: true })
     vi.mocked(rawTestMachine).mockResolvedValue(result(false))
 
     const { result: hook } = renderHook(() => useAutoResolveMachine('M1', 'critique'), { wrapper })
@@ -51,7 +51,7 @@ describe('useAutoResolveMachine', () => {
   })
 
   it('automatisation désactivée : un seul essai, jamais de boucle', async () => {
-    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: false })
+    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_mm_s: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: false })
     vi.mocked(rawTestMachine).mockResolvedValue(result(false))
 
     const { result: hook } = renderHook(() => useAutoResolveMachine('M2', 'modérée'), { wrapper })
@@ -64,7 +64,7 @@ describe('useAutoResolveMachine', () => {
 
   it('modérée + automatisation activée : boucle jusqu’à résolution', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
-    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: true })
+    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_mm_s: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: true })
     vi.mocked(rawTestMachine)
       .mockResolvedValueOnce(result(false))
       .mockResolvedValueOnce(result(false))
@@ -84,7 +84,7 @@ describe('useAutoResolveMachine', () => {
 
   it('plafond atteint sans résolution : needs_human, jamais resolved', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
-    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: true })
+    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_mm_s: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: true })
     vi.mocked(rawTestMachine).mockResolvedValue(result(false))
 
     const { result: hook } = renderHook(() => useAutoResolveMachine('M4', 'faible'), { wrapper })
@@ -100,7 +100,7 @@ describe('useAutoResolveMachine', () => {
 
   it('reprend une boucle interrompue (localStorage) au montage sans nouveau clic', async () => {
     localStorage.setItem('nouankany-auto-resolve:M5', JSON.stringify({ attempt: 2, startedAt: Date.now() }))
-    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_hz: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: true })
+    vi.mocked(rawAlertThresholds).mockResolvedValue({ temperature_max_c: 60, vibration_max_mm_s: 45, surconsommation_ratio: 1.2, auto_resolve_enabled: true })
     vi.mocked(rawTestMachine).mockResolvedValue(result(true))
 
     renderHook(() => useAutoResolveMachine('M5', 'modérée'), { wrapper })

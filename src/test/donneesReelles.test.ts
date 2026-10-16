@@ -17,7 +17,7 @@ import { getCachedMachines, rawBilling, rawPredict } from '@/api/rawBackend'
 function machine(overrides: Partial<BackendMachine> = {}): BackendMachine {
   return {
     machine_id: 'M1', nom: 'Pompe', site_id: null, site_nom: 'Non associé', power_kw: 4,
-    temperature_c: null, vibration_hz: null, pressure_bar: null, has_reading: false,
+    temperature_c: null, vibration_mm_s: null, pressure_bar: null, has_reading: false,
     status: 'actif', priority: 'moyenne', categorie: null, marque: null, modele: null, numero_serie: null,
     ...overrides,
   }
@@ -54,7 +54,7 @@ describe('Machine sans relevé (M7)', () => {
 
 describe('Provenance des indicateurs (M20)', () => {
   it('la puissance et les alertes, tirées de relevés simulés, sont « synthétiques »', async () => {
-    vi.mocked(getCachedMachines).mockResolvedValue([machine({ temperature_c: 30, vibration_hz: 1, pressure_bar: 1, has_reading: true })])
+    vi.mocked(getCachedMachines).mockResolvedValue([machine({ temperature_c: 30, vibration_mm_s: 1, pressure_bar: 1, has_reading: true })])
     vi.mocked(rawBilling).mockResolvedValue({
       statements: [], estimated_ai_savings: { month_total_fcfa: 0, weeks: [], actions: [] },
     } as unknown as Awaited<ReturnType<typeof rawBilling>>)
