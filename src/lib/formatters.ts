@@ -47,6 +47,12 @@ export function computeYTicks(maxValue: number, maxPercent: number): string[] {
  * Relevé simulé par « Vérifier », avec seulement les mesures que l'appareil a (2026-10-15) : un appareil suivi par un
  * simple capteur électrique n'a ni température ni vibration. Ex. « 1,2 kW · 4,1 °C ».
  */
+/** Origine de la mesure de vérification : le vrai capteur de l'appareil, ou une simulation faute de capteur. */
+export function measureOrigin(r: { provenance?: 'simulation' | 'mesure' | null }, last = false): string {
+  if (r.provenance === 'mesure') return last ? 'dernière mesure du capteur' : 'Nouvelle mesure du capteur'
+  return last ? 'dernière mesure simulée' : 'Nouvelle mesure simulée (aucun capteur branché)'
+}
+
 export function measuredReading(r: { power_kw?: number | null; temperature_c?: number | null; vibration_mm_s?: number | null }): string {
   const parts: string[] = []
   if (r.power_kw !== null && r.power_kw !== undefined) {

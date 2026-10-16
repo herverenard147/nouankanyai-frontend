@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Speaker } from 'lucide-react'
 
+import { kindOf } from '@/api/sources'
 import { CONNECTION_LABEL, LANGUAGE_LABEL, LIGHT_SHORT, lastActivity } from '@/api/boitiers'
 import { LightDot, Th } from '@/components/boitier/BoitierParts'
 import { PairingModal } from '@/components/boitier/PairingModal'
@@ -39,7 +40,8 @@ export function BoitiersPage() {
   if (!profile) return null
 
   const status = boitiers.status === 'error' || requests.status === 'error' ? 'error' : boitiers.isSuccess && requests.isSuccess ? 'success' : 'pending'
-  const rows = boitiers.data ?? []
+  // Seulement les boîtiers vocaux : passerelles, capteurs, logiciels et fichiers sont sur la page Sources de mesures.
+  const rows = (boitiers.data ?? []).filter((r) => kindOf(r.device) === 'vocal')
   const waiting = (requests.data ?? []).filter((r) => r.status === 'a_livrer')
   const delivered = (requests.data ?? []).filter((r) => r.status === 'livre')
   const columns = boitierListColumns(level)

@@ -5,7 +5,7 @@ import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineB
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useAutoResolveMachine } from '@/hooks/queries/useMachineCrud'
-import { measuredReading } from '@/lib/formatters'
+import { measureOrigin, measuredReading } from '@/lib/formatters'
 import { alertTone } from '@/lib/severity'
 import { AllowedLink } from '@/routes/AllowedLink'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
@@ -80,7 +80,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
           )}
           {!admin && autoResolve.lastResult && !autoResolve.lastResult.resolved && autoResolve.status !== 'needs_human' && (
             <p className="mt-2 text-sm text-alert">
-              Nouvelle mesure simulée (aucun capteur branché) : {measuredReading(autoResolve.lastResult)}. L&rsquo;anomalie est toujours là.{' '}
+              {measureOrigin(autoResolve.lastResult)} : {measuredReading(autoResolve.lastResult)}. L&rsquo;anomalie est toujours là.{' '}
               {autoResolve.autoEnabled
                 ? `Nouvel essai automatique ${autoResolve.attempt + 1}/${autoResolve.maxAttempts}…`
                 : 'Elle ne se règle pas à distance : une personne doit intervenir sur l’appareil, puis relancer la vérification.'}
@@ -88,7 +88,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
           )}
           {!admin && autoResolve.status === 'needs_human' && autoResolve.lastResult && (
             <p className="mt-2 text-sm text-alert">
-              Non résolu après {autoResolve.maxAttempts} tentatives automatiques (dernière mesure simulée :{' '}
+              Non résolu après {autoResolve.maxAttempts} tentatives automatiques ({measureOrigin(autoResolve.lastResult, true)} :{' '}
               {measuredReading(autoResolve.lastResult)}). Elle ne se règle pas à distance : une personne doit intervenir sur l&rsquo;appareil, puis relancer la vérification.
             </p>
           )}

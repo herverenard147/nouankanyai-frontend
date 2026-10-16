@@ -20,7 +20,8 @@ const STATUS_CLASS: Record<BackendMeterPoint['status'], string> = {
 }
 
 /** Compteurs lus par une passerelle : liste, ajout, nouvel essai, retrait. */
-export function MeterPointsPanel({ deviceId }: { deviceId: string }) {
+/** `sensor` : le point unique du capteur d'un appareil (posé à sa création) : ni ajout ni retrait ici. */
+export function MeterPointsPanel({ deviceId, sensor = false }: { deviceId: string; sensor?: boolean }) {
   const points = useMeterPoints(deviceId, true)
   const installation = useInstallation()
   const { retestMeter, deleteMeter } = useSourceMutations(deviceId)
@@ -31,16 +32,20 @@ export function MeterPointsPanel({ deviceId }: { deviceId: string }) {
 
   return (
     <BoitierSectionBlock
-      title="Compteurs lus"
+      title={sensor ? 'Mesure du capteur' : 'Compteurs lus'}
       rule
       action={
-        <Button type="button" onClick={() => setAdding(true)}>
-          Ajouter un compteur
-        </Button>
+        sensor ? undefined : (
+          <Button type="button" onClick={() => setAdding(true)}>
+            Ajouter un compteur
+          </Button>
+        )
       }
     >
       <p className="text-sm text-text-secondary">
-        Chaque nouveau compteur est lu une première fois pour vérifier ses réglages (dans la minute, si la passerelle est en ligne). Il n’est mis en service que si cette lecture est plausible.
+        {sensor
+          ? 'Le capteur envoie une première lecture pour vérifier ses réglages, dès qu’il est en ligne. Ses mesures ne sont prises en compte que si cette lecture est plausible.'
+          : 'Chaque nouveau compteur est lu une première fois pour vérifier ses réglages (dans la minute, si la passerelle est en ligne). Il n’est mis en service que si cette lecture est plausible.'}
       </p>
       <MetricState status={points.status}>
         {rows.length === 0 ? (
@@ -79,9 +84,11 @@ export function MeterPointsPanel({ deviceId }: { deviceId: string }) {
                             Relancer l’essai
                           </Button>
                         )}
-                        <Button type="button" variant="ghost" onClick={() => setRemoving(p)}>
-                          Retirer
-                        </Button>
+                        {!sensor && (
+                          <Button type="button" variant="ghost" onClick={() => setRemoving(p)}>
+                            Retirer
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>

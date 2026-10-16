@@ -88,7 +88,7 @@ const SOURCES_CLIENT: Section = {
   id: 'sources',
   title: 'Comment vos mesures arrivent sur la plateforme',
   blocks: [
-    { kind: 'p', text: 'Page « Sources de mesures », bouton « Ajouter une source » : la plateforme vous demande comment vos mesures peuvent nous arriver. Cinq cas :' },
+    { kind: 'p', text: 'Page « Sources de mesures », bouton « Ajouter une source » : la plateforme vous demande comment vos mesures peuvent nous arriver. Six cas :' },
     {
       kind: 'table',
       head: ['Votre situation', 'La source à choisir', 'Qui la met en place'],
@@ -97,6 +97,7 @@ const SOURCES_CLIENT: Section = {
         ['Votre logiciel (supervision, gestion d’énergie, GTB) sait envoyer ses données', 'Logiciel du client : il envoie avec une clé', 'Votre informaticien ou intégrateur, avec le technicien'],
         ['Votre logiciel sait seulement exporter un fichier (CSV, Excel)', 'Dépôt de fichiers : chaque jour, automatiquement ou à la main', 'Le technicien règle les colonnes une fois'],
         ['Vous voulez un assistant qui parle', 'Boîtier Nouankany (page Boîtier)', 'Vous, avec un code'],
+        ['Vous voulez mesurer un appareil précis, ou pouvoir le couper', 'Capteur d’un appareil : un petit module posé sur l’appareil', 'Un technicien, ou vous avec un code'],
         ['Vous n’avez aucun compteur', 'Vos factures CIE (page Factures)', 'Vous'],
       ],
     },
@@ -104,7 +105,7 @@ const SOURCES_CLIENT: Section = {
       kind: 'list',
       items: [
         'Toutes les sources arrivent dans les mêmes unités (kW, kWh…) et passent les mêmes contrôles : une valeur absurde ou une erreur d’unité est refusée, jamais mélangée à vos calculs.',
-        'Délai : environ une minute pour une passerelle ou un logiciel ; un jour pour un dépôt de fichiers (suffisant pour la facture et les économies, pas pour les alertes).',
+        'Délai : environ une minute pour une passerelle, un capteur ou un logiciel ; un jour pour un dépôt de fichiers (suffisant pour la facture et les économies, pas pour les alertes).',
         'Vos données ne vont que dans un sens : c’est votre site qui envoie. Nouankany ne se connecte jamais à votre réseau.',
       ],
     },
@@ -117,6 +118,31 @@ const FICHIERS_CLIENT: Section = {
   blocks: [
     { kind: 'p', text: 'Sur la fiche d’une source « Dépôt de fichiers », chaque fichier reçu a une ligne : date, origine (dépôt automatique ou plateforme), lignes lues, mesures gardées, lignes refusées. Cliquez sur une ligne pour voir pourquoi chaque ligne a été refusée (fiches d’erreur plus bas).' },
     { kind: 'p', text: 'Un fichier « refusé » en entier n’a rien changé à vos données : corrigez la cause, puis redéposez-le. Redéposer un fichier ne crée jamais de doublon.' },
+  ],
+}
+
+const CAPTEURS_CLIENT: Section = {
+  id: 'capteurs',
+  title: 'Les capteurs de vos appareils',
+  blocks: [
+    { kind: 'p', text: 'Un capteur se pose sur un seul appareil. Il mesure sa vraie consommation au lieu de l’estimer, et peut le couper s’il a un relais.' },
+    {
+      kind: 'steps',
+      items: [
+        'Ouvrez la fiche de l’appareil (Mes appareils, ou Machines), bloc « Capteur », puis « Ajouter un capteur ». Cochez « relais » s’il doit pouvoir couper, « sonde » pour un réfrigérateur, un congélateur ou un climatiseur.',
+        'Le code s’affiche une fois (15 minutes) : saisissez-le sur le capteur, qui se connecte au wifi.',
+        'Le capteur envoie une première lecture pour vérifier ses réglages. Ses mesures comptent seulement si cette lecture est plausible.',
+      ],
+    },
+    {
+      kind: 'list',
+      items: [
+        'Coupure d’internet : le capteur garde ses mesures en mémoire et les envoie au retour de la connexion. Rien n’est perdu.',
+        'Couper un appareil : c’est toujours vous qui décidez s’il est éteignable (page Mon boîtier). Le boîtier vous demande de confirmer, le capteur coupe, puis confirme qu’il a bien coupé. Sans cette confirmation, l’ordre est marqué échoué, jamais « éteint ».',
+        'Sans internet, la coupure à la voix ne passe pas : le boîtier comprend votre demande grâce à la plateforme.',
+        'Un appareil n’a qu’un capteur. Pour le changer, révoquez l’ancien sur sa fiche (Sources de mesures).',
+      ],
+    },
   ],
 }
 
@@ -259,6 +285,7 @@ const MENAGE: Guide = {
         { kind: 'p', text: 'Le boîtier apparaît « Hors ligne » quand il ne s’est pas manifesté depuis 90 secondes : vérifiez qu’il est branché et que le wifi fonctionne.' },
       ],
     },
+    CAPTEURS_CLIENT,
     ALERTES,
     ACCES_TECHNICIEN_CLIENT,
   ],
@@ -267,7 +294,7 @@ const MENAGE: Guide = {
 const PME: Guide = {
   title: 'Guide PME',
   intro: 'Suivre vos sites et vos équipements, brancher vos mesures, être prévenu à temps et piloter vos économies.',
-  sections: [COMMENCER_PRO, SOURCES_CLIENT, ALERTES, SEUILS_PRO, FICHIERS_CLIENT, CONTRAT_CLIENT, ACCES_TECHNICIEN_CLIENT, REFUS_DONNEES],
+  sections: [COMMENCER_PRO, SOURCES_CLIENT, CAPTEURS_CLIENT, ALERTES, SEUILS_PRO, FICHIERS_CLIENT, CONTRAT_CLIENT, ACCES_TECHNICIEN_CLIENT, REFUS_DONNEES],
 }
 
 const INDUSTRIE: Guide = {
@@ -276,6 +303,7 @@ const INDUSTRIE: Guide = {
   sections: [
     COMMENCER_PRO,
     SOURCES_CLIENT,
+    CAPTEURS_CLIENT,
     {
       id: 'passerelle',
       title: 'La passerelle de mesure',
@@ -347,6 +375,7 @@ const TECHNICIEN: Guide = {
             ['Une supervision qui expose ses valeurs en Modbus-TCP', 'Passerelle de mesure, qui lit la supervision comme un compteur', '≈ 1 minute'],
             ['Un logiciel qui ne sait qu’exporter des fichiers', 'Dépôt de fichiers', '≈ 1 jour'],
             ['Un ménage qui veut le boîtier qui parle', 'Boîtier Nouankany', '≈ 1 minute'],
+            ['Un appareil à mesurer seul, ou à pouvoir couper', 'Capteur d’un appareil', '≈ 1 minute'],
           ],
         },
         { kind: 'note', text: 'Préférez toujours la passerelle quand c’est possible : aucun travail pour le client, et nous maîtrisons les unités.' },
@@ -366,6 +395,24 @@ const TECHNICIEN: Guide = {
             'Montrez au client sa page « Mon boîtier » : c’est lui qui choisit les appareils que le boîtier peut éteindre, et les quatre lumières.',
           ],
         },
+      ],
+    },
+    {
+      id: 'capteur',
+      title: 'Poser le capteur d’un appareil',
+      blocks: [
+        { kind: 'p', text: 'Le capteur : un ESP32 avec un module de mesure PZEM-004T (puissance, énergie, tension, courant, facteur de puissance), une sonde de température en option, un relais en option pour couper. Il envoie lui-même par le wifi du client.' },
+        {
+          kind: 'steps',
+          items: [
+            'L’appareil doit être déclaré dans le compte, avec sa vraie puissance (plaque signalétique) : la lecture d’essai la compare.',
+            'Dans l’intervention, fiche de l’appareil, « Ajouter un capteur » (ou « Ajouter une source », « Je veux un capteur sur un appareil »). Cochez relais et sonde selon le matériel posé.',
+            'Saisissez le code (15 minutes, une seule fois) sur le capteur, avec le wifi du client.',
+            'Attendez la lecture d’essai sur la fiche de la source : « En service », sinon voir « Comprendre la lecture d’essai ».',
+            'Relais posé : montrez au client sa page « Mon boîtier ». C’est lui qui rend l’appareil éteignable ; faites un essai de coupure avec lui.',
+          ],
+        },
+        { kind: 'note', text: 'Un appareil n’accepte qu’un capteur actif. Le capteur garde ses mesures en mémoire pendant une coupure d’internet ; la plateforme les accepte jusqu’à 30 jours de retard.' },
       ],
     },
     {

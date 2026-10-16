@@ -5,18 +5,20 @@ import { SOURCE_KIND_LABEL, SOURCE_KIND_SENTENCE } from '@/api/sources'
 import { Button } from '@/components/ui/Button'
 import { Modal, MutationError, SelectField } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
+import { AddSensorModal } from '@/components/sources/AddSensorModal'
+import { CreatedModal } from '@/components/sources/CreatedSourceModal'
 import { useInstallation, useSourceMutations } from '@/hooks/queries/useSources'
 import { useInterventionStore } from '@/store/interventionStore'
-import { useSessionStore } from '@/store/sessionStore'
 import type { BackendDeviceCreated, BackendSourceKind } from '@/types/backend'
 
-type Choice = 'passerelle' | 'logiciel' | 'fichier' | 'boitier' | 'factures'
+type Choice = 'passerelle' | 'logiciel' | 'fichier' | 'boitier' | 'capteur' | 'factures'
 
 const CHOICES: { value: Choice; title: string; text: string }[] = [
   { value: 'passerelle', title: 'Je n’ai pas de logiciel : des compteurs, ou rien', text: SOURCE_KIND_SENTENCE.passerelle },
   { value: 'logiciel', title: 'Mon logiciel peut envoyer ses mesures', text: SOURCE_KIND_SENTENCE.logiciel },
   { value: 'fichier', title: 'Mon logiciel exporte seulement des fichiers', text: SOURCE_KIND_SENTENCE.fichier },
   { value: 'boitier', title: 'Je veux le boîtier qui parle', text: SOURCE_KIND_SENTENCE.vocal },
+  { value: 'capteur', title: 'Je veux un capteur sur un appareil', text: SOURCE_KIND_SENTENCE.capteur },
   { value: 'factures', title: 'Je n’ai aucun compteur', text: 'Vos factures CIE suffisent pour commencer : envoyez-les en photo ou en PDF.' },
 ]
 
@@ -38,6 +40,7 @@ export function AddSourceModal({ onClose, onCreated }: { onClose: () => void; on
   const sites = installation.data?.sites ?? []
 
   if (created) return <CreatedModal created={created} onClose={() => onCreated(created.id)} />
+  if (choice === 'capteur') return <AddSensorModal onClose={() => setChoice(null)} onCreated={onCreated} />
 
   if (choice === null || (choice === 'boitier' && !intervention) || choice === 'factures') {
     return (
@@ -131,60 +134,5 @@ const PLACEHOLDER: Record<BackendSourceKind, string> = {
   passerelle: 'Passerelle de l’atelier',
   logiciel: 'Supervision de l’usine',
   fichier: 'Export quotidien de la GTB',
-}
-
-function CreatedModal({ created, onClose }: { created: BackendDeviceCreated; onClose: () => void }) {
-  const profile = useSessionStore((s) => s.session?.profile)
-  const [copied, setCopied] = useState(false)
-  const isCode = Boolean(created.pairing_code)
-  const text = isCode ? (created.pairing_code ?? '') : `Identifiant : ${created.id}\nClé : ${created.secret ?? ''}`
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-    } catch {
-      setCopied(false)
-    }
-  }
-
-  return (
-    <Modal
-      title={isCode ? `Code d’appairage ${created.kind === 'vocal' ? 'du boîtier' : 'de la passerelle'}` : 'Identifiant et clé de la source'}
-      description="Affiché une seule fois : notez-le maintenant."
-      onClose={onClose}
-      actions={
-        <>
-          <Button type="button" variant="outline" onClick={() => void copy()}>
-            {copied ? 'Copié' : 'Copier'}
-          </Button>
-          <Button type="button" onClick={onClose}>
-            Terminé, ouvrir la source
-          </Button>
-        </>
-      }
-    >
-      {isCode ? (
-        <div className="flex flex-col gap-2.5">
-          <p className="w-fit border border-text-primary px-5 py-3 font-heading text-[2.25rem] font-bold leading-none tracking-[0.16em]">{created.pairing_code}</p>
-          <p className="text-sm text-text-primary">Saisissez ce code sur {created.kind === 'vocal' ? 'le boîtier' : 'la passerelle'} « {created.nom} » dans les 15 minutes. Il ne sert qu’une fois.</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2.5">
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
-            <dt className="text-text-secondary">Identifiant</dt>
-            <dd className="break-all font-mono text-text-primary">{created.id}</dd>
-            <dt className="text-text-secondary">Clé</dt>
-            <dd className="break-all font-mono text-text-primary">{created.secret}</dd>
-          </dl>
-          <p className="text-sm text-text-primary">
-            Remettez-les à la personne qui règle le logiciel, en main propre ou par un canal privé. Clé perdue : « Remplacer la clé » sur la fiche de la source.
-          </p>
-          <Link to={profile === 'technicien' ? '/app/aide#logiciel' : '/app/aide#contrat'} className="text-sm font-medium text-accent-cta underline underline-offset-2">
-            Contrat d’envoi et unités
-          </Link>
-        </div>
-      )}
-    </Modal>
-  )
+  capteur: 'Capteur du climatiseur',
 }

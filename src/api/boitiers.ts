@@ -59,6 +59,7 @@ export const COMMAND_RESULT_LABEL: Record<BackendDeviceCommand['status'], string
   expired: 'Expirée',
   proposed: 'En attente',
   confirmed: 'En cours',
+  sent: 'Envoyée au capteur',
 }
 
 export const COMMAND_VIA_LABEL: Record<BackendDeviceCommand['requested_via'], string> = { voice: 'À la voix', site: 'Depuis le site' }

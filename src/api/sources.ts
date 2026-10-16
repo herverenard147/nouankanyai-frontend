@@ -28,6 +28,7 @@ export const SOURCE_KIND_LABEL: Record<BackendSourceKind, string> = {
   passerelle: 'Passerelle de mesure',
   logiciel: 'Logiciel du client',
   fichier: 'Dépôt de fichiers',
+  capteur: 'Capteur d’un appareil',
 }
 
 export const SOURCE_KIND_SENTENCE: Record<BackendSourceKind, string> = {
@@ -35,6 +36,7 @@ export const SOURCE_KIND_SENTENCE: Record<BackendSourceKind, string> = {
   passerelle: 'Un petit boîtier muet, posé dans le tableau électrique, qui lit vos compteurs et envoie leurs mesures.',
   logiciel: 'Votre logiciel de supervision ou de gestion d’énergie envoie lui-même ses mesures, avec une clé.',
   fichier: 'Votre logiciel exporte un fichier (CSV ou Excel), déposé chaque jour automatiquement ou à la main.',
+  capteur: 'Un petit capteur posé sur un appareil : il mesure sa consommation, et peut le couper s’il a un relais.',
 }
 
 export const METER_STATUS_LABEL = {
@@ -97,4 +99,11 @@ export function modbusOffset(documented: number): { address: number; function: 3
   if (documented >= 30001 && documented <= 39999) return { address: documented - 30001, function: 4 }
   if (documented >= 40001 && documented <= 49999) return { address: documented - 40001, function: 3 }
   return null
+}
+
+/** Capteurs d'appareils du compte, par code d'appareil (un capteur actif au plus par appareil). */
+export function sensorsByMachine(devices: BackendDevice[]): Map<string, BackendDevice> {
+  const out = new Map<string, BackendDevice>()
+  for (const d of devices) if (kindOf(d) === 'capteur' && d.machine_code) out.set(d.machine_code, d)
+  return out
 }

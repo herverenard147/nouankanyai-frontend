@@ -58,8 +58,8 @@ export function DefinitionRows({ rows }: { rows: [string, string][] }) {
   )
 }
 
-/** Ce que le boîtier a fait : une ligne par demande d'extinction, « via le boîtier » quand il l'a exécutée, et « (démo) » tant
- * qu'aucun appareil réel n'est commandé (canal simulé). */
+/** Ce que le boîtier a fait : une ligne par demande d'extinction ; « confirmé par le capteur » quand le capteur de l'appareil
+ * a réellement coupé (2026-10-16), « (démo) » quand l'appareil n'a pas de capteur à relais (canal simulé). */
 export function CommandsTable({ commands, status }: { commands: BackendDeviceCommand[]; status: 'pending' | 'error' | 'success' }) {
   return (
     <MetricState status={status} isEmpty={false}>
@@ -84,8 +84,7 @@ export function CommandsTable({ commands, status }: { commands: BackendDeviceCom
                   <td className="px-3 py-2.5 text-text-secondary">{COMMAND_VIA_LABEL[command.requested_via]}</td>
                   <td className="px-3 py-2.5 text-text-primary">
                     {COMMAND_RESULT_LABEL[command.status]}
-                    {command.status === 'executed' ? ' · via le boîtier' : ''}
-                    {command.simulated && command.status === 'executed' ? ' (démo)' : ''}
+                    {command.status === 'executed' ? (command.simulated ? ' (démo)' : ' · confirmé par le capteur') : ''}
                   </td>
                 </tr>
               ))}

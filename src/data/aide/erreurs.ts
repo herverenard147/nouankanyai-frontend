@@ -152,6 +152,44 @@ export const ERRORS: ErrorEntry[] = [
     audiences: CLIENTS,
   },
 
+  // ------------------------------------------------------------------ capteur d'un appareil
+  {
+    id: 'capteur-sans-appareil',
+    message: 'Un capteur se pose sur un appareil : choisissez l’appareil.',
+    match: /^Un capteur se pose sur un appareil/,
+    where: 'Ajout d’un capteur.',
+    meaning: 'Un capteur mesure un seul appareil : la plateforme doit savoir lequel.',
+    fix: ['Choisissez l’appareil dans la liste, ou ajoutez le capteur depuis la fiche de l’appareil.', 'L’appareil n’est pas dans la liste ? Déclarez-le d’abord (Mes appareils, ou Machines).'],
+    audiences: [...CLIENTS, ...TECH],
+  },
+  {
+    id: 'capteur-appareil-introuvable',
+    message: 'Appareil introuvable pour cette source.',
+    match: /^Appareil introuvable pour cette source/,
+    where: 'Ajout d’un capteur.',
+    meaning: 'L’appareil choisi n’existe plus dans ce compte (supprimé entre-temps, ou d’un autre compte).',
+    fix: ['Rechargez la page et choisissez de nouveau l’appareil.'],
+    audiences: [...CLIENTS, ...TECH],
+  },
+  {
+    id: 'capteur-deja-pose',
+    message: 'Cet appareil a déjà un capteur : révoquez-le avant d’en poser un autre.',
+    match: /^Cet appareil a déjà un capteur/,
+    where: 'Ajout d’un capteur.',
+    meaning: 'Un appareil n’accepte qu’un capteur actif, pour que ses mesures ne soient jamais comptées deux fois.',
+    fix: ['Pour remplacer le capteur : Sources de mesures, fiche de l’ancien capteur, « Révoquer », puis ajoutez le nouveau.'],
+    audiences: [...CLIENTS, ...TECH],
+  },
+  {
+    id: 'capteur-hors-ligne',
+    message: 'Le capteur de l’appareil est hors ligne.',
+    match: /capteur de l.appareil est hors ligne|aucun capteur avec coupure/,
+    where: 'Extinction d’un appareil par le boîtier ou depuis la plateforme.',
+    meaning: 'L’ordre de coupure n’a pas pu partir : le capteur de l’appareil ne répond plus, ou l’appareil n’a pas de capteur à relais. Rien n’a été éteint.',
+    fix: ['Vérifiez que le capteur est alimenté et que le wifi fonctionne : il doit être « En ligne » sur sa fiche (Sources de mesures).', 'Sans capteur à relais, l’appareil ne peut pas être coupé à distance : éteignez-le à la main.'],
+    audiences: [...CLIENTS, ...TECH],
+  },
+
   // ------------------------------------------------------------------ passerelle et compteurs
   {
     id: 'passerelle-seule',
