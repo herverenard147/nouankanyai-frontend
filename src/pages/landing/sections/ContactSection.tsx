@@ -66,13 +66,13 @@ function MessageForm() {
 export function ContactSection() {
   return (
     <section id="contact" className="bg-bg-elevated py-20 lg:py-28">
-      <div className="mx-auto max-w-[1200px] px-6">
+      <div className="mx-auto max-w-[75rem] px-6">
         <h2 className="max-w-[20ch] text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
           Une question, un projet ? Écrivez-nous
         </h2>
         <p className="mt-3.5 text-text-secondary">Nous répondons habituellement sous 48h ouvrées.</p>
 
-        <div className="mt-12 grid gap-12 lg:grid-cols-[6fr_5fr] lg:gap-[72px]">
+        <div className="mt-12 grid gap-12 lg:grid-cols-[6fr_5fr] lg:gap-[4.5rem]">
           <div>
             <h3 className="text-2xl font-bold tracking-[-0.015em] text-text-primary">Écrivez-nous</h3>
             <p className="mb-6 mt-2 text-text-secondary">
@@ -111,7 +111,7 @@ export function ContactSection() {
             </div>
 
             <div className="border-t border-border pt-7">
-              <h3 className="text-xl font-bold tracking-[-0.01em] text-text-primary">Une question sur le produit ?</h3>
+              <h3 className="text-xl font-bold tracking-[-0.01em] text-text-primary">Une question sur le produit ?</h3>
               <p className="mt-1.5 text-text-secondary">
                 Consultez d&rsquo;abord la{' '}
                 <Link to="/#faq" className="font-semibold text-accent-cta hover:text-accent-cta-hover">

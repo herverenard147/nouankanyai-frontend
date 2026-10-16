@@ -1,7 +1,7 @@
 import { Suspense, lazy, useCallback, useState } from 'react'
 
 import { Boitier2D } from '@/components/boitier/Boitier2D'
-import { BOITIER_PHRASES, BOITIER_STATES, boitierState } from '@/components/boitier/boitierStates'
+import { BOITIER_PHRASES, BOITIER_STATES } from '@/components/boitier/boitierStates'
 import type { BoitierState } from '@/components/boitier/boitierStates'
 import { Footer } from '@/pages/landing/sections/Footer'
 import { NavBar } from '@/pages/landing/sections/NavBar'
@@ -11,7 +11,6 @@ const BoitierEclate = lazy(() => import('@/components/boitier/BoitierEclate'))
 
 export function BoitierPage() {
   const [state, setState] = useState<BoitierState>('rouge')
-  const info = boitierState(state)
   const [no3d, setNo3d] = useState(false)
   const onUnavailable = useCallback(() => setNo3d(true), [])
 
@@ -19,18 +18,17 @@ export function BoitierPage() {
     <>
       <NavBar />
       <main id="main-content">
-        <section className="bg-dark-bg py-16 text-white lg:py-24">
-          <div className="mx-auto max-w-[1200px] px-6">
+        <section className="bg-dark-bg py-12 text-white lg:py-16">
+          <div className="mx-auto max-w-[75rem] px-6">
             <h1 className="max-w-[20ch] text-[clamp(2.25rem,5vw,3.25rem)] font-bold leading-[1.05] tracking-[-0.025em]">
-              Votre installation, résumée par une lumière et une voix.
+              Un coup d&rsquo;œil, et vous savez.
             </h1>
-            <p className="mt-5 max-w-[58ch] text-[1.2rem] leading-snug text-dark-text">
-              Le boîtier Nouankany montre en permanence l&rsquo;état de vos appareils, vous dit quoi faire quand
-              l&rsquo;un d&rsquo;eux dérive, et l&rsquo;éteint quand vous le lui demandez.
+            <p className="mt-5 max-w-[48ch] text-[1.2rem] leading-snug text-dark-text">
+              Vert, tout va bien. Orange, il surveille. Rouge, il vous dit quoi faire.
             </p>
 
-            <div className="mt-14 grid items-start gap-12 lg:mt-16 lg:grid-cols-2 lg:gap-[72px]">
-              <div className="bg-dark-field px-4 py-10 sm:px-8">
+            <div className="mt-8 grid items-start gap-10 lg:mt-10 lg:grid-cols-2 lg:gap-14">
+              <div className="bg-dark-field px-2 py-3 sm:px-4 sm:py-4">
                 {no3d ? (
                   <Boitier2D state={state} />
                 ) : (
@@ -38,10 +36,8 @@ export function BoitierPage() {
                     <BoitierEclate state={state} onUnavailable={onUnavailable} />
                   </Suspense>
                 )}
-                <p className="mt-6 text-center text-sm text-dark-text">
-                  Vue 3D du prototype : glissez pour le faire tourner dans tous les sens, molette pour zoomer. « Éclaté »
-                  sépare les pièces ; cliquez sur l&rsquo;une d&rsquo;elles pour la détailler. Choisissez un état à droite :
-                  l&rsquo;anneau prend sa couleur.
+                <p className="mt-4 text-center text-sm text-dark-text">
+                  Glissez pour le faire tourner. « Éclaté » pour l&rsquo;ouvrir, puis touchez une pièce.
                 </p>
               </div>
 
@@ -49,9 +45,9 @@ export function BoitierPage() {
                 <div
                   role="group"
                   aria-label="État affiché par le boîtier"
-                  className="grid grid-cols-2 border border-dark-field-border"
+                  className="grid grid-cols-2 gap-px bg-dark-field-border"
                 >
-                  {BOITIER_STATES.map((item, index) => {
+                  {BOITIER_STATES.map((item) => {
                     const selected = item.id === state
                     return (
                       <button
@@ -59,10 +55,8 @@ export function BoitierPage() {
                         type="button"
                         aria-pressed={selected}
                         onClick={() => setState(item.id)}
-                        className={`focus-ring flex min-h-12 items-center gap-3 px-4 py-2 text-left text-[0.95rem] font-semibold ${
-                          index % 2 === 1 ? 'border-l border-dark-field-border' : ''
-                        } ${index > 1 ? 'border-t border-dark-field-border' : ''} ${
-                          selected ? 'bg-white text-text-primary' : 'text-white hover:bg-white/10'
+                        className={`focus-ring flex min-h-12 items-center justify-center gap-3 px-4 py-2 text-[0.95rem] font-semibold ${
+                          selected ? 'bg-white text-text-primary' : 'bg-dark-bg text-white hover:bg-white/10'
                         }`}
                       >
                         <span
@@ -76,35 +70,52 @@ export function BoitierPage() {
                   })}
                 </div>
 
-                <div aria-live="polite" className="mt-7">
-                  <p className="text-[1.15rem] font-semibold">{info.meaning}</p>
-                  <ol className="mt-6 border-t border-dark-field-border">
-                    {info.dialog.map((line, index) => (
-                      <li key={`${state}-${index}`} className="border-b border-dark-field-border py-4">
-                        <p className="font-mono text-label text-dark-text">{line.who}</p>
-                        <p className="mt-1">{line.text}</p>
-                      </li>
-                    ))}
-                  </ol>
+                {/* Tous les états sont posés dans la même case : la colonne prend la hauteur du plus long
+                    (« Action requise ») et ne bouge plus quand on change d'état. */}
+                <div aria-live="polite" className="mt-6 grid">
+                  {BOITIER_STATES.map((item) => (
+                    <div
+                      key={item.id}
+                      aria-hidden={item.id !== state}
+                      className={`[grid-area:1/1] ${item.id === state ? '' : 'invisible'}`}
+                    >
+                      <p className="text-[1.15rem] font-semibold">{item.meaning}</p>
+                      <ol className="mt-6 flex flex-col gap-3">
+                        {item.dialog.map((line, index) => (
+                          <li
+                            key={index}
+                            className={`max-w-[85%] px-4 py-3 ${
+                              line.who === 'Vous' ? 'self-end bg-white text-text-primary' : 'self-start bg-dark-field'
+                            }`}
+                          >
+                            <p
+                              className={`font-mono text-label ${line.who === 'Vous' ? 'text-text-secondary' : 'text-dark-text'}`}
+                            >
+                              {line.who}
+                            </p>
+                            <p className="mt-1">{line.text}</p>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <p className="mt-16 max-w-[46ch] border-t border-dark-field-border pt-8 text-[1.2rem] leading-snug">
-              Le boîtier n&rsquo;éteint un appareil que si vous le lui demandez. Quand la panne demande une
-              intervention sur place, il vous dit quoi vérifier au lieu d&rsquo;agir à votre place.
+            <p className="mx-auto mt-10 max-w-[46ch] border-t border-dark-field-border pt-6 text-center text-[1.2rem] leading-snug">
+              Il n&rsquo;éteint rien sans votre accord.
             </p>
           </div>
         </section>
 
         <section className="py-16 lg:py-24">
-          <div className="mx-auto max-w-[1200px] px-6">
+          <div className="mx-auto max-w-[75rem] px-6">
             <h2 className="max-w-[20ch] text-[clamp(1.75rem,3.5vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
-              Plusieurs façons de lui parler
+              Parlez-lui normalement
             </h2>
             <p className="mt-4 max-w-[60ch] text-text-secondary">
-              Une même demande se dit de plusieurs manières : pas besoin de retenir une formule exacte. Commencez
-              toujours par « Hey Nouankany ».
+              Dites « Hey Nouankany », puis demandez avec vos mots.
             </p>
             <div className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
               {BOITIER_PHRASES.map((group) => (

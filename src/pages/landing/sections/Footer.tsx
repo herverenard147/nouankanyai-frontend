@@ -10,7 +10,7 @@ export function Footer() {
 
   return (
     <footer className="bg-dark-bg py-14 text-dark-text">
-      <div className="mx-auto max-w-[1200px] px-6">
+      <div className="mx-auto max-w-[75rem] px-6">
         <div className="mb-9 grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr))]">
           <div>
             <div className="flex items-center gap-2">
@@ -30,29 +30,29 @@ export function Footer() {
             <h4 className="text-[0.95rem] font-bold text-white">
               Produit
             </h4>
-            <ul className="mt-3 flex flex-col gap-2 text-sm text-dark-text">
+            <ul className="mt-2 flex flex-col text-sm text-dark-text">
               <li>
-                <Link to="/#profils" className="hover:text-white">
+                <Link to="/#profils" className="inline-block py-1.5 hover:text-white">
                   Pour qui
                 </Link>
               </li>
               <li>
-                <Link to="/le-boitier" className="hover:text-white">
+                <Link to="/le-boitier" className="inline-block py-1.5 hover:text-white">
                   Le boîtier
                 </Link>
               </li>
               <li>
-                <Link to="/comment-ca-marche" className="hover:text-white">
+                <Link to="/comment-ca-marche" className="inline-block py-1.5 hover:text-white">
                   Comment ça marche
                 </Link>
               </li>
               <li>
-                <Link to="/#formules" className="hover:text-white">
+                <Link to="/#formules" className="inline-block py-1.5 hover:text-white">
                   Formules
                 </Link>
               </li>
               <li>
-                <Link to="/#confiance" className="hover:text-white">
+                <Link to="/#confiance" className="inline-block py-1.5 hover:text-white">
                   Notre engagement
                 </Link>
               </li>
@@ -63,19 +63,19 @@ export function Footer() {
             <h4 className="text-[0.95rem] font-bold text-white">
               Entreprise
             </h4>
-            <ul className="mt-3 flex flex-col gap-2 text-sm text-dark-text">
+            <ul className="mt-2 flex flex-col text-sm text-dark-text">
               <li>
-                <Link to="/#apropos" className="hover:text-white">
+                <Link to="/#apropos" className="inline-block py-1.5 hover:text-white">
                   Qui sommes-nous
                 </Link>
               </li>
               <li>
-                <Link to="/#contact" className="hover:text-white">
+                <Link to="/#contact" className="inline-block py-1.5 hover:text-white">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link to="/#faq" className="hover:text-white">
+                <Link to="/#faq" className="inline-block py-1.5 hover:text-white">
                   FAQ
                 </Link>
               </li>
@@ -84,9 +84,9 @@ export function Footer() {
 
           <div>
             <h4 className="text-[0.95rem] font-bold text-white">Légal</h4>
-            <ul className="mt-3 flex flex-col gap-2 text-sm text-dark-text">
+            <ul className="mt-2 flex flex-col text-sm text-dark-text">
               <li>
-                <button type="button" onClick={() => setOpenDoc('cgu')} className="text-left hover:text-white">
+                <button type="button" onClick={() => setOpenDoc('cgu')} className="py-1.5 text-left hover:text-white">
                   Conditions Générales d&rsquo;Utilisation
                 </button>
               </li>
@@ -94,7 +94,7 @@ export function Footer() {
                 <button
                   type="button"
                   onClick={() => setOpenDoc('confidentialite')}
-                  className="text-left hover:text-white"
+                  className="py-1.5 text-left hover:text-white"
                 >
                   Politique de confidentialité
                 </button>

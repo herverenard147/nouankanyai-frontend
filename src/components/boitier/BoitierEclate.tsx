@@ -19,7 +19,7 @@ import type { Material, Object3D } from 'three'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-import { COMP, META, PARTS } from '@/components/boitier/boitierEclateData'
+import { META, PARTS } from '@/components/boitier/boitierEclateData'
 import type { Box } from '@/components/boitier/boitierEclateData'
 import { Boitier2D } from '@/components/boitier/Boitier2D'
 import { boitierState } from '@/components/boitier/boitierStates'
@@ -32,7 +32,6 @@ const T_EXPLODED = 1.0
 const PITCH_START = (20 * Math.PI) / 180
 const YAW_START = (-35 * Math.PI) / 180
 const KEYS = Object.keys(META.components)
-const REAL_COUNT = KEYS.reduce((n, k) => n + Object.values(PARTS[k] ?? {}).filter((p) => p.real).length, 0)
 
 const compOf = (m: Material) => m.name.split('__')[0] ?? ''
 const refOf = (m: Material) => m.name.split('__')[1] ?? ''
@@ -69,7 +68,6 @@ export default function BoitierEclate({ state, onUnavailable }: BoitierEclatePro
   const [loaded, setLoaded] = useState(false)
   const [exploded, setExploded] = useState(false)
   const [focused, setFocused] = useState<string | null>(null)
-  const [selectedRef, setSelectedRef] = useState<string | null>(null)
   const [label, setLabel] = useState<{ text: string; real: boolean | null } | null>(null)
 
   useEffect(() => {
@@ -205,7 +203,6 @@ export default function BoitierEclate({ state, onUnavailable }: BoitierEclatePro
     const syncUi = () => {
       setExploded(isExploded)
       setFocused(focusedKey)
-      setSelectedRef(selRef)
     }
     const explode = () => {
       if (isExploded) return Promise.resolve()
@@ -522,9 +519,6 @@ export default function BoitierEclate({ state, onUnavailable }: BoitierEclatePro
   }, [onUnavailable])
 
   const engine = () => engineRef.current
-  const comp = focused ? META.components[focused] : null
-  const parts = focused ? PARTS[focused] ?? {} : {}
-  const part = focused && selectedRef ? parts[selectedRef] : null
 
   return (
     <div className="flex flex-col gap-4">
@@ -593,57 +587,6 @@ export default function BoitierEclate({ state, onUnavailable }: BoitierEclatePro
         ))}
       </div>
 
-      <div aria-live="polite" className="border-t border-dark-field-border pt-4">
-        {comp && focused ? (
-          <>
-            <p className="font-mono text-label text-dark-text">
-              Pièce {String(KEYS.indexOf(focused) + 1).padStart(2, '0')} / {KEYS.length} · {COMP[focused]?.dims}
-            </p>
-            <p className="mt-1 text-[1.05rem] font-bold">{comp.label}</p>
-            <p className="mt-1 text-sm text-dark-text">{COMP[focused]?.text}</p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {Object.entries(parts).map(([ref, p]) => (
-                <button
-                  key={ref}
-                  type="button"
-                  aria-pressed={selectedRef === ref}
-                  onClick={() => engine()?.selectRef(ref)}
-                  className={`focus-ring border px-2 py-1 text-xs ${
-                    selectedRef === ref ? 'border-white bg-white text-text-primary' : 'border-dark-field-border text-white hover:bg-white/10'
-                  }`}
-                >
-                  {p.name.replace(/\s*\(.*\)$/, '')}
-                </button>
-              ))}
-            </div>
-            {part && (
-              <div className="mt-3 border-l-2 border-white pl-3">
-                <p className="text-sm font-semibold">
-                  {part.name}{' '}
-                  <span className={`font-mono text-[0.65rem] uppercase ${part.real ? 'text-confirm' : 'text-dark-text'}`}>
-                    {part.real ? 'réel' : 'modélisé'}
-                  </span>
-                </p>
-                <p className="font-mono text-xs text-dark-text">{part.meta}</p>
-                <p className="mt-1 text-sm text-dark-text">{part.text}</p>
-              </div>
-            )}
-            <button type="button" onClick={() => engine()?.back()} className="focus-ring mt-3 text-sm font-semibold text-white underline">
-              Retour à la vue d&rsquo;ensemble
-            </button>
-          </>
-        ) : (
-          <>
-            <p className="font-mono text-label text-dark-text">
-              Vue d&rsquo;ensemble · Ø115 × 83 mm · {KEYS.length} sous-ensembles · {REAL_COUNT} composants réels
-            </p>
-            <p className="mt-1 text-sm text-dark-text">
-              Un Raspberry Pi 4 au fond, un haut-parleur et une carte ampli au milieu, quatre micros et un anneau de
-              12 LED en haut, dans un cylindre en tissu. Éclatez-le, puis cliquez sur une pièce pour la détailler.
-            </p>
-          </>
-        )}
-      </div>
     </div>
   )
 }

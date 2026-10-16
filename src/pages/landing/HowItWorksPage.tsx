@@ -106,7 +106,7 @@ export function HowItWorksPage() {
       <NavBar />
       <main id="main-content">
         <section className="border-b border-border py-16">
-          <div className="mx-auto max-w-[760px] px-6">
+          <div className="mx-auto max-w-[47.5rem] px-6">
             <p className="font-mono text-label font-semibold uppercase tracking-wide text-text-secondary">
               Comment ça marche
             </p>
@@ -120,7 +120,7 @@ export function HowItWorksPage() {
         </section>
 
         <section className="border-b border-border py-16">
-          <div className="mx-auto max-w-[1120px] px-6">
+          <div className="mx-auto max-w-[70rem] px-6">
             <div className="mb-10 flex flex-wrap items-center gap-3">
               <span className="w-fit rounded-pill bg-accent-cta px-3 py-1 text-xs font-semibold text-white">
                 Segment prioritaire
@@ -169,14 +169,14 @@ export function HowItWorksPage() {
         </section>
 
         <section className="py-16">
-          <div className="mx-auto max-w-[1120px] px-6">
+          <div className="mx-auto max-w-[70rem] px-6">
             <div className="mb-6 flex flex-wrap items-center gap-3">
               <span className="w-fit rounded-pill bg-bg-elevated px-3 py-1 text-xs font-semibold text-text-secondary">
                 Bientôt disponible
               </span>
               <h2 className="text-h2-section font-bold text-text-primary">Pour les Ménages</h2>
             </div>
-            <div className="max-w-[640px] rounded-card border border-border bg-card p-6">
+            <div className="max-w-[40rem] rounded-card border border-border bg-card p-6">
               <p className="text-small-body text-text-secondary">
                 Vous prenez en photo votre facture CIE. Nouankany prédit votre prochaine consommation et vous dit
                 précisément quoi éteindre ou décaler pour payer moins. Sans capteur pour commencer : ce parcours

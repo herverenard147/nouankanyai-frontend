@@ -16,7 +16,7 @@ const ROWS: { value: Provenance; definition: string }[] = [
 export function TrustSection() {
   return (
     <section id="confiance" className="py-20 lg:py-28">
-      <div className="mx-auto grid max-w-[1200px] items-start gap-12 px-6 lg:grid-cols-[6fr_5fr] lg:gap-[72px]">
+      <div className="mx-auto grid max-w-[75rem] items-start gap-12 px-6 lg:grid-cols-[6fr_5fr] lg:gap-[4.5rem]">
         <div>
           <h2 className="text-[clamp(2.25rem,4.5vw,3.25rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
             Une donnée est mesurée, estimée, ou synthétique. Jamais inventée.
