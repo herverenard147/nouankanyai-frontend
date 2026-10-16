@@ -183,6 +183,57 @@ export interface BackendMachineTestResult {
   pressure_bar: number
   power_kw: number
   diagnostic: BackendMachineDiagnostic | null
+  /** Alertes du registre fermées par cette vérification (elles passent « à documenter »). */
+  closed_alert_ids?: string[]
+}
+
+/** Une alerte du registre (GET /api/v1/alerts) : jamais supprimée, fermée avec la façon dont elle l'a été. */
+export interface BackendAlertEntry {
+  id: string
+  machine_code: string | null
+  machine_nom: string | null
+  kind: string | null
+  kind_label: string | null
+  level: 'alerte' | 'a_verifier' | 'ecart_prevision' | null
+  source: 'boitier' | 'moteur' | 'photo' | null
+  title: string | null
+  description: string | null
+  action: string | null
+  reco: { id: string | null; version: number | null; cause: string | null; steps: string[] }
+  opened_provenance: 'mesure' | 'simulation' | 'image' | null
+  created_at: string | null
+  last_seen_at: string | null
+  is_open: boolean
+  closed_at: string | null
+  closure_trigger: 'auto' | 'verification' | 'commande' | null
+  closure_provenance: 'mesure' | 'simulation' | null
+  resolution: 'nouankany' | 'intervention' | 'seule' | 'fausse_alerte' | 'remplacee' | 'inconnue' | null
+  needs_feedback: boolean
+  feedback: {
+    did_something: boolean
+    problem: string
+    problem_detail: string | null
+    action: string
+    action_detail: string | null
+    reco_useful: string | null
+    cost_fcfa: number | null
+    downtime_hours: number | null
+    learning_eligible: boolean
+    created_at: string | null
+  } | null
+}
+
+export type BackendAlertStatus = 'toutes' | 'ouvertes' | 'fermees' | 'a_documenter'
+
+export interface BackendAlertFeedbackIn {
+  did_something: boolean
+  problem: string
+  problem_detail?: string
+  action: 'reco_suivie' | 'autre_action' | 'technicien' | 'rien'
+  action_detail?: string
+  reco_useful?: 'oui' | 'en_partie' | 'non'
+  cost_fcfa?: number
+  downtime_hours?: number
 }
 
 export interface BackendDemoSeedResult {

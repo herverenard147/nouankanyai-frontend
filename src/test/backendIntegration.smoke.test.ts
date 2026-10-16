@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 
-import { fetchActionAlerts, fetchAlertHistory, fetchAutoAlerts } from '@/api/alerts'
+import { fetchActionAlerts, fetchAutoAlerts } from '@/api/alerts'
 import { fetchAdminPanel, reloadModels } from '@/api/adminModels'
 import { fetchAdminUsers, promoteUser } from '@/api/adminUsers'
 import { fetchAdvice } from '@/api/advice'
@@ -22,6 +22,7 @@ import {
   rawSites,
   rawAdminUserBilling,
   rawUserMachines,
+  rawAlertRegistry,
 } from '@/api/rawBackend'
 import { fetchThresholds, updateThresholds } from '@/api/settings'
 import { queryClient } from '@/lib/queryClient'
@@ -64,7 +65,7 @@ smoke('intégration backend réel : compte Ménage', () => {
     expect(Array.isArray(actionAlerts)).toBe(true)
     const autoAlerts = await fetchAutoAlerts('menage')
     expect(Array.isArray(autoAlerts)).toBe(true)
-    const history = await fetchAlertHistory('menage')
+    const history = await rawAlertRegistry('toutes')
     expect(Array.isArray(history)).toBe(true)
 
     const advice = await fetchAdvice('menage')
