@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 
 import { AppLayout } from '@/layouts/AppLayout'
@@ -10,40 +11,44 @@ import { ResetPasswordPage } from '@/pages/auth/ResetPasswordPage'
 import { VerifyEmailPage } from '@/pages/auth/VerifyEmailPage'
 import { HowItWorksPage } from '@/pages/landing/HowItWorksPage'
 import { LandingPage } from '@/pages/landing/LandingPage'
-import { BoitierDetailPage } from '@/pages/app/BoitierDetailPage'
-import { BoitiersPage } from '@/pages/app/BoitiersPage'
-import { AdvicePage } from '@/pages/app/AdvicePage'
-import { AssistantPage } from '@/pages/app/AssistantPage'
-import { AuditPage } from '@/pages/app/AuditPage'
-import { PlanActionPage } from '@/pages/app/PlanActionPage'
-import { AlertsPage } from '@/pages/app/AlertsPage'
-import { ConsumptionPage } from '@/pages/app/ConsumptionPage'
-import { EquipmentPage } from '@/pages/app/EquipmentPage'
-import { FacturationPage } from '@/pages/app/FacturationPage'
-import { GettingStartedPage } from '@/pages/app/GettingStartedPage'
-import { InvoicesPage } from '@/pages/app/InvoicesPage'
-import { JournalPage } from '@/pages/app/JournalPage'
-import { MachinesPage } from '@/pages/app/MachinesPage'
-import { OverviewPage } from '@/pages/app/OverviewPage'
-import { PredictionPage } from '@/pages/app/PredictionPage'
-import { RecommendationsPage } from '@/pages/app/RecommendationsPage'
-import { ReportsPage } from '@/pages/app/ReportsPage'
-import { SettingsPage } from '@/pages/app/SettingsPage'
-import { HelpPage } from '@/pages/app/HelpPage'
 import { InterventionLayout, InterventionsPage } from '@/pages/app/InterventionsPage'
-import { SourceDetailPage, SourcesPage } from '@/pages/app/SourcesPage'
-import { AdminBoitierDetailPage } from '@/pages/app/admin/AdminBoitierDetailPage'
-import { AdminBoitiersPage } from '@/pages/app/admin/AdminBoitiersPage'
-import { AdminHealthPage } from '@/pages/app/admin/AdminHealthPage'
-import { AdminBillingPage } from '@/pages/app/admin/AdminBillingPage'
-import { AdminLeadsPage } from '@/pages/app/admin/AdminLeadsPage'
-import { AdminMessagesPage } from '@/pages/app/admin/AdminMessagesPage'
-import { AdminModelsPage } from '@/pages/app/admin/AdminModelsPage'
-import { AdminUserDetailPage } from '@/pages/app/admin/AdminUserDetailPage'
-import { AdminUsersPage } from '@/pages/app/admin/AdminUsersPage'
 import { AppIndexRedirect } from '@/routes/AppIndexRedirect'
 import { ProfileGuard } from '@/routes/ProfileGuard'
 import { ProtectedRoute } from '@/routes/ProtectedRoute'
+
+// Pages du tableau de bord chargées à la demande (audit du 2026-10-16) : la page d'accueil et les pages publiques ne
+// téléchargent plus tout le tableau de bord. Le chargement s'affiche dans AppLayout (Suspense autour de l'Outlet).
+const BoitierDetailPage = lazy(() => import('@/pages/app/BoitierDetailPage').then((m) => ({ default: m.BoitierDetailPage })))
+const BoitiersPage = lazy(() => import('@/pages/app/BoitiersPage').then((m) => ({ default: m.BoitiersPage })))
+const AdvicePage = lazy(() => import('@/pages/app/AdvicePage').then((m) => ({ default: m.AdvicePage })))
+const AssistantPage = lazy(() => import('@/pages/app/AssistantPage').then((m) => ({ default: m.AssistantPage })))
+const AuditPage = lazy(() => import('@/pages/app/AuditPage').then((m) => ({ default: m.AuditPage })))
+const PlanActionPage = lazy(() => import('@/pages/app/PlanActionPage').then((m) => ({ default: m.PlanActionPage })))
+const AlertsPage = lazy(() => import('@/pages/app/AlertsPage').then((m) => ({ default: m.AlertsPage })))
+const ConsumptionPage = lazy(() => import('@/pages/app/ConsumptionPage').then((m) => ({ default: m.ConsumptionPage })))
+const EquipmentPage = lazy(() => import('@/pages/app/EquipmentPage').then((m) => ({ default: m.EquipmentPage })))
+const FacturationPage = lazy(() => import('@/pages/app/FacturationPage').then((m) => ({ default: m.FacturationPage })))
+const GettingStartedPage = lazy(() => import('@/pages/app/GettingStartedPage').then((m) => ({ default: m.GettingStartedPage })))
+const InvoicesPage = lazy(() => import('@/pages/app/InvoicesPage').then((m) => ({ default: m.InvoicesPage })))
+const JournalPage = lazy(() => import('@/pages/app/JournalPage').then((m) => ({ default: m.JournalPage })))
+const MachinesPage = lazy(() => import('@/pages/app/MachinesPage').then((m) => ({ default: m.MachinesPage })))
+const OverviewPage = lazy(() => import('@/pages/app/OverviewPage').then((m) => ({ default: m.OverviewPage })))
+const PredictionPage = lazy(() => import('@/pages/app/PredictionPage').then((m) => ({ default: m.PredictionPage })))
+const RecommendationsPage = lazy(() => import('@/pages/app/RecommendationsPage').then((m) => ({ default: m.RecommendationsPage })))
+const ReportsPage = lazy(() => import('@/pages/app/ReportsPage').then((m) => ({ default: m.ReportsPage })))
+const SettingsPage = lazy(() => import('@/pages/app/SettingsPage').then((m) => ({ default: m.SettingsPage })))
+const HelpPage = lazy(() => import('@/pages/app/HelpPage').then((m) => ({ default: m.HelpPage })))
+const SourceDetailPage = lazy(() => import('@/pages/app/SourcesPage').then((m) => ({ default: m.SourceDetailPage })))
+const SourcesPage = lazy(() => import('@/pages/app/SourcesPage').then((m) => ({ default: m.SourcesPage })))
+const AdminBoitierDetailPage = lazy(() => import('@/pages/app/admin/AdminBoitierDetailPage').then((m) => ({ default: m.AdminBoitierDetailPage })))
+const AdminBoitiersPage = lazy(() => import('@/pages/app/admin/AdminBoitiersPage').then((m) => ({ default: m.AdminBoitiersPage })))
+const AdminHealthPage = lazy(() => import('@/pages/app/admin/AdminHealthPage').then((m) => ({ default: m.AdminHealthPage })))
+const AdminBillingPage = lazy(() => import('@/pages/app/admin/AdminBillingPage').then((m) => ({ default: m.AdminBillingPage })))
+const AdminLeadsPage = lazy(() => import('@/pages/app/admin/AdminLeadsPage').then((m) => ({ default: m.AdminLeadsPage })))
+const AdminMessagesPage = lazy(() => import('@/pages/app/admin/AdminMessagesPage').then((m) => ({ default: m.AdminMessagesPage })))
+const AdminModelsPage = lazy(() => import('@/pages/app/admin/AdminModelsPage').then((m) => ({ default: m.AdminModelsPage })))
+const AdminUserDetailPage = lazy(() => import('@/pages/app/admin/AdminUserDetailPage').then((m) => ({ default: m.AdminUserDetailPage })))
+const AdminUsersPage = lazy(() => import('@/pages/app/admin/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage })))
 
 export const router = createBrowserRouter([
   {

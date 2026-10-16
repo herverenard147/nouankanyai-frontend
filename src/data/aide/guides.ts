@@ -580,7 +580,7 @@ const ADMIN: Guide = {
             ['Client (ménage, PME, industrie)', 'Son compte et ses données', 'Inscription'],
             ['Technicien', 'Installer dans le compte d’un client qui l’y autorise, et rien d’autre', 'Superadmin (Utilisateurs, fiche du compte, rôle)'],
             ['Administrateur', 'Les pages d’administration', 'Superadmin'],
-            ['Superadmin', 'Tout, dont les rôles et la suppression de comptes', '—'],
+            ['Superadmin', 'Tout, dont les rôles et la suppression de comptes', 'Le propriétaire, par le script promote_admin.py'],
           ],
         },
         { kind: 'p', text: 'Un technicien n’a aucun accès aux comptes clients par son rôle seul : c’est le client qui ouvre son compte, pour une durée. Retirer le rôle d’un technicien coupe toutes ses interventions.' },
