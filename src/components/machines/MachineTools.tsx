@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 
+import { MachineSensor } from '@/components/machines/MachineSensor'
 import { Button } from '@/components/ui/Button'
 import { MutationError } from '@/components/ui/Modal'
 import { useAnalyzeMachineMedia, useResetMachine, useSimulateMachine } from '@/hooks/queries/useMachineCrud'
@@ -25,6 +26,8 @@ export function MachineTools({ machine }: { machine: BackendMachine }) {
   return (
     <section className="flex flex-col gap-3 border-t border-border pt-4" aria-label="Outils de la machine">
       <h4 className="text-sm font-semibold text-text-primary">Outils</h4>
+
+      <MachineSensor machine={machine} />
 
       <div className="flex flex-col gap-2">
         <input

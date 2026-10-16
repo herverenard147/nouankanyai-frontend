@@ -141,6 +141,18 @@ export function SourceDetailPage() {
               />
             </BoitierSectionBlock>
             {kindOf(device) === 'passerelle' && <MeterPointsPanel deviceId={device.id} />}
+            {kindOf(device) === 'capteur' && (
+              <>
+                <DefinitionRows
+                  rows={[
+                    ['Appareil', device.machine_nom ?? device.machine_code ?? 'Appareil retiré'],
+                    ['Coupure', device.has_relay ? 'Oui : il peut couper l’appareil quand le client le demande' : 'Non : il mesure seulement'],
+                    ['Sonde de température', device.has_temperature_probe ? 'Oui' : 'Non'],
+                  ]}
+                />
+                <MeterPointsPanel deviceId={device.id} sensor />
+              </>
+            )}
             {(kindOf(device) === 'logiciel' || kindOf(device) === 'fichier') && <KeyPanel deviceId={device.id} />}
             {kindOf(device) === 'fichier' && <FileSourcePanel deviceId={device.id} />}
             {(kindOf(device) === 'logiciel' || kindOf(device) === 'fichier') && <AliasesPanel deviceId={device.id} />}

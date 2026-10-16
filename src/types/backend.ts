@@ -175,8 +175,8 @@ export interface BackendMachineDiagnostic {
 }
 
 export interface BackendMachineTestResult {
-  /** Aucun capteur réel : la mesure de vérification est toujours simulée. */
-  provenance: 'simulation'
+  /** « mesure » : dernière mesure réelle du capteur de l'appareil (moins de 15 minutes) ; sinon simulée. */
+  provenance: 'simulation' | 'mesure'
   resolved: boolean
   temperature_c: number
   vibration_mm_s: number
@@ -686,12 +686,17 @@ export type BackendBoitierLight = 'vert' | 'orange' | 'rouge' | 'aucune_donnee'
 export type BackendBoitierMachineState = 'vert' | 'orange' | 'rouge' | 'arrete' | 'inconnu'
 
 /** Type de source de mesures (backend `devices.kind`, 2026-10-16). */
-export type BackendSourceKind = 'vocal' | 'passerelle' | 'logiciel' | 'fichier'
+export type BackendSourceKind = 'vocal' | 'passerelle' | 'logiciel' | 'fichier' | 'capteur'
 
 export interface BackendDevice {
   id: string
   nom: string
   kind?: BackendSourceKind
+  /** Capteur d'un appareil (2026-10-16) : l'appareil mesuré et ce que porte le capteur. */
+  machine_code?: string | null
+  machine_nom?: string | null
+  has_relay?: boolean
+  has_temperature_probe?: boolean
   scope: 'site' | 'account'
   language: 'fr' | 'en'
   site_id: string | null
@@ -722,6 +727,9 @@ export interface BackendDeviceCreatePayload {
   scope?: 'site' | 'account'
   language?: 'fr' | 'en'
   kind?: BackendSourceKind
+  machine_code?: string
+  relay?: boolean
+  temperature_probe?: boolean
 }
 
 export interface BackendDeviceUpdatePayload {
@@ -746,7 +754,8 @@ export interface BackendDeviceCommand {
   machine_code: string | null
   machine_nom: string | null
   type: string
-  status: 'proposed' | 'confirmed' | 'executed' | 'failed' | 'expired' | 'cancelled'
+  // « sent » : ordre envoyé au capteur de l'appareil, en attente de son acquittement (2026-10-16).
+  status: 'proposed' | 'confirmed' | 'sent' | 'executed' | 'failed' | 'expired' | 'cancelled'
   requested_via: 'voice' | 'site'
   simulated: boolean
   result: string | null

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { BOITIER_PROVENANCE, CONNECTION_LABEL, LANGUAGE_LABEL, LIGHT_SENTENCE, MACHINE_STATE_LABEL, connectionOf, lastActivity } from '@/api/boitiers'
+import { kindOf } from '@/api/sources'
 import { BackLink, BoitierSectionBlock, CommandsTable, DefinitionRows, LightDot, Th } from '@/components/boitier/BoitierParts'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
@@ -39,6 +40,10 @@ export function BoitierDetailPage() {
   const blocks = boitierDetailBlocks(profile, level)
   const backLabel = profile === 'menage' ? 'Mes boîtiers' : 'Boîtiers de mon compte'
   const row = list.data?.find((r) => r.device.id === deviceId)
+  // Appareils qu'un capteur à relais coupe pour de vrai ; les autres éteignables restent en démonstration (canal simulé).
+  const relayCodes = new Set(
+    (list.data ?? []).filter((r) => kindOf(r.device) === 'capteur' && r.device.has_relay && r.device.machine_code).map((r) => r.device.machine_code as string),
+  )
 
   if (list.isSuccess && !row) {
     return (
@@ -139,7 +144,7 @@ export function BoitierDetailPage() {
                                 'Non'
                               )}
                             </td>
-                            {blocks.technical && <td className="px-3 py-2.5 text-text-secondary">{machine.controllable ? 'Simulé' : '-'}</td>}
+                            {blocks.technical && <td className="px-3 py-2.5 text-text-secondary">{machine.controllable ? (relayCodes.has(machine.code) ? 'Capteur' : 'Simulé') : '-'}</td>}
                             <td className="px-3 py-2.5">
                               {machine.controllable && machine.state !== 'arrete' && (
                                 <Button
