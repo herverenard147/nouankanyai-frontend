@@ -150,7 +150,8 @@ pas été revérifiée écran par écran depuis le 2026-10-09.
 | Admin : santé, modèles, utilisateurs, demandes d'audit, messages, impayés, boîtiers | Admin | aucune |
 
 Pour chaque écran modifié : en-tête (titre + sous-titre court), filets au lieu de cartes, provenance sur
-chaque donnée, états vides, mobile 390 px sans défilement horizontal. **Ne pas changer** les règles de niveau
+chaque donnée, états vides, mobile 390 px sans défilement horizontal. Contraste WCAG AA (4,5 pour le texte courant) : audit axe-core
+des pages publiques sans aucune violation le 2026-10-17, après le passage du texte tertiaire à `#6e6e64`. **Ne pas changer** les règles de niveau
 ci-dessus sans les mettre à jour dans ce fichier.
 
 ## 5 bis. Premiers pas, mouvement et vocabulaire du Ménage (demande du propriétaire, 2026-10-11)
