@@ -13,7 +13,9 @@
   --color-card: #ffffff;
   --color-text-primary: #1c1f1b;
   --color-text-secondary: #55584f;
-  --color-text-tertiary: #8a8a80;
+  /* Tertiaire : #6e6e64 depuis le 2026-10-17 (avant #8a8a80, contraste 3,5 seulement). Il atteint 4,5 (WCAG AA, texte
+     courant) sur le blanc, --color-bg et --color-bg-elevated, et reste plus clair que le secondaire. */
+  --color-text-tertiary: #6e6e64;
   --color-border: #e2e1db;
   --color-accent: #e8590c;
   --color-accent-cta: #7a2c05;
@@ -32,7 +34,7 @@
   --color-placeholder-1: #efeee9;
   --color-placeholder-2: #f5f4f0;
   --color-placeholder-border: #c9c7be;
-  --color-placeholder-text: #8a8a80;
+  --color-placeholder-text: #6e6e64;
   --color-dark-bg: #1c1f1b;
   --color-dark-text: #c7c7c0;
   --color-dark-field: #262922;
