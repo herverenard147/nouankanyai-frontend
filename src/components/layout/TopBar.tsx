@@ -1,6 +1,7 @@
 import { Menu } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 
+import { NotificationBell } from '@/components/layout/NotificationBell'
 import { LevelSelector } from '@/components/level/LevelSelector'
 import { NAV_BY_PROFILE } from '@/lib/navConfig'
 import { useLevel, useLevelStore } from '@/store/levelStore'
@@ -43,12 +44,15 @@ export function TopBar() {
           </p>
         </div>
       </div>
-      {showLevelSelector && (
-        <div className="hidden items-center gap-2 lg:flex">
-          <span className="font-mono text-mono-axis uppercase tracking-wide text-text-tertiary">Niveau</span>
-          <LevelSelector value={level} onChange={(l) => setLevel(session.profile, l)} />
-        </div>
-      )}
+      <div className="ml-auto flex items-center gap-3">
+        {showLevelSelector && (
+          <div className="hidden items-center gap-2 lg:flex">
+            <span className="font-mono text-mono-axis uppercase tracking-wide text-text-tertiary">Niveau</span>
+            <LevelSelector value={level} onChange={(l) => setLevel(session.profile, l)} />
+          </div>
+        )}
+        <NotificationBell profile={session.profile} />
+      </div>
     </header>
   )
 }
