@@ -1,6 +1,7 @@
 import { LogOut } from 'lucide-react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
+import { NotificationBell } from '@/components/layout/NotificationBell'
 import { SensorDisclaimer } from '@/components/layout/SensorDisclaimer'
 import { useAlertsBadgeCount, useAdviceBadgeCount } from '@/hooks/useNotificationBadges'
 import { NAV_BY_PROFILE, visibleNav } from '@/lib/navConfig'
@@ -41,12 +42,15 @@ export function SideRail({ onNavigate }: SideRailProps) {
 
   return (
     <div className="flex h-full flex-col gap-4 bg-dark-bg px-2.5 py-4 text-dark-text">
-      <Link to="/app/apercu" onClick={onNavigate} className="focus-ring flex items-center gap-2.5 px-3.5 pb-2 pt-1">
-        <img src="/logo.png" alt="Nouankany" className="h-7 w-7 object-contain" />
-        <span className="text-base font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
-          Nouankany
-        </span>
-      </Link>
+      <div className="flex items-center justify-between gap-2 pr-1">
+        <Link to="/app/apercu" onClick={onNavigate} className="focus-ring flex items-center gap-2.5 px-3.5 pb-2 pt-1">
+          <img src="/logo.png" alt="Nouankany" className="h-7 w-7 object-contain" />
+          <span className="text-base font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
+            Nouankany
+          </span>
+        </Link>
+        <NotificationBell profile={session.profile} tone="sombre" onNavigate={onNavigate} />
+      </div>
 
       <nav className="scrollbar-dark flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto" aria-label="Navigation principale">
         {entries.map((entry) => {

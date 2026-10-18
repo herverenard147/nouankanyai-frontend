@@ -314,6 +314,9 @@ et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste**
 - **Notification** : `AlertNotifier` (clients seulement, hors intervention) relit les alertes ouvertes chaque minute tant
   que l'onglet est visible ; une alerte apparue pendant la visite s'annonce dans un bandeau avec un lien « Voir ». Rien au
   premier chargement.
+- **Cloche des notifications** (2026-10-18, `NotificationBell`) : à droite de la barre du haut et en tête du menu
+  (ordinateur et tiroir mobile), elle mène à `/app/alertes` et porte le même compteur que l'entrée du menu (alertes à
+  traiter pas encore vues). Absente pour le technicien, qui n'a pas de page d'alertes.
 - **Technicien** : onglet Alertes en intervention (`InterventionAlertsPage`) ; ses réponses portent « documentée par un
   technicien Nouankany ».
 - **Capteur d'un appareil** : ajouté depuis la fiche de l'appareil ; état du capteur, essai, coupure réelle quand il a un
