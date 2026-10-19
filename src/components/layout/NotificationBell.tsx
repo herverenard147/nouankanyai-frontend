@@ -1,4 +1,4 @@
-import { AlertTriangle, Bell, Box, ClipboardList, FileText, Lightbulb, MessageCircleQuestion, Receipt } from 'lucide-react'
+import { AlertTriangle, Bell, Box, ClipboardList, Database, FileText, Lightbulb, MessageCircleQuestion, Receipt } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -20,6 +20,7 @@ const ICONS: Record<BackendNotification['kind'], typeof Bell> = {
   plan: ClipboardList,
   boitier: Box,
   conseil: Lightbulb,
+  collecte: Database,
 }
 
 /**

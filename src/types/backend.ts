@@ -907,6 +907,35 @@ export interface BackendCollectionStatus {
   seuil_reentrainement: { machines: number; heures_par_machine: number; couverture: number }
   pret_pour_reentrainement: boolean
 }
+/** GET /api/v1/ml/collecte/appareils (administrateurs) */
+export interface BackendCollectionMachine {
+  code: string
+  nom: string
+  categorie: string | null
+  type_compte: string | null
+  releves: number
+  debut: string | null
+  fin: string | null
+  heures_periode: number
+  heures_mesurees: number
+  /** Part des heures de la période qui ont au moins une mesure, de 0 à 1. */
+  couverture: number
+  pret: boolean
+}
+/** GET /api/v1/ml/previsions/bilan (administrateurs) */
+export interface BackendForecastReview {
+  periode_jours: number
+  previsions_servies: number
+  lignes: {
+    methode: string
+    modele: string | null
+    famille: string | null
+    previsions: number
+    heures_mesurees: number
+    erreur_moyenne_kw: number
+    erreur_relative: number | null
+  }[]
+}
 
 /** GET /api/v1/ml/drift (administrateurs) */
 export interface BackendDriftFeature {
@@ -1108,7 +1137,7 @@ export interface BackendConsumption {
 /** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
 export interface BackendNotification {
   id: string
-  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil'
+  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil' | 'collecte'
   title: string
   detail: string
   at: string | null
