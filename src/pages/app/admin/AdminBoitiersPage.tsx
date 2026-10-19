@@ -43,7 +43,12 @@ export function AdminBoitiersPage() {
       </p>
       <MetricState status={status}>
         <section aria-label="Indicateurs clés" className="grid grid-cols-1 border-y border-border sm:grid-cols-3 sm:border-t-2 sm:border-t-text-primary">
-          <Tile label="Boîtiers connectés" value={list.filter((d) => d.paired).length} note="Sur toute la plateforme" />
+          {/* « Connectés » désignait les boîtiers associés, même hors ligne (test du site, 2026-10-18). */}
+          <Tile
+            label="Boîtiers associés"
+            value={list.filter((d) => d.paired).length}
+            note={`dont ${list.filter((d) => d.paired && connectionOf(d) === 'en_ligne').length} en ligne`}
+          />
           <Tile label="Demandes à livrer" value={toDeliver} note={toDeliver === 0 ? 'Aucune demande en attente' : 'En attente de livraison'} />
           <Tile label="Commandes, 24 h" value={list.reduce((total, d) => total + d.commands_24h, 0)} note="Extinctions demandées" />
         </section>
@@ -106,7 +111,7 @@ export function AdminBoitiersPage() {
 
         <BoitierSectionBlock title="Tous les boîtiers">
           {list.length === 0 ? (
-            <p className="border-t border-border py-2.5 text-sm text-text-secondary">Aucun boîtier n’est connecté pour le moment.</p>
+            <p className="border-t border-border py-2.5 text-sm text-text-secondary">Aucun boîtier n’est associé pour le moment.</p>
           ) : (
             <div className="overflow-x-auto border-y border-border">
               <table className="w-full min-w-[880px] border-collapse text-sm">

@@ -35,7 +35,10 @@ export function AdminPlatformPrediction() {
               className="focus-ring flex items-center justify-between gap-3 border-t border-border py-3 text-left transition-colors hover:bg-bg-elevated"
             >
               <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">{row.ownerNom}</span>
-              <span className="shrink-0 text-xs text-text-secondary">{row.machines.length} équipement{row.machines.length > 1 ? 's' : ''}</span>
+              <span className="shrink-0 text-xs text-text-secondary">
+                {row.machines.length} prévu{row.machines.length > 1 ? 's' : ''}
+                {row.withoutForecast > 0 ? `, ${row.withoutForecast} sans relevé` : ''}
+              </span>
               <span className="shrink-0 font-mono text-sm font-semibold tabular-nums text-text-primary">
                 {row.totalNextHourKw !== null ? `${formatNumberFr(row.totalNextHourKw, 1)} kW` : '-'}
               </span>

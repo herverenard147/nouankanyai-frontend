@@ -217,10 +217,10 @@ smoke('intégration backend réel : compte Admin', () => {
     const menageUser = users.find((u) => u.email === 'aicha@menage.demo')!
     expect(menageUser.platformRole).toBeNull()
 
-    const promoted = await promoteUser(menageUser.id, true)
+    const promoted = await promoteUser(menageUser.id, 'admin')
     expect(promoted.platform_role).toBe('admin')
 
-    const demoted = await promoteUser(menageUser.id, false)
+    const demoted = await promoteUser(menageUser.id, 'client')
     expect(demoted.platform_role).toBeNull()
   }, 30000)
 

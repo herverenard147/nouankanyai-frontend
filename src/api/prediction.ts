@@ -80,7 +80,8 @@ export function bucketize(
       const month = (start.getUTCMonth() + k) % 12
       const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate()
       const count = k === 0 ? daysInMonth - start.getUTCDate() + 1 : daysInMonth
-      labels.push(k === 0 ? `${monthLabel(year, month)} (reste du mois)` : monthLabel(year, month))
+      // Court : « (reste du mois) » chevauchait le mois suivant sur téléphone.
+      labels.push(k === 0 ? `fin ${monthLabel(year, month)}` : monthLabel(year, month))
       values.push(dailyKwh * count)
       costs.push(dailyCost * count)
     }

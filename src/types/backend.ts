@@ -259,6 +259,17 @@ export interface BackendContactMessage {
   email: string
   message: string
   created_at: string
+  handled_at?: string | null
+  exported_at?: string | null
+}
+
+export type ContactMessageFilter = 'a_traiter' | 'traites' | 'tous'
+
+export interface BackendContactMessagePage {
+  items: BackendContactMessage[]
+  total: number
+  page: number
+  per_page: number
 }
 
 export interface BackendMachineHistoryPoint {
@@ -499,6 +510,8 @@ export interface BackendPlatformPredictionUser {
   owner_id: string
   owner_nom: string
   machines: BackendAdminMachinePrediction[]
+  /** Appareils sans prévision (pas de relevé, mesures absentes). */
+  sans_prevision?: number
 }
 export interface BackendPlatformPredictions {
   users: BackendPlatformPredictionUser[]
@@ -1077,4 +1090,16 @@ export interface BackendConsumption {
   tarif: BackendConsumptionTariff
   prix_note: string
   factures_kwh_par_mois: { mois: string; kwh: number }[]
+}
+
+/** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
+export interface BackendNotification {
+  id: string
+  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil'
+  title: string
+  detail: string
+  at: string | null
+  /** Page et ancre de l'élément, par exemple « /app/factures#facture-<id> ». */
+  link: string
+  level: string
 }

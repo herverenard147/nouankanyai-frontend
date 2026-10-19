@@ -106,7 +106,7 @@ export function PlanActionPage() {
         <MetricState status={plan.status} isEmpty={plan.data?.length === 0}>
           <ol className="border-t-2 border-text-primary">
             {plan.data?.map((item, index) => (
-              <li key={item.id} className="flex flex-col gap-2 border-b border-border py-4">
+              <li key={item.id} id={`plan-${item.id}`} className="flex flex-col gap-2 border-b border-border py-4">
                 <div className="grid grid-cols-[2.5rem_1fr_auto] items-start gap-x-3">
                   <span className="font-heading text-lg font-semibold text-text-tertiary tabular-nums">{String(index + 1).padStart(2, '0')}</span>
                   <div>

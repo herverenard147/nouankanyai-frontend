@@ -45,7 +45,7 @@ describe('vue Mois', () => {
   it('prolonge la moyenne journalière : reste du mois puis deux mois entiers', () => {
     const { series } = bucketize(hourlyPoints(24 * 7, 1, 0), 'mois', MIDNIGHT)
     expect(series).toHaveLength(3)
-    expect(series[0].label).toContain('reste du mois')
+    expect(series[0].label).toMatch(/^fin oct\. 2026$/)
     expect(series[0].value).toBe(24 * 12) // 20 au 31 octobre
     expect(series[1].value).toBe(24 * 30) // novembre
     expect(series[2].value).toBe(24 * 31) // décembre
