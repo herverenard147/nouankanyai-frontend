@@ -2,55 +2,92 @@ import { getCachedMachines, hasReading, rawPredict } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { Prediction, PredictionGranularity, PredictionsBundle, PredictionSeriesPoint, Profile } from '@/types/domain'
 
-// Horizon interrogé côté backend (XGBoost, /api/predict) pour chaque granularité —
-// pas besoin de changement backend : predict_next_hours() fait déjà varier
-// heure-du-jour et jour-de-semaine sur tout l'horizon demandé, donc un horizon plus
-// large donne de vraies variations (semaine vs week-end), pas une répétition à plat.
-const HORIZON_HOURS: Record<PredictionGranularity, number> = {
-  heure: 24,
-  jour: 24 * 7,
-  // 7 jours au plus : le serveur refuse au-delà (le modèle prédit l’heure suivante, Volet 5, M15).
-  semaine: 24 * 7,
-}
-// Nombre d'heures agrégées par barre du graphique.
-const BUCKET_HOURS: Record<PredictionGranularity, number> = {
-  heure: 1,
-  jour: 24,
-  semaine: 24 * 7,
-}
+/*
+ * Correction 7 du test du site (2026-10-18) : la vue « Jour » découpait des tranches de 24 h à partir de
+ * maintenant et les étiquetait comme des jours civils (décalage d'un jour) ; la vue « Semaine » annonçait
+ * « sur 4 semaines » pour 7 jours. Les points sont maintenant placés sur le calendrier : le premier point est
+ * l'heure pleine suivante (comme ml/prediction.py), en temps universel (heure d'Abidjan). Le modèle prévoit au
+ * plus 7 jours : la vue « Mois » prolonge leur moyenne, et le dit.
+ */
+const HORIZON_HOURS: Record<PredictionGranularity, number> = { heure: 24, jour: 24 * 7, mois: 24 * 7 }
 const GRANULARITY_INTERVAL_LABEL: Record<PredictionGranularity, string> = {
   heure: 'sur 24 h',
   jour: 'sur 7 jours',
-  semaine: 'sur 4 semaines',
+  mois: 'sur 3 mois, en prolongeant la moyenne des 7 jours prévus',
+}
+const MONTHS_AHEAD = 3
+const HOUR_MS = 3600 * 1000
+
+type Point = { predicted_kw: number; cost_fcfa: number }
+
+/** Heure pleine qui suit `now` : l'heure du premier point prévu. */
+export function firstForecastHour(now: Date = new Date()): Date {
+  const d = new Date(now)
+  d.setUTCMinutes(0, 0, 0)
+  return new Date(d.getTime() + HOUR_MS)
 }
 
-export function bucketLabel(granularity: PredictionGranularity, bucketIndex: number): string {
-  if (granularity === 'heure') return `+${bucketIndex + 1} h`
-  if (granularity === 'jour') {
-    const date = new Date(Date.now() + bucketIndex * 24 * 3600 * 1000)
-    return date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
-  }
-  return `Sem. +${bucketIndex + 1}`
+function dayLabel(d: Date): string {
+  return d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
+}
+
+function monthLabel(year: number, month: number): string {
+  return new Date(Date.UTC(year, month, 1)).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric', timeZone: 'UTC' })
 }
 
 export function bucketize(
-  points: { predicted_kw: number; cost_fcfa: number }[],
+  points: Point[],
   granularity: PredictionGranularity,
+  start: Date = firstForecastHour(),
 ): { series: PredictionSeriesPoint[]; totalCostFcfa: number } {
-  const bucketSize = BUCKET_HOURS[granularity]
+  const labels: string[] = []
   const values: number[] = []
   const costs: number[] = []
-  for (let i = 0; i < points.length; i += bucketSize) {
-    const chunk = points.slice(i, i + bucketSize)
-    // Vue "heure" : puissance instantanée (kW), on garde le point tel quel.
-    // Vue "jour"/"semaine" : la somme des kW horaires d'un intervalle équivaut
-    // numériquement à l'énergie consommée sur cet intervalle, en kWh.
-    values.push(granularity === 'heure' ? chunk[0].predicted_kw : chunk.reduce((sum, p) => sum + p.predicted_kw, 0))
-    costs.push(chunk.reduce((sum, p) => sum + p.cost_fcfa, 0))
+
+  if (granularity === 'heure') {
+    points.forEach((p, i) => {
+      labels.push(`${new Date(start.getTime() + i * HOUR_MS).getUTCHours()} h`)
+      values.push(p.predicted_kw)
+      costs.push(p.cost_fcfa)
+    })
+  } else if (granularity === 'jour') {
+    // Jours civils ; le premier (et le dernier) peuvent être partiels : l'étiquette le dit.
+    const byDay = new Map<string, { date: Date; kwh: number; cost: number; hours: number; first: number; last: number }>()
+    points.forEach((p, i) => {
+      const t = new Date(start.getTime() + i * HOUR_MS)
+      const key = t.toISOString().slice(0, 10)
+      const day = byDay.get(key) ?? { date: t, kwh: 0, cost: 0, hours: 0, first: t.getUTCHours(), last: t.getUTCHours() }
+      day.kwh += p.predicted_kw // 1 h à x kW = x kWh
+      day.cost += p.cost_fcfa
+      day.hours += 1
+      day.last = t.getUTCHours()
+      byDay.set(key, day)
+    })
+    for (const day of byDay.values()) {
+      const partial = day.hours < 24 ? (day.first > 0 ? `, dès ${day.first} h` : `, jusqu’à ${day.last + 1} h`) : ''
+      labels.push(`${dayLabel(day.date)}${partial}`)
+      values.push(day.kwh)
+      costs.push(day.cost)
+    }
+  } else {
+    // Mois : moyenne journalière des jours prévus × jours restants du mois en cours, puis mois entiers.
+    const days = points.length / 24
+    const dailyKwh = days > 0 ? points.reduce((sum, p) => sum + p.predicted_kw, 0) / days : 0
+    const dailyCost = days > 0 ? points.reduce((sum, p) => sum + p.cost_fcfa, 0) / days : 0
+    for (let k = 0; k < MONTHS_AHEAD && points.length > 0; k += 1) {
+      const year = start.getUTCFullYear() + Math.floor((start.getUTCMonth() + k) / 12)
+      const month = (start.getUTCMonth() + k) % 12
+      const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate()
+      const count = k === 0 ? daysInMonth - start.getUTCDate() + 1 : daysInMonth
+      labels.push(k === 0 ? `${monthLabel(year, month)} (reste du mois)` : monthLabel(year, month))
+      values.push(dailyKwh * count)
+      costs.push(dailyCost * count)
+    }
   }
+
   const max = Math.max(...values, 0.0001)
   const series = values.map((value, i) => ({
-    label: bucketLabel(granularity, i),
+    label: labels[i],
     value,
     displayValue: formatNumberFr(value, 1),
     percent: Math.round((value / max) * 100),
@@ -67,9 +104,11 @@ function toPrediction(title: string, granularity: PredictionGranularity, buckete
     unit,
     intervalLabel: `coût estimé ${GRANULARITY_INTERVAL_LABEL[granularity]} : ${formatNumberFr(bucketed.totalCostFcfa)} FCFA`,
     modelNote:
-      "Modèle XGBoost entraîné sur données synthétiques (voir Portail Admin). Aucun capteur physique installé : la prédiction s'appuie sur les derniers relevés enregistrés pour chaque équipement.",
-    modelName: 'XGBoost',
-    provenance: 'synthetique',
+      granularity === 'mois'
+        ? 'Prévision heure par heure sur 7 jours, à partir des relevés de chaque appareil ; chaque mois prolonge leur moyenne journalière.'
+        : 'Prévision heure par heure, à partir des relevés de chaque appareil ; elle se recale à chaque nouveau relevé.',
+    modelName: 'Prévision par appareil',
+    provenance: 'estime',
     yAxisUnit: unit,
     series: bucketed.series,
   }
@@ -96,10 +135,11 @@ export async function fetchPredictionsBundle(_profile: Profile, granularity: Pre
   }
 
   const horizonHours = HORIZON_HOURS[granularity]
+  const start = firstForecastHour()
   const perMachine = await Promise.all(
     measured.map(async (machine) => ({
       machine,
-      bucketed: bucketize((await rawPredict(machine, horizonHours)).predictions, granularity),
+      bucketed: bucketize((await rawPredict(machine, horizonHours)).predictions, granularity, start),
     })),
   )
 
@@ -114,7 +154,7 @@ export async function fetchPredictionsBundle(_profile: Profile, granularity: Pre
   const globalCostFcfa = perMachine.reduce((sum, d) => sum + d.bucketed.totalCostFcfa, 0)
   const max = Math.max(...globalValues, 0.0001)
   const globalSeries: PredictionSeriesPoint[] = globalValues.map((value, i) => ({
-    label: bucketLabel(granularity, i),
+    label: perMachine[0]?.bucketed.series[i]?.label ?? '',
     value,
     displayValue: formatNumberFr(value, 1),
     percent: Math.round((value / max) * 100),
