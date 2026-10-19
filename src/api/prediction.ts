@@ -12,7 +12,7 @@ import type { Prediction, PredictionGranularity, PredictionsBundle, PredictionSe
 const HORIZON_HOURS: Record<PredictionGranularity, number> = { heure: 24, jour: 24 * 7, mois: 24 * 7 }
 const GRANULARITY_INTERVAL_LABEL: Record<PredictionGranularity, string> = {
   heure: 'sur 24 h',
-  jour: 'sur 7 jours',
+  jour: 'sur les jours entiers prévus',
   mois: 'sur 3 mois, en prolongeant la moyenne des 7 jours prévus',
 }
 const MONTHS_AHEAD = 3
@@ -63,9 +63,10 @@ export function bucketize(
       day.last = t.getUTCHours()
       byDay.set(key, day)
     })
+    // Seulement les jours entiers : un jour entamé faisait un creux trompeur au début et à la fin de la courbe.
     for (const day of byDay.values()) {
-      const partial = day.hours < 24 ? (day.first > 0 ? `, dès ${day.first} h` : `, jusqu’à ${day.last + 1} h`) : ''
-      labels.push(`${dayLabel(day.date)}${partial}`)
+      if (day.hours < 24) continue
+      labels.push(dayLabel(day.date))
       values.push(day.kwh)
       costs.push(day.cost)
     }
@@ -97,10 +98,13 @@ export function bucketize(
 
 function toPrediction(title: string, granularity: PredictionGranularity, bucketed: ReturnType<typeof bucketize>): Prediction {
   const unit = granularity === 'heure' ? 'kW' : 'kWh'
+  // Heure : la puissance de l'heure qui vient ; Jour et Mois : le total de la période (avant : le premier jour,
+  // souvent entamé, en gros chiffre).
   const first = bucketed.series[0]
+  const total = bucketed.series.reduce((sum, p) => sum + p.value, 0)
   return {
     title,
-    value: first ? first.displayValue : '-',
+    value: granularity === 'heure' ? (first ? first.displayValue : '-') : bucketed.series.length ? formatNumberFr(total, total < 100 ? 1 : 0) : '-',
     unit,
     intervalLabel: `coût estimé ${GRANULARITY_INTERVAL_LABEL[granularity]} : ${formatNumberFr(bucketed.totalCostFcfa)} FCFA`,
     modelNote:

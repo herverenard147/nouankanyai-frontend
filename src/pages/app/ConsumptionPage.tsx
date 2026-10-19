@@ -35,6 +35,12 @@ const PROVENANCE: Record<BackendConsumptionProvenance, Provenance> = {
 }
 const MAX_CURVES = 5
 
+/** « 2026-07 » → « juil. 2026 ». */
+function monthLabel(key: string): string {
+  const [year, month] = key.split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric', timeZone: 'UTC' })
+}
+
 export function ConsumptionPage() {
   const profile = useSessionStore((s) => s.session?.profile)
   const level = useLevel(profile ?? 'menage')
@@ -151,15 +157,15 @@ function ConsumptionView({ data, window, technical, single }: { data: BackendCon
         <section className={SECTION}>
           <h2 className="text-section-title font-semibold text-text-primary">Par appareil</h2>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[480px] text-sm">
+            <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-text-secondary">
                   <th className="py-2 font-medium">Appareil</th>
                   <th className="py-2 text-right font-medium">kWh</th>
-                  <th className="py-2 text-right font-medium">Part</th>
+                  <th className="hidden py-2 text-right font-medium sm:table-cell">Part</th>
                   <th className="py-2 text-right font-medium">Coût estimé</th>
                   {technical && <th className="py-2 text-right font-medium">Temps couvert</th>}
-                  <th className="py-2 text-right font-medium">Source</th>
+                  <th className="hidden py-2 text-right font-medium sm:table-cell">Source</th>
                 </tr>
               </thead>
               <tbody>
@@ -167,10 +173,10 @@ function ConsumptionView({ data, window, technical, single }: { data: BackendCon
                   <tr key={m.code} className="border-b border-border">
                     <td className="py-2 text-text-primary">{m.nom}</td>
                     <td className="py-2 text-right tabular-nums">{formatNumberFr(m.kwh, m.kwh < 100 ? 1 : 0)}</td>
-                    <td className="py-2 text-right tabular-nums">{m.part_pct === null ? '-' : `${formatNumberFr(m.part_pct, 0)} %`}</td>
+                    <td className="hidden py-2 text-right tabular-nums sm:table-cell">{m.part_pct === null ? '-' : `${formatNumberFr(m.part_pct, 0)} %`}</td>
                     <td className="py-2 text-right tabular-nums">{formatFcfa(m.cout_fcfa)}</td>
                     {technical && <td className="py-2 text-right tabular-nums">{formatNumberFr(m.couverture_pct, 0)} %</td>}
-                    <td className="py-2 text-right">{m.provenance ? <ProvenanceBadge value={PROVENANCE[m.provenance]} /> : <span className="text-xs text-text-secondary">aucun relevé</span>}</td>
+                    <td className="hidden py-2 text-right sm:table-cell">{m.provenance ? <ProvenanceBadge value={PROVENANCE[m.provenance]} /> : <span className="text-xs text-text-secondary">aucun relevé</span>}</td>
                   </tr>
                 ))}
               </tbody>
@@ -186,7 +192,7 @@ function ConsumptionView({ data, window, technical, single }: { data: BackendCon
           <h2 className="text-section-title font-semibold text-text-primary">D’après vos factures CIE</h2>
           <p className="text-sm text-text-secondary">kWh par mois, lus sur vos factures (une facture de deux mois est partagée entre les deux).</p>
           <LineChart
-            labels={data.factures_kwh_par_mois.map((f) => f.mois)}
+            labels={data.factures_kwh_par_mois.map((f) => monthLabel(f.mois))}
             series={[{ name: 'Factures', values: data.factures_kwh_par_mois.map((f) => f.kwh) }]}
             unit="kWh"
             height={180}

@@ -33,12 +33,11 @@ describe('vue Jour', () => {
     expect(series[0].label).toMatch(/^mar\. 20 oct\.$/)
   })
 
-  it('l’après-midi : le premier et le dernier jour sont partiels et le disent', () => {
+  it('l’après-midi : les jours entamés sont écartés (pas de creux trompeur)', () => {
     const { series } = bucketize(hourlyPoints(24 * 7, 1, 10), 'jour', AFTERNOON)
-    expect(series).toHaveLength(8)
-    expect(series[0].value).toBe(9) // 15 h à minuit
-    expect(series[0].label).toContain('dès 15 h')
-    expect(series[7].label).toContain('jusqu’à 15 h')
+    expect(series).toHaveLength(6)
+    series.forEach((p) => expect(p.value).toBe(24))
+    expect(series[0].label).toMatch(/^mer\. 21 oct\.$/)
   })
 })
 

@@ -24,13 +24,14 @@ interface LineChartProps {
   xLabelEvery?: number
 }
 
-const PAD = { top: 12, right: 12, bottom: 28, left: 52 }
+const PAD = { top: 26, right: 16, bottom: 28, left: 52 }
 
-function niceMax(max: number): number {
-  if (max <= 0) return 1
-  const power = 10 ** Math.floor(Math.log10(max))
-  const step = [1, 2, 2.5, 5, 10].find((s) => s * power >= max / 4) ?? 10
-  return Math.ceil(max / (step * power)) * step * power
+/** Pas « rond » de la graduation : quatre pas couvrent le maximum (1, 2, 2,5, 5 × 10ⁿ). Les graduations tombent ainsi
+ * sur 0, 5, 10, 15, 20 et jamais sur 0,8 ou 2,3. */
+function niceStep(max: number): number {
+  if (max <= 0) return 0.25
+  const power = 10 ** Math.floor(Math.log10(max / 4))
+  return ([1, 2, 2.5, 5, 10].map((m) => m * power).find((step) => step * 4 >= max) ?? 10 * power)
 }
 
 export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 }: LineChartProps) {
@@ -47,14 +48,17 @@ export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 
   }, [])
 
   const values = series.flatMap((s) => s.values.filter((v): v is number => v !== null))
-  const top = niceMax(values.length ? Math.max(...values) : 0)
+  const step = niceStep(values.length ? Math.max(...values) : 0)
+  const top = step * 4
   const plotW = width - PAD.left - PAD.right
+  // Pas plus d'une date tous les 70 px : sur téléphone, elles se chevauchaient.
+  const labelEvery = Math.max(xLabelEvery, Math.ceil(labels.length / Math.max(2, Math.floor(plotW / 70))))
   const plotH = height - PAD.top - PAD.bottom
   const n = Math.max(1, labels.length)
   const x = (i: number) => PAD.left + (n === 1 ? plotW / 2 : (i * plotW) / (n - 1))
   const y = (v: number) => PAD.top + plotH - (v / top) * plotH
-  const ticks = [0, top / 4, top / 2, (3 * top) / 4, top]
-  const digits = top < 10 ? 1 : 0
+  const ticks = [0, step, 2 * step, 3 * step, top]
+  const digits = Number.isInteger(step) ? 0 : 1
 
   function path(vals: (number | null)[]): string {
     let d = ''
@@ -109,13 +113,20 @@ export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 
             </text>
           </g>
         ))}
-        <text x={4} y={PAD.top - 2} className="fill-text-secondary text-[11px]">
+        <text x={PAD.left - 6} y={11} textAnchor="end" className="fill-text-secondary text-[11px]">
           {unit}
         </text>
         {labels.map((label, i) =>
-          i % xLabelEvery === 0 ? (
-            <text key={label + i} x={x(i)} y={height - 8} textAnchor="middle" className="fill-text-secondary text-[11px]">
-              {label}
+          i % labelEvery === 0 || i === n - 1 ? (
+            <text
+              key={label + i}
+              x={x(i)}
+              y={height - 8}
+              // Première et dernière date calées sur le bord : elles étaient coupées.
+              textAnchor={i === 0 && n > 1 ? 'start' : i === n - 1 && n > 1 ? 'end' : 'middle'}
+              className="fill-text-secondary text-[11px]"
+            >
+              {i === n - 1 || i % labelEvery === 0 ? label : ''}
             </text>
           ) : null,
         )}
@@ -132,6 +143,16 @@ export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 
         ))}
         {active !== null && <line x1={x(active)} x2={x(active)} y1={PAD.top} y2={PAD.top + plotH} stroke="var(--color-text-secondary)" strokeDasharray="3 3" />}
       </svg>
+      {series.length > 1 && (
+        <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-text-secondary" aria-hidden="true">
+          {series.map((s, k) => (
+            <li key={s.name} className="flex items-center gap-1.5">
+              <span className="inline-block h-0.5 w-4" style={{ background: s.color ?? SERIES_COLORS[k % SERIES_COLORS.length] }} />
+              {s.name}
+            </li>
+          ))}
+        </ul>
+      )}
       {active !== null && (
         <output
           className="pointer-events-none absolute top-0 z-10 bg-dark-bg px-2.5 py-1.5 text-xs text-white"
