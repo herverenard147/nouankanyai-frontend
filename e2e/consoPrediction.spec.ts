@@ -66,7 +66,7 @@ test('consommation et prédiction : trois profils, chaque vue', async ({ browser
       await page.goto('/app/consommation')
       await expect(page.getByText('Énergie consommée')).toBeVisible({ timeout: 30_000 })
       await expect(page.getByText('Votre tarif CIE')).toBeVisible()
-      if (profile === 'industrie') await expect(page.getByText('Heures de pointe')).toBeVisible()
+      if (profile === 'industrie') await expect(page.getByText('Heures de pointe').first()).toBeVisible()
       else await expect(page.getByText('Tranche 2')).toBeVisible()
       for (const label of ['Heure', 'Jour', 'Semaine', 'Mois']) {
         await page.getByRole('button', { name: label, exact: true }).click()
