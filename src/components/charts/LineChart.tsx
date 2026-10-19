@@ -52,8 +52,9 @@ export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 
   const step = niceStep(values.length ? Math.max(...values) : 0)
   const top = step * 4
   const plotW = width - PAD.left - PAD.right
-  // Pas plus d'une date tous les 70 px : sur téléphone, elles se chevauchaient.
-  const labelEvery = Math.max(xLabelEvery, Math.ceil(labels.length / Math.max(2, Math.floor(plotW / 70))))
+  // Une date tous les « largeur du plus long libellé » au moins : sur téléphone, elles se chevauchaient.
+  const labelSpace = Math.max(70, Math.max(0, ...labels.map((l) => l.length)) * 6.5 + 14)
+  const labelEvery = Math.max(xLabelEvery, Math.ceil(labels.length / Math.max(2, Math.floor(plotW / labelSpace))))
   const plotH = height - PAD.top - PAD.bottom
   const n = Math.max(1, labels.length)
   const x = (i: number) => PAD.left + (n === 1 ? plotW / 2 : (i * plotW) / (n - 1))

@@ -161,22 +161,22 @@ function ConsumptionView({ data, window, technical, single }: { data: BackendCon
               <thead>
                 <tr className="border-b border-border text-left text-text-secondary">
                   <th className="py-2 font-medium">Appareil</th>
-                  <th className="py-2 text-right font-medium">kWh</th>
-                  <th className="hidden py-2 text-right font-medium sm:table-cell">Part</th>
-                  <th className="py-2 text-right font-medium">Coût estimé</th>
-                  {technical && <th className="py-2 text-right font-medium">Temps couvert</th>}
-                  <th className="hidden py-2 text-right font-medium sm:table-cell">Source</th>
+                  <th className="py-2 pl-3 text-right font-medium">kWh</th>
+                  <th className="hidden py-2 pl-3 text-right font-medium sm:table-cell">Part</th>
+                  <th className="py-2 pl-3 text-right font-medium">Coût estimé</th>
+                  {technical && <th className="hidden py-2 pl-3 text-right font-medium sm:table-cell">Temps couvert</th>}
+                  <th className="hidden py-2 pl-3 text-right font-medium sm:table-cell">Source</th>
                 </tr>
               </thead>
               <tbody>
                 {data.machines.map((m) => (
                   <tr key={m.code} className="border-b border-border">
                     <td className="py-2 text-text-primary">{m.nom}</td>
-                    <td className="py-2 text-right tabular-nums">{formatNumberFr(m.kwh, m.kwh < 100 ? 1 : 0)}</td>
-                    <td className="hidden py-2 text-right tabular-nums sm:table-cell">{m.part_pct === null ? '-' : `${formatNumberFr(m.part_pct, 0)} %`}</td>
-                    <td className="py-2 text-right tabular-nums">{formatFcfa(m.cout_fcfa)}</td>
-                    {technical && <td className="py-2 text-right tabular-nums">{formatNumberFr(m.couverture_pct, 0)} %</td>}
-                    <td className="hidden py-2 text-right sm:table-cell">{m.provenance ? <ProvenanceBadge value={PROVENANCE[m.provenance]} /> : <span className="text-xs text-text-secondary">aucun relevé</span>}</td>
+                    <td className="py-2 pl-3 text-right tabular-nums">{formatNumberFr(m.kwh, m.kwh < 100 ? 1 : 0)}</td>
+                    <td className="hidden py-2 pl-3 text-right tabular-nums sm:table-cell">{m.part_pct === null ? '-' : `${formatNumberFr(m.part_pct, 0)} %`}</td>
+                    <td className="whitespace-nowrap py-2 pl-3 text-right tabular-nums">{formatFcfa(m.cout_fcfa)}</td>
+                    {technical && <td className="hidden py-2 pl-3 text-right tabular-nums sm:table-cell">{formatNumberFr(m.couverture_pct, 0)} %</td>}
+                    <td className="hidden py-2 pl-3 text-right sm:table-cell">{m.provenance ? <ProvenanceBadge value={PROVENANCE[m.provenance]} /> : <span className="text-xs text-text-secondary">aucun relevé</span>}</td>
                   </tr>
                 ))}
               </tbody>
