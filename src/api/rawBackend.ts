@@ -89,6 +89,7 @@ import type {
   ReportType,
   BackendPendingBill,
   BackendCollectionMachine,
+  BackendMainMeterComparison,
   BackendCollectionStatus,
   BackendForecastReview,
 } from '@/types/backend'
@@ -319,6 +320,10 @@ export const rawAdminAuditEvents = (query: AuditQuery = {}) =>
 
 export const rawConsumption = (granularity: ConsumptionGranularity, machine?: string) =>
   api.get<BackendConsumption>(`/api/v1/consumption?granularity=${granularity}${machine ? `&machine=${encodeURIComponent(machine)}` : ''}`)
+export const rawMainMeters = (granularity: ConsumptionGranularity) =>
+  api.get<BackendMainMeterComparison>(`/api/v1/consumption/compteur-general?granularity=${granularity}`)
+export const rawCreateMainMeter = (siteId?: string) => api.post<{ code: string }>('/api/v1/consumption/compteur-general', { site_id: siteId || null })
+export const rawDeleteMainMeter = (code: string) => api.delete<void>(`/api/v1/consumption/compteur-general/${encodeURIComponent(code)}`)
 export const rawNotifications = () => api.get<BackendNotification[]>('/api/v1/notifications')
 
 export const rawCompteur = () => api.get<BackendCompteur>('/api/v1/compteur')

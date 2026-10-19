@@ -9,7 +9,13 @@ import { useSessionStore } from '@/store/sessionStore'
 import type { BackendConsumption } from '@/types/backend'
 
 /** Correction 7 du test du site (2026-10-18) : consommation réelle, tarif expliqué selon le type de compte. */
-vi.mock('@/api/rawBackend', () => ({ rawConsumption: vi.fn() }))
+vi.mock('@/api/rawBackend', () => ({
+  rawConsumption: vi.fn(),
+  rawMainMeters: vi.fn().mockResolvedValue({ granularity: 'day', labels: [], compteurs: [] }),
+  rawCreateMainMeter: vi.fn(),
+  rawDeleteMainMeter: vi.fn(),
+  rawSites: vi.fn().mockResolvedValue([]),
+}))
 import { rawConsumption } from '@/api/rawBackend'
 
 const base: Omit<BackendConsumption, 'segment' | 'tarif'> = {
