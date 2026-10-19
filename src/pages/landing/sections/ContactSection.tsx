@@ -4,7 +4,7 @@ import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/Button'
-import { TextField } from '@/components/ui/TextField'
+import { RequiredMark, TextField } from '@/components/ui/TextField'
 import { useSendContactMessage } from '@/hooks/queries/useContact'
 
 function MessageForm() {
@@ -38,9 +38,12 @@ function MessageForm() {
         placeholder="vous@exemple.com"
       />
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="contact-message" className="text-sm font-medium text-text-primary">
-          Message
-        </label>
+        <div className="flex items-end gap-1">
+          <label htmlFor="contact-message" className="text-sm font-medium text-text-primary">
+            Message
+          </label>
+          <RequiredMark />
+        </div>
         <textarea
           id="contact-message"
           {...FRENCH_VALIDITY}

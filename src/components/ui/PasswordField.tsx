@@ -15,8 +15,8 @@ export function PasswordField({ label, error, className, id, ...rest }: Password
   const [visible, setVisible] = useState(false)
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-baseline gap-1">
+    <div className="flex h-full flex-col gap-1.5">
+      <div className="flex flex-1 items-end gap-1">
         <label htmlFor={fieldId} className="text-sm font-medium text-text-primary">
           {label}
         </label>

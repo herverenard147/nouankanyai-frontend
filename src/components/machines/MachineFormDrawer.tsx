@@ -31,6 +31,9 @@ const PRIORITIES = [
   { value: 'haute', label: 'Haute' },
 ]
 
+
+/** Même plafond que le serveur pour un appareil de maison (15 kW). */
+const HOUSEHOLD_MAX_W = 15_000
 /**
  * Modale d'ajout/modification, partagée entre EquipmentPage (PME) et MachinesPage (Industrie) : même
  * ressource backend (`/api/machines`). L'ajout s'enregistre directement ; la modification passe par une
@@ -42,6 +45,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
   const profile = useSessionStore((s) => s.session?.profile)
   // Catalogue d'équipements pour les suggestions (Ménage : référentiel domestique seul).
   const segment = profile === 'menage' ? 'menage' : undefined
+  const household = profile === 'menage'
   const catalog = useQuery({
     queryKey: ['equipment-catalog', segment ?? 'tous'],
     queryFn: () => rawEquipmentCatalog(segment),
@@ -92,7 +96,9 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
         { label: 'Modèle', before: machine.modele ?? '', after: form.modele },
         { label: 'Numéro de série', before: machine.numero_serie ?? '', after: form.numero_serie },
         { label: 'Année de mise en service', before: machine.annee_mise_en_service ? String(machine.annee_mise_en_service) : '', after: form.annee },
-        { label: 'Puissance', before: `${formatNumberFr(machine.power_kw, 1)} kW`, after: form.power_kw ? `${formatNumberFr(Number(form.power_kw), 1)} kW` : '' },
+        household
+          ? { label: 'Puissance', before: `${formatNumberFr(machine.power_kw * 1000, 0)} W`, after: form.power_kw ? `${formatNumberFr(Number(form.power_kw) * 1000, 0)} W` : '' }
+          : { label: 'Puissance', before: `${formatNumberFr(machine.power_kw, 1)} kW`, after: form.power_kw ? `${formatNumberFr(Number(form.power_kw), 1)} kW` : '' },
         { label: 'Priorité', before: priorityLabel(machine.priority), after: priorityLabel(form.priority) },
         { label: 'Site', before: siteName(machine.site_id ?? ''), after: siteName(form.site_id) },
       ].filter((change) => change.before !== change.after)
@@ -144,6 +150,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
     const power = Number(form.power_kw.replace(',', '.'))
     if (!form.power_kw.trim()) found.power = 'Indiquez la puissance, ou choisissez un modèle proposé : elle se remplit seule.'
     else if (!Number.isFinite(power) || power <= 0) found.power = 'La puissance doit être un nombre supérieur à 0.'
+    else if (household && power * 1000 > HOUSEHOLD_MAX_W) found.power = `Un appareil de maison consomme moins de ${formatNumberFr(HOUSEHOLD_MAX_W, 0)} W : vérifiez l’étiquette.`
     else if (power > LIMITS.powerKw) found.power = 'Cette puissance est trop élevée : indiquez-la en kW, pas en W (1 500 W = 1,5 kW).'
     if (form.nom.trim().length > LIMITS.name) found.nom = `Le nom est trop long (${LIMITS.name} caractères au plus).`
     const year = Number(form.annee)
@@ -262,16 +269,34 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
               if (choice) applyModel(choice, true)
             }}
           />
-          <TextField
-            label="Puissance nominale (kW)"
-            type="number"
-            step="0.1"
-            min="0"
-            required
-            error={errors.power}
-            value={form.power_kw}
-            onChange={(e) => setForm((f) => ({ ...f, power_kw: e.target.value }))}
-          />
+          {household ? (
+            // Un foyer lit des watts sur l'étiquette (test du site, 2026-10-18 : « 150 » pour un frigo devenait 150 kW).
+            <TextField
+              label="Puissance (W, sur l’étiquette)"
+              type="number"
+              step="1"
+              min="0"
+              max={HOUSEHOLD_MAX_W}
+              required
+              error={errors.power}
+              value={form.power_kw ? String(Math.round(Number(form.power_kw.replace(',', '.')) * 100_000) / 100) : ''}
+              onChange={(e) => {
+                const watts = e.target.value.trim()
+                setForm((f) => ({ ...f, power_kw: watts ? String(Number(watts.replace(',', '.')) / 1000) : '' }))
+              }}
+            />
+          ) : (
+            <TextField
+              label="Puissance nominale (kW)"
+              type="number"
+              step="0.1"
+              min="0"
+              required
+              error={errors.power}
+              value={form.power_kw}
+              onChange={(e) => setForm((f) => ({ ...f, power_kw: e.target.value }))}
+            />
+          )}
           {isEdit && (
             <TextField label="Numéro de série" value={form.numero_serie} onChange={(e) => setForm((f) => ({ ...f, numero_serie: e.target.value }))} />
           )}

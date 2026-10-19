@@ -88,8 +88,8 @@ export function ComboboxField({ label, value, onChange, onSelect, options, requi
   }
 
   return (
-    <div className="relative flex flex-col gap-1.5">
-      <div className="flex items-baseline gap-1">
+    <div className="relative flex h-full flex-col gap-1.5">
+      <div className="flex flex-1 items-end gap-1">
         <label htmlFor={id} className="text-sm font-medium text-text-primary">
           {label}
         </label>

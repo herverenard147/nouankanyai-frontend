@@ -110,7 +110,7 @@ export function InvoicesPage() {
     <div className="grid gap-3 sm:grid-cols-3">
       <TextField label="Mois" type="month" max={maxBillMonth()} value={month} onChange={(e) => setMonth(e.target.value)} required />
       <TextField label="Montant TTC (FCFA)" type="number" min="1" max={LIMITS.amountFcfa} value={amount} onChange={(e) => setAmount(e.target.value)} required />
-      <TextField label="Consommation (kWh)" type="number" min="0" max={LIMITS.amountFcfa} value={kwh} onChange={(e) => setKwh(e.target.value)} />
+      <TextField label="Consommation (kWh)" type="number" min="1" max={LIMITS.amountFcfa} value={kwh} onChange={(e) => setKwh(e.target.value)} required />
     </div>
   )
 

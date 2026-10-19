@@ -260,8 +260,8 @@ export function SelectField({ label, value, onChange, options, id }: SelectField
   const autoId = useId()
   const fieldId = id ?? autoId
   return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={fieldId} className="text-sm font-medium text-text-primary">
+    <div className="flex h-full flex-col gap-1.5">
+      <label htmlFor={fieldId} className="flex flex-1 items-end text-sm font-medium text-text-primary">
         {label}
       </label>
       <select

@@ -13,6 +13,9 @@ import { formatFcfa } from '@/lib/formatters'
 import type { Profile } from '@/types/domain'
 
 /** Demande d'un boîtier : le prix vient du backend et il est figé au moment de la demande. */
+
+/** Même plafond que le serveur (`app/schemas/boitier.py`, quantity ≤ 20). */
+const MAX_BOITIERS = 20
 export function RequestBoitierModal({ profile, onClose }: { profile: Profile; onClose: () => void }) {
   const sites = useSites()
   const price = useBoitierPrice()
@@ -26,9 +29,16 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
   const [busy, setBusy] = useState(false)
 
   const siteList = sites.data ?? []
-  const qty = Math.min(20, Math.max(1, Number.parseInt(quantity, 10) || 1))
+  // Plus de plafond silencieux (test du site, 2026-10-18 : 9 999 devenait 20 sans un mot) : la quantité hors
+  // limites est signalée sur le champ et bloque l'envoi.
+  const parsed = Number(quantity)
+  const quantityError =
+    profile === 'menage' || (Number.isInteger(parsed) && parsed >= 1 && parsed <= MAX_BOITIERS)
+      ? null
+      : `Entre 1 et ${MAX_BOITIERS} boîtiers par demande. Pour plus, écrivez-nous dans Précisions.`
+  const qty = profile === 'menage' || quantityError ? 1 : parsed
   const unit = price.data?.unit_price_fcfa
-  const ready = sites.isSuccess && siteChoiceReady(siteList, site) && contact.trim().length >= 3 && unit !== undefined
+  const ready = sites.isSuccess && siteChoiceReady(siteList, site) && contact.trim().length >= 3 && unit !== undefined && !quantityError
 
   async function submit() {
     setBusy(true)
@@ -69,10 +79,21 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
       <div className="flex flex-col gap-3.5">
         <SiteFields sites={siteList} value={site} onChange={setSite} label="Où sera-t-il installé ?" />
         {profile !== 'menage' && (
-          <TextField label="Nombre de boîtiers" type="number" min={1} max={20} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+          <TextField
+            label="Nombre de boîtiers"
+            required
+            type="number"
+            min={1}
+            max={MAX_BOITIERS}
+            step={1}
+            value={quantity}
+            error={quantityError ?? undefined}
+            onChange={(e) => setQuantity(e.target.value)}
+          />
         )}
         <TextField
           label="Contact pour la livraison"
+          required
           maxLength={LIMITS.deliveryContact}
           placeholder={profile === 'menage' ? 'Numéro de téléphone' : 'Nom et numéro de téléphone'}
           value={contact}
