@@ -4,6 +4,10 @@ import { createRoot } from 'react-dom/client'
 import '@/styles/index.css'
 import App from '@/App'
 import { reloadForNewVersion } from '@/lib/newVersion'
+import { installSiteValidity } from '@/lib/siteValidity'
+
+// Messages de saisie du site à la place des bulles du navigateur.
+installSiteValidity()
 
 // Fichier d'une ancienne version introuvable après une mise en ligne : on recharge une fois.
 window.addEventListener('vite:preloadError', (event) => {

@@ -15,9 +15,10 @@ export const LIMITS = {
   deliveryContact: 120,
   amountFcfa: 100_000_000_000,
   powerKw: 100_000,
-  temperatureMaxC: 1000,
+  // Seuils du compte : mêmes plafonds que le serveur (un four règle le sien sur sa fiche, jusqu'à 1 000 °C).
+  temperatureMaxC: 300,
   vibrationMaxMmS: 100,
-  overconsumptionRatio: 100,
+  overconsumptionRatio: 5,
   billMonthsAhead: 2,
 } as const
 
