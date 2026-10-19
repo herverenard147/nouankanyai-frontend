@@ -64,3 +64,9 @@ export function measuredReading(r: { power_kw?: number | null; temperature_c?: n
   if (r.vibration_mm_s !== null && r.vibration_mm_s !== undefined) parts.push(`${formatNumberFr(r.vibration_mm_s, 1)}${NARROW_NBSP}mm/s`)
   return parts.join(' · ')
 }
+
+/** « −1 200 FCFA par mois » : un gain sans sa période ne se comprenait pas (test du site, 2026-10-18). */
+export function formatGain(fcfa: number, periode?: 'action' | 'jour' | 'mois'): string {
+  const suffix = periode === 'mois' ? ' par mois' : periode === 'jour' ? ' par jour' : periode === 'action' ? ' par intervention' : ''
+  return `−${formatFcfa(fcfa)}${suffix}`
+}

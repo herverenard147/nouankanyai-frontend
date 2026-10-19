@@ -14,6 +14,9 @@ export const AUDIT_CATEGORY_LABEL: Record<string, string> = {
   seuils: 'Seuils',
   equipe: 'Équipe',
   plan: 'Plan d’action',
+  boitier: 'Boîtier',
+  facturation: 'Facturation Nouankany',
+  modeles: 'Modèles',
 }
 
 export function toAuditEvent(event: BackendAuditEvent): AuditEvent {

@@ -7,11 +7,13 @@ import { MobileDrawer } from '@/components/layout/MobileDrawer'
 import { SideRail } from '@/components/layout/SideRail'
 import { TopBar } from '@/components/layout/TopBar'
 import { useHashTarget } from '@/hooks/useHashTarget'
+import { useStepVisitOnRoute } from '@/hooks/useStepVisitOnRoute'
 import { useSessionStore } from '@/store/sessionStore'
 
 export function AppLayout() {
   const session = useSessionStore((s) => s.session)
   useHashTarget()
+  useStepVisitOnRoute(session)
   if (!session) return null
 
   return (

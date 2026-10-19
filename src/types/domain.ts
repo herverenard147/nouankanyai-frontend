@@ -160,6 +160,10 @@ export interface EquipmentRow {
   marque: string
   modele: string
   site: string
+  /** Puissance de plaque déclarée, en W pour un ménage, en kW sinon. */
+  puissance: string
+  /** Consommation attendue par jour d'après la fiche de l'appareil (estimation). */
+  attendu: string
   priorite: 'Haute' | 'Moyenne' | 'Basse'
   statut: string
   provenance: Provenance

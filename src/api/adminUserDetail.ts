@@ -10,9 +10,8 @@ import {
   rawUserAlerts,
   rawUserPredictions,
 } from '@/api/rawBackend'
-import { formatFcfa } from '@/lib/formatters'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
-import { formatNumberFr } from '@/lib/formatters'
+import { formatGain, formatNumberFr } from '@/lib/formatters'
 import type { AdminMachinePrediction } from '@/types/domain'
 import type { BackendRecommendation } from '@/types/backend'
 
@@ -65,7 +64,7 @@ function toAlertItem(rec: BackendRecommendation, i: number, ownerNom?: string): 
     id: `${rec.machine_id}-${rec.type}-${i}`,
     title: rec.title,
     detail: frenchNumbersWithUnits(rec.description),
-    severityOrGain: rec.gain_fcfa > 0 ? `−${formatFcfa(rec.gain_fcfa)}` : rec.severity,
+    severityOrGain: rec.gain_fcfa > 0 ? formatGain(rec.gain_fcfa, rec.gain_periode) : rec.severity,
     provenance: 'synthetique',
     ownerNom,
     machineId: rec.machine_id,

@@ -1,6 +1,7 @@
 import { priorityLabel, statusLabel } from '@/api/backendHelpers'
 import { getCachedMachines, getCachedRecommend, hasReading } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
+import type { BackendMachine } from '@/types/backend'
 import type { MachineRow, Profile } from '@/types/domain'
 
 /** « - » pour une machine sans relevé : aucune valeur inventée. */
@@ -8,18 +9,23 @@ function reading(value: number | null, unit: string): string {
   return value === null ? '-' : `${formatNumberFr(value, 1)} ${unit}`
 }
 
+/**
+ * Machines dont le diagnostic a franchi un seuil : « Anomalie détectée » partout (Machines, Équipements, vue
+ * d'ensemble), même si leur statut enregistré est encore « actif ». Test du site (2026-10-18) : un réfrigérateur était
+ * en anomalie sur la vue d'ensemble et « Opérationnel » dans Équipements.
+ */
+export async function alertedMachineIds(machines: BackendMachine[]): Promise<Set<string>> {
+  const measured = machines.filter(hasReading)
+  if (measured.length === 0) return new Set()
+  const { recommendations } = await getCachedRecommend(measured).catch(() => ({ recommendations: [] as { type: string; machine_id: string }[] }))
+  return new Set(recommendations.filter((rec) => rec.type === 'alerte').map((rec) => rec.machine_id))
+}
+
 export async function fetchMachinesTable(_profile: Profile): Promise<{ title: string; rows: MachineRow[] }> {
   const machines = await getCachedMachines()
   // Statut cohérent avec Alertes : une machine dont le diagnostic a franchi un seuil est « Anomalie détectée »,
   // même si son statut enregistré est encore « actif » (avant, elle restait « Opérationnel » dans ce tableau).
-  const measured = machines.filter(hasReading)
-  const alerted = new Set(
-    measured.length === 0
-      ? []
-      : (await getCachedRecommend(measured).catch(() => ({ recommendations: [] }))).recommendations
-          .filter((rec) => rec.type === 'alerte')
-          .map((rec) => rec.machine_id),
-  )
+  const alerted = await alertedMachineIds(machines)
   return {
     title: 'Machines suivies',
     rows: machines.map((m) => ({

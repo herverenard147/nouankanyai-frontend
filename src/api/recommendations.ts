@@ -1,5 +1,5 @@
 import { getCachedMachines, getCachedRecommend } from '@/api/rawBackend'
-import { formatFcfa } from '@/lib/formatters'
+import { formatGain } from '@/lib/formatters'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { Advice, Profile } from '@/types/domain'
 
@@ -20,7 +20,7 @@ export async function fetchRecommendations(_profile: Profile): Promise<Advice[]>
       rank: String(i + 1).padStart(2, '0'),
       title: rec.title,
       detail: frenchNumbersWithUnits(`${rec.description} ${rec.action}`),
-      impactLabel: rec.gain_fcfa > 0 ? `−${formatFcfa(rec.gain_fcfa)}` : rec.severity,
+      impactLabel: rec.gain_fcfa > 0 ? formatGain(rec.gain_fcfa, rec.gain_periode) : rec.severity,
       impactKind: rec.gain_fcfa > 0 ? ('gain' as const) : ('severity' as const),
       // Modèle plus économe et vieillissement viennent de fiches et d'une étude : « estimé ».
       provenance: rec.alternative || rec.vieillissement ? ('estime' as const) : ('synthetique' as const),

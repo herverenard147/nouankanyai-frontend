@@ -64,6 +64,8 @@ export interface BackendMachine {
   site_id: string | null
   site_nom: string
   power_kw: number
+  /** Puissance de plaque déclarée (power_kw est la dernière mesure quand il y en a une). */
+  puissance_nominale_kw?: number | null
   // Vides tant qu'aucun relevé n'existe (le backend n'invente plus de mesures).
   temperature_c: number | null
   vibration_mm_s: number | null
@@ -468,6 +470,8 @@ export interface BackendRecommendation {
   description: string
   action: string
   gain_fcfa: number
+  /** Période du gain : par action menée, par jour, par mois. Absente sur une ancienne réponse. */
+  gain_periode?: 'action' | 'jour' | 'mois'
   auto_resolu: boolean
   /** Conseils tirés du référentiel d'équipements : une estimation, pas une donnée simulée. */
   alternative?: { marque: string; modele: string; inverter: boolean; source: string; confiance: string }
