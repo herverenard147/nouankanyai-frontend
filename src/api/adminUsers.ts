@@ -31,6 +31,9 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
 }
 
 /** Superadmin uniquement : un admin ordinaire reçoit un 403 (voir CLAUDE.md du backend). */
-export function promoteUser(targetUserId: string, makeAdmin: boolean) {
-  return rawUpdateUserRole(targetUserId, makeAdmin ? 'admin' : null)
+/** Rôle plateforme modifiable depuis la fiche : client (aucun), technicien ou administrateur. */
+export type EditableRole = 'client' | 'technicien' | 'admin'
+
+export function promoteUser(targetUserId: string, role: EditableRole) {
+  return rawUpdateUserRole(targetUserId, role === 'client' ? null : role)
 }

@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { TransferCard } from '@/components/import/TransferCard'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import type { EditableRole } from '@/api/adminUsers'
 
 import { MIN_PASSWORD_LENGTH } from '@/lib/validation'
 import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineButton'
@@ -33,6 +34,12 @@ type Dialog = 'role-form' | 'role-confirm' | 'rename-form' | 'rename-confirm' | 
  * que l'Admin ne voit nulle part ailleurs : lui-même n'a pas d'équipement, de facture ni de
  * prédiction en propre, contrairement aux 3 profils client.
  */
+
+const ROLE_LABEL: Record<EditableRole, string> = {
+  client: 'Client (aucun accès à l’administration)',
+  technicien: 'Technicien',
+  admin: 'Administrateur',
+}
 export function AdminUserDetailPage() {
   const { userId } = useParams<{ userId: string }>()
   const session = useSessionStore((s) => s.session)
@@ -46,8 +53,9 @@ export function AdminUserDetailPage() {
   const { suspend, resetPassword, updateProfile, remove } = useUserManagementMutations()
 
   const [dialog, setDialog] = useState<Dialog | null>(null)
-  const [roleTarget, setRoleTarget] = useState<'client' | 'admin'>('client')
+  const [roleTarget, setRoleTarget] = useState<EditableRole>('client')
   const [nom, setNom] = useState('')
+  const [nameError, setNameError] = useState<string | null>(null)
   const [newPassword, setNewPassword] = useState('')
 
   if (usersQuery.status === 'pending') return <p className="text-sm text-text-secondary">Chargement…</p>
@@ -67,7 +75,7 @@ export function AdminUserDetailPage() {
   const canDelete = session?.platformRole === 'superadmin'
   const isSelf = user.id === session?.userId
   const isSuperadmin = user.platformRole === 'superadmin'
-  const isAdminRole = user.platformRole === 'admin'
+  const currentRole: EditableRole = user.platformRole === 'admin' || user.platformRole === 'technicien' ? user.platformRole : 'client'
   // Même garde-fou que côté backend (_get_manageable_target) : un admin n'agit ni sur
   // son propre compte depuis ce panneau, ni sur le superadmin.
   const canAct = !isSelf && !isSuperadmin && user.status !== 'supprime'
@@ -121,7 +129,8 @@ export function AdminUserDetailPage() {
                 variant="outline"
                 onClick={() => {
                   promoteMutation.reset()
-                  setRoleTarget(isAdminRole ? 'client' : 'admin')
+                  // Le rôle actuel est présélectionné (test du site, 2026-10-18 : le rôle opposé l'était, risqué).
+                  setRoleTarget(currentRole)
                   setDialog('role-form')
                 }}
               >
@@ -175,10 +184,21 @@ export function AdminUserDetailPage() {
             id="rename-form"
             onSubmit={(event) => {
               event.preventDefault()
+              // Un nom fait d'espaces passait le contrôle du navigateur puis était refusé sans message (test du site).
+              if (!nom.trim()) return setNameError('Le nom ne peut pas être vide.')
               setDialog('rename-confirm')
             }}
           >
-            <TextField label="Nom" value={nom} onChange={(event) => setNom(event.target.value)} required />
+            <TextField
+              label="Nom"
+              value={nom}
+              onChange={(event) => {
+                setNom(event.target.value)
+                setNameError(null)
+              }}
+              error={nameError ?? undefined}
+              required
+            />
           </form>
         </Modal>
       )}
@@ -281,14 +301,12 @@ export function AdminUserDetailPage() {
           <SelectField
             label="Rôle plateforme"
             value={roleTarget}
-            onChange={(value) => setRoleTarget(value as 'client' | 'admin')}
-            options={[
-              { value: 'client', label: 'Client (aucun accès à l’administration)' },
-              { value: 'admin', label: 'Administrateur' },
-            ]}
+            onChange={(value) => setRoleTarget(value as EditableRole)}
+            options={(Object.keys(ROLE_LABEL) as EditableRole[]).map((value) => ({ value, label: ROLE_LABEL[value] }))}
           />
           <p className="text-xs text-text-secondary">
-            Un administrateur voit tous les comptes et la piste d’audit de la plateforme. Le rôle superadmin ne peut pas être modifié ici.
+            Un technicien intervient sur les boîtiers des comptes qui lui ont donné accès. Un administrateur voit tous les comptes et la
+            piste d’audit de la plateforme. Le rôle superadmin ne peut pas être modifié ici.
           </p>
         </Modal>
       )}
@@ -296,14 +314,12 @@ export function AdminUserDetailPage() {
         <ConfirmEditModal
           subject={`Vous allez modifier les droits de ${user.name}.`}
           changes={
-            roleTarget === (isAdminRole ? 'admin' : 'client')
-              ? []
-              : [{ label: 'Rôle plateforme', before: isAdminRole ? 'Administrateur' : 'Client', after: roleTarget === 'admin' ? 'Administrateur' : 'Client' }]
+            roleTarget === currentRole ? [] : [{ label: 'Rôle plateforme', before: ROLE_LABEL[currentRole], after: ROLE_LABEL[roleTarget] }]
           }
           pending={promoteMutation.isPending}
           error={promoteMutation.error}
           onBack={() => setDialog('role-form')}
-          onConfirm={() => promoteMutation.mutate({ userId: user.id, makeAdmin: roleTarget === 'admin' }, { onSuccess: () => setDialog(null) })}
+          onConfirm={() => promoteMutation.mutate({ userId: user.id, role: roleTarget }, { onSuccess: () => setDialog(null) })}
         />
       )}
 

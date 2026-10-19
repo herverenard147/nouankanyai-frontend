@@ -257,6 +257,17 @@ export interface BackendContactMessage {
   email: string
   message: string
   created_at: string
+  handled_at?: string | null
+  exported_at?: string | null
+}
+
+export type ContactMessageFilter = 'a_traiter' | 'traites' | 'tous'
+
+export interface BackendContactMessagePage {
+  items: BackendContactMessage[]
+  total: number
+  page: number
+  per_page: number
 }
 
 export interface BackendMachineHistoryPoint {
@@ -497,6 +508,8 @@ export interface BackendPlatformPredictionUser {
   owner_id: string
   owner_nom: string
   machines: BackendAdminMachinePrediction[]
+  /** Appareils sans prévision (pas de relevé, mesures absentes). */
+  sans_prevision?: number
 }
 export interface BackendPlatformPredictions {
   users: BackendPlatformPredictionUser[]

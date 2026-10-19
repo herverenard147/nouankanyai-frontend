@@ -91,7 +91,7 @@ function ContractEditor({ billing, userId }: { billing: BackendBilling; userId: 
       <TextField label="Frais d’audit (FCFA)" type="number" min="0" {...field('audit_fee_fcfa')} />
       <TextField label="Redevance mensuelle (FCFA)" type="number" min="0" {...field('saas_fee_fcfa')} />
       <TextField label="Part des économies (30 à 50 %)" type="number" min="30" max="50" step="1" {...field('savings_share_pct')} />
-      <TextField label="Puissance souscrite (kVA)" type="number" min="0" step="any" {...field('puissance_souscrite_kva')} />
+      <TextField label="Puissance souscrite (kVA)" type="number" min="0.1" step="any" {...field('puissance_souscrite_kva')} />
       <TextField label="Ajustement de la ligne de base (kWh, IPMVP)" type="number" step="any" {...field('baseline_adjustment_kwh')} />
       <TextField label="Motif de l’ajustement" {...field('baseline_adjustment_note')} required={Boolean(form.baseline_adjustment_kwh)} />
       <div className="flex flex-col gap-2 sm:col-span-3">
@@ -99,6 +99,8 @@ function ContractEditor({ billing, userId }: { billing: BackendBilling; userId: 
           {saveContract.isPending ? 'Enregistrement…' : c ? 'Enregistrer le contrat' : 'Créer le contrat'}
         </Button>
         <MutationError error={saveContract.error} />
+        {/* Test du site (2026-10-18) : aucune confirmation après la création du contrat. */}
+        {saveContract.isSuccess && <p className="text-sm text-confirm" role="status">Contrat enregistré.</p>}
       </div>
     </form>
   )

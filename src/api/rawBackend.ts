@@ -44,6 +44,8 @@ import type {
   BackendDeviceState,
   BackendDeviceUpdatePayload,
   BackendContactMessage,
+  BackendContactMessagePage,
+  ContactMessageFilter,
   BackendContactMessagePayload,
   BackendDemoSeedResult,
   BackendElectricityBill,
@@ -280,6 +282,8 @@ export const rawCreateAuditRequest = (payload: BackendAuditRequestPayload) =>
 
 /** Réservé aux administrateurs de la plateforme. */
 export const rawAuditRequests = () => api.get<BackendAuditRequest[]>('/api/v1/leads')
+export const rawUpdateAuditRequest = (id: string, status: BackendAuditRequest['status']) =>
+  api.patch<BackendAuditRequest>(`/api/v1/leads/${encodeURIComponent(id)}`, { status })
 
 export const rawUpdateBill = (billId: string, payload: BackendBillUpdatePayload) =>
   api.patch<BackendElectricityBill>(`/api/bills/${billId}`, payload)
@@ -366,7 +370,25 @@ export const rawSiteShutdown = (deviceId: string, machineCode: string) =>
   api.post<BackendDeviceCommand>(`/api/v1/boitiers/${deviceId}/commands`, { machine_code: machineCode, type: 'shutdown' })
 export const rawGenerateReport = (reportType: ReportType, exportFormat: ReportFormat) =>
   api.postBlob('/api/v1/reports/generate', { report_type: reportType, export_format: exportFormat })
-export const rawContactMessages = () => api.get<BackendContactMessage[]>('/api/v1/contact')
+function contactQuery(statut: ContactMessageFilter, q: string, page?: number, perPage?: number): string {
+  const params = new URLSearchParams({ statut })
+  if (q.trim()) params.set('q', q.trim())
+  if (page) params.set('page', String(page))
+  if (perPage) params.set('per_page', String(perPage))
+  return params.toString()
+}
+
+export const rawContactMessages = (statut: ContactMessageFilter, q: string, page: number, perPage = 50) =>
+  api.get<BackendContactMessagePage>(`/api/v1/contact?${contactQuery(statut, q, page, perPage)}`)
+export const rawMarkContactMessage = (id: string, traite: boolean) =>
+  api.patch<BackendContactMessage>(`/api/v1/contact/${encodeURIComponent(id)}`, { traite })
+/** Export CSV du filtre affiché : les messages exportés deviennent supprimables. */
+export async function downloadContactCsv(statut: ContactMessageFilter, q: string): Promise<void> {
+  const { blob, filename } = await api.getBlob(`/api/v1/contact/export.csv?${contactQuery(statut, q)}`)
+  saveBlob(blob, filename ?? 'messages-nouankany.csv')
+}
+export const rawDeleteExportedContactMessages = (q: string) =>
+  api.post<{ supprimes: number }>('/api/v1/contact/supprimer', q.trim() ? { q: q.trim() } : { tous: true })
 export const rawWaitlistEntries = () => api.get<BackendWaitlistEntry[]>('/api/v1/waitlist')
 export const rawMlCollection = () => api.get<BackendCollectionStatus>('/api/v1/ml/collecte')
 export const rawMlDrift = (window = 500) => api.get<BackendDriftReport>(`/api/v1/ml/drift?window=${window}`)

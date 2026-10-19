@@ -45,7 +45,9 @@ async function isolationForestPanel(): Promise<AdminPanel> {
     meta: model?.trained_at ? `entraîné le ${model.trained_at}` : 'entraînement inconnu',
     badge: 'jeu de données : synthétique',
     rows: [
-      { label: 'Alertes plateforme actives', value: String(adminMetrics.ml_health.isolation_forest_anomalies_detected) },
+      // Cumul des anomalies repérées par le modèle de détection, pas les alertes ouvertes (test du site, 2026-10-18 :
+      // « 37 alertes actives » ici contre 2 sur la page Alertes).
+      { label: 'Anomalies repérées par le modèle (cumul)', value: String(adminMetrics.ml_health.isolation_forest_anomalies_detected) },
       { label: 'Second avis dans les conseils', value: 'retiré (quality gate jamais atteint)' },
       { label: 'F1-score (R&D v2, non déployé)', value: model?.metrics.f1_score !== undefined ? `${model.metrics.f1_score.toFixed(2)} (recherche)` : '-' },
       { label: 'Statut modèle', value: model?.status ?? '-' },

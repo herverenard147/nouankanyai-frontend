@@ -85,6 +85,8 @@ export interface AdminPlatformPredictionRow {
   /** Somme des prédictions « heure suivante » de ses équipements, `null` si aucune n'a pu être calculée. */
   totalNextHourKw: number | null
   machines: AdminMachinePrediction[]
+  /** Appareils du compte sans prévision (pas de relevé) : affichés à part du nombre prévu. */
+  withoutForecast: number
 }
 
 /** Prédictions agrégées de toute la plateforme, par utilisateur : remplace l'ancien scope
@@ -111,6 +113,7 @@ export async function fetchPlatformPredictions(): Promise<AdminPlatformPredictio
       ownerNom: u.owner_nom,
       totalNextHourKw: values.length ? values.reduce((sum, v) => sum + v, 0) : null,
       machines,
+      withoutForecast: u.sans_prevision ?? 0,
     }
   })
 }

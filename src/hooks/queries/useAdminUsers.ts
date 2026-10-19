@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { fetchAdminUsers, promoteUser } from '@/api/adminUsers'
+import { fetchAdminUsers, promoteUser, type EditableRole } from '@/api/adminUsers'
 import {
   deleteUser,
   fetchPlatformConsumption,
@@ -22,7 +22,7 @@ export function useAdminUsers() {
 export function usePromoteUser() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ userId, makeAdmin }: { userId: string; makeAdmin: boolean }) => promoteUser(userId, makeAdmin),
+    mutationFn: ({ userId, role }: { userId: string; role: EditableRole }) => promoteUser(userId, role),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin-metrics'] })
       void queryClient.invalidateQueries({ queryKey: ['admin-users'] })
