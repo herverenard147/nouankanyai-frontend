@@ -1,11 +1,5 @@
-import { EMAIL_INPUT, LIMITS } from '@/lib/validation'
-import { useState } from 'react'
-import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
-import { TextField } from '@/components/ui/TextField'
-import { Button } from '@/components/ui/Button'
-import { useJoinWaitlist } from '@/hooks/queries/useWaitlist'
 import { Footer } from '@/pages/landing/sections/Footer'
 import { NavBar } from '@/pages/landing/sections/NavBar'
 
@@ -51,54 +45,6 @@ const REVENUE_LINES = [
   },
 ]
 
-function WaitlistForm() {
-  const [email, setEmail] = useState('')
-  const [telephone, setTelephone] = useState('')
-  const mutation = useJoinWaitlist()
-
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    mutation.mutate({ email, telephone: telephone.trim() || undefined })
-  }
-
-  if (mutation.isSuccess) {
-    return (
-      <p className="mt-5 text-sm font-semibold text-confirm">
-        Merci, vous êtes inscrit(e). Nous vous contacterons par email{telephone ? ' ou SMS' : ''} à
-        l&rsquo;ouverture.
-      </p>
-    )
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:flex-wrap">
-      <TextField
-        label="Email"
-        {...EMAIL_INPUT}
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="vous@exemple.com"
-        className="sm:w-64"
-      />
-      <TextField
-        label="Téléphone (optionnel, pour un SMS)"
-        type="tel"
-        maxLength={LIMITS.phone}
-        value={telephone}
-        onChange={(e) => setTelephone(e.target.value)}
-        placeholder="+225 01 02 03 04"
-        className="sm:w-64"
-      />
-      <Button loading={mutation.isPending} type="submit" disabled={mutation.isPending}>
-        {mutation.isPending ? 'Envoi…' : 'Être informé à l’ouverture'}
-      </Button>
-      {mutation.isError && (
-        <p className="w-full text-sm text-alert">Échec de l&rsquo;inscription, réessayez.</p>
-      )}
-    </form>
-  )
-}
 
 export function HowItWorksPage() {
   return (
@@ -113,8 +59,8 @@ export function HowItWorksPage() {
             <h1 className="mt-2 text-h1 font-bold text-text-primary">Deux parcours, un seul produit</h1>
             <p className="mt-4 max-w-[47.5rem] text-lede text-text-secondary">
               PME et Industrie sont en phase pilote active dès aujourd&rsquo;hui : audit, installation ciblée, puis
-              6 à 9 mois de mesure avant généralisation. La formule Ménage arrive dans un second temps, une fois ce
-              pilote industriel consolidé.
+              6 à 9 mois de mesure avant généralisation. Les ménages peuvent déjà s&rsquo;inscrire avec la formule
+              Découverte, gratuite ; l&rsquo;offre complète suivra le pilote industriel.
             </p>
           </div>
         </section>
@@ -172,20 +118,26 @@ export function HowItWorksPage() {
           <div className="mx-auto max-w-[70rem] px-6">
             <div className="mb-6 flex flex-wrap items-center gap-3">
               <span className="w-fit rounded-pill bg-bg-elevated px-3 py-1 text-xs font-semibold text-text-secondary">
-                Bientôt disponible
+                Inscription ouverte
               </span>
               <h2 className="text-h2-section font-bold text-text-primary">Pour les Ménages</h2>
             </div>
             <div className="max-w-[40rem] rounded-card border border-border bg-card p-6">
               <p className="text-small-body text-text-secondary">
                 Vous prenez en photo votre facture CIE. Nouankany prédit votre prochaine consommation et vous dit
-                précisément quoi éteindre ou décaler pour payer moins. Sans capteur pour commencer : ce parcours
-                repose sur votre facture et votre déclaration d&rsquo;équipements, pas sur une installation IoT.
+                quels appareils pèsent le plus et comment mieux les régler pour payer moins (chez un particulier, le prix
+                du kWh ne dépend pas de l&rsquo;heure). Sans capteur pour commencer : ce parcours repose sur votre
+                facture et votre déclaration d&rsquo;équipements ; un boîtier peut s&rsquo;ajouter ensuite.
               </p>
               <p className="mt-3 text-small-body text-text-secondary">
-                Ce parcours n&rsquo;est pas encore disponible.
+                La formule Découverte est gratuite (jusqu&rsquo;à 3 appareils).
               </p>
-              <WaitlistForm />
+              <Link
+                to="/login?mode=signup&type=menage"
+                className="focus-ring mt-4 inline-flex min-h-11 items-center bg-accent px-5 text-sm font-semibold text-text-primary hover:opacity-90"
+              >
+                Créer mon compte
+              </Link>
             </div>
           </div>
         </section>

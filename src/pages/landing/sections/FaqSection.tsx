@@ -50,9 +50,9 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
     question: 'Quand la formule Ménage sera-t-elle disponible ?',
     answer: (
       <>
-        D&rsquo;ici 12 à 24 mois.{' '}
-        <Link to="/#contact" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
-          Inscrivez-vous pour être informé(e) à l&rsquo;ouverture
+        Elle l&rsquo;est déjà : la formule Découverte est gratuite.{' '}
+        <Link to="/login?mode=signup&type=menage" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
+          Créer un compte
         </Link>
         .
       </>

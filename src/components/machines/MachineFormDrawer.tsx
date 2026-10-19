@@ -80,6 +80,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
       categorie: extracted.categorie ?? f.categorie,
       marque: extracted.marque ?? f.marque,
       modele: extracted.modele ?? f.modele,
+      numero_serie: extracted.numero_serie ?? f.numero_serie,
       power_kw: extracted.puissance_nominale_kw != null ? String(extracted.puissance_nominale_kw) : f.power_kw,
       photo_data_url: photoDataUrl,
     }))
@@ -297,7 +298,8 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
               onChange={(e) => setForm((f) => ({ ...f, power_kw: e.target.value }))}
             />
           )}
-          {isEdit && (
+          {/* Aussi à l'ajout quand la photo de la plaque l'a lu : jamais une valeur envoyée sans être montrée. */}
+          {(isEdit || form.numero_serie) && (
             <TextField label="Numéro de série" value={form.numero_serie} onChange={(e) => setForm((f) => ({ ...f, numero_serie: e.target.value }))} />
           )}
           <TextField

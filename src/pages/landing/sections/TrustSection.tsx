@@ -3,13 +3,15 @@ import type { Provenance } from '@/types/domain'
 
 const ROWS: { value: Provenance; definition: string }[] = [
   { value: 'mesure', definition: 'Donnée issue d’un capteur installé sur votre site.' },
+  { value: 'declare', definition: 'Relevé que vous avez importé ou saisi vous-même.' },
   {
     value: 'estime',
     definition: 'Calculé à partir de votre facture CIE et de votre déclaration d’équipements.',
   },
+  { value: 'demonstration', definition: 'Exemple chargé sur un compte d’essai, jamais mêlé à vos vraies données.' },
   {
     value: 'synthetique',
-    definition: 'Modèle entraîné sur un jeu de données de référence, en attendant vos données réelles.',
+    definition: 'Simulation ou modèle entraîné sur un jeu de référence, en attendant vos données réelles.',
   },
 ]
 

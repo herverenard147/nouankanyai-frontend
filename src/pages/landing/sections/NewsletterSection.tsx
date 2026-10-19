@@ -19,20 +19,19 @@ export function NewsletterSection() {
     <section className="bg-accent py-16 text-text-primary lg:py-20">
       <div className="mx-auto grid max-w-[75rem] grid-cols-1 items-end gap-8 px-6 lg:grid-cols-[6fr_5fr] lg:gap-16">
         <div>
-          <p className="font-mono text-sm font-semibold">Bientôt disponible</p>
+          <p className="font-mono text-sm font-semibold">Nouveautés</p>
           <h2 className="mt-2.5 text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em]">
-            Soyez parmi les premiers utilisateurs
+            Suivez les nouveautés de Nouankany
           </h2>
           <p className="mt-3.5 max-w-[48ch]">
-            Le produit est en développement actif. Laissez votre email pour être informé à l&rsquo;ouverture des
-            inscriptions, sans spam.
+            Nouvelles fonctions, conseils d&rsquo;économie, ouverture aux autres pays : laissez votre email, sans spam.
           </p>
         </div>
 
         <div>
           {success ? (
             <p className="font-semibold">
-              Merci, votre email est enregistré. Nous vous préviendrons à l&rsquo;ouverture des inscriptions.
+              Merci, votre email est enregistré. Nous vous écrirons à chaque nouveauté importante.
             </p>
           ) : (
             <form onSubmit={handleSubmit} className="flex">

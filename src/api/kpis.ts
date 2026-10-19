@@ -1,5 +1,5 @@
 import { formatFcfa } from '@/lib/formatters'
-import { getCachedAdminMetrics, rawBilling, getCachedMachines, getCachedRecommend } from '@/api/rawBackend'
+import { getCachedAdminMetrics, rawBilling, getCachedMachines, getCachedRecommend, hasReading } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { Kpi, KpiWindow, Profile } from '@/types/domain'
 
@@ -17,7 +17,8 @@ const CLIENT_LABELS: Record<(typeof CLIENT_KPI_IDS)[number], string> = {
  * « machines », « à surveiller » plutôt qu'« anomalie ». PME, Industrie et Admin gardent les leurs. */
 const MENAGE_LABELS: typeof CLIENT_LABELS = {
   'puissance-totale': 'Consommation en ce moment',
-  'machines-actives': 'Appareils en marche',
+  // « En marche » laissait croire à une mesure : c'est le nombre d'appareils sans alerte (test du site, 2026-10-18).
+  'machines-actives': 'Appareils sans alerte',
   'economies-mois': 'Économies estimées ce mois',
   'anomalies-actives': 'Appareils à surveiller',
 }
@@ -69,16 +70,20 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
   // la vue d'ensemble affichait « Aucune alerte active » à côté d'une alerte listée (audit du 2026-10-12).
   const diagnosed = await alertedMachineIds(machines)
   const alerteMachines = machines.filter((m) => m.status === 'alerte' || diagnosed.has(m.machine_id))
-  // Puissance tirée des relevés simulés (aucun capteur branché) : provenance « synthétique » (M20).
-  const totalPower = machines.reduce((sum, m) => sum + m.power_kw, 0)
+  // Seulement les appareils qui ont un relevé : sans relevé, power_kw est la puissance de plaque, pas une mesure
+  // (test du site, 2026-10-18 : « 1,4 kW en ce moment » pour un foyer sans aucune mesure).
+  const measured = machines.filter(hasReading)
+  const totalPower = measured.reduce((sum, m) => sum + m.power_kw, 0)
 
   return {
     'puissance-totale': {
       id: 'puissance-totale',
       label: labels['puissance-totale'],
-      value: formatNumberFr(totalPower, 1),
-      unit: 'kW',
-      note: `${machines.length} ${noun}${plural(machines.length)} ${noun === 'appareil' ? 'enregistré' : 'enregistrée'}${plural(machines.length)}`,
+      value: measured.length ? formatNumberFr(totalPower, 1) : '-',
+      unit: measured.length ? 'kW' : '',
+      note: measured.length
+        ? `${measured.length} ${noun}${plural(measured.length)} mesuré${plural(measured.length)} sur ${machines.length}`
+        : 'Aucune mesure : reliez un boîtier ou importez des relevés',
       provenance: 'synthetique',
     },
     'machines-actives': {
