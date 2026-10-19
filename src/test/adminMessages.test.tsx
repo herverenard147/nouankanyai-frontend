@@ -7,10 +7,11 @@ vi.mock('@/api/rawBackend', () => ({
   rawContactMessages: vi.fn(),
   rawMarkContactMessage: vi.fn().mockResolvedValue({}),
   rawDeleteExportedContactMessages: vi.fn().mockResolvedValue({ supprimes: 2 }),
+  rawDeleteSpamMessages: vi.fn().mockResolvedValue({ supprimes: 120 }),
   downloadContactCsv: vi.fn().mockResolvedValue(undefined),
   rawWaitlistEntries: vi.fn().mockResolvedValue([]),
 }))
-import { rawContactMessages, rawDeleteExportedContactMessages, rawMarkContactMessage } from '@/api/rawBackend'
+import { rawContactMessages, rawDeleteExportedContactMessages, rawDeleteSpamMessages, rawMarkContactMessage } from '@/api/rawBackend'
 import { AdminMessagesPage } from '@/pages/app/admin/AdminMessagesPage'
 
 function page() {
@@ -47,5 +48,21 @@ describe('Messages de contact (admin)', () => {
     const buttons = screen.getAllByRole('button', { name: 'Supprimer les messages exportés' })
     fireEvent.click(buttons[buttons.length - 1])
     await waitFor(() => expect(rawDeleteExportedContactMessages).toHaveBeenCalledWith(''))
+  })
+
+  it('« Supprimer comme spam » : seulement sur une recherche, sans export, nombre à retaper', async () => {
+    page()
+    await waitFor(() => expect(screen.getByText(/120 messages/)).toBeTruthy())
+    expect((screen.getByRole('button', { name: 'Supprimer comme spam' }) as HTMLButtonElement).disabled).toBe(true)
+    fireEvent.change(screen.getByLabelText(/Rechercher/), { target: { value: 'x@x.com' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
+    await waitFor(() => expect((screen.getByRole('button', { name: 'Supprimer comme spam' }) as HTMLButtonElement).disabled).toBe(false))
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer comme spam' }))
+    const field = await screen.findByLabelText(/tapez le nombre de messages/)
+    const buttons = () => screen.getAllByRole('button', { name: 'Supprimer comme spam' })
+    expect((buttons()[buttons().length - 1] as HTMLButtonElement).disabled).toBe(true)
+    fireEvent.change(field, { target: { value: '120' } })
+    fireEvent.click(buttons()[buttons().length - 1])
+    await waitFor(() => expect(rawDeleteSpamMessages).toHaveBeenCalledWith('x@x.com', 120))
   })
 })
