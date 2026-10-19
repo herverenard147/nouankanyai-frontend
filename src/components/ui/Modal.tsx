@@ -26,10 +26,16 @@ interface ModalProps {
  * boîte, rendu à l'élément déclencheur à la fermeture, Échap = fermer, clic sur le fond = fermer.
  * Jamais plus haute que l'écran : en-tête et boutons restent visibles, seul le corps défile, avec sa barre de
  * défilement dans la modale (test du site, 2026-10-18 : titre et boutons hors d'écran en 1366×570).
+ * Dès qu'un champ a été rempli, un clic à côté ne ferme plus rien (demande du propriétaire, 2026-10-19) : seuls le
+ * ×, les boutons et Échap ferment, pour ne jamais perdre une saisie par mégarde.
  */
 export function Modal({ title, description, onClose, children, actions, danger = false, width = 'md' }: ModalProps) {
   const titleId = useId()
   const boxRef = useRef<HTMLDivElement>(null)
+  const edited = useRef(false)
+  const markEdited = () => {
+    edited.current = true
+  }
 
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null
@@ -61,13 +67,23 @@ export function Modal({ title, description, onClose, children, actions, danger =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-bg/60 p-4 overlay-backdrop">
-      <button type="button" aria-label="Fermer" tabIndex={-1} className="absolute inset-0 cursor-default" onClick={onClose} />
+      <button
+        type="button"
+        aria-label="Fermer"
+        tabIndex={-1}
+        className="absolute inset-0 cursor-default"
+        onClick={() => {
+          if (!edited.current) onClose()
+        }}
+      />
       <div
         ref={boxRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         onKeyDown={handleKeyDown}
+        onInputCapture={markEdited}
+        onChangeCapture={markEdited}
         className={clsx(
           'relative flex max-h-[calc(100dvh-2rem)] w-full flex-col overflow-hidden border-t-4 bg-card shadow-assistant-panel overlay-panel-center',
           danger ? 'border-alert' : 'border-text-primary',

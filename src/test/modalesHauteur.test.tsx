@@ -36,3 +36,25 @@ describe('Modal : jamais plus haute que l’écran', () => {
     expect(body.contains(footer)).toBe(false)
   })
 })
+
+describe('Modal : une saisie ne se perd pas par un clic à côté', () => {
+  it('ferme sur un clic à côté tant que rien n’est rempli, plus ensuite', async () => {
+    const { fireEvent } = await import('@testing-library/react')
+    let closed = 0
+    const { unmount } = render(
+      <Modal title="Ajouter un appareil" onClose={() => (closed += 1)} actions={<button type="button">Enregistrer</button>}>
+        <input aria-label="Nom" />
+      </Modal>,
+    )
+    const backdrop = document.querySelector('button.absolute.inset-0') as HTMLElement
+    fireEvent.click(backdrop)
+    expect(closed).toBe(1)
+
+    fireEvent.input(screen.getByLabelText('Nom'), { target: { value: 'Frigo' } })
+    fireEvent.click(backdrop)
+    expect(closed).toBe(1)
+    fireEvent.click(screen.getAllByRole('button', { name: 'Fermer' }).at(-1) as HTMLElement)
+    expect(closed).toBe(2)
+    unmount()
+  })
+})
