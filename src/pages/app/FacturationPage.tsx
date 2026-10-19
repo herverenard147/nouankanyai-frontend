@@ -35,9 +35,12 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
       <section className={SECTION}>
         <h1 className="text-section-title font-semibold text-text-primary">Facturation Nouankany</h1>
         <p className="text-sm text-text-secondary">
-          Aucun contrat pour l’instant. Tout commence par un audit de référence ({formatFcfa(d.audit_fee_fcfa)}, une fois) qui mesure votre
-          consommation actuelle. Ensuite : une redevance de {formatFcfa(d.saas_fee_fcfa)} par mois et {formatNumberFr(d.savings_share_pct)} % des
-          économies réellement mesurées sur vos factures CIE. Un mois sans économie, vous ne payez que la redevance.
+          {/* Décisions du propriétaire (2026-10-18 et 19) : prix de l'audit fixé avec chaque client, abonnement de 50 000 FCFA par
+              mois par défaut, 15 % des économies par défaut, révisable à l'audit. */}
+          Aucun contrat pour l’instant. Tout commence par un audit de référence qui mesure votre consommation actuelle ; son prix est
+          fixé avec vous, selon votre site. Ensuite : un abonnement de {formatFcfa(d.saas_fee_fcfa)} par mois et, par défaut,{' '}
+          {formatNumberFr(d.savings_share_pct)} % des économies réellement mesurées sur vos factures CIE. Ce pourcentage peut être revu
+          lors de l’audit, selon les capteurs et équipements à installer. Un mois sans économie, vous ne payez que l’abonnement.
         </p>
         {billing.effective_tier === 'decouverte_pro' && billing.pme_free_tier && (
           <p className="text-sm text-text-secondary">
