@@ -13,7 +13,7 @@ import type { PredictionGranularity } from '@/types/domain'
 const GRANULARITIES: { id: PredictionGranularity; label: string }[] = [
   { id: 'heure', label: 'Heure' },
   { id: 'jour', label: 'Jour' },
-  { id: 'semaine', label: 'Semaine' },
+  { id: 'mois', label: 'Mois' },
 ]
 
 export function PredictionPage() {
