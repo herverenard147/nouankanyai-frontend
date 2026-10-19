@@ -1028,3 +1028,15 @@ export interface BackendInstallation {
   sites: { id: string; nom: string }[]
   appareils: { code: string; nom: string; categorie: string | null; puissance_nominale_kw: number | null; site_id: string | null }[]
 }
+
+/** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
+export interface BackendNotification {
+  id: string
+  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil'
+  title: string
+  detail: string
+  at: string | null
+  /** Page et ancre de l'élément, par exemple « /app/factures#facture-<id> ». */
+  link: string
+  level: string
+}

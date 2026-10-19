@@ -1,7 +1,6 @@
 import { LogOut } from 'lucide-react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
-import { NotificationBell } from '@/components/layout/NotificationBell'
 import { SensorDisclaimer } from '@/components/layout/SensorDisclaimer'
 import { useAlertsBadgeCount, useAdviceBadgeCount } from '@/hooks/useNotificationBadges'
 import { NAV_BY_PROFILE, visibleNav } from '@/lib/navConfig'
@@ -49,7 +48,6 @@ export function SideRail({ onNavigate }: SideRailProps) {
             Nouankany
           </span>
         </Link>
-        <NotificationBell profile={session.profile} tone="sombre" onNavigate={onNavigate} />
       </div>
 
       <nav className="scrollbar-dark flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto" aria-label="Navigation principale">

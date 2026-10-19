@@ -16,7 +16,7 @@ export function StatementList({ statements, action }: { statements: BackendBilli
   return (
     <ul className="flex flex-col">
       {statements.map((s) => (
-        <li key={s.id} className="flex flex-col gap-2 border-t border-border py-3 text-sm">
+        <li key={s.id} id={`releve-${s.id}`} className="flex flex-col gap-2 border-t border-border py-3 text-sm">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <span className="font-semibold text-text-primary">{s.month}</span>
             <span className="tabular-nums text-text-primary">{s.total_fcfa !== null ? formatFcfa(s.total_fcfa) : 'Non calculé'}</span>

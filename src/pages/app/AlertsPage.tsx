@@ -67,7 +67,9 @@ export function AlertsPage() {
             corriger nos recommandations.
           </p>
           {pending.map((alert) => (
-            <AlertFeedbackForm key={alert.id} alert={alert} level={level} onLater={() => setLater((s) => new Set(s).add(alert.id))} />
+            <div key={alert.id} id={`retour-${alert.id}`}>
+              <AlertFeedbackForm alert={alert} level={level} onLater={() => setLater((s) => new Set(s).add(alert.id))} />
+            </div>
           ))}
         </section>
       )}
@@ -80,7 +82,7 @@ export function AlertsPage() {
               {history.data?.map((alert) => {
                 const provenance = alertProvenance(alert)
                 return (
-                  <div key={alert.id} className="flex flex-wrap items-start gap-4 border-b border-border py-4">
+                  <div key={alert.id} id={`alerte-${alert.id}`} className="flex flex-wrap items-start gap-4 border-b border-border py-4">
                     <span className="text-sm tabular-nums text-text-tertiary">{formatUtcDateTime(alert.created_at)}</span>
                     <div className="min-w-[200px] flex-1">
                       <p className="font-semibold text-text-primary">
