@@ -1,6 +1,8 @@
 import { lazy } from 'react'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 
+import { RouteErrorPage } from '@/components/errors/RouteErrorPage'
+
 import { AppLayout } from '@/layouts/AppLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { AuditRequestPage } from '@/pages/audit/AuditRequestPage'
@@ -55,6 +57,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <PublicLayout />,
+    errorElement: <RouteErrorPage />,
     children: [
       { index: true, element: <LandingPage /> },
       { path: 'login', element: <LoginPage /> },
@@ -69,6 +72,7 @@ export const router = createBrowserRouter([
   {
     path: '/app',
     element: <ProtectedRoute />,
+    errorElement: <RouteErrorPage />,
     children: [
       {
         element: <AppLayout />,
