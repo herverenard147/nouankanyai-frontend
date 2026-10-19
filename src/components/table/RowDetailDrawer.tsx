@@ -41,18 +41,19 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance; 
         onClick={onClose}
       />
       <aside
-        className="relative flex h-full w-full max-w-sm flex-col gap-4 overflow-y-auto bg-card p-6 shadow-assistant-panel overlay-panel-right"
+        className="relative flex h-full w-full max-w-sm flex-col overflow-hidden bg-card shadow-assistant-panel overlay-panel-right"
         role="dialog"
         aria-modal="true"
         aria-label={title}
         onKeyDown={onEscape(onClose)}
       >
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex shrink-0 items-start justify-between gap-3 px-6 pb-4 pt-6">
           <h3 className="text-section-title font-semibold text-text-primary">{title}</h3>
           <button type="button" onClick={onClose} className="focus-ring rounded-control p-1 text-text-secondary hover:text-text-primary" aria-label="Fermer">
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
+        <div data-modal-body className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-6 pb-4">
         {row.photo_data_url && (
           <img src={row.photo_data_url} alt={`Photo : ${title}`} className="h-40 w-full rounded-card object-cover" />
         )}
@@ -66,8 +67,9 @@ export function RowDetailDrawer<T extends { id: string; provenance: Provenance; 
         </dl>
         <ProvenanceBadge value={row.provenance} className="w-fit" />
         {children}
+        </div>
         {(onEdit || onDelete) && (
-          <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-4">
+          <div className="flex shrink-0 flex-wrap gap-2 border-t border-border px-6 pb-6 pt-4">
             {onEdit && (
               <Button type="button" variant="ghost" onClick={onEdit}>
                 Modifier
