@@ -429,7 +429,7 @@ function AutomationCard() {
               Relancer automatiquement la vérification d&rsquo;une alerte jusqu&rsquo;à résolution (les alertes
               critiques restent toujours manuelles).
               <span className="mt-1 block text-xs text-text-secondary">
-                La mesure reste simulée en l&rsquo;absence de capteur réel branché.
+                Chaque essai lit la dernière mesure du boîtier relié à l&rsquo;appareil : sans boîtier, rien n&rsquo;est vérifié ni inventé.
               </span>
             </span>
           </label>
