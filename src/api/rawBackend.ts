@@ -88,7 +88,9 @@ import type {
   ReportFormat,
   ReportType,
   BackendPendingBill,
+  BackendCollectionMachine,
   BackendCollectionStatus,
+  BackendForecastReview,
 } from '@/types/backend'
 
 export const rawAuthMe = () => api.get<BackendUser>('/api/auth/me')
@@ -416,6 +418,13 @@ export const rawDeleteSpamMessages = (q: string, confirmation: number) =>
   api.post<{ supprimes: number }>('/api/v1/contact/spam', { q: q.trim(), confirmation })
 export const rawWaitlistEntries = () => api.get<BackendWaitlistEntry[]>('/api/v1/waitlist')
 export const rawMlCollection = () => api.get<BackendCollectionStatus>('/api/v1/ml/collecte')
+export const rawMlCollectionMachines = () => api.get<BackendCollectionMachine[]>('/api/v1/ml/collecte/appareils')
+export const rawMlForecastReview = (jours = 30) => api.get<BackendForecastReview>(`/api/v1/ml/previsions/bilan?jours=${jours}`)
+/** Jeu d'entraînement construit sur les seules mesures réelles, à déposer dans le Drive pour le carnet de réentraînement. */
+export async function downloadTrainingCsv(): Promise<void> {
+  const { blob, filename } = await api.getBlob('/api/v1/ml/collecte/export.csv')
+  saveBlob(blob, filename ?? 'reel.csv')
+}
 export const rawMlDrift = (window = 500) => api.get<BackendDriftReport>(`/api/v1/ml/drift?window=${window}`)
 export const rawMlDriftLog = (window = 500) =>
   api.post<{ status: string; log_file: string; report: BackendDriftReport }>(`/api/v1/ml/drift/log?window=${window}`)

@@ -77,6 +77,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/prediction', label: 'Prédiction' },
     { path: '/app/admin/sante', label: 'Santé plateforme' },
     { path: '/app/admin/modeles', label: 'Modèles & observabilité' },
+    { path: '/app/admin/donnees', label: "Données d'entraînement" },
     { path: '/app/admin/utilisateurs', label: 'Utilisateurs' },
     { path: '/app/admin/leads', label: "Demandes d'audit" },
     { path: '/app/admin/messages', label: 'Messages et inscriptions' },
