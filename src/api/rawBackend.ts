@@ -7,12 +7,9 @@
 import { api, saveBlob } from '@/lib/apiClient'
 import { queryClient } from '@/lib/queryClient'
 import type {
-<<<<<<< HEAD
-  BackendNotification,
-=======
   BackendConsumption,
   ConsumptionGranularity,
->>>>>>> origin/main
+  BackendNotification,
   BackendAdminDevice,
   BackendAdminDeviceRequest,
   BackendAdminMachineActionResult,
@@ -312,12 +309,9 @@ export const rawAuditEvents = (query: AuditQuery = {}) =>
 export const rawAdminAuditEvents = (query: AuditQuery = {}) =>
   api.get<BackendAuditPage>(`/api/v1/audit/admin/events${toQueryString({ ...query })}`)
 
-<<<<<<< HEAD
-export const rawNotifications = () => api.get<BackendNotification[]>('/api/v1/notifications')
-=======
 export const rawConsumption = (granularity: ConsumptionGranularity, machine?: string) =>
   api.get<BackendConsumption>(`/api/v1/consumption?granularity=${granularity}${machine ? `&machine=${encodeURIComponent(machine)}` : ''}`)
->>>>>>> origin/main
+export const rawNotifications = () => api.get<BackendNotification[]>('/api/v1/notifications')
 
 export const rawJournalEvents = (limit = 100) => api.get<BackendJournalPage>(`/api/v1/journal/events?limit=${limit}`)
 

@@ -1029,18 +1029,6 @@ export interface BackendInstallation {
   appareils: { code: string; nom: string; categorie: string | null; puissance_nominale_kw: number | null; site_id: string | null }[]
 }
 
-<<<<<<< HEAD
-/** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
-export interface BackendNotification {
-  id: string
-  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil'
-  title: string
-  detail: string
-  at: string | null
-  /** Page et ancre de l'élément, par exemple « /app/factures#facture-<id> ». */
-  link: string
-  level: string
-=======
 /** GET /api/v1/consumption : consommation réelle calculée à partir des relevés (correction 7, 2026-10-19). */
 export type ConsumptionGranularity = 'hour' | 'day' | 'week' | 'month'
 export type BackendConsumptionProvenance = 'mesure' | 'declare' | 'demonstration' | 'simulation'
@@ -1086,5 +1074,14 @@ export interface BackendConsumption {
   tarif: BackendConsumptionTariff
   prix_note: string
   factures_kwh_par_mois: { mois: string; kwh: number }[]
->>>>>>> origin/main
+/** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
+export interface BackendNotification {
+  id: string
+  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil'
+  title: string
+  detail: string
+  at: string | null
+  /** Page et ancre de l'élément, par exemple « /app/factures#facture-<id> ». */
+  link: string
+  level: string
 }
