@@ -28,7 +28,7 @@ const FIELD_LABELS: Record<string, string> = {
   title: 'Titre', description: 'Détail', gain_estime_fcfa: 'Gain estimé', month: 'Mois',
   amount_xof: 'Montant', actual_amount_xof: 'Montant réel', kwh_consumed: 'Consommation',
   power_kw: 'Puissance', localisation: 'Localisation', quantity: 'Quantité',
-  temperature_max_c: 'Température max', vibration_max_mm_s: 'Vibration max', surconsommation_ratio: 'Ratio de surconsommation',
+  temperature_max_c: 'Température max', vibration_max_mm_s: 'Vibration max', surconsommation_ratio: 'Surconsommation tolérée',
 }
 
 interface ValidationItem {

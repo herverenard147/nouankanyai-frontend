@@ -16,6 +16,8 @@ function row(overrides: Partial<EquipmentRow> = {}): EquipmentRow {
     marque: 'Samsung',
     modele: 'X1',
     site: 'Domicile',
+    puissance: '2 000 W',
+    attendu: '-',
     priorite: 'Moyenne',
     statut: 'Normal',
     provenance: 'estime',

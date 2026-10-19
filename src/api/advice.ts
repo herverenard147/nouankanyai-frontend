@@ -1,5 +1,5 @@
 import { getCachedMachines, getCachedRecommend } from '@/api/rawBackend'
-import { formatFcfa } from '@/lib/formatters'
+import { formatGain } from '@/lib/formatters'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import type { Advice, Profile } from '@/types/domain'
 
@@ -22,7 +22,7 @@ export async function fetchAdvice(_profile: Profile): Promise<Advice[]> {
       rank: String(i + 1).padStart(2, '0'),
       title: rec.title,
       detail: frenchNumbersWithUnits(`${rec.description} ${rec.action}`),
-      impactLabel: rec.gain_fcfa > 0 ? `−${formatFcfa(rec.gain_fcfa)}` : rec.severity,
+      impactLabel: rec.gain_fcfa > 0 ? formatGain(rec.gain_fcfa, rec.gain_periode) : rec.severity,
       impactKind: rec.gain_fcfa > 0 ? ('gain' as const) : ('severity' as const),
       provenance: 'synthetique' as const,
       machineId: rec.machine_id,

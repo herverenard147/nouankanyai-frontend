@@ -26,6 +26,7 @@ import type { EquipmentRow } from '@/types/domain'
 const COLUMNS_BASE: TableColumn<EquipmentRow>[] = [
   { key: 'nom', label: 'Équipement' },
   { key: 'categorie', label: 'Catégorie' },
+  { key: 'puissance', label: 'Puissance' },
   { key: 'site', label: 'Site' },
   { key: 'statut', label: 'Statut' },
 ]
@@ -34,6 +35,8 @@ const COLUMNS_FULL: TableColumn<EquipmentRow>[] = [
   { key: 'categorie', label: 'Catégorie' },
   { key: 'marque', label: 'Marque' },
   { key: 'modele', label: 'Modèle' },
+  { key: 'puissance', label: 'Puissance' },
+  { key: 'attendu', label: 'Attendu par jour (estimé)' },
   { key: 'site', label: 'Site' },
   { key: 'priorite', label: 'Priorité' },
   { key: 'statut', label: 'Statut' },

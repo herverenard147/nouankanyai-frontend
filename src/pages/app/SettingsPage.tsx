@@ -313,7 +313,7 @@ function ThresholdsCard() {
     ? [
         { label: 'Température max', before: `${formatNumberFr(current.temperature_max_c, 1)}${NARROW_NBSP}°C`, after: `${formatNumberFr(form.temperature_max_c, 1)}${NARROW_NBSP}°C` },
         { label: 'Vibration max', before: `${formatNumberFr(current.vibration_max_mm_s, 1)}${NARROW_NBSP}mm/s`, after: `${formatNumberFr(form.vibration_max_mm_s, 1)}${NARROW_NBSP}mm/s` },
-        { label: 'Ratio de surconsommation', before: String(current.surconsommation_ratio).replace('.', ','), after: String(form.surconsommation_ratio).replace('.', ',') },
+        { label: 'Surconsommation', before: overconsumptionLabel(current.surconsommation_ratio), after: overconsumptionLabel(form.surconsommation_ratio) },
       ].filter((change) => change.before !== change.after)
     : []
 
@@ -332,8 +332,8 @@ function ThresholdsCard() {
               <dd className="font-semibold text-text-primary">{formatNumberFr(current.vibration_max_mm_s, 1)}{NARROW_NBSP}mm/s</dd>
             </div>
             <div className={ROW}>
-              <dt className="text-text-secondary">Ratio de surconsommation</dt>
-              <dd className="font-semibold text-text-primary">{String(current.surconsommation_ratio).replace('.', ',')}</dd>
+              <dt className="text-text-secondary">Surconsommation</dt>
+              <dd className="font-semibold text-text-primary">{overconsumptionLabel(current.surconsommation_ratio)}</dd>
             </div>
           </dl>
         )}
@@ -380,9 +380,21 @@ function ThresholdsCard() {
             <div className="grid gap-3 sm:grid-cols-3">
               <TextField label="Température max (°C)" type="number" step="0.1" min="0.1" max={LIMITS.temperatureMaxC} required value={form.temperature_max_c} onChange={(e) => setForm((f) => ({ ...f, temperature_max_c: Number(e.target.value) }))} />
               <TextField label="Vibration max (mm/s)" type="number" step="0.1" min="0.1" max={LIMITS.vibrationMaxMmS} required value={form.vibration_max_mm_s} onChange={(e) => setForm((f) => ({ ...f, vibration_max_mm_s: Number(e.target.value) }))} />
-              <TextField label="Ratio de surconsommation" type="number" step="0.1" min="1.1" max={LIMITS.overconsumptionRatio} required value={form.surconsommation_ratio} onChange={(e) => setForm((f) => ({ ...f, surconsommation_ratio: Number(e.target.value) }))} />
+              <TextField
+                label="Surconsommation tolérée (%)"
+                type="number"
+                step="1"
+                min="5"
+                max={Math.round((LIMITS.overconsumptionRatio - 1) * 100)}
+                required
+                value={Math.round((form.surconsommation_ratio - 1) * 100)}
+                onChange={(e) => setForm((f) => ({ ...f, surconsommation_ratio: 1 + Number(e.target.value) / 100 }))}
+              />
             </div>
-            <p className="text-xs text-text-secondary">Au-delà de ces valeurs, un appareil passe en « Anomalie détectée » et une alerte apparaît.</p>
+            <p className="text-xs text-text-secondary">
+              Au-delà de ces valeurs, un appareil passe en « Anomalie détectée » et une alerte apparaît. Surconsommation : 20 % signifie une alerte
+              quand l’appareil consomme 20 % de plus que prévu.
+            </p>
           </form>
         </Modal>
       )}
@@ -587,6 +599,11 @@ function DeleteAccountCard({ isMember }: { isMember: boolean }) {
       )}
     </section>
   )
+}
+
+/** 1,2 → « alerte au-delà de +20 % » : le ratio brut n'était pas compris (test du site, 2026-10-18). */
+function overconsumptionLabel(ratio: number): string {
+  return `alerte au-delà de +${Math.round((ratio - 1) * 100)}${NARROW_NBSP}%`
 }
 
 export function SettingsPage() {
