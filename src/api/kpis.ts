@@ -23,6 +23,14 @@ const MENAGE_LABELS: typeof CLIENT_LABELS = {
   'anomalies-actives': 'Appareils à surveiller',
 }
 
+/** PME : « équipements », comme partout ailleurs dans son espace (test du site, 2026-10-18 : « machines » ici seulement). */
+const PME_LABELS: typeof CLIENT_LABELS = {
+  'puissance-totale': 'Puissance active totale',
+  'machines-actives': 'Équipements sans alerte',
+  'economies-mois': 'Économies estimées ce mois',
+  'anomalies-actives': 'Équipements en anomalie',
+}
+
 const ADMIN_LABELS: Record<(typeof ADMIN_KPI_IDS)[number], string> = {
   'base-donnees': 'Base de données',
   uptime: 'Uptime du processus',
@@ -43,7 +51,7 @@ export function kpiMeta(profile: Profile, kpiId: string): { label: string; windo
     const window = kpiId === 'latence-moyenne' ? { label: '5 min' } : undefined
     return { label, window }
   }
-  const labels = profile === 'menage' ? MENAGE_LABELS : CLIENT_LABELS
+  const labels = profile === 'menage' ? MENAGE_LABELS : profile === 'pme' ? PME_LABELS : CLIENT_LABELS
   return { label: labels[kpiId as (typeof CLIENT_KPI_IDS)[number]] }
 }
 
@@ -58,8 +66,8 @@ function formatUptime(seconds: number): string {
 }
 
 async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>> {
-  const labels = profile === 'menage' ? MENAGE_LABELS : CLIENT_LABELS
-  const noun = profile === 'menage' ? 'appareil' : 'machine'
+  const labels = profile === 'menage' ? MENAGE_LABELS : profile === 'pme' ? PME_LABELS : CLIENT_LABELS
+  const noun = profile === 'menage' ? 'appareil' : profile === 'pme' ? 'équipement' : 'machine'
   const plural = (count: number) => (count > 1 ? 's' : '')
   // Les 4 indicateurs client viennent des 2 mêmes requêtes (machines, facturation) : une seule fois pour
   // toute la bande, pas une fois par indicateur (KpiStrip montait 4 KpiTile, chacun refetchait tout).
