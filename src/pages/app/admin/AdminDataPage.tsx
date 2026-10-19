@@ -69,7 +69,7 @@ export function AdminDataPage() {
         <h2 className="text-section-title font-semibold text-text-primary">Jeu d’entraînement</h2>
         <p className="text-sm text-text-secondary">
           Une ligne par appareil et par heure ; une heure sans mesure reste vide, jamais inventée. Déposez le fichier dans le Drive (dossier
-          Nouankany/donnees) puis lancez le carnet de réentraînement sur Colab.
+          Nouankany/donnees_reelles) puis lancez le carnet « reentrainement_reel » sur Colab ; sans le seuil atteint, il ne réentraîne rien.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <Button type="button" loading={download.isPending} onClick={() => { setDone(false); download.mutate() }}>
