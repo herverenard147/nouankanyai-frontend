@@ -1,0 +1,32 @@
+# Déplacé du dépôt backend (privé) le 2026-10-19 : un dépôt public ne consomme pas les minutes GitHub Actions
+# (le compte avait épuisé ses 2 000 minutes, dont ~5 700 par mois pour ces deux tâches planifiées).
+# Garde le backend staging éveillé : sur le plan gratuit de Render, le service s'endort après
+# 15 minutes sans requête et met environ 100 s à se réveiller. Un appel toutes les 10 minutes
+# l'en empêche (une seule instance 24 h/24 tient dans les 750 h gratuites mensuelles).
+# À retirer si le service passe sur un plan payant, qui ne s'endort pas.
+# GitHub peut retarder une exécution planifiée de quelques minutes, et suspend les tâches
+# planifiées d'un dépôt resté 60 jours sans activité.
+name: Keep-alive staging
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      STAGING_URL: ${{ vars.STAGING_BACKEND_URL || 'https://nouankany-staging-backend-bm9s.onrender.com' }}
+    steps:
+      - name: Appeler la racine du backend
+        run: |
+          for attempt in 1 2 3; do
+            if curl -fsS --max-time 120 -o /dev/null -w "HTTP %{http_code} en %{time_total}s\n" "$STAGING_URL/"; then exit 0; fi
+            sleep 20
+          done
+          echo "Le backend staging ne répond pas" >&2
+          exit 1
