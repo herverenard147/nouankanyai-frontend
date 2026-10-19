@@ -351,9 +351,13 @@ export interface BackendBillingStatement {
   total_fcfa: number | null
   detail: { formule?: string; etapes?: string[]; raison?: string; palier_nom?: string; mention?: string; bareme_a_confirmer?: boolean; bareme_note?: string }
   paid_at: string | null
+  /** Échéance du relevé à payer (billing/payment.py). */
+  due_at?: string | null
 }
 export interface BackendBilling {
   segment: 'menage' | 'pme_industrie'
+  /** Services coupés pour impayé, 15 jours après l'échéance (décision du propriétaire, 2026-10-19). */
+  services?: { coupes: boolean; detail: string | null; releve_id: string | null }
   contract: BackendBillingContract | null
   effective_tier: BillingTierId | null
   /** Ce que le compte peut faire maintenant. `tier` : formule du contrat (celle qui reste après un essai). */
