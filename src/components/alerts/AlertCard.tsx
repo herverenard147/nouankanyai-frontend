@@ -5,6 +5,7 @@ import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineB
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useAutoResolveMachine } from '@/hooks/queries/useMachineCrud'
+import { ApiError } from '@/lib/apiClient'
 import { measureOrigin, measuredReading } from '@/lib/formatters'
 import { alertTone } from '@/lib/severity'
 import { AllowedLink } from '@/routes/AllowedLink'
@@ -76,7 +77,10 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             {alert.basis && <span>· {alert.basis}</span>}
           </p>
           {!admin && autoResolve.status === 'error' && (
-            <ApiErrorMessage message="Échec de la vérification." className="mt-2 text-sm text-alert" />
+            <ApiErrorMessage
+              message={autoResolve.error instanceof ApiError ? autoResolve.error.message : 'Échec de la vérification.'}
+              className="mt-2 text-sm text-alert"
+            />
           )}
           {!admin && autoResolve.lastResult && !autoResolve.lastResult.resolved && autoResolve.status !== 'needs_human' && (
             <p className="mt-2 text-sm text-alert">

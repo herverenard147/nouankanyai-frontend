@@ -513,11 +513,12 @@ export interface BackendPlatformConsumption {
   users: BackendPlatformConsumptionUser[]
 }
 export interface BackendAdminMachineActionResult {
+  provenance: 'simulation' | 'mesure'
   resolved: boolean
-  temperature_c: number
-  vibration_mm_s: number
-  pressure_bar: number
-  power_kw: number
+  temperature_c: number | null
+  vibration_mm_s: number | null
+  pressure_bar: number | null
+  power_kw: number | null
   owner_id: string
 }
 

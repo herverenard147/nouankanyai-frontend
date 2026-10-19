@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Button, Spinner } from '@/components/ui/Button'
 import { Modal, MutationError } from '@/components/ui/Modal'
 import { useAdminMachineActions } from '@/hooks/queries/useAdminUsers'
-import { measuredReading } from '@/lib/formatters'
+import { measureOrigin, measuredReading } from '@/lib/formatters'
 
 /**
  * Bouton d'action support partagé entre la page Alertes de l'Admin (AlertCard) et la fiche
@@ -51,16 +51,16 @@ export function AdminVerifyMachineButton({ machineId, subject }: { machineId: st
           }
         >
           <p className="text-sm text-text-secondary">
-            Une nouvelle mesure sera prise sur cet équipement et comparée aux seuils d&rsquo;alerte du compte concerné, exactement
-            comme si son propriétaire cliquait lui-même sur « Vérifier et résoudre ».
+            La dernière mesure du boîtier (moins de 15 minutes) est comparée aux seuils d&rsquo;alerte du compte concerné, exactement
+            comme si son propriétaire cliquait lui-même sur « Vérifier maintenant ». Sans mesure récente, rien n&rsquo;est vérifié.
           </p>
           <p className="text-xs text-text-secondary">Cette action sera enregistrée dans l’Audit du compte concerné, visible par lui.</p>
-          <MutationError error={verify.error} />
         </Modal>
       )}
+      <MutationError error={verify.error} />
       {verify.isSuccess && verify.data && !verify.data.resolved && (
         <p className="w-full text-xs text-alert">
-          Anomalie persistante (mesure simulée) : {measuredReading(verify.data)}.
+          Anomalie persistante ({measureOrigin(verify.data, true)}) : {measuredReading(verify.data)}.
         </p>
       )}
     </>
