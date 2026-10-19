@@ -1,6 +1,5 @@
-import { computeYTicks } from '@/lib/formatters'
+import { LineChart } from '@/components/charts/LineChart'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
-import { BarChart, type ChartBar } from '@/components/charts/BarChart'
 import type { Prediction } from '@/types/domain'
 
 export function PredictionContent({
@@ -13,15 +12,6 @@ export function PredictionContent({
   /** Admin uniquement : nom du modèle et jeu de données (il suit le comportement des modèles). Jamais côté client. */
   showModelName?: boolean
 }) {
-  const maxPoint = prediction.series.reduce((max, p) => (p.percent > max.percent ? p : max), prediction.series[0])
-  const yTicks = maxPoint ? computeYTicks(maxPoint.value, maxPoint.percent) : ['0', '0', '0']
-
-  const bars: ChartBar[] = prediction.series.map((point, i) => ({
-    key: `pred-${i}`,
-    x: point.label,
-    percent: point.percent,
-    tip: `${point.displayValue} ${prediction.unit}`,
-  }))
 
   return (
     <>
@@ -37,23 +27,18 @@ export function PredictionContent({
         <div className="flex flex-col items-end gap-1">
           <ProvenanceBadge value={prediction.provenance} />
           {showModelName && (
-            <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName} · jeu de données : synthétique</p>
+            <p className="font-mono text-mono-axis text-text-tertiary">{prediction.modelName}</p>
           )}
         </div>
       </div>
 
-      <div className="hidden sm:block">
-        <BarChart bars={bars} yTicks={yTicks} size="dashboard" yAxisLabel={prediction.yAxisUnit} xAxisLabel="période" />
-      </div>
-      <div className="sm:hidden">
-        <BarChart
-          bars={bars}
-          yTicks={yTicks}
-          size="dashboardMobile"
-          yAxisLabel={prediction.yAxisUnit}
-          xAxisLabel="période"
-        />
-      </div>
+      {/* Courbe plutôt que barres (demande du propriétaire, 2026-10-18) : les fluctuations se lisent mieux. */}
+      <LineChart
+        labels={prediction.series.map((p) => p.label)}
+        series={[{ name: prediction.title, values: prediction.series.map((p) => p.value) }]}
+        unit={prediction.yAxisUnit}
+        xLabelEvery={Math.max(1, Math.ceil(prediction.series.length / 8))}
+      />
 
       {showModelDetails && (
         <p className="text-sm text-text-secondary">

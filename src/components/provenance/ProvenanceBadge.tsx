@@ -7,6 +7,8 @@ const PROVENANCE_LABEL: Record<Provenance, string> = {
   estime: 'Estimé',
   synthetique: 'Synthétique',
   telemetrie_systeme: 'Télémétrie système',
+  declare: 'Déclaré',
+  demonstration: 'Démonstration',
 }
 
 interface ProvenanceBadgeProps {
