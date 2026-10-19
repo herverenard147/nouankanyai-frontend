@@ -45,20 +45,21 @@ async function login(page: Page, email: string, password: string) {
   await page.waitForURL(/\/app\//)
 }
 
-test('consommation et prédiction : trois profils, chaque vue', async ({ page }) => {
-  test.setTimeout(15 * 60_000)
+test('consommation et prédiction : trois profils, chaque vue', async ({ browser }) => {
+  test.setTimeout(25 * 60_000)
   const problems: string[] = []
-  page.on('pageerror', (error) => problems.push(`erreur JavaScript : ${error.message}`))
-  page.on('response', (r) => {
-    if (r.status() >= 500) problems.push(`${r.status()} sur ${new URL(r.url()).pathname}`)
-  })
   const accounts = seedAccounts()
   expect(Object.keys(accounts).length).toBe(3)
 
   for (const [email, password] of Object.entries(accounts)) {
     const profile = email.split('@')[0].replace('e2e-', '')
-    await page.context().clearCookies()
-    await page.setViewportSize({ width: 1440, height: 900 })
+    // Un contexte neuf par compte : la session est gardée dans le stockage du navigateur, pas dans un cookie.
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 } })
+    const page = await context.newPage()
+    page.on('pageerror', (error) => problems.push(`${profile} : erreur JavaScript : ${error.message}`))
+    page.on('response', (r) => {
+      if (r.status() >= 500) problems.push(`${profile} : ${r.status()} sur ${new URL(r.url()).pathname}`)
+    })
     await login(page, email, password)
     for (const viewport of VIEWPORTS) {
       await page.setViewportSize({ width: viewport.width, height: viewport.height })
@@ -81,6 +82,7 @@ test('consommation et prédiction : trois profils, chaque vue', async ({ page })
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
       if (overflow > 1) problems.push(`${profile} ${viewport.name} : défilement horizontal de ${overflow} px`)
     }
+    await context.close()
   }
   expect(problems, problems.join('\n')).toEqual([])
 })
