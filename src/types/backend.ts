@@ -1074,6 +1074,8 @@ export interface BackendConsumption {
   tarif: BackendConsumptionTariff
   prix_note: string
   factures_kwh_par_mois: { mois: string; kwh: number }[]
+}
+
 /** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
 export interface BackendNotification {
   id: string
