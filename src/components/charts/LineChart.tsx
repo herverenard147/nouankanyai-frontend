@@ -117,7 +117,8 @@ export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 
           {unit}
         </text>
         {labels.map((label, i) =>
-          i % labelEvery === 0 || i === n - 1 ? (
+          // La dernière date est toujours écrite ; une date régulière trop proche d'elle est omise (elles se chevauchaient).
+          (i % labelEvery === 0 && n - 1 - i >= labelEvery) || i === n - 1 ? (
             <text
               key={label + i}
               x={x(i)}
@@ -126,7 +127,7 @@ export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 
               textAnchor={i === 0 && n > 1 ? 'start' : i === n - 1 && n > 1 ? 'end' : 'middle'}
               className="fill-text-secondary text-[11px]"
             >
-              {i === n - 1 || i % labelEvery === 0 ? label : ''}
+              {label}
             </text>
           ) : null,
         )}
