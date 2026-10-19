@@ -130,6 +130,8 @@ export interface BackendMachinePhotoExtraction {
     /** Lu sur la plaque signalétique (test du site, 2026-10-18 : il n'était pas repris). */
     numero_serie?: string | null
     categorie_connue: boolean
+    /** Plaque absente ou illisible : estimation à vérifier (fiche du modèle, sinon médiane de la famille). */
+    puissance_estimee?: { puissance_kw: number; methode: 'fiche' | 'famille'; detail: string; reference_id?: string } | null
   }
   photo_data_url: string
 }
