@@ -36,7 +36,8 @@ function niceStep(max: number): number {
 
 export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 }: LineChartProps) {
   const boxRef = useRef<HTMLDivElement>(null)
-  const [width, setWidth] = useState(640)
+  // Largeur mesurée ; 320 au départ : 640 forçait la colonne à s'élargir sur téléphone (défilement de côté).
+  const [width, setWidth] = useState(320)
   const [active, setActive] = useState<number | null>(null)
 
   useEffect(() => {
@@ -82,7 +83,7 @@ export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 
   }
 
   return (
-    <div ref={boxRef} className="relative w-full select-none">
+    <div ref={boxRef} className="relative w-full min-w-0 select-none overflow-hidden">
       {/* Survol à la souris, toucher, ou flèches gauche/droite au clavier. */}
       <svg
         width={width}
