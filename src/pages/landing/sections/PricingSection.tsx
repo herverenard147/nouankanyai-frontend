@@ -29,14 +29,15 @@ const TIERS: Tier[] = [
   {
     name: 'Découverte',
     audience: 'Ménages, Côte d’Ivoire',
-    badge: 'Bientôt disponible',
+    priceLabel: 'Gratuit',
+    badge: 'Inscription ouverte',
     features: [
       'Suivi de consommation à partir de votre facture CIE',
-      'Prédiction hebdomadaire et alerte de seuil',
-      'Conseils génériques classés par impact',
-      'Formule complète à venir, une fois ce segment activé',
+      'Jusqu’à 3 appareils, rapport mensuel',
+      'Conseils classés par impact',
+      'Essentiel (2 900 FCFA/mois) et Optimum (7 900 FCFA/mois) depuis votre espace',
     ],
-    ctas: [{ label: 'Être informé à l’ouverture', href: '/#contact', primary: true }],
+    ctas: [{ label: 'Créer mon compte', href: '/login?mode=signup&type=menage', primary: true }],
   },
   {
     name: 'Pilote PME',

@@ -7,8 +7,8 @@ import { FaqSection } from '@/pages/landing/sections/FaqSection'
 import { Hero } from '@/pages/landing/sections/Hero'
 import { PricingSection } from '@/pages/landing/sections/PricingSection'
 
-describe('liens « être informé à l’ouverture »', () => {
-  it('renvoient vers le formulaire de contact (hero, formules, FAQ)', () => {
+describe('inscription des ménages', () => {
+  it('ouverte : hero, formules et FAQ mènent à la création de compte (plus « d’ici 12 à 24 mois »)', () => {
     render(
       <MemoryRouter>
         <Hero />
@@ -16,9 +16,10 @@ describe('liens « être informé à l’ouverture »', () => {
         <FaqSection />
       </MemoryRouter>,
     )
-    const links = screen.getAllByRole('link', { name: /informé.*à l.ouverture/i })
+    const links = screen.getAllByRole('link', { name: /Créer (mon|un) compte/i })
     expect(links).toHaveLength(3)
-    links.forEach((link) => expect(link).toHaveAttribute('href', '/#contact'))
+    links.forEach((link) => expect(link).toHaveAttribute('href', '/login?mode=signup&type=menage'))
+    expect(screen.queryByText(/12 à 24/)).toBeNull()
   })
 })
 

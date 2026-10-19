@@ -125,6 +125,8 @@ export interface BackendMachinePhotoExtraction {
     marque: string | null
     modele: string | null
     puissance_nominale_kw: number | null
+    /** Lu sur la plaque signalétique (test du site, 2026-10-18 : il n'était pas repris). */
+    numero_serie?: string | null
     categorie_connue: boolean
   }
   photo_data_url: string
@@ -721,6 +723,7 @@ export interface BackendPlanItemPayload {
   gain_estime_fcfa?: number
   source_ref?: string
   month?: string
+  status?: BackendPlanStatus
 }
 
 export interface BackendPlanItemUpdate {

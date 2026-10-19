@@ -32,10 +32,10 @@ export function Hero() {
             </Link>
           </div>
           <p className="mt-6 text-[0.9rem] text-white">
-            <span className="font-semibold text-white">Ménages :</span> la formule arrive d&rsquo;ici 12 à 24
-            mois.{' '}
-            <Link to="/#contact" className="font-semibold text-white underline underline-offset-4">
-              Être informé à l&rsquo;ouverture
+            {/* L'inscription d'un ménage est ouverte (test du site, 2026-10-18 : la page disait « d'ici 12 à 24 mois »). */}
+            <span className="font-semibold text-white">Ménages :</span> inscription ouverte, formule Découverte gratuite.{' '}
+            <Link to="/login?mode=signup&type=menage" className="font-semibold text-white underline underline-offset-4">
+              Créer mon compte
             </Link>
           </p>
         </div>

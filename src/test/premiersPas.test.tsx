@@ -65,7 +65,8 @@ describe('Vocabulaire du Ménage', () => {
     const labels = (profile: Profile) => kpiIdsFor(profile).map((id) => kpiMeta(profile, id).label)
     expect(labels('menage').join(' ')).not.toMatch(/machine|anomalie|puissance active/i)
     expect(labels('menage')).toContain('Appareils à surveiller')
-    expect(labels('pme')).toContain('Machines en anomalie')
-    expect(labels('industrie')).toEqual(labels('pme'))
+    // PME : « équipements », comme dans le reste de son espace (test du site, 2026-10-18) ; l'industrie garde « machines ».
+    expect(labels('pme')).toContain('Équipements en anomalie')
+    expect(labels('industrie')).toContain('Machines en anomalie')
   })
 })

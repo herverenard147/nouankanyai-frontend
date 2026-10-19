@@ -78,7 +78,9 @@ export function PlanActionPage() {
             <div className="flex flex-col gap-1 px-4 py-4 lg:px-5">
               <span className="text-xs font-medium text-text-secondary">Gain estimé restant</span>
               <p className="font-heading text-[2rem] font-bold leading-tight tabular-nums">{summary.data.potentialLabel}</p>
-              <p className="text-xs text-text-secondary">{summary.data.openCount} actions à traiter</p>
+              <p className="text-xs text-text-secondary">
+                {summary.data.openCount} action{summary.data.openCount > 1 ? 's' : ''} à traiter
+              </p>
               <ProvenanceBadge value="synthetique" className="w-fit" />
             </div>
             <div className="flex flex-col gap-1 border-t border-border px-4 py-4 sm:border-l sm:border-t-0 lg:px-5">
@@ -205,7 +207,7 @@ export function PlanActionPage() {
             onSubmit={(event) => {
               event.preventDefault()
               create.mutate(
-                { title: form.title.trim(), description: form.description || undefined, gain_estime_fcfa: gainValue },
+                { title: form.title.trim(), description: form.description || undefined, gain_estime_fcfa: gainValue, status: form.status },
                 { onSuccess: () => setDialog(null) },
               )
             }}

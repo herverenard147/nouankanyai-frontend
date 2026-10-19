@@ -151,6 +151,12 @@ export function AliasesPanel({ deviceId }: { deviceId: string }) {
         </Button>
       </div>
       <MutationError error={saveAliases.error} />
+      {/* Test du site (2026-10-18) : aucun retour après l'enregistrement. */}
+      {saveAliases.isSuccess && !dirty && (
+        <p className="text-sm text-confirm" role="status">
+          Noms enregistrés.
+        </p>
+      )}
     </BoitierSectionBlock>
   )
 }

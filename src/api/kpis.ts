@@ -1,5 +1,5 @@
 import { formatFcfa } from '@/lib/formatters'
-import { getCachedAdminMetrics, rawBilling, getCachedMachines, getCachedRecommend } from '@/api/rawBackend'
+import { getCachedAdminMetrics, rawBilling, getCachedMachines, getCachedRecommend, hasReading } from '@/api/rawBackend'
 import { formatNumberFr } from '@/lib/formatters'
 import type { Kpi, KpiWindow, Profile } from '@/types/domain'
 
@@ -17,9 +17,18 @@ const CLIENT_LABELS: Record<(typeof CLIENT_KPI_IDS)[number], string> = {
  * « machines », « à surveiller » plutôt qu'« anomalie ». PME, Industrie et Admin gardent les leurs. */
 const MENAGE_LABELS: typeof CLIENT_LABELS = {
   'puissance-totale': 'Consommation en ce moment',
-  'machines-actives': 'Appareils en marche',
+  // « En marche » laissait croire à une mesure : c'est le nombre d'appareils sans alerte (test du site, 2026-10-18).
+  'machines-actives': 'Appareils sans alerte',
   'economies-mois': 'Économies estimées ce mois',
   'anomalies-actives': 'Appareils à surveiller',
+}
+
+/** PME : « équipements », comme partout ailleurs dans son espace (test du site, 2026-10-18 : « machines » ici seulement). */
+const PME_LABELS: typeof CLIENT_LABELS = {
+  'puissance-totale': 'Puissance active totale',
+  'machines-actives': 'Équipements sans alerte',
+  'economies-mois': 'Économies estimées ce mois',
+  'anomalies-actives': 'Équipements en anomalie',
 }
 
 const ADMIN_LABELS: Record<(typeof ADMIN_KPI_IDS)[number], string> = {
@@ -42,7 +51,7 @@ export function kpiMeta(profile: Profile, kpiId: string): { label: string; windo
     const window = kpiId === 'latence-moyenne' ? { label: '5 min' } : undefined
     return { label, window }
   }
-  const labels = profile === 'menage' ? MENAGE_LABELS : CLIENT_LABELS
+  const labels = profile === 'menage' ? MENAGE_LABELS : profile === 'pme' ? PME_LABELS : CLIENT_LABELS
   return { label: labels[kpiId as (typeof CLIENT_KPI_IDS)[number]] }
 }
 
@@ -57,8 +66,8 @@ function formatUptime(seconds: number): string {
 }
 
 async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>> {
-  const labels = profile === 'menage' ? MENAGE_LABELS : CLIENT_LABELS
-  const noun = profile === 'menage' ? 'appareil' : 'machine'
+  const labels = profile === 'menage' ? MENAGE_LABELS : profile === 'pme' ? PME_LABELS : CLIENT_LABELS
+  const noun = profile === 'menage' ? 'appareil' : profile === 'pme' ? 'équipement' : 'machine'
   const plural = (count: number) => (count > 1 ? 's' : '')
   // Les 4 indicateurs client viennent des 2 mêmes requêtes (machines, facturation) : une seule fois pour
   // toute la bande, pas une fois par indicateur (KpiStrip montait 4 KpiTile, chacun refetchait tout).
@@ -69,16 +78,20 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
   // la vue d'ensemble affichait « Aucune alerte active » à côté d'une alerte listée (audit du 2026-10-12).
   const diagnosed = await alertedMachineIds(machines)
   const alerteMachines = machines.filter((m) => m.status === 'alerte' || diagnosed.has(m.machine_id))
-  // Puissance tirée des relevés simulés (aucun capteur branché) : provenance « synthétique » (M20).
-  const totalPower = machines.reduce((sum, m) => sum + m.power_kw, 0)
+  // Seulement les appareils qui ont un relevé : sans relevé, power_kw est la puissance de plaque, pas une mesure
+  // (test du site, 2026-10-18 : « 1,4 kW en ce moment » pour un foyer sans aucune mesure).
+  const measured = machines.filter(hasReading)
+  const totalPower = measured.reduce((sum, m) => sum + m.power_kw, 0)
 
   return {
     'puissance-totale': {
       id: 'puissance-totale',
       label: labels['puissance-totale'],
-      value: formatNumberFr(totalPower, 1),
-      unit: 'kW',
-      note: `${machines.length} ${noun}${plural(machines.length)} ${noun === 'appareil' ? 'enregistré' : 'enregistrée'}${plural(machines.length)}`,
+      value: measured.length ? formatNumberFr(totalPower, 1) : '-',
+      unit: measured.length ? 'kW' : '',
+      note: measured.length
+        ? `${measured.length} ${noun}${plural(measured.length)} mesuré${plural(measured.length)} sur ${machines.length}`
+        : 'Aucune mesure : reliez un boîtier ou importez des relevés',
       provenance: 'synthetique',
     },
     'machines-actives': {

@@ -93,7 +93,8 @@ export function Modal({ title, description, onClose, children, actions, danger =
         <div className="flex shrink-0 items-start justify-between gap-4 px-6 pb-4 pt-6 sm:px-7 sm:pt-7">
           <div className="min-w-0">
             <h2 id={titleId} className="text-h2-secondary font-bold text-text-primary">
-              {title}
+              {/* Espace insécable avant « ? » et « ! » : le point d'interrogation passait seul à la ligne. */}
+              {title.replace(/ ([?!:;])/g, '\u00a0$1')}
             </h2>
             {description && <p className="mt-1 text-sm text-text-secondary">{description}</p>}
           </div>
