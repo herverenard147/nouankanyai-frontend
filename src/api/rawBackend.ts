@@ -396,6 +396,9 @@ export async function downloadContactCsv(statut: ContactMessageFilter, q: string
 }
 export const rawDeleteExportedContactMessages = (q: string) =>
   api.post<{ supprimes: number }>('/api/v1/contact/supprimer', q.trim() ? { q: q.trim() } : { tous: true })
+/** Spam évident : suppression sans export, si `confirmation` est exactement le nombre de messages de la recherche. */
+export const rawDeleteSpamMessages = (q: string, confirmation: number) =>
+  api.post<{ supprimes: number }>('/api/v1/contact/spam', { q: q.trim(), confirmation })
 export const rawWaitlistEntries = () => api.get<BackendWaitlistEntry[]>('/api/v1/waitlist')
 export const rawMlCollection = () => api.get<BackendCollectionStatus>('/api/v1/ml/collecte')
 export const rawMlDrift = (window = 500) => api.get<BackendDriftReport>(`/api/v1/ml/drift?window=${window}`)

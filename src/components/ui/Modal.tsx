@@ -187,6 +187,8 @@ interface ConfirmDeleteModalProps {
   consequences: string[]
   /** Si fourni, l'utilisateur doit saisir ce texte (nom de l'appareil) pour activer le bouton. */
   confirmText?: string
+  /** Libellé du champ de confirmation (par défaut : le nom de l'objet). */
+  confirmFieldLabel?: string
   confirmLabel?: string
   pending?: boolean
   error?: unknown
@@ -200,6 +202,7 @@ export function ConfirmDeleteModal({
   description = 'Cette action est définitive.',
   consequences,
   confirmText,
+  confirmFieldLabel = 'Pour confirmer, saisissez le nom',
   confirmLabel = 'Supprimer définitivement',
   pending,
   error,
@@ -236,7 +239,7 @@ export function ConfirmDeleteModal({
       </ul>
       {confirmText && (
         <TextField
-          label="Pour confirmer, saisissez le nom"
+          label={confirmFieldLabel}
           placeholder={confirmText}
           autoComplete="off"
           value={typed}

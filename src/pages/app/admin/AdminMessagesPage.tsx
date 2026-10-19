@@ -5,6 +5,7 @@ import {
   downloadContactCsv,
   rawContactMessages,
   rawDeleteExportedContactMessages,
+  rawDeleteSpamMessages,
   rawMarkContactMessage,
   rawWaitlistEntries,
 } from '@/api/rawBackend'
@@ -35,6 +36,8 @@ export function AdminMessagesPage() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  // Spam : nombre de messages de la recherche, tous statuts confondus (celui que l'admin doit retaper).
+  const [spamCount, setSpamCount] = useState<number | null>(null)
   const [exportError, setExportError] = useState<unknown>(null)
   const messages = useQuery({
     queryKey: ['admin-contact', statut, search, page],
@@ -52,6 +55,19 @@ export function AdminMessagesPage() {
       void refresh()
     },
   })
+  const spam = useMutation({
+    mutationFn: (count: number) => rawDeleteSpamMessages(search, count),
+    onSuccess: () => {
+      setSpamCount(null)
+      setPage(1)
+      void refresh()
+    },
+  })
+  async function askSpam() {
+    spam.reset()
+    const { total: found } = await rawContactMessages('tous', search, 1, 1)
+    setSpamCount(found)
+  }
   const total = messages.data?.total ?? 0
   const pages = Math.max(1, Math.ceil(total / PER_PAGE))
 
@@ -115,6 +131,10 @@ export function AdminMessagesPage() {
             <Button type="button" variant="outline" disabled={total === 0} onClick={() => setConfirmDelete(true)} className="text-alert">
               Supprimer les messages exportés
             </Button>
+            {/* Spam évident (décision du propriétaire, 2026-10-19) : sans export, seulement sur une recherche. */}
+            <Button type="button" variant="outline" disabled={!search.trim() || total === 0} onClick={() => void askSpam()} className="text-alert">
+              Supprimer comme spam
+            </Button>
           </div>
         </div>
         <MutationError error={exportError ?? mark.error} />
@@ -172,6 +192,25 @@ export function AdminMessagesPage() {
           )}
         </MetricState>
       </section>
+
+      {spamCount !== null && (
+        <ConfirmDeleteModal
+          title="Supprimer ces messages comme spam ?"
+          description={`Recherche « ${search} » : ${formatNumberFr(spamCount)} message${spamCount > 1 ? 's' : ''}, tous statuts confondus.`}
+          consequences={[
+            'Ils sont supprimés sans export : aucune copie ne sera gardée.',
+            'À réserver au spam évident ; pour un vrai message, exportez d’abord.',
+            'Pour confirmer, tapez le nombre de messages ci-dessous.',
+          ]}
+          confirmText={String(spamCount)}
+          confirmFieldLabel="Pour confirmer, tapez le nombre de messages"
+          confirmLabel="Supprimer comme spam"
+          pending={spam.isPending}
+          error={spam.error}
+          onConfirm={() => spam.mutate(spamCount)}
+          onCancel={() => setSpamCount(null)}
+        />
+      )}
 
       {confirmDelete && (
         <ConfirmDeleteModal
