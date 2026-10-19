@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { formatFcfa } from '@/lib/formatters'
+import { formatFcfa, formatMonth } from '@/lib/formatters'
 import type { BackendBillingStatement } from '@/types/backend'
 
 export const STATEMENT_STATUS_LABEL: Record<BackendBillingStatement['status'], string> = {
@@ -18,7 +18,7 @@ export function StatementList({ statements, action }: { statements: BackendBilli
       {statements.map((s) => (
         <li key={s.id} id={`releve-${s.id}`} className="flex flex-col gap-2 border-t border-border py-3 text-sm">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <span className="font-semibold text-text-primary">{s.month}</span>
+            <span className="font-semibold text-text-primary">{formatMonth(s.month)}</span>
             <span className="tabular-nums text-text-primary">{s.total_fcfa !== null ? formatFcfa(s.total_fcfa) : 'Non calculé'}</span>
             <span className={`text-xs font-semibold ${s.status === 'a_payer' ? 'text-alert' : 'text-text-secondary'}`}>{STATEMENT_STATUS_LABEL[s.status]}</span>
           </div>

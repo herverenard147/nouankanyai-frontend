@@ -70,3 +70,13 @@ export function formatGain(fcfa: number, periode?: 'action' | 'jour' | 'mois'): 
   const suffix = periode === 'mois' ? ' par mois' : periode === 'jour' ? ' par jour' : periode === 'action' ? ' par intervention' : ''
   return `−${formatFcfa(fcfa)}${suffix}`
 }
+
+const MONTHS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+
+/** « 2026-08 » → « août 2026 ». Le serveur garde une seule écriture du mois (« AAAA-MM ») ; un autre libellé est
+ * rendu tel quel. Test du site (2026-10-18) : « Mai 2022 » et « 2026-08 » se côtoyaient. */
+export function formatMonth(value: string | null | undefined): string {
+  const m = /^(\d{4})-(\d{2})$/.exec(value ?? '')
+  if (!m || Number(m[2]) < 1 || Number(m[2]) > 12) return value ?? ''
+  return `${MONTHS_FR[Number(m[2]) - 1]} ${m[1]}`
+}

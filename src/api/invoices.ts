@@ -9,7 +9,7 @@ import {
   rawUpdateBill,
   rawUploadBillPhoto,
 } from '@/api/rawBackend'
-import { formatFcfa, formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
+import { formatFcfa, formatMonth, formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 import type { BackendElectricityBill } from '@/types/backend'
 import type { InvoiceRecord, OcrField, Profile } from '@/types/domain'
 
@@ -39,7 +39,7 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
   // Une prévision garde son badge de provenance (synthétique) ; une facture réelle porte son état de vérification.
   const statusLabel = bill.is_forecast ? undefined : FIELD_STATUS_LABEL[bill.validation_status ?? 'en_attente']
   const rawFields: OcrField[] = [
-    { key: 'periode', label: 'Période facturée', value: bill.month, provenance: 'estime', editable: false },
+    { key: 'periode', label: 'Période facturée', value: formatMonth(bill.month), provenance: 'estime', editable: false },
     {
       key: 'montant',
       label: bill.is_forecast ? 'Montant prévu' : 'Montant TTC',
@@ -86,7 +86,7 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
 
   return {
     id: bill.id,
-    period: bill.month,
+    period: formatMonth(bill.month),
     status: bill.is_forecast && bill.actual_amount_xof === null ? 'en_cours' : 'traitee',
     fields,
     hasPhoto: bill.has_photo,
