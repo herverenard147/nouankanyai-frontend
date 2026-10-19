@@ -1,0 +1,54 @@
+# Déplacé du dépôt backend (privé) le 2026-10-19 : un dépôt public ne consomme pas les minutes GitHub Actions
+# (le compte avait épuisé ses 2 000 minutes, dont ~5 700 par mois pour ces deux tâches planifiées).
+# Surveillance du site en ligne (partie O3 de docs/PRODUCTION.md du dépôt backend). Toutes les 30 minutes : si un contrôle échoue, la
+# tâche échoue et GitHub prévient par email la personne qui a modifié ce fichier en dernier (réglage par défaut des
+# notifications GitHub Actions). Les contrôles ne lisent que des pages publiques : aucun secret n'est utilisé.
+# GitHub peut retarder une exécution planifiée de quelques minutes, et suspend les tâches planifiées d'un dépôt resté
+# 60 jours sans activité.
+name: Surveillance du site en ligne
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  controles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      BACKEND: ${{ vars.STAGING_BACKEND_URL || 'https://nouankany-staging-backend-bm9s.onrender.com' }}
+      FRONTEND: ${{ vars.STAGING_FRONTEND_URL || 'https://nouankany-staging-frontend.vercel.app' }}
+    steps:
+      - name: Backend en marche et base à jour
+        run: |
+          # Plan gratuit : le premier appel peut réveiller le service (environ 100 s).
+          for attempt in 1 2 3; do
+            body=$(curl -fsS --max-time 120 "$BACKEND/") && break
+            sleep 20
+          done
+          echo "$body"
+          echo "$body" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("schema_a_jour") is True else "Base en retard sur les migrations : schema_a_jour n est pas vrai (garde-fou 11).")'
+      - name: Service d'IA (Lambda) en bonne santé
+        run: |
+          body=$(curl -fsS --max-time 60 "$BACKEND/api/v1/ml/health")
+          echo "$body"
+          echo "$body" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("status") == "healthy" else "Service d IA : statut " + str(d.get("status")))'
+      - name: Site public affiché
+        run: |
+          html=$(curl -fsS --max-time 60 "$FRONTEND/")
+          echo "$html" | grep -q 'id="root"' || { echo "La page d'accueil ne contient pas l'application." >&2; exit 1; }
+      - name: Pas de régression de sécurité
+        run: |
+          for path in docs openapi.json redoc; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "$BACKEND/$path")
+            [ "$code" = "404" ] || { echo "/$path répond $code : la documentation de l'API est de nouveau publique." >&2; exit 1; }
+          done
+          headers=$(curl -fsS -D - -o /dev/null --max-time 60 "$BACKEND/")   # GET : la racine refuse HEAD (405)
+          for h in x-content-type-options x-frame-options strict-transport-security referrer-policy; do
+            echo "$headers" | grep -qi "^$h:" || { echo "En-tête de sécurité absent : $h" >&2; exit 1; }
+          done
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "$BACKEND/api/v1/alerts")
+          [ "$code" = "401" ] || { echo "/api/v1/alerts sans jeton répond $code au lieu de 401." >&2; exit 1; }
