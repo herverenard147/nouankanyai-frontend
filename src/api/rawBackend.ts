@@ -7,6 +7,8 @@
 import { api, saveBlob } from '@/lib/apiClient'
 import { queryClient } from '@/lib/queryClient'
 import type {
+  BackendCompteur,
+  BackendCompteurDemande,
   BackendConsumption,
   ConsumptionGranularity,
   BackendNotification,
@@ -316,6 +318,19 @@ export const rawAdminAuditEvents = (query: AuditQuery = {}) =>
 export const rawConsumption = (granularity: ConsumptionGranularity, machine?: string) =>
   api.get<BackendConsumption>(`/api/v1/consumption?granularity=${granularity}${machine ? `&machine=${encodeURIComponent(machine)}` : ''}`)
 export const rawNotifications = () => api.get<BackendNotification[]>('/api/v1/notifications')
+
+export const rawCompteur = () => api.get<BackendCompteur>('/api/v1/compteur')
+export const rawSetCompteur = (numero: string) => api.put<BackendCompteur>('/api/v1/compteur', { numero })
+export function rawRequestCompteurChange(nouveau: string, motif: string, justificatif: File) {
+  const form = new FormData()
+  form.append('nouveau', nouveau)
+  if (motif.trim()) form.append('motif', motif.trim())
+  form.append('justificatif', justificatif)
+  return api.postForm<BackendCompteurDemande>('/api/v1/compteur/demande', form)
+}
+export const rawAdminCompteurDemandes = () => api.get<BackendCompteurDemande[]>('/api/v1/compteur/admin/demandes')
+export const rawAdminDecideCompteur = (id: string, accepte: boolean, note?: string) =>
+  api.post<BackendCompteurDemande>(`/api/v1/compteur/admin/demandes/${encodeURIComponent(id)}`, { accepte, note })
 
 export const rawJournalEvents = (limit = 100) => api.get<BackendJournalPage>(`/api/v1/journal/events?limit=${limit}`)
 

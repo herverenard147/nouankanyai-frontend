@@ -1103,3 +1103,27 @@ export interface BackendNotification {
   link: string
   level: string
 }
+
+/** Numéro de compteur CIE du compte, verrouillé (décision du propriétaire, 2026-10-19). */
+export interface BackendCompteurDemande {
+  id: string
+  user_id: string
+  ancien: string | null
+  nouveau: string
+  motif: string | null
+  status: 'en_attente' | 'acceptee' | 'refusee'
+  created_at: string | null
+  decided_at: string | null
+  note: string | null
+  justificatif_data_url?: string
+  user_nom?: string
+  user_email?: string
+}
+
+export interface BackendCompteur {
+  numero: string | null
+  source: 'saisie' | 'facture' | 'admin' | null
+  fixe_le: string | null
+  verrouille: boolean
+  demande: BackendCompteurDemande | null
+}

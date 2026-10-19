@@ -1,6 +1,7 @@
 import { EMAIL_INPUT, LIMITS, MIN_PASSWORD_LENGTH } from '@/lib/validation'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { CompteurCard } from '@/components/settings/CompteurCard'
 
 import { LevelSelector } from '@/components/level/LevelSelector'
 import { SitesCard } from '@/components/settings/SitesCard'
@@ -619,6 +620,7 @@ export function SettingsPage() {
         </>
       )}
 
+      {isClientProfile(session.profile) && <CompteurCard />}
       {isClientProfile(session.profile) && <ThresholdsCard />}
       {isClientProfile(session.profile) && <AutomationCard />}
       {isClientProfile(session.profile) && <TechnicianAccessPanel />}
