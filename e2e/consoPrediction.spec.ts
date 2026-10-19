@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process'
+import { spawnSync } from 'node:child_process'
 import { mkdtempSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -8,7 +8,7 @@ import { expect, test, type Page } from '@playwright/test'
 
 /**
  * Correction 7 du test du site (2026-10-18) : Consommation (kWh réels par heure, jour, semaine, mois, en courbes,
- * tarif CIE expliqué) et Prédiction (jours civils, vue Mois). Trois comptes avec 45 jours de relevés horaires
+ * tarif CIE expliqué) et Prédiction (jours civils, vue Mois). Trois comptes avec 120 jours de relevés horaires
  * (scripts/seed_year.py, jeu « e2e »), captures dans test-results/conso/.
  */
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -21,11 +21,14 @@ const VIEWPORTS = [
 
 function seedAccounts(): Record<string, string> {
   const out = path.join(mkdtempSync(path.join(tmpdir(), 'seed-')), 'comptes.txt')
-  execSync(`.venv/bin/python scripts/seed_year.py --invite e2e --days 45 --replace --out ${out}`, {
+  // 120 jours : deux mois entiers, donc des factures (bimestrielles pour le ménage). Le script finit par son
+  // contrôle de qualité, qui peut signaler un écart sans empêcher les comptes d'exister : on lit le fichier.
+  const run = spawnSync('.venv/bin/python', ['scripts/seed_year.py', '--invite', 'e2e', '--days', '120', '--replace', '--out', out], {
     cwd: BACKEND_DIR,
     env: { ...process.env, DATABASE_URL: process.env.E2E_DATABASE_URL, JWT_SECRET: 'test-secret' },
-    stdio: 'pipe',
+    encoding: 'utf-8',
   })
+  if (run.status !== 0) console.log(`seed_year : code ${run.status}\n${run.stdout.slice(-2000)}\n${run.stderr.slice(-2000)}`)
   const accounts: Record<string, string> = {}
   for (const line of readFileSync(out, 'utf-8').split('\n')) {
     const m = line.match(/^(\S+@\S+) : (\S+)$/)
