@@ -24,6 +24,8 @@ interface ModalProps {
 /**
  * Modale du dashboard (voir DESIGN.md §8) : centrée, coins droits, filet épais en tête. Focus piégé dans la
  * boîte, rendu à l'élément déclencheur à la fermeture, Échap = fermer, clic sur le fond = fermer.
+ * Jamais plus haute que l'écran : en-tête et boutons restent visibles, seul le corps défile, avec sa barre de
+ * défilement dans la modale (test du site, 2026-10-18 : titre et boutons hors d'écran en 1366×570).
  */
 export function Modal({ title, description, onClose, children, actions, danger = false, width = 'md' }: ModalProps) {
   const titleId = useId()
@@ -58,7 +60,7 @@ export function Modal({ title, description, onClose, children, actions, danger =
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-dark-bg/60 p-4 sm:items-center overlay-backdrop">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-bg/60 p-4 overlay-backdrop">
       <button type="button" aria-label="Fermer" tabIndex={-1} className="absolute inset-0 cursor-default" onClick={onClose} />
       <div
         ref={boxRef}
@@ -67,12 +69,12 @@ export function Modal({ title, description, onClose, children, actions, danger =
         aria-labelledby={titleId}
         onKeyDown={handleKeyDown}
         className={clsx(
-          'relative flex w-full flex-col gap-4 border-t-4 bg-card p-6 shadow-assistant-panel overlay-panel-center sm:p-7',
+          'relative flex max-h-[calc(100dvh-2rem)] w-full flex-col overflow-hidden border-t-4 bg-card shadow-assistant-panel overlay-panel-center',
           danger ? 'border-alert' : 'border-text-primary',
           width === 'lg' ? 'max-w-[640px]' : 'max-w-[560px]',
         )}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 px-6 pb-4 pt-6 sm:px-7 sm:pt-7">
           <div className="min-w-0">
             <h2 id={titleId} className="text-h2-secondary font-bold text-text-primary">
               {title}
@@ -89,8 +91,10 @@ export function Modal({ title, description, onClose, children, actions, danger =
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
-        {children}
-        <div className="flex flex-wrap justify-end gap-3 border-t border-border pt-4">{actions}</div>
+        <div data-modal-body className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-6 pb-4 sm:px-7">
+          {children}
+        </div>
+        <div className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-border px-6 pb-6 pt-4 sm:px-7 sm:pb-7">{actions}</div>
       </div>
     </div>
   )
