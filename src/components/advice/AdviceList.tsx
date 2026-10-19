@@ -12,6 +12,7 @@ import { MetricState } from '@/components/state/MetricState'
 import { useAdvice } from '@/hooks/queries/useAdvice'
 import { useResolveMachine } from '@/hooks/queries/useMachineCrud'
 import { ApiError } from '@/lib/apiClient'
+import { adviceAnchor } from '@/lib/notificationLinks'
 import { useNotificationStore } from '@/store/notificationStore'
 import type { Advice, Level, Profile } from '@/types/domain'
 
@@ -52,7 +53,7 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
   }
 
   return (
-    <article className="flex flex-col gap-3 border-b border-border py-4">
+    <article id={adviceAnchor(advice)} className="flex flex-col gap-3 border-b border-border py-4">
       <div className="flex flex-wrap items-center gap-4">
         <span className="text-lg font-semibold tabular-nums text-text-tertiary">{advice.rank}</span>
         <div className="min-w-[16rem] flex-1">

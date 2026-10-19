@@ -9,6 +9,7 @@ import { queryClient } from '@/lib/queryClient'
 import type {
   BackendConsumption,
   ConsumptionGranularity,
+  BackendNotification,
   BackendAdminDevice,
   BackendAdminDeviceRequest,
   BackendAdminMachineActionResult,
@@ -310,6 +311,7 @@ export const rawAdminAuditEvents = (query: AuditQuery = {}) =>
 
 export const rawConsumption = (granularity: ConsumptionGranularity, machine?: string) =>
   api.get<BackendConsumption>(`/api/v1/consumption?granularity=${granularity}${machine ? `&machine=${encodeURIComponent(machine)}` : ''}`)
+export const rawNotifications = () => api.get<BackendNotification[]>('/api/v1/notifications')
 
 export const rawJournalEvents = (limit = 100) => api.get<BackendJournalPage>(`/api/v1/journal/events?limit=${limit}`)
 

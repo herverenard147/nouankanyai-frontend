@@ -1,15 +1,16 @@
 import { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
 
-import { AlertNotifier } from '@/components/alerts/AlertNotifier'
 import { AssistantWidget } from '@/components/assistant/AssistantWidget'
 import { MobileDrawer } from '@/components/layout/MobileDrawer'
 import { SideRail } from '@/components/layout/SideRail'
 import { TopBar } from '@/components/layout/TopBar'
+import { useHashTarget } from '@/hooks/useHashTarget'
 import { useSessionStore } from '@/store/sessionStore'
 
 export function AppLayout() {
   const session = useSessionStore((s) => s.session)
+  useHashTarget()
   if (!session) return null
 
   return (
@@ -32,7 +33,6 @@ export function AppLayout() {
         </main>
       </div>
       <MobileDrawer />
-      <AlertNotifier />
       <AssistantWidget profile={session.profile} />
     </div>
   )

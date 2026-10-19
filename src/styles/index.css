@@ -267,3 +267,10 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Élément atteint depuis une notification : mis en valeur quelques secondes (useHashTarget). */
+.notification-target {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+  transition: outline-color 0.3s ease-out;
+}

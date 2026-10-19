@@ -1075,3 +1075,15 @@ export interface BackendConsumption {
   prix_note: string
   factures_kwh_par_mois: { mois: string; kwh: number }[]
 }
+
+/** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
+export interface BackendNotification {
+  id: string
+  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil'
+  title: string
+  detail: string
+  at: string | null
+  /** Page et ancre de l'élément, par exemple « /app/factures#facture-<id> ». */
+  link: string
+  level: string
+}
