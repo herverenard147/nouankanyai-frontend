@@ -17,6 +17,8 @@ export async function fetchTariff(profile: Profile): Promise<TariffInfo> {
   return { rateLabel: profile === 'admin' || profile === 'technicien' ? '' : RATE_LABEL_BY_PROFILE[profile] }
 }
 
+/** Barre des plages horaires (creuses, pleines, pointe) : moyenne tension seulement. En basse tension (ménage,
+ * PME), le prix ne dépend pas de l'heure (grille ANARE, vérifiée le 2026-10-18) : la barre y était fausse. */
 export function tariffShown(profile: Profile): boolean {
-  return profile !== 'admin' && profile !== 'technicien'
+  return profile === 'industrie'
 }

@@ -9,7 +9,9 @@ export type Level = 'debutant' | 'amateur' | 'technique'
  * n'alimente encore `sensor_metrics` côté backend) mais doit rester supportée
  * par tous les composants qui affichent une provenance.
  */
-export type Provenance = 'mesure' | 'estime' | 'synthetique' | 'telemetrie_systeme'
+// « declare » : relevés importés ou saisis par le client ; « demonstration » : données de démonstration (test du
+// site, 2026-10-18 : tout s'affichait « Synthétique », même des relevés déclarés).
+export type Provenance = 'mesure' | 'estime' | 'synthetique' | 'telemetrie_systeme' | 'declare' | 'demonstration'
 
 export interface Session {
   /** UUID du compte côté backend. */
@@ -120,7 +122,7 @@ export interface Prediction {
 /** Heure : prochaines 24h, une barre par heure, en kW (puissance instantanée).
  * Jour : prochains 7 jours, une barre par jour, en kWh (énergie du jour).
  * Semaine : prochaines 4 semaines, une barre par semaine, en kWh. */
-export type PredictionGranularity = 'heure' | 'jour' | 'semaine'
+export type PredictionGranularity = 'heure' | 'jour' | 'mois'
 
 export interface PredictionsBundle {
   /** Somme des prédictions de tous les équipements du compte, point par point. `null` tant qu'aucun

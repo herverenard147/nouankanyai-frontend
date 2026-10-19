@@ -166,7 +166,7 @@ export function InvoicesPage() {
         <MetricState status={invoicesQuery.status} isEmpty={invoicesQuery.data?.length === 0}>
           <div className="flex flex-col border-t-2 border-text-primary">
             {invoicesQuery.data?.map((invoice) => (
-              <article key={invoice.id} className="flex flex-col gap-3 border-b border-border py-4">
+              <article key={invoice.id} id={`facture-${invoice.id}`} className="flex flex-col gap-3 border-b border-border py-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h3 className="font-semibold text-text-primary">{invoice.period}</h3>
                   <div className="flex flex-wrap items-center gap-4">

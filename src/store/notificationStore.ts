@@ -14,6 +14,9 @@ import { persist } from 'zustand/middleware'
 interface NotificationState {
   seenAlertIds: string[]
   seenAdviceIds: string[]
+  /** Notifications de la cloche déjà vues (identifiants stables du serveur et des conseils). */
+  seenNotificationIds: string[]
+  markNotificationsSeen: (ids: string[]) => void
   markAlertsSeen: (ids: string[]) => void
   markAdviceSeen: (ids: string[]) => void
   /** À appeler depuis sessionStore.logout() : sans ça, le "vu" d'un compte
@@ -28,9 +31,12 @@ export const useNotificationStore = create<NotificationState>()(
     (set) => ({
       seenAlertIds: [],
       seenAdviceIds: [],
+      seenNotificationIds: [],
+      // Ajoute sans perdre les autres ; plafonné pour que le stockage du navigateur ne grossisse pas sans fin.
+      markNotificationsSeen: (ids) => set((s) => ({ seenNotificationIds: [...new Set([...ids, ...s.seenNotificationIds])].slice(0, 500) })),
       markAlertsSeen: (ids) => set({ seenAlertIds: ids }),
       markAdviceSeen: (ids) => set({ seenAdviceIds: ids }),
-      resetSeen: () => set({ seenAlertIds: [], seenAdviceIds: [] }),
+      resetSeen: () => set({ seenAlertIds: [], seenAdviceIds: [], seenNotificationIds: [] }),
     }),
     { name: 'nouankany-notifications' },
   ),
