@@ -194,11 +194,11 @@ function AddMeterModal({ deviceId, onClose }: { deviceId: string; onClose: () =>
             { value: 'tcp', label: 'Réseau (Modbus-TCP)' },
           ]}
         />
-        <TextField label="Adresse du compteur (esclave, 1 à 247)" inputMode="numeric" value={slave} onChange={(e) => setSlave(e.target.value)} />
+        <TextField label="Adresse du compteur (esclave, 1 à 247)" required inputMode="numeric" value={slave} onChange={(e) => setSlave(e.target.value)} />
         {protocol === 'tcp' ? (
           <>
-            <TextField label="Adresse IP" value={host} onChange={(e) => setHost(e.target.value)} placeholder="192.168.1.40" />
-            <TextField label="Port" inputMode="numeric" value={port} onChange={(e) => setPort(e.target.value)} />
+            <TextField label="Adresse IP" required value={host} onChange={(e) => setHost(e.target.value)} placeholder="192.168.1.40" />
+            <TextField label="Port (vide : 502)" inputMode="numeric" value={port} onChange={(e) => setPort(e.target.value)} />
           </>
         ) : (
           <TextField label="Vitesse en bauds (vide : celle du modèle)" inputMode="numeric" value={baud} onChange={(e) => setBaud(e.target.value)} placeholder="9600" />

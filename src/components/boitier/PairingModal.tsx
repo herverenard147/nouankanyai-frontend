@@ -120,6 +120,7 @@ export function PairingModal({ profile, onClose }: { profile: Profile; onClose: 
       <div className="flex flex-col gap-3.5">
         <TextField
           label="Nom du boîtier"
+          required
           placeholder={profile === 'menage' ? 'Ex. Boîtier salon' : 'Ex. Boîtier fournil'}
           value={name}
           onChange={(e) => setName(e.target.value)}

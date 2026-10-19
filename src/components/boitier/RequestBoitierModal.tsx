@@ -81,6 +81,7 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
         {profile !== 'menage' && (
           <TextField
             label="Nombre de boîtiers"
+            required
             type="number"
             min={1}
             max={MAX_BOITIERS}
@@ -92,6 +93,7 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
         )}
         <TextField
           label="Contact pour la livraison"
+          required
           maxLength={LIMITS.deliveryContact}
           placeholder={profile === 'menage' ? 'Numéro de téléphone' : 'Nom et numéro de téléphone'}
           value={contact}

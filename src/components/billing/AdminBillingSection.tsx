@@ -26,7 +26,7 @@ export function AdminBillingSection({ userId }: { userId: string }) {
           <>
             {query.data.segment === 'menage' ? <TierEditor billing={query.data} userId={userId} /> : <ContractEditor billing={query.data} userId={userId} />}
             <div className="flex flex-wrap items-end gap-3 border-t border-border pt-3">
-              <TextField label="Mois (AAAA-MM)" value={month} onChange={(e) => setMonth(e.target.value)} pattern="\d{4}-\d{2}" />
+              <TextField label="Mois (AAAA-MM)" required value={month} onChange={(e) => setMonth(e.target.value)} pattern="\d{4}-\d{2}" />
               <Button loading={m.compute.isPending} type="button" variant="outline" disabled={m.compute.isPending || !query.data.contract} onClick={() => m.compute.mutate(month)}>
                 {m.compute.isPending ? 'Calcul…' : 'Calculer le relevé'}
               </Button>
