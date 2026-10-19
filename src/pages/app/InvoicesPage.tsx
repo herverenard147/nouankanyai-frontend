@@ -23,7 +23,7 @@ import {
   useUploadInvoicePhoto,
 } from '@/hooks/queries/useInvoices'
 import { ApiError } from '@/lib/apiClient'
-import { formatFcfa, formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
+import { formatFcfa, formatMonth, formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 import { useSessionStore } from '@/store/sessionStore'
 import type { InvoiceRecord } from '@/types/domain'
 
@@ -96,7 +96,7 @@ export function InvoicesPage() {
   function editChanges(invoice: InvoiceRecord): FieldChange[] {
     const before = invoice.raw
     return [
-      { label: 'Mois', before: before.month, after: month },
+      { label: 'Mois', before: formatMonth(before.month), after: formatMonth(month) },
       { label: 'Montant TTC', before: before.amountXof != null ? formatFcfa(before.amountXof) : '', after: amount ? formatFcfa(Number(amount)) : '' },
       {
         label: 'Consommation',

@@ -1,6 +1,5 @@
-import { formatFcfa } from '@/lib/formatters'
+import { formatFcfa, formatMonth, formatNumberFr } from '@/lib/formatters'
 import { getCachedAdminMetrics, rawBilling, getCachedMachines, getCachedRecommend, hasReading } from '@/api/rawBackend'
-import { formatNumberFr } from '@/lib/formatters'
 import type { Kpi, KpiWindow, Profile } from '@/types/domain'
 
 const CLIENT_KPI_IDS = ['puissance-totale', 'machines-actives', 'economies-mois', 'anomalies-actives'] as const
@@ -109,7 +108,7 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
       // Volet 2 C3) ; la facturation se fait sur les économies mesurées.
       value: formatNumberFr(billing.estimated_ai_savings.month_total_fcfa),
       unit: 'FCFA',
-      note: lastStatement ? `Dernier relevé Nouankany (${lastStatement.month}) : ${formatFcfa(lastStatement.total_fcfa ?? 0)}` : 'Aucun relevé Nouankany pour l’instant',
+      note: lastStatement ? `Dernier relevé Nouankany (${formatMonth(lastStatement.month)}) : ${formatFcfa(lastStatement.total_fcfa ?? 0)}` : 'Aucun relevé Nouankany pour l’instant',
       provenance: 'estime',
     },
     'anomalies-actives': {

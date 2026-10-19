@@ -9,7 +9,7 @@ import { TextField } from '@/components/ui/TextField'
 
 import { MetricState } from '@/components/state/MetricState'
 import { usePendingBills, useTierRequests, useUnpaidStatements, useValidateBill } from '@/hooks/queries/useBilling'
-import { formatFcfa, formatNumberFr } from '@/lib/formatters'
+import { formatFcfa, formatMonth, formatNumberFr } from '@/lib/formatters'
 import { verificationChecks as checks } from '@/lib/billVerification'
 
 const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
@@ -38,7 +38,7 @@ function PendingBills() {
                   {b.user_nom}
                 </Link>
                 <span className="text-text-secondary">
-                  {b.month}
+                  {formatMonth(b.month)}
                   {b.period_months > 1 ? ` (${b.period_months} mois)` : ''}
                 </span>
                 <span className="tabular-nums text-text-primary">
@@ -80,7 +80,7 @@ function PendingBills() {
                   Rejeter
                 </Button>
               </div>
-              {photo?.id === b.id && <img src={photo.url} alt={`Justificatif de la facture ${b.month}`} className="max-h-96 w-fit rounded-card border border-border" />}
+              {photo?.id === b.id && <img src={photo.url} alt={`Justificatif de la facture ${formatMonth(b.month)}`} className="max-h-96 w-fit rounded-card border border-border" />}
             </li>
           ))}
         </ul>
@@ -158,7 +158,7 @@ export function AdminBillingPage() {
                 <Link to={`/app/admin/utilisateurs/${s.user_id}`} className="focus-ring font-semibold text-accent-cta">
                   {s.user_nom}
                 </Link>
-                <span className="text-text-secondary">{s.month}</span>
+                <span className="text-text-secondary">{formatMonth(s.month)}</span>
                 <span className="tabular-nums text-text-primary">{formatFcfa(s.total_fcfa ?? 0)}</span>
               </li>
             ))}
