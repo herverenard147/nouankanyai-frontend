@@ -1175,3 +1175,26 @@ export interface BackendCompteur {
   verrouille: boolean
   demande: BackendCompteurDemande | null
 }
+
+/** GET /api/v1/consumption/compteur-general : compteur général d'un site comparé à la somme des appareils. */
+export interface BackendMainMeter {
+  code: string
+  nom: string
+  site: string
+  appareils_suivis: number
+  compteur_kwh: number
+  appareils_kwh: number
+  ecart_kwh: number
+  /** Part de la consommation du compteur que les appareils ne voient pas (négative : les appareils le dépassent). */
+  ecart_pct: number | null
+  couverture_compteur_pct: number
+  couverture_appareils_pct: number
+  verdict: string
+  points_compteur: (number | null)[]
+  points_appareils: (number | null)[]
+}
+export interface BackendMainMeterComparison {
+  granularity: ConsumptionGranularity
+  labels: string[]
+  compteurs: BackendMainMeter[]
+}

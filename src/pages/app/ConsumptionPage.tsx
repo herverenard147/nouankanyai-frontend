@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { rawConsumption } from '@/api/rawBackend'
 import { LineChart, type LineSeries } from '@/components/charts/LineChart'
+import { MainMeterCard } from '@/components/consumption/MainMeterCard'
 import { SERIES_COLORS } from '@/lib/chartColors'
 import { AdminPlatformConsumption } from '@/components/consumption/AdminPlatformConsumption'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
@@ -110,6 +111,7 @@ export function ConsumptionPage() {
       </div>
 
       <MetricState status={query.status}>{query.data && <ConsumptionView data={query.data} window={window} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)} />}</MetricState>
+      {!machine && profile !== 'technicien' && <MainMeterCard granularity={granularity} window={window} profile={profile} />}
     </div>
   )
 }
