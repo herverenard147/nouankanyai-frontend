@@ -442,6 +442,15 @@ export interface BackendPendingBill {
   user_id: string
   user_nom: string
   user_email: string
+  /** Contrôle du justificatif à l'envoi ; null pour une facture envoyée avant ce contrôle. */
+  verification: BackendBillVerification | null
+  compteur_cie: string | null
+}
+export interface BackendBillVerification {
+  document: 'facture_cie' | 'inconnu' | null
+  numero: 'ok' | 'a_verifier' | 'sans_numero_compte' | 'non_lu'
+  numero_lu: string | null
+  chiffres: 'ok' | 'non_lu' | 'lus_sur_photo'
 }
 export interface BackendBillPhoto {
   photo_data_url: string
