@@ -57,6 +57,8 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
   const updateMutation = useUpdateMachine()
   const [step, setStep] = useState<'form' | 'confirm' | 'photo'>('form')
   const [categorieNonReconnue, setCategorieNonReconnue] = useState(false)
+  // Puissance proposée sans plaque lisible : affichée comme estimation tant que l'utilisateur ne l'a pas changée.
+  const [powerEstimate, setPowerEstimate] = useState<{ kw: string; detail: string } | null>(null)
   const [errors, setErrors] = useState<{ nom?: string; power?: string; annee?: string }>({})
 
   const [form, setForm] = useState({
@@ -81,9 +83,17 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
       marque: extracted.marque ?? f.marque,
       modele: extracted.modele ?? f.modele,
       numero_serie: extracted.numero_serie ?? f.numero_serie,
-      power_kw: extracted.puissance_nominale_kw != null ? String(extracted.puissance_nominale_kw) : f.power_kw,
+      power_kw:
+        extracted.puissance_nominale_kw != null
+          ? String(extracted.puissance_nominale_kw)
+          : extracted.puissance_estimee && !f.power_kw
+            ? String(extracted.puissance_estimee.puissance_kw)
+            : f.power_kw,
+      reference_id: extracted.puissance_estimee?.reference_id ?? f.reference_id,
       photo_data_url: photoDataUrl,
     }))
+    const estimate = extracted.puissance_nominale_kw == null ? extracted.puissance_estimee : null
+    setPowerEstimate(estimate && !form.power_kw ? { kw: String(estimate.puissance_kw), detail: estimate.detail } : null)
     setCategorieNonReconnue(!extracted.categorie_connue)
     setStep('form')
   }
@@ -297,6 +307,11 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
               value={form.power_kw}
               onChange={(e) => setForm((f) => ({ ...f, power_kw: e.target.value }))}
             />
+          )}
+          {powerEstimate && powerEstimate.kw === form.power_kw && (
+            <p className="text-xs font-semibold text-alert">
+              Puissance estimée, pas lue sur l’appareil ({powerEstimate.detail}). Vérifiez-la sur la plaque ou la notice dès que possible.
+            </p>
           )}
           {/* Aussi à l'ajout quand la photo de la plaque l'a lu : jamais une valeur envoyée sans être montrée. */}
           {(isEdit || form.numero_serie) && (

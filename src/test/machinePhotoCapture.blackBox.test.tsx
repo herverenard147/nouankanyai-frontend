@@ -92,6 +92,23 @@ describe('Ajout de machine par photo (boîte noire)', () => {
     expect(screen.getByRole('button', { name: 'Ajouter' })).not.toBeDisabled()
   })
 
+  it('sans plaque lisible : puissance estimée pré-remplie et signalée comme estimation', async () => {
+    vi.mocked(rawExtractMachinePhoto).mockResolvedValue({
+      status: 'success',
+      extracted: {
+        nom_suggere: 'Climatiseur', categorie: 'Climatiseur', marque: 'AUX', modele: 'AH12', puissance_nominale_kw: null, categorie_connue: true,
+        puissance_estimee: { puissance_kw: 1.2, methode: 'fiche', detail: 'fiche du modèle AUX AH12 dans le référentiel (energystar)', reference_id: 'r1' },
+      },
+      photo_data_url: 'data:image/jpeg;base64,xyz',
+    })
+    renderDrawer(null)
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter par photo' }))
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
+    fireEvent.change(input, { target: { files: [new File(['x'], 'a.jpg', { type: 'image/jpeg' })] } })
+    await waitFor(() => expect(screen.getByText(/Puissance estimée, pas lue sur l’appareil/)).toBeInTheDocument())
+    expect(screen.getByText(/fiche du modèle AUX AH12/)).toBeInTheDocument()
+  })
+
   it('un échec d’extraction affiche un message dédié, jamais une trace brute, et ne bloque pas la saisie manuelle', async () => {
     vi.mocked(rawExtractMachinePhoto).mockRejectedValue(new Error("Impossible de reconnaître cet appareil. Essayez une photo plus nette, si possible de la plaque signalétique."))
     renderDrawer(null)
