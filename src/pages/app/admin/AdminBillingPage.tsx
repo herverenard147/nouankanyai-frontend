@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom'
 import { rawAdminBillPhoto, rawAdminCompteurDemandes, rawAdminDecideCompteur } from '@/api/rawBackend'
 import { Button } from '@/components/ui/Button'
 import { MutationError } from '@/components/ui/Modal'
+import { TextField } from '@/components/ui/TextField'
 
 import { MetricState } from '@/components/state/MetricState'
 import { usePendingBills, useTierRequests, useUnpaidStatements, useValidateBill } from '@/hooks/queries/useBilling'
 import { formatFcfa, formatNumberFr } from '@/lib/formatters'
+import { verificationChecks as checks } from '@/lib/billVerification'
 
 const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
 const TIER_LABEL: Record<string, string> = { decouverte: 'Découverte', essentiel: 'Essentiel', optimum: 'Optimum', decouverte_pro: 'Découverte Pro' }
@@ -18,6 +20,7 @@ function PendingBills() {
   const pending = usePendingBills()
   const validate = useValidateBill()
   const [photo, setPhoto] = useState<{ id: string; url: string } | null>(null)
+  const [compteurs, setCompteurs] = useState<Record<string, string>>({})
   async function showPhoto(id: string) {
     const { photo_data_url } = await rawAdminBillPhoto(id)
     setPhoto({ id, url: photo_data_url })
@@ -42,6 +45,26 @@ function PendingBills() {
                   {b.kwh_consumed !== null ? `${formatNumberFr(b.kwh_consumed)} kWh` : 'kWh manquants'} · {formatFcfa(b.amount_xof ?? 0)}
                 </span>
               </div>
+              {b.verification && (
+                <ul className="flex flex-col gap-0.5 text-xs">
+                  {checks(b.verification).map((c) => (
+                    <li key={c.label} className={c.ok ? 'text-text-secondary' : 'font-semibold text-alert'}>
+                      {c.ok ? '✓' : '!'} {c.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {!b.compteur_cie && b.has_photo && (
+                <div className="max-w-xs">
+                  <TextField
+                    label="Numéro de compteur lu sur la photo"
+                    value={compteurs[b.id] ?? ''}
+                    onChange={(e) => setCompteurs({ ...compteurs, [b.id]: e.target.value })}
+                    maxLength={40}
+                    placeholder="Facultatif, enregistré et verrouillé à la validation"
+                  />
+                </div>
+              )}
               <div className="flex flex-wrap items-center gap-3">
                 {b.has_photo ? (
                   <button type="button" className="focus-ring font-semibold text-accent-cta hover:underline" onClick={() => void showPhoto(b.id)}>
@@ -50,7 +73,7 @@ function PendingBills() {
                 ) : (
                   <span className="text-text-secondary">Justificatif manquant</span>
                 )}
-                <Button type="button" disabled={!b.has_photo || validate.isPending} onClick={() => validate.mutate({ billId: b.id, decision: 'validee' })}>
+                <Button type="button" disabled={!b.has_photo || validate.isPending} onClick={() => validate.mutate({ billId: b.id, decision: 'validee', compteur: compteurs[b.id]?.trim() })}>
                   Valider
                 </Button>
                 <Button type="button" variant="outline" disabled={validate.isPending} onClick={() => validate.mutate({ billId: b.id, decision: 'rejetee' })}>

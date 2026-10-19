@@ -24,9 +24,10 @@ export const usePendingBills = () => useQuery({ queryKey: ['admin-pending-bills'
 export function useValidateBill() {
   const client = useQueryClient()
   return useMutation({
-    mutationFn: ({ billId, decision }: { billId: string; decision: 'validee' | 'rejetee' }) => rawAdminValidateBill(billId, decision),
+    mutationFn: ({ billId, decision, compteur }: { billId: string; decision: 'validee' | 'rejetee'; compteur?: string }) =>
+      rawAdminValidateBill(billId, decision, compteur),
     onSuccess: () => {
-      for (const key of ['admin-pending-bills', 'admin-unpaid', 'admin-user-billing']) void client.invalidateQueries({ queryKey: [key] })
+      for (const key of ['admin-pending-bills', 'admin-unpaid', 'admin-user-billing', 'compteur']) void client.invalidateQueries({ queryKey: [key] })
     },
   })
 }
