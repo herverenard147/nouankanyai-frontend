@@ -28,29 +28,33 @@ function isoDay(ms: number): string {
   return new Date(ms).toISOString().slice(0, 10)
 }
 
-export function PowerPeakSection() {
+/** `fixedDay` : le jour choisi en haut de la page (« Jour précis ») ; les boutons de jour sont alors masqués. */
+export function PowerPeakSection({ fixedDay }: { fixedDay?: string } = {}) {
   const today = Math.floor(Date.now() / DAY_MS) * DAY_MS
   const days = Array.from({ length: 7 }, (_, k) => today - k * DAY_MS)
-  const [day, setDay] = useState(isoDay(today))
+  const [chosen, setDay] = useState(isoDay(today))
+  const day = fixedDay ?? chosen
   const query = useQuery({ queryKey: ['power-peak', day], queryFn: () => rawPowerPeak(day) })
 
   return (
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Pic de puissance face à la puissance souscrite</h2>
-      <fieldset className="flex flex-wrap gap-2">
-        <legend className="sr-only">Jour</legend>
-        {days.map((d, k) => (
-          <button
-            key={d}
-            type="button"
-            aria-pressed={day === isoDay(d)}
-            onClick={() => setDay(isoDay(d))}
-            className={`focus-ring min-h-10 rounded-pill border px-4 text-sm font-semibold ${day === isoDay(d) ? 'border-text-primary bg-text-primary text-white' : 'border-border bg-card text-text-primary hover:bg-bg-elevated'}`}
-          >
-            {k === 0 ? 'Aujourd’hui' : k === 1 ? 'Hier' : shortDate(d)}
-          </button>
-        ))}
-      </fieldset>
+      {!fixedDay && (
+        <fieldset className="flex flex-wrap gap-2">
+          <legend className="sr-only">Jour</legend>
+          {days.map((d, k) => (
+            <button
+              key={d}
+              type="button"
+              aria-pressed={day === isoDay(d)}
+              onClick={() => setDay(isoDay(d))}
+              className={`focus-ring min-h-10 rounded-pill border px-4 text-sm font-semibold ${day === isoDay(d) ? 'border-text-primary bg-text-primary text-white' : 'border-border bg-card text-text-primary hover:bg-bg-elevated'}`}
+            >
+              {k === 0 ? 'Aujourd’hui' : k === 1 ? 'Hier' : shortDate(d)}
+            </button>
+          ))}
+        </fieldset>
+      )}
       <MetricState status={query.status} isEmpty={query.data?.sites.length === 0}>
         {query.data?.sites.map((site) => <SitePeak key={site.site_id ?? 'sans-site'} site={site} ongoing={query.data.en_cours} />)}
       </MetricState>

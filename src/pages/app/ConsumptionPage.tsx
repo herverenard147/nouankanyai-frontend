@@ -27,6 +27,13 @@ const GRANULARITIES: { value: ConsumptionGranularity; label: string; window: str
 ]
 const SECTION = 'flex flex-col gap-4 border-t-2 border-text-primary pt-4'
 
+const todayIso = () => new Date().toISOString().slice(0, 10)
+const yesterday = () => new Date(Date.now() - 86_400_000).toISOString().slice(0, 10)
+/** « 2026-10-19 » → « lundi 19 octobre 2026 » (heure d'Abidjan = temps universel). */
+function dayLong(iso: string): string {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+}
+
 /** « 2026-07 » → « juil. 2026 ». */
 function monthLabel(key: string): string {
   const [year, month] = key.split('-').map(Number)
@@ -37,16 +44,19 @@ export function ConsumptionPage() {
   const profile = useSessionStore((s) => s.session?.profile)
   const level = useLevel(profile ?? 'menage')
   const [granularity, setGranularity] = useState<ConsumptionGranularity>('day')
+  // Détail d'un jour précis (demande du propriétaire, 2026-10-20) : ce jour-là heure par heure.
+  const [day, setDay] = useState<string | null>(null)
   const [machine, setMachine] = useState('')
+  const effective: ConsumptionGranularity = day ? 'hour' : granularity
   const query = useQuery({
-    queryKey: ['consumption-real', granularity, machine],
-    queryFn: () => rawConsumption(granularity, machine || undefined),
+    queryKey: ['consumption-real', effective, machine, day],
+    queryFn: () => rawConsumption(effective, machine || undefined, day ?? undefined),
     enabled: profile !== undefined && profile !== 'admin',
   })
   // Liste des appareils : la vue « tous les appareils » de la même période (déjà en cache quand on en choisit un).
   const all = useQuery({
-    queryKey: ['consumption-real', granularity, ''],
-    queryFn: () => rawConsumption(granularity),
+    queryKey: ['consumption-real', effective, '', day],
+    queryFn: () => rawConsumption(effective, undefined, day ?? undefined),
     enabled: profile !== undefined && profile !== 'admin',
   })
   const deviceList = all.data?.machines ?? []
@@ -61,7 +71,7 @@ export function ConsumptionPage() {
     )
   }
 
-  const window = GRANULARITIES.find((g) => g.value === granularity)?.window ?? ''
+  const window = day ? `le ${dayLong(day)}, heure par heure` : (GRANULARITIES.find((g) => g.value === granularity)?.window ?? '')
   return (
     <div className="flex flex-col gap-7">
       <p className="text-sm text-text-secondary">
@@ -76,14 +86,37 @@ export function ConsumptionPage() {
             <button
               key={g.value}
               type="button"
-              aria-pressed={granularity === g.value}
-              onClick={() => setGranularity(g.value)}
-              className={`focus-ring min-h-10 px-4 text-sm font-semibold ${granularity === g.value ? 'bg-dark-bg text-white' : 'bg-card text-text-primary hover:bg-bg-elevated'}`}
+              aria-pressed={!day && granularity === g.value}
+              onClick={() => {
+                setDay(null)
+                setGranularity(g.value)
+              }}
+              className={`focus-ring min-h-10 px-4 text-sm font-semibold ${!day && granularity === g.value ? 'bg-dark-bg text-white' : 'bg-card text-text-primary hover:bg-bg-elevated'}`}
             >
               {g.label}
             </button>
           ))}
+          <button
+            type="button"
+            aria-pressed={day !== null}
+            onClick={() => setDay(day ?? yesterday())}
+            className={`focus-ring min-h-10 px-4 text-sm font-semibold ${day ? 'bg-dark-bg text-white' : 'bg-card text-text-primary hover:bg-bg-elevated'}`}
+          >
+            Jour précis
+          </button>
         </fieldset>
+        {day && (
+          <label className="flex flex-col gap-1.5 text-sm font-medium text-text-primary">
+            Date
+            <input
+              type="date"
+              value={day}
+              max={todayIso()}
+              onChange={(e) => e.target.value && setDay(e.target.value)}
+              className="focus-ring min-h-10 rounded-control border border-border bg-card px-3 text-sm"
+            />
+          </label>
+        )}
         <label className="flex flex-col gap-1.5 text-sm font-medium text-text-primary">
           Appareil
           <select
@@ -103,14 +136,14 @@ export function ConsumptionPage() {
 
       <MetricState status={query.status}>
         {query.data && (
-          <ConsumptionNewView data={query.data} window={window} granularity={granularity} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)}>
+          <ConsumptionNewView data={query.data} window={window} granularity={effective} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)}>
             <TariffExplained data={query.data} />
             <BillsChart data={query.data} />
           </ConsumptionNewView>
         )}
       </MetricState>
-      {!machine && (profile === 'industrie' || profile === 'pme') && <PowerPeakSection />}
-      {!machine && profile !== 'technicien' && <MainMeterCard granularity={granularity} window={window} profile={profile} />}
+      {!machine && (profile === 'industrie' || profile === 'pme') && <PowerPeakSection fixedDay={day ?? undefined} />}
+      {!machine && !day && profile !== 'technicien' && <MainMeterCard granularity={granularity} window={window} profile={profile} />}
     </div>
   )
 }
