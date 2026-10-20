@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { useBreadcrumbLabel } from '@/store/breadcrumbStore'
+
 import { LANGUAGE_LABEL, LIGHT_SENTENCE, lastActivity } from '@/api/boitiers'
-import { BackLink, BoitierSectionBlock, CommandsTable, DefinitionRows, LightDot } from '@/components/boitier/BoitierParts'
+import { BoitierSectionBlock, CommandsTable, DefinitionRows, LightDot } from '@/components/boitier/BoitierParts'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal } from '@/components/ui/Modal'
@@ -18,11 +20,11 @@ export function AdminBoitierDetailPage() {
   const [confirming, setConfirming] = useState(false)
 
   const device = list.data?.find((d) => d.id === deviceId)
+  useBreadcrumbLabel(device?.nom)
 
   if (list.isSuccess && !device) {
     return (
       <div className="flex flex-col gap-4">
-        <BackLink to="/app/admin/boitiers">Tous les boîtiers</BackLink>
         <p className="text-sm text-text-secondary">Ce boîtier n’existe plus ou a été révoqué.</p>
       </div>
     )
@@ -30,7 +32,6 @@ export function AdminBoitierDetailPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <BackLink to="/app/admin/boitiers">Tous les boîtiers</BackLink>
       <MetricState status={list.status === 'error' || detail.status === 'error' ? 'error' : list.isSuccess && detail.isSuccess ? 'success' : 'pending'}>
         {device && detail.data && (
           <>

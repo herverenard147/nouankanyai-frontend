@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { useBreadcrumbLabel } from '@/store/breadcrumbStore'
+
 import { BOITIER_PROVENANCE, CONNECTION_LABEL, LANGUAGE_LABEL, LIGHT_SENTENCE, MACHINE_STATE_LABEL, connectionOf, lastActivity } from '@/api/boitiers'
 import { kindOf } from '@/api/sources'
-import { BackLink, BoitierSectionBlock, CommandsTable, DefinitionRows, LightDot, Th } from '@/components/boitier/BoitierParts'
+import { BoitierSectionBlock, CommandsTable, DefinitionRows, LightDot, Th } from '@/components/boitier/BoitierParts'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
@@ -35,10 +37,10 @@ export function BoitierDetailPage() {
   const detail = useBoitierDetail(deviceId)
   const { update, revoke, setControl, shutdown } = useBoitierMutations()
   const [dialog, setDialog] = useState<Dialog>(null)
+  useBreadcrumbLabel(list.data?.find((r) => r.device.id === deviceId)?.device.nom)
 
   if (!profile) return null
   const blocks = boitierDetailBlocks(profile, level)
-  const backLabel = profile === 'menage' ? 'Mes boîtiers' : 'Boîtiers de mon compte'
   const row = list.data?.find((r) => r.device.id === deviceId)
   // Appareils qu'un capteur à relais coupe pour de vrai ; les autres éteignables restent en démonstration (canal simulé).
   const relayCodes = new Set(
@@ -48,7 +50,6 @@ export function BoitierDetailPage() {
   if (list.isSuccess && !row) {
     return (
       <div className="flex flex-col gap-4">
-        <BackLink to="/app/boitier">{backLabel}</BackLink>
         <p className="text-sm text-text-secondary">Ce boîtier n’existe plus ou n’appartient pas à votre compte.</p>
       </div>
     )
@@ -62,7 +63,6 @@ export function BoitierDetailPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <BackLink to="/app/boitier">{backLabel}</BackLink>
       <MetricState status={list.status === 'error' || detail.status === 'error' ? 'error' : list.isSuccess && detail.isSuccess ? 'success' : 'pending'}>
         {device && state && connection && (
           <>
