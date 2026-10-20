@@ -85,7 +85,7 @@ function renderPage() {
   )
 }
 
-describe('Conso & coûts : nouvelle vue et retour à l’ancienne', () => {
+describe('Conso & coûts : nouvelle vue seule', () => {
   afterEach(() => {
     useSessionStore.setState({ session: null })
     useChartViewStore.setState({ byPage: {} })
@@ -102,12 +102,23 @@ describe('Conso & coûts : nouvelle vue et retour à l’ancienne', () => {
     expect(screen.getByText(/Superposé : chaque courbe/)).toBeTruthy()
   })
 
-  it('« Ancienne vue » rend la page d’avant et le choix est gardé', async () => {
+  it('plus de choix de vue : la nouvelle vue est la seule (validée le 2026-10-20)', async () => {
     renderPage()
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Ancienne vue' })).toBeTruthy())
-    fireEvent.click(screen.getByRole('button', { name: 'Ancienne vue' }))
-    await waitFor(() => expect(screen.getByText('Par appareil')).toBeTruthy())
-    expect(screen.queryByText(/Qui consomme quoi/)).toBeNull()
-    expect(useChartViewStore.getState().byPage.consommation).toBe('ancienne')
+    await waitFor(() => expect(screen.getByText(/Qui consomme quoi/)).toBeTruthy())
+    expect(screen.queryByRole('button', { name: 'Ancienne vue' })).toBeNull()
+    expect(screen.queryByText('Par appareil')).toBeNull()
+  })
+})
+
+describe('Prédiction : intitulés des deux vues', () => {
+  afterEach(() => useChartViewStore.setState({ byPage: {} }))
+
+  it('« Mesuré et prévu » et « Prévision par appareil », choix gardé', async () => {
+    const { ViewSwitch } = await import('@/components/charts/ViewSwitch')
+    render(<ViewSwitch page="prediction" labels={{ nouvelle: 'Mesuré et prévu', ancienne: 'Prévision par appareil' }} />)
+    expect(screen.getByRole('button', { name: 'Mesuré et prévu' }).getAttribute('aria-pressed')).toBe('true')
+    fireEvent.click(screen.getByRole('button', { name: 'Prévision par appareil' }))
+    expect(useChartViewStore.getState().byPage.prediction).toBe('ancienne')
+    expect(screen.queryByText('Nouvelle vue')).toBeNull()
   })
 })

@@ -57,7 +57,7 @@ export function PredictionPage() {
             </Pill>
           ))}
         </div>
-        <ViewSwitch page="prediction" />
+        <ViewSwitch page="prediction" labels={{ nouvelle: 'Mesuré et prévu', ancienne: 'Prévision par appareil' }} />
       </div>
 
       {view === 'nouvelle' ? (

@@ -45,6 +45,9 @@ function buildChart(prediction: Prediction, granularity: PredictionGranularity, 
     // Jour : un jour entamé ferait un creux trompeur ; il est laissé vide.
     return { at, value: at + DAY_MS > now ? null : kwh }
   })
+    // Seulement les heures (ou jours) mesurés : sans relevé récent, la courbe commence au premier point utile au
+    // lieu d'une longue partie vide (vu en production le 2026-10-20 : dernier relevé deux jours plus tôt).
+    .filter((p) => p.value !== null)
   if (granularity === 'heure') {
     const yesterday = (Math.floor(now / DAY_MS) - 1) * DAY_MS
     const line = mergeTimeline(past, future, HOUR_MS, yesterday)
