@@ -18,6 +18,7 @@ describe('niveaux proposés par page', () => {
     expect(pageLevels('industrie', '/app/boitier/abc')).toEqual(['debutant', 'amateur', 'technique'])
     expect(pageLevels('industrie', '/app/factures')).toEqual([])
     expect(pageLevels('pme', '/app/journal')).toEqual([])
+    expect(pageLevels('industrie', '/app/machines/CMP-1')).toEqual([])
   })
 
   it('ménage : règle de DESIGN.md inchangée, aucun bouton ; admin et technicien : les trois', () => {

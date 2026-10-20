@@ -95,6 +95,11 @@ export function EquipmentPage() {
         )}
       </MetricState>
       <RowDetailDrawer row={selected} columns={columns} title={selected?.categorie ?? ''} onClose={() => setSelected(null)}>
+        {selected && (
+          <Link to={`/app/equipements/${encodeURIComponent(selected.id)}`} className="focus-ring w-fit text-sm font-semibold text-accent-cta hover:underline">
+            Voir la page de l’appareil : courbes, coût, habitude →
+          </Link>
+        )}
         {selected && rawOf(selected.id) && <MachineTools machine={rawOf(selected.id) as BackendMachine} />}
       </RowDetailDrawer>
       {adding && <MachineFormDrawer machine={null} itemLabel="un équipement" onClose={() => setAdding(false)} />}

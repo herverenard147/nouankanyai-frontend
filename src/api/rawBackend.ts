@@ -7,6 +7,7 @@
 import { api, saveBlob } from '@/lib/apiClient'
 import { queryClient } from '@/lib/queryClient'
 import type {
+  BackendApplianceDetail,
   BackendPowerPeak,
   SubscriptionUnit,
   BackendCompteur,
@@ -397,6 +398,8 @@ export const rawAdminSetRequestStatus = (id: string, status: 'a_livrer' | 'livre
 export const rawDeleteSite = (siteId: string) => api.delete<null>(`/api/sites/${siteId}`)
 export const rawSetSiteSubscription = (siteId: string, payload: { valeur: number | null; unite: SubscriptionUnit | null; cos_phi: number | null }) =>
   api.put<BackendSite>(`/api/sites/${siteId}/souscription`, payload)
+export const rawApplianceDetail = (code: string, periode: '24h' | '7j' | '30j') =>
+  api.get<BackendApplianceDetail>(`/api/v1/consumption/appareil/${encodeURIComponent(code)}?periode=${periode}`)
 export const rawPowerPeak = (jour?: string) => api.get<BackendPowerPeak>(`/api/v1/consumption/pic${jour ? `?jour=${jour}` : ''}`)
 export const rawAnalyzeMachineMedia = (machineId: string, file: File) => {
   const form = new FormData()

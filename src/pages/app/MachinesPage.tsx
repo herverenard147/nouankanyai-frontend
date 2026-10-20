@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { BulkReadingsImport } from '@/components/import/BulkReadingsImport'
 import { MachineFormDrawer } from '@/components/machines/MachineFormDrawer'
@@ -75,6 +76,11 @@ export function MachinesPage() {
         )}
       </MetricState>
       <RowDetailDrawer row={selected} columns={columns} title={selected?.machine ?? ''} onClose={() => setSelected(null)}>
+        {selected && (
+          <Link to={`/app/machines/${encodeURIComponent(selected.id)}`} className="focus-ring w-fit text-sm font-semibold text-accent-cta hover:underline">
+            Voir la page de l’appareil : courbes, coût, habitude →
+          </Link>
+        )}
         {selected && rawOf(selected.id) && <MachineTools machine={rawOf(selected.id) as BackendMachine} />}
       </RowDetailDrawer>
       {adding && <MachineFormDrawer machine={null} itemLabel="une machine" onClose={() => setAdding(false)} />}

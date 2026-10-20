@@ -34,6 +34,7 @@ const GettingStartedPage = lazy(() => import('@/pages/app/GettingStartedPage').t
 const InvoicesPage = lazy(() => import('@/pages/app/InvoicesPage').then((m) => ({ default: m.InvoicesPage })))
 const JournalPage = lazy(() => import('@/pages/app/JournalPage').then((m) => ({ default: m.JournalPage })))
 const MachinesPage = lazy(() => import('@/pages/app/MachinesPage').then((m) => ({ default: m.MachinesPage })))
+const MachineDetailPage = lazy(() => import('@/pages/app/MachineDetailPage').then((m) => ({ default: m.MachineDetailPage })))
 const OverviewPage = lazy(() => import('@/pages/app/OverviewPage').then((m) => ({ default: m.OverviewPage })))
 const PredictionPage = lazy(() => import('@/pages/app/PredictionPage').then((m) => ({ default: m.PredictionPage })))
 const RecommendationsPage = lazy(() => import('@/pages/app/RecommendationsPage').then((m) => ({ default: m.RecommendationsPage })))
@@ -92,6 +93,8 @@ export const router = createBrowserRouter([
               { path: 'recommandations', element: <RecommendationsPage /> },
               { path: 'equipements', element: <EquipmentPage /> },
               { path: 'machines', element: <MachinesPage /> },
+              { path: 'machines/:code', element: <MachineDetailPage /> },
+              { path: 'equipements/:code', element: <MachineDetailPage /> },
               { path: 'rapports', element: <ReportsPage /> },
               { path: 'facturation', element: <FacturationPage /> },
               { path: 'journal', element: <JournalPage /> },
