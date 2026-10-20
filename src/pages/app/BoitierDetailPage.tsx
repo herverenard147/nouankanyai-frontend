@@ -103,7 +103,7 @@ export function BoitierDetailPage() {
                 {state.machines.length === 0 ? (
                   <p className="border-t border-border py-2.5 text-sm text-text-secondary">Aucun appareil n’est rattaché à ce boîtier.</p>
                 ) : (
-                  <div className="overflow-x-auto border-y border-border">
+                  <div className="relative overflow-x-auto border-y border-border">
                     <table className="w-full min-w-[520px] border-collapse text-sm">
                       <thead className="bg-bg-elevated">
                         <tr>

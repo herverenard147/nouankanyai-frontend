@@ -216,7 +216,7 @@ function CostPerDevice({ data, technical }: { data: BackendConsumption; technica
   return (
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Ce que coûte chaque appareil</h2>
-      <div className="overflow-x-auto">
+      <div className="relative overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-text-secondary">
@@ -290,7 +290,7 @@ function Habits({ habits, withTariff }: { habits: BackendConsumptionHabits | nul
       {!habits && (
         <p className="text-sm font-semibold text-text-primary">Aucun relevé sur les {weeks} dernières semaines : la grille se remplira dès que vos appareils enverront des relevés.</p>
       )}
-      <div className="overflow-x-auto">
+      <div className="relative overflow-x-auto">
         <table className="border-separate" style={{ borderSpacing: 2 }}>
           <thead>
             {withTariff && (

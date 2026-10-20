@@ -80,7 +80,7 @@ export function ConsumptionPage() {
       </p>
 
       <div className="flex flex-wrap items-end gap-4">
-        <fieldset className="flex border border-border">
+        <fieldset className="flex flex-wrap border border-border">
           <legend className="sr-only">Période</legend>
           {GRANULARITIES.map((g) => (
             <button
@@ -91,7 +91,7 @@ export function ConsumptionPage() {
                 setDay(null)
                 setGranularity(g.value)
               }}
-              className={`focus-ring min-h-10 px-4 text-sm font-semibold ${!day && granularity === g.value ? 'bg-dark-bg text-white' : 'bg-card text-text-primary hover:bg-bg-elevated'}`}
+              className={`focus-ring min-h-10 flex-auto px-4 text-sm font-semibold ${!day && granularity === g.value ? 'bg-dark-bg text-white' : 'bg-card text-text-primary hover:bg-bg-elevated'}`}
             >
               {g.label}
             </button>
@@ -100,7 +100,7 @@ export function ConsumptionPage() {
             type="button"
             aria-pressed={day !== null}
             onClick={() => setDay(day ?? yesterday())}
-            className={`focus-ring min-h-10 px-4 text-sm font-semibold ${day ? 'bg-dark-bg text-white' : 'bg-card text-text-primary hover:bg-bg-elevated'}`}
+            className={`focus-ring min-h-10 flex-auto px-4 text-sm font-semibold ${day ? 'bg-dark-bg text-white' : 'bg-card text-text-primary hover:bg-bg-elevated'}`}
           >
             Jour précis
           </button>

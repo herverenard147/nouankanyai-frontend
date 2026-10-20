@@ -154,7 +154,7 @@ export function PlanActionPage() {
         <section className="flex flex-col gap-3">
           <h2 className="text-section-title font-semibold text-text-primary">Historique des résolutions</h2>
           <MetricState status={resolutions.status} isEmpty={resolutions.data?.length === 0}>
-            <div className="overflow-x-auto border-t-2 border-text-primary">
+            <div className="relative overflow-x-auto border-t-2 border-text-primary">
               <table className="w-full min-w-[560px] border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">

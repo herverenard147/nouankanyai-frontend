@@ -112,7 +112,7 @@ export function DataTable<T extends { id: string; provenance: Provenance; photo_
           {filtered.length === 0 && <li className="py-6 text-center text-text-secondary">Aucun résultat.</li>}
         </ul>
       ) : (
-        <div className="overflow-x-auto border-y border-border">
+        <div className="relative overflow-x-auto border-y border-border">
           <table className="w-full min-w-[640px] border-collapse text-sm">
             <thead className="bg-bg-elevated">
               <tr>
