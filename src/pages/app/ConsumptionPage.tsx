@@ -1,24 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { rawConsumption } from '@/api/rawBackend'
-import { LineChart, type LineSeries } from '@/components/charts/LineChart'
 import { TimeChart } from '@/components/charts/TimeChart'
-import { ViewSwitch } from '@/components/charts/ViewSwitch'
 import { ConsumptionNewView } from '@/components/consumption/ConsumptionNewView'
 import { MainMeterCard } from '@/components/consumption/MainMeterCard'
-import { SERIES_COLORS } from '@/lib/chartColors'
 import { AdminPlatformConsumption } from '@/components/consumption/AdminPlatformConsumption'
-import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
-import { formatFcfa, formatNumberFr } from '@/lib/formatters'
+import { formatNumberFr } from '@/lib/formatters'
 import { levelAtLeast } from '@/lib/levelGating'
-import { useChartView } from '@/store/chartViewStore'
 import { useLevel } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
-import type { BackendConsumption, BackendConsumptionProvenance, ConsumptionGranularity } from '@/types/backend'
-import type { Provenance } from '@/types/domain'
+import type { BackendConsumption, ConsumptionGranularity } from '@/types/backend'
 
 /**
  * Consommation réelle (correction 7 du test du site, 2026-10-18) : kWh et coût par heure, jour, semaine ou mois,
@@ -32,13 +25,6 @@ const GRANULARITIES: { value: ConsumptionGranularity; label: string; window: str
   { value: 'month', label: 'Mois', window: '12 derniers mois' },
 ]
 const SECTION = 'flex flex-col gap-4 border-t-2 border-text-primary pt-4'
-const PROVENANCE: Record<BackendConsumptionProvenance, Provenance> = {
-  mesure: 'mesure',
-  declare: 'declare',
-  demonstration: 'demonstration',
-  simulation: 'synthetique',
-}
-const MAX_CURVES = 5
 
 /** « 2026-07 » → « juil. 2026 ». */
 function monthLabel(key: string): string {
@@ -63,7 +49,6 @@ export function ConsumptionPage() {
     enabled: profile !== undefined && profile !== 'admin',
   })
   const deviceList = all.data?.machines ?? []
-  const view = useChartView('consommation')
 
   if (!profile) return null
   if (profile === 'admin') {
@@ -113,117 +98,22 @@ export function ConsumptionPage() {
             ))}
           </select>
         </label>
-        <div className="sm:ml-auto">
-          <ViewSwitch page="consommation" />
-        </div>
       </div>
 
       <MetricState status={query.status}>
-        {query.data &&
-          (view === 'nouvelle' ? (
-            <ConsumptionNewView data={query.data} window={window} granularity={granularity} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)}>
-              <TariffExplained data={query.data} />
-              <BillsChart data={query.data} />
-            </ConsumptionNewView>
-          ) : (
-            <ConsumptionView data={query.data} window={window} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)} />
-          ))}
+        {query.data && (
+          <ConsumptionNewView data={query.data} window={window} granularity={granularity} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)}>
+            <TariffExplained data={query.data} />
+            <BillsChart data={query.data} />
+          </ConsumptionNewView>
+        )}
       </MetricState>
       {!machine && profile !== 'technicien' && <MainMeterCard granularity={granularity} window={window} profile={profile} />}
     </div>
   )
 }
 
-function ConsumptionView({ data, window, technical, single }: { data: BackendConsumption; window: string; technical: boolean; single: boolean }) {
-  const hasReadings = data.total.points.some((p) => p !== null)
-  const series: LineSeries[] = [{ name: single ? (data.machines[0]?.nom ?? 'Appareil') : 'Tout le compte', values: data.total.points }]
-  if (!single && data.machines.length > 1) {
-    ;[...data.machines]
-      .sort((a, b) => b.kwh - a.kwh)
-      .slice(0, MAX_CURVES)
-      .forEach((m, i) => series.push({ name: m.nom, values: m.points, color: SERIES_COLORS[(i + 1) % SERIES_COLORS.length] }))
-  }
-  const every = Math.max(1, Math.ceil(data.labels.length / 12))
-
-  return (
-    <div className="flex flex-col gap-7">
-      <section className={SECTION}>
-        <h2 className="text-section-title font-semibold text-text-primary">Consommation, {window}</h2>
-        <dl className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <dt className="text-sm text-text-secondary">Énergie consommée</dt>
-            <dd className="text-2xl font-semibold tabular-nums text-text-primary">{formatNumberFr(data.total.kwh, data.total.kwh < 100 ? 1 : 0)} kWh</dd>
-          </div>
-          <div>
-            <dt className="text-sm text-text-secondary">Coût estimé</dt>
-            <dd className="text-2xl font-semibold tabular-nums text-text-primary">{formatFcfa(data.total.cout_fcfa)}</dd>
-          </div>
-          <div>
-            <dt className="text-sm text-text-secondary">Temps couvert par des relevés</dt>
-            <dd className="text-2xl font-semibold tabular-nums text-text-primary">{formatNumberFr(data.total.couverture_pct, 0)} %</dd>
-          </div>
-        </dl>
-        <p className="text-xs text-text-secondary">{data.prix_note}</p>
-        {hasReadings ? (
-          <LineChart labels={data.labels} series={series} unit="kWh" xLabelEvery={every} />
-        ) : (
-          <p className="text-sm text-text-secondary">
-            Aucun relevé sur cette période. Reliez un boîtier ou <Link to="/app/parametres" className="font-semibold text-accent-cta hover:underline">importez des relevés</Link> pour voir la consommation réelle.
-          </p>
-        )}
-      </section>
-
-      {data.machines.length > 0 && (
-        <section className={SECTION}>
-          <h2 className="text-section-title font-semibold text-text-primary">Par appareil</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-text-secondary">
-                  <th className="py-2 font-medium">Appareil</th>
-                  <th className="py-2 pl-3 text-right font-medium">kWh</th>
-                  <th className="hidden py-2 pl-3 text-right font-medium sm:table-cell">Part</th>
-                  <th className="py-2 pl-3 text-right font-medium">Coût estimé</th>
-                  {technical && <th className="hidden py-2 pl-3 text-right font-medium sm:table-cell">Temps couvert</th>}
-                  <th className="hidden py-2 pl-3 text-right font-medium sm:table-cell">Source</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.machines.map((m) => (
-                  <tr key={m.code} className="border-b border-border">
-                    <td className="py-2 text-text-primary">{m.nom}</td>
-                    <td className="py-2 pl-3 text-right tabular-nums">{formatNumberFr(m.kwh, m.kwh < 100 ? 1 : 0)}</td>
-                    <td className="hidden py-2 pl-3 text-right tabular-nums sm:table-cell">{m.part_pct === null ? '-' : `${formatNumberFr(m.part_pct, 0)} %`}</td>
-                    <td className="whitespace-nowrap py-2 pl-3 text-right tabular-nums">{formatFcfa(m.cout_fcfa)}</td>
-                    {technical && <td className="hidden py-2 pl-3 text-right tabular-nums sm:table-cell">{formatNumberFr(m.couverture_pct, 0)} %</td>}
-                    <td className="hidden py-2 pl-3 text-right sm:table-cell">{m.provenance ? <ProvenanceBadge value={PROVENANCE[m.provenance]} /> : <span className="text-xs text-text-secondary">aucun relevé</span>}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
-
-      <TariffExplained data={data} />
-
-      {data.factures_kwh_par_mois.length > 0 && (
-        <section className={SECTION}>
-          <h2 className="text-section-title font-semibold text-text-primary">D’après vos factures CIE</h2>
-          <p className="text-sm text-text-secondary">kWh par mois, lus sur vos factures (une facture de deux mois est partagée entre les deux).</p>
-          <LineChart
-            labels={data.factures_kwh_par_mois.map((f) => monthLabel(f.mois))}
-            series={[{ name: 'Factures', values: data.factures_kwh_par_mois.map((f) => f.kwh) }]}
-            unit="kWh"
-            height={180}
-          />
-        </section>
-      )}
-    </div>
-  )
-}
-
-/** Nouvelle vue : kWh lus sur les factures CIE, mois par mois, avec les axes du site. */
+/** kWh lus sur les factures CIE, mois par mois, avec les axes du site. */
 function BillsChart({ data }: { data: BackendConsumption }) {
   if (data.factures_kwh_par_mois.length === 0) return null
   return (

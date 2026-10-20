@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 import { formatNumberFr } from '@/lib/formatters'
 
@@ -52,6 +52,8 @@ interface TimeChartProps {
   legendExtra?: LegendExtra[]
   /** false : la page affiche sa propre légende (cases à cocher). */
   showLegend?: boolean
+  /** Aucune valeur : le graphique reste affiché, vide, avec ce message au milieu (demande du propriétaire). */
+  emptyMessage?: ReactNode
 }
 
 const AXIS = 'var(--color-placeholder-border)'
@@ -101,6 +103,7 @@ export function TimeChart({
   extraTip,
   legendExtra = [],
   showLegend = true,
+  emptyMessage,
 }: TimeChartProps) {
   const boxRef = useRef<HTMLDivElement>(null)
   // 320 au départ : une valeur plus large forçait la colonne à s'élargir sur téléphone.
@@ -134,6 +137,7 @@ export function TimeChart({
         })
       })()
     : []
+  const isEmpty = series.every((s) => s.values.every((v) => v === null))
   const allValues = stacked
     ? stackedLayers.flatMap((l) => l.high)
     : series.flatMap((s) => s.values.filter((v): v is number => v !== null))
@@ -205,7 +209,7 @@ export function TimeChart({
             <g key={t}>
               <line x1={pad.left} x2={width - pad.right} y1={y(t)} y2={y(t)} stroke="var(--color-border)" strokeWidth={1} />
               <text x={pad.left - 6} y={y(t) + 4} textAnchor="end" className="fill-text-tertiary font-mono text-mono-axis">
-                {formatNumberFr(t, digits)}
+                {isEmpty ? '' : formatNumberFr(t, digits)}
               </text>
             </g>
           ))}
@@ -265,6 +269,11 @@ export function TimeChart({
           })}
           {active !== null && <line x1={x(active)} x2={x(active)} y1={pad.top} y2={bottom} stroke="var(--color-text-secondary)" strokeDasharray="3 3" />}
         </svg>
+        {isEmpty && emptyMessage && (
+          <div className="pointer-events-none absolute inset-x-0 flex items-center justify-center px-6" style={{ top: pad.top, height: plotH }}>
+            <p className="pointer-events-auto max-w-md border border-border bg-card px-4 py-3 text-center text-sm text-text-secondary">{emptyMessage}</p>
+          </div>
+        )}
         {active !== null && (
           <output
             className="pointer-events-none absolute top-0 z-10 bg-dark-bg px-2.5 py-1.5 text-xs text-white"

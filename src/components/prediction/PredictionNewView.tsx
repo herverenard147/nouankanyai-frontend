@@ -45,6 +45,9 @@ function buildChart(prediction: Prediction, granularity: PredictionGranularity, 
     // Jour : un jour entamé ferait un creux trompeur ; il est laissé vide.
     return { at, value: at + DAY_MS > now ? null : kwh }
   })
+    // Seulement les heures (ou jours) mesurés : sans relevé récent, la courbe commence au premier point utile au
+    // lieu d'une longue partie vide (vu en production le 2026-10-20 : dernier relevé deux jours plus tôt).
+    .filter((p) => p.value !== null)
   if (granularity === 'heure') {
     const yesterday = (Math.floor(now / DAY_MS) - 1) * DAY_MS
     const line = mergeTimeline(past, future, HOUR_MS, yesterday)
@@ -118,6 +121,21 @@ export function PredictionNewView({ bundle, granularity, showModelDetails }: { b
 
   return (
     <div className="flex flex-col gap-7">
+      {!bundle.global && (
+        <section className={SECTION} aria-label="Prévision de tout le compte">
+          <h2 className="text-section-title font-semibold text-text-primary">Tout le compte</h2>
+          <TimeChart
+            labels={Array.from({ length: 24 }, (_, h) => `${h} h`)}
+            series={[{ name: 'Prévu', values: Array.from({ length: 24 }, () => null), color: FORECAST, kind: 'dashed' }]}
+            unit="kW"
+            yAxisLabel="Puissance (kW)"
+            xAxisLabel={X_LABEL[granularity]}
+            height={320}
+            emptyMessage="Aucune prévision pour l’instant : elle part des relevés de vos appareils. Dès qu’un appareil envoie un relevé, la courbe se dessine."
+          />
+        </section>
+      )}
+
       {bundle.global && (
         <section className={SECTION} aria-label="Prévision de tout le compte">
           <h2 className="text-section-title font-semibold text-text-primary">Tout le compte</h2>

@@ -59,6 +59,18 @@ export function ConsumptionNewView({
   children?: ReactNode
 }) {
   const hasReadings = data.total.points.some((p) => p !== null)
+  const measured = data.total.points.flatMap((p, i) => (p === null ? [] : [i]))
+  const lastIndex = measured[measured.length - 1]
+  // Un point seul ne trace pas de courbe, et une courbe qui s'arrête tôt semble cassée : on dit pourquoi
+  // (vu en production le 2026-10-20 : compte sans relevé depuis deux jours, un seul point en vue Heure et Mois).
+  const coverageNote =
+    !hasReadings || lastIndex === undefined
+      ? null
+      : measured.length === 1
+        ? `Une seule période de cette fenêtre a des relevés (${data.labels[lastIndex]}) : la courbe se dessinera avec les relevés suivants.`
+        : lastIndex < data.labels.length - 2
+          ? `Aucun relevé depuis ${data.labels[lastIndex]} : la courbe s’arrête là.`
+          : null
   const byHour = granularity === 'hour' && data.tarif.kind === 'plages_horaires'
   const bands = byHour ? tariffBands(data.starts) : []
   const name = data.machines[0]?.nom ?? 'appareil'
@@ -81,8 +93,7 @@ export function ConsumptionNewView({
             <dd className="text-2xl font-semibold tabular-nums text-text-primary">{formatNumberFr(data.total.couverture_pct, 0)} %</dd>
           </div>
         </dl>
-        {hasReadings ? (
-          <TimeChart
+        <TimeChart
             labels={data.labels}
             series={[{ name: `Consommation, ${single ? name : 'tout le compte'}`, values: data.total.points, color: 'var(--color-accent)', kind: 'area' }]}
             unit="kWh"
@@ -91,25 +102,26 @@ export function ConsumptionNewView({
             height={300}
             bands={bands}
             legendExtra={byHour ? (['creuses', 'pleines', 'pointe'] as const).map((k) => ({ label: TARIFF_LABEL[k], swatch: 'box' as const, color: TARIFF_COLOR[k] })) : []}
+            emptyMessage={
+              <>
+                Aucun relevé sur cette période : la courbe reste vide, rien n’est inventé. Reliez un boîtier ou{' '}
+                <Link to="/app/parametres" className="font-semibold text-accent-cta hover:underline">
+                  importez des relevés
+                </Link>
+                .
+              </>
+            }
             extraTip={(i) => (data.total.couts[i] === null ? null : `Coût : ${formatFcfa(data.total.couts[i] as number)}`)}
           />
-        ) : (
-          <p className="text-sm text-text-secondary">
-            Aucun relevé sur cette période. Reliez un boîtier ou{' '}
-            <Link to="/app/parametres" className="font-semibold text-accent-cta hover:underline">
-              importez des relevés
-            </Link>{' '}
-            pour voir la consommation réelle.
-          </p>
-        )}
+        {coverageNote && <p className="text-sm font-semibold text-text-primary">{coverageNote}</p>}
         <p className="text-xs text-text-secondary">{data.prix_note}</p>
       </section>
 
-      {!single && data.machines.length > 1 && hasReadings && <WhoUsesWhat data={data} granularity={granularity} window={window} />}
+      {!single && data.machines.length > 1 && <WhoUsesWhat data={data} granularity={granularity} window={window} />}
 
       {data.machines.length > 0 && <CostPerDevice data={data} technical={technical} />}
 
-      {data.habitudes && <Habits habits={data.habitudes} withTariff={data.tarif.kind === 'plages_horaires'} />}
+      <Habits habits={data.habitudes ?? null} withTariff={data.tarif.kind === 'plages_horaires'} />
 
       {children}
     </div>
@@ -163,6 +175,7 @@ function WhoUsesWhat({ data, granularity, window }: { data: BackendConsumption; 
           stacked={stacked}
           maxValue={maxValue}
           showLegend={false}
+          emptyMessage="Aucun relevé de vos appareils sur cette période : rien à répartir pour l’instant."
         />
       ) : (
         <p className="text-sm text-text-secondary">Cochez au moins un appareil.</p>
@@ -252,12 +265,18 @@ function heatColor(ratio: number): string {
   return `rgb(${mix.join(',')})`
 }
 
-function Habits({ habits, withTariff }: { habits: BackendConsumptionHabits; withTariff: boolean }) {
-  const max = Math.max(0.0001, ...habits.kw.flat().filter((v): v is number => v !== null))
+function Habits({ habits, withTariff }: { habits: BackendConsumptionHabits | null; withTariff: boolean }) {
+  // Sans relevé sur 4 semaines : la grille reste affichée, vide, avec la raison.
+  const kw = habits?.kw ?? Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => null as number | null))
+  const weeks = habits?.semaines ?? 4
+  const max = Math.max(0.0001, ...kw.flat().filter((v): v is number => v !== null))
   const scale = [0, 0.25, 0.5, 0.75, 1].map((r) => ({ ratio: r, kw: r * max }))
   return (
     <section className={SECTION}>
-      <h2 className="text-section-title font-semibold text-text-primary">Habitudes : puissance moyenne par jour et par heure, {habits.semaines} dernières semaines</h2>
+      <h2 className="text-section-title font-semibold text-text-primary">Habitudes : puissance moyenne par jour et par heure, {weeks} dernières semaines</h2>
+      {!habits && (
+        <p className="text-sm font-semibold text-text-primary">Aucun relevé sur les {weeks} dernières semaines : la grille se remplira dès que vos appareils enverront des relevés.</p>
+      )}
       <div className="overflow-x-auto">
         <table className="border-separate" style={{ borderSpacing: 2 }}>
           <thead>
@@ -279,7 +298,7 @@ function Habits({ habits, withTariff }: { habits: BackendConsumptionHabits; with
             </tr>
           </thead>
           <tbody>
-            {habits.kw.map((row, d) => (
+            {kw.map((row, d) => (
               <tr key={DAYS[d]}>
                 <th scope="row" className="pr-2 text-left text-sm font-semibold text-text-primary">
                   {DAYS[d].slice(0, 3)}.
@@ -300,15 +319,17 @@ function Habits({ habits, withTariff }: { habits: BackendConsumptionHabits; with
         </table>
       </div>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-text-secondary">
-        <span className="flex items-center gap-2">
-          Puissance moyenne :
-          {scale.map((s) => (
-            <span key={s.ratio} className="flex items-center gap-1">
-              <span className="inline-block h-3.5 w-7 border border-placeholder-border" style={{ background: heatColor(s.ratio) }} />
-              {formatNumberFr(s.kw, s.kw < 10 ? 1 : 0)} kW
-            </span>
-          ))}
-        </span>
+        {habits && (
+          <span className="flex items-center gap-2">
+            Puissance moyenne :
+            {scale.map((s) => (
+              <span key={s.ratio} className="flex items-center gap-1">
+                <span className="inline-block h-3.5 w-7 border border-placeholder-border" style={{ background: heatColor(s.ratio) }} />
+                {formatNumberFr(s.kw, s.kw < 10 ? 1 : 0)} kW
+              </span>
+            ))}
+          </span>
+        )}
         <span className="flex items-center gap-1">
           <span className="inline-block h-3.5 w-7" style={{ background: 'var(--color-placeholder-2)' }} />
           aucune mesure

@@ -85,7 +85,7 @@ function renderPage() {
   )
 }
 
-describe('Conso & coûts : nouvelle vue et retour à l’ancienne', () => {
+describe('Conso & coûts : nouvelle vue seule', () => {
   afterEach(() => {
     useSessionStore.setState({ session: null })
     useChartViewStore.setState({ byPage: {} })
@@ -102,12 +102,67 @@ describe('Conso & coûts : nouvelle vue et retour à l’ancienne', () => {
     expect(screen.getByText(/Superposé : chaque courbe/)).toBeTruthy()
   })
 
-  it('« Ancienne vue » rend la page d’avant et le choix est gardé', async () => {
+  it('plus de choix de vue : la nouvelle vue est la seule (validée le 2026-10-20)', async () => {
     renderPage()
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Ancienne vue' })).toBeTruthy())
-    fireEvent.click(screen.getByRole('button', { name: 'Ancienne vue' }))
-    await waitFor(() => expect(screen.getByText('Par appareil')).toBeTruthy())
-    expect(screen.queryByText(/Qui consomme quoi/)).toBeNull()
-    expect(useChartViewStore.getState().byPage.consommation).toBe('ancienne')
+    await waitFor(() => expect(screen.getByText(/Qui consomme quoi/)).toBeTruthy())
+    expect(screen.queryByRole('button', { name: 'Ancienne vue' })).toBeNull()
+    expect(screen.queryByText('Par appareil')).toBeNull()
+  })
+
+  it('un seul relevé ou des relevés arrêtés : la page le dit', async () => {
+    vi.mocked(rawConsumption).mockResolvedValue({ ...data, total: { ...data.total, points: [null, 200, null], couts: [null, 13000, null] } })
+    useSessionStore.setState({
+      session: { userId: 'u1', token: 't', refreshToken: 'r', profile: 'industrie', platformRole: null, displayName: 'X', subtitle: '', isTeamOwner: true, isTrial: false, isDemo: false },
+    })
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <ConsumptionPage />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+    await waitFor(() => expect(screen.getByText(/Une seule période de cette fenêtre a des relevés \(18\/10\)/)).toBeTruthy())
+  })
+})
+
+describe('Prédiction : intitulés des deux vues', () => {
+  afterEach(() => useChartViewStore.setState({ byPage: {} }))
+
+  it('« Mesuré et prévu » et « Prévision par appareil », choix gardé', async () => {
+    const { ViewSwitch } = await import('@/components/charts/ViewSwitch')
+    render(<ViewSwitch page="prediction" labels={{ nouvelle: 'Mesuré et prévu', ancienne: 'Prévision par appareil' }} />)
+    expect(screen.getByRole('button', { name: 'Mesuré et prévu' }).getAttribute('aria-pressed')).toBe('true')
+    fireEvent.click(screen.getByRole('button', { name: 'Prévision par appareil' }))
+    expect(useChartViewStore.getState().byPage.prediction).toBe('ancienne')
+    expect(screen.queryByText('Nouvelle vue')).toBeNull()
+  })
+})
+
+describe('Aucun relevé : graphiques vides et expliqués', () => {
+  afterEach(() => useSessionStore.setState({ session: null }))
+
+  it('la courbe, la répartition et la grille des habitudes restent affichées, avec la raison', async () => {
+    vi.mocked(rawConsumption).mockResolvedValue({
+      ...data,
+      total: { ...data.total, kwh: 0, cout_fcfa: 0, points: [null, null, null], couts: [null, null, null] },
+      machines: data.machines.map((m) => ({ ...m, kwh: 0, cout_fcfa: 0, points: [null, null, null] })),
+      habitudes: null,
+    })
+    useSessionStore.setState({
+      session: { userId: 'u1', token: 't', refreshToken: 'r', profile: 'industrie', platformRole: null, displayName: 'X', subtitle: '', isTeamOwner: true, isTrial: false, isDemo: false },
+    })
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <ConsumptionPage />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+    await waitFor(() => expect(screen.getByText(/la courbe reste vide, rien n’est inventé/)).toBeTruthy())
+    expect(screen.getAllByText(/axe des ordonnées/).length).toBeGreaterThanOrEqual(2)
+    expect(screen.getByText(/rien à répartir pour l’instant/)).toBeTruthy()
+    expect(screen.getByText(/la grille se remplira/)).toBeTruthy()
   })
 })

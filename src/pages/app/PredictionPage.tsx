@@ -57,11 +57,11 @@ export function PredictionPage() {
             </Pill>
           ))}
         </div>
-        <ViewSwitch page="prediction" />
+        <ViewSwitch page="prediction" labels={{ nouvelle: 'Mesuré et prévu', ancienne: 'Prévision par appareil' }} />
       </div>
 
       {view === 'nouvelle' ? (
-        <MetricState status={query.status} isEmpty={!query.data?.global}>
+        <MetricState status={query.status}>
           {query.data && <PredictionNewView bundle={query.data} granularity={granularity} showModelDetails={showModelDetails} />}
         </MetricState>
       ) : (

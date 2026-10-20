@@ -2,11 +2,12 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 /**
- * Nouvelles vues des graphiques (demande du propriétaire, 2026-10-20) : « crée ça sur le site en gardant les
- * anciennes vues, pour qu'on puisse revenir en arrière ». Le choix est gardé dans ce navigateur, page par page.
+ * Deux vues de la Prédiction (2026-10-20) : « Mesuré et prévu » (une courbe : relevés puis prévision) et
+ * « Prévision par appareil » (la vue d'avant, une courbe par appareil). Le propriétaire garde les deux ; Conso & coûts
+ * n'a plus que la nouvelle vue. Le choix est gardé dans ce navigateur.
  */
 export type ChartView = 'nouvelle' | 'ancienne'
-export type ChartViewPage = 'consommation' | 'prediction'
+export type ChartViewPage = 'prediction'
 
 interface ChartViewState {
   byPage: Partial<Record<ChartViewPage, ChartView>>

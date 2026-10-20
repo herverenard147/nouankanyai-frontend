@@ -51,11 +51,11 @@ Les maquettes sont dans le canvas « Nouankany — Propositions de design »
 11. **Graphique à une seule mesure** : quand un graphique horaire n'a qu'un relevé (cas de « Conso & coûts »), on
     montre 24 créneaux, **une barre**, les autres heures vides, à largeur fixe (≈ 480 px), pas une barre
     étirée sur toute la bande.
-12. **Nouvelles vues des graphiques (2026-10-20)** : Conso & coûts et Prédiction ont un bouton « Nouvelle vue /
-    Ancienne vue » (`ViewSwitch`, choix gardé dans le navigateur, page par page). La nouvelle vue utilise
-    `TimeChart` : trait d'axe à gauche et en bas, « axe des ordonnées / axe des abscisses » sous le graphique,
-    légende, fond « à venir » et trait « maintenant », jours nommés et minuit marqué en vue horaire. L'ancienne vue
-    reste intacte tant que le propriétaire n'a pas décidé de la retirer.
+12. **Graphiques à axes (2026-10-20)** : `TimeChart` (trait d'axe à gauche et en bas, « axe des ordonnées /
+    axe des abscisses » sous le graphique, légende, fond « à venir » et trait « maintenant », jours nommés et minuit
+    marqué en vue horaire). Conso & coûts n'a plus que cette vue (validée par le propriétaire). Prédiction garde deux
+    vues, au choix (`ViewSwitch`, gardé dans le navigateur) : « Mesuré et prévu » et « Prévision par appareil »
+    (la vue d'avant). Sans relevé récent, la courbe commence au premier point utile, pas à hier 0 h.
 
 ## 2. Langage visuel (déjà dans `src/styles/index.css`, `@theme`)
 
