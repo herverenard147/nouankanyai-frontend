@@ -56,6 +56,35 @@ export interface BackendSite {
   nom: string
   localisation: string
   user_id: string
+  /** Puissance souscrite lue sur la facture CIE (2026-10-20) : ampères (basse tension), kVA ou kW. */
+  souscription_valeur?: number | null
+  souscription_unite?: SubscriptionUnit | null
+  cos_phi?: number | null
+  cos_phi_retenu?: number
+  souscription_kw?: number | null
+}
+
+export type SubscriptionUnit = 'A' | 'kVA' | 'kW'
+
+/** GET /api/v1/consumption/pic : pic tenu d'une journée, site par site. */
+export interface BackendPowerPeak {
+  jour: string
+  en_cours: boolean
+  fenetres_min: number[]
+  sites: BackendSitePeak[]
+}
+
+export interface BackendSitePeak {
+  site_id: string | null
+  site_nom: string
+  source: 'compteur_general' | 'somme_appareils'
+  appareils: number
+  ecart_releves_min: number | null
+  souscription: { valeur: number; unite: SubscriptionUnit; cos_phi: number; kw: number } | null
+  /** Clés « 10 », « 15 », « 60 » : null si les relevés sont trop espacés pour cette durée, ou absents. */
+  pics: Record<string, { kw: number; debut: string } | null>
+  quarts_kw: (number | null)[]
+  depassements: { debut: string; fin: string; minutes: number; max_kw: number }[]
 }
 
 export interface BackendMachine {

@@ -54,6 +54,8 @@ interface TimeChartProps {
   showLegend?: boolean
   /** Aucune valeur : le graphique reste affiché, vide, avec ce message au milieu (demande du propriétaire). */
   emptyMessage?: ReactNode
+  /** Lignes horizontales de référence (la puissance souscrite, par exemple), en pointillé avec leur nom. */
+  refLines?: { value: number; label: string; color: string }[]
 }
 
 const AXIS = 'var(--color-placeholder-border)'
@@ -104,6 +106,7 @@ export function TimeChart({
   legendExtra = [],
   showLegend = true,
   emptyMessage,
+  refLines = [],
 }: TimeChartProps) {
   const boxRef = useRef<HTMLDivElement>(null)
   // 320 au départ : une valeur plus large forçait la colonne à s'élargir sur téléphone.
@@ -141,7 +144,7 @@ export function TimeChart({
   const allValues = stacked
     ? stackedLayers.flatMap((l) => l.high)
     : series.flatMap((s) => s.values.filter((v): v is number => v !== null))
-  const step = niceStep(maxValue ?? (allValues.length ? Math.max(...allValues) : 0))
+  const step = niceStep(Math.max(maxValue ?? (allValues.length ? Math.max(...allValues) : 0), ...refLines.map((r) => r.value * 1.05)))
   const top = step * 4
   const y = (v: number) => pad.top + plotH - (v / top) * plotH
   const yTicks = [0, step, 2 * step, 3 * step, top]
@@ -172,6 +175,7 @@ export function TimeChart({
   const legendItems = [
     ...series.map((s) => ({ label: s.name, kind: stacked ? ('box' as const) : (s.kind ?? 'line'), color: s.color })),
     ...(nowIndex !== undefined ? [{ label: 'À venir', kind: 'box' as const, color: 'var(--color-bg-elevated)' }, { label: 'Maintenant', kind: 'mark' as const, color: 'var(--color-text-primary)' }] : []),
+    ...refLines.map((r) => ({ label: r.label, kind: 'dashed' as const, color: r.color })),
     ...legendExtra.map((e) => ({ label: e.label, kind: e.swatch, color: e.color })),
   ]
 
@@ -248,6 +252,14 @@ export function TimeChart({
                 )),
               )}
 
+          {refLines.map((r) => (
+            <g key={r.label}>
+              <line x1={pad.left} x2={width - pad.right} y1={y(r.value)} y2={y(r.value)} stroke={r.color} strokeWidth={2} strokeDasharray="8 6" />
+              <text x={width - pad.right - 4} y={y(r.value) - 6} textAnchor="end" className="text-[12px] font-semibold" fill={r.color}>
+                {r.label}
+              </text>
+            </g>
+          ))}
           {nowIndex !== undefined && nowIndex < n && (
             <g>
               <line x1={x(nowIndex)} x2={x(nowIndex)} y1={pad.top} y2={bottom} stroke="var(--color-text-primary)" strokeWidth={1.5} />

@@ -5,6 +5,7 @@ import { rawConsumption } from '@/api/rawBackend'
 import { TimeChart } from '@/components/charts/TimeChart'
 import { ConsumptionNewView } from '@/components/consumption/ConsumptionNewView'
 import { MainMeterCard } from '@/components/consumption/MainMeterCard'
+import { PowerPeakSection } from '@/components/consumption/PowerPeakSection'
 import { AdminPlatformConsumption } from '@/components/consumption/AdminPlatformConsumption'
 import { MetricState } from '@/components/state/MetricState'
 import { formatNumberFr } from '@/lib/formatters'
@@ -108,6 +109,7 @@ export function ConsumptionPage() {
           </ConsumptionNewView>
         )}
       </MetricState>
+      {!machine && (profile === 'industrie' || profile === 'pme') && <PowerPeakSection />}
       {!machine && profile !== 'technicien' && <MainMeterCard granularity={granularity} window={window} profile={profile} />}
     </div>
   )
