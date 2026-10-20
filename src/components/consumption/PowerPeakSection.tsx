@@ -93,6 +93,8 @@ function SitePeak({ site, ongoing }: { site: BackendSitePeak; ongoing: boolean }
               {p ? (
                 <dd className={`text-xl font-semibold tabular-nums ${over ? 'text-alert' : 'text-text-primary'}`}>
                   {formatNumberFr(p.kw, p.kw < 10 ? 1 : 0)} kW <span className="text-sm font-medium text-text-secondary">à {clock(p.debut)}</span>
+                  {/* Basse tension : la même valeur en ampères, comparable au calibre du disjoncteur (2026-10-20). */}
+                  {p.amperes != null && <span className="block text-xs font-medium text-text-secondary">soit environ {formatNumberFr(p.amperes, 0)} A</span>}
                 </dd>
               ) : (
                 <dd className="text-sm text-text-secondary">
@@ -110,6 +112,7 @@ function SitePeak({ site, ongoing }: { site: BackendSitePeak; ongoing: boolean }
               {site.souscription.unite !== 'kW' && (
                 <span className="block text-xs font-medium text-text-secondary">
                   {formatNumberFr(site.souscription.valeur, 1)} {site.souscription.unite}, cos φ {String(site.souscription.cos_phi).replace('.', ',')}
+                  {site.souscription.unite === 'kVA' && site.souscription.amperes != null && ` (disjoncteur ${formatNumberFr(site.souscription.amperes, 0)} A)`}
                 </span>
               )}
             </dd>
