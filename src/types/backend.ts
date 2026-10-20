@@ -244,6 +244,13 @@ export interface BackendAlertEntry {
   closure_provenance: 'mesure' | 'simulation' | null
   resolution: 'nouankany' | 'intervention' | 'seule' | 'fausse_alerte' | 'remplacee' | 'arrivee' | 'inconnue' | null
   needs_feedback: boolean
+  /** Épisodes et suivi (2026-10-20) : revenue dans les 24 h, prise en charge, appareil sans nouveau relevé. */
+  reopen_count?: number
+  reopened_at?: string | null
+  taken_at?: string | null
+  taken_by_nom?: string | null
+  last_reading_at?: string | null
+  mute?: boolean
   feedback: {
     did_something: boolean
     problem: string

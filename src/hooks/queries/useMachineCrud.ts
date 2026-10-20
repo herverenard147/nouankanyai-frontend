@@ -32,6 +32,7 @@ function invalidateMachineQueries(queryClient: ReturnType<typeof useQueryClient>
   queryClient.invalidateQueries({ queryKey: ['machines-raw'] })
   queryClient.invalidateQueries({ queryKey: ['kpi-set'] })
   queryClient.invalidateQueries({ queryKey: ['alerts-action'] })
+  queryClient.invalidateQueries({ queryKey: ['alerts-to-check'] })
   queryClient.invalidateQueries({ queryKey: ['alerts-auto'] })
   queryClient.invalidateQueries({ queryKey: ['alert-registry'] })
   queryClient.invalidateQueries({ queryKey: ['anomalies-open'] })

@@ -1,12 +1,15 @@
-import { Spinner } from '@/components/ui/Button'
+import { Button, Spinner } from '@/components/ui/Button'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineButton'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
+import { useAlertFeedback, useAlertTakeCharge } from '@/hooks/queries/useAlertRegistry'
 import { useAutoResolveMachine } from '@/hooks/queries/useMachineCrud'
 import { ApiError } from '@/lib/apiClient'
-import { measureOrigin, measuredReading } from '@/lib/formatters'
+import { formatUtcDateTime, measureOrigin, measuredReading } from '@/lib/formatters'
+import { Modal, MutationError } from '@/components/ui/Modal'
 import { alertTone } from '@/lib/severity'
 import { AllowedLink } from '@/routes/AllowedLink'
 import type { ActionAlert, AutoAlert } from '@/types/domain'
@@ -76,6 +79,13 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
             Source : <ProvenanceBadge value={alert.provenance} className="lowercase" />
             {alert.basis && <span>· {alert.basis}</span>}
           </p>
+          {alert.registry && <EpisodeLines entry={alert.registry} />}
+          {!admin && alert.tier === 'a_verifier' && autoResolve.status === 'resolved' && (
+            <p className="mt-2 text-sm text-text-secondary">
+              Mesures sous vos seuils. L&rsquo;écart à l&rsquo;habitude reste suivi : l&rsquo;alerte se fermera quand les relevés redeviendront
+              habituels, ou déclarez une fausse alerte.
+            </p>
+          )}
           {!admin && autoResolve.status === 'error' && (
             <ApiErrorMessage
               message={autoResolve.error instanceof ApiError ? autoResolve.error.message : 'Échec de la vérification.'}
@@ -106,6 +116,7 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
               {alert.ctaLabel}
             </Link>
           )}
+          {!admin && alert.registry && <EpisodeActions entry={alert.registry} />}
           {admin ? (
             <AdminVerifyMachineButton machineId={alert.machineId} subject={alert.title} />
           ) : (
@@ -143,5 +154,96 @@ export function AlertCard(props: ActionAlertCardProps | AutoAlertCardProps) {
         </AllowedLink>
       </div>
     </div>
+  )
+}
+
+type RegistryEntry = NonNullable<ActionAlert['registry']>
+
+/** Début, dernière observation, retours dans les 24 h, appareil muet, prise en charge (plan du 2026-10-20). */
+function EpisodeLines({ entry }: { entry: RegistryEntry }) {
+  return (
+    <div className="mt-2 flex flex-col gap-1 text-xs text-text-secondary">
+      <p>
+        Depuis le {formatUtcDateTime(entry.created_at)}
+        {entry.last_seen_at && entry.last_seen_at !== entry.created_at && ` · vu en dernier le ${formatUtcDateTime(entry.last_seen_at)}`}
+        {(entry.reopen_count ?? 0) > 0 &&
+          ` · revenue ${entry.reopen_count === 1 ? 'une fois' : `${entry.reopen_count} fois`}, la dernière le ${formatUtcDateTime(entry.reopened_at)}`}
+      </p>
+      {entry.mute && (
+        <p className="font-semibold text-text-primary">
+          Aucun nouveau relevé depuis le {formatUtcDateTime(entry.last_reading_at)} : l&rsquo;alerte ne peut ni se confirmer ni se fermer
+          d&rsquo;elle-même. Vérifiez que l&rsquo;appareil envoie ses mesures.
+        </p>
+      )}
+      {entry.taken_at && (
+        <p>
+          Pris en charge{entry.taken_by_nom ? ` par ${entry.taken_by_nom}` : ''} le {formatUtcDateTime(entry.taken_at)}.
+        </p>
+      )}
+    </div>
+  )
+}
+
+/** « Je m'en occupe » (l'alerte reste ouverte) et « Fausse alerte » (la ferme, avec confirmation). */
+function EpisodeActions({ entry }: { entry: RegistryEntry }) {
+  const take = useAlertTakeCharge()
+  const feedback = useAlertFeedback()
+  const [confirming, setConfirming] = useState(false)
+  return (
+    <>
+      {!entry.taken_at && (
+        <button
+          type="button"
+          disabled={take.isPending}
+          onClick={() => take.mutate(entry.id)}
+          className="focus-ring min-h-10 text-sm font-semibold text-accent-cta hover:text-accent-cta-hover disabled:opacity-60"
+        >
+          {take.isPending ? 'Enregistrement…' : 'Je m’en occupe'}
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={() => {
+          feedback.reset()
+          setConfirming(true)
+        }}
+        className="focus-ring min-h-10 text-sm font-semibold text-text-secondary hover:text-text-primary"
+      >
+        Fausse alerte
+      </button>
+      {confirming && (
+        <Modal
+          title="Déclarer une fausse alerte ?"
+          description={`${entry.kind_label ?? entry.title ?? 'Alerte'} sur ${entry.machine_nom ?? 'cet appareil'}, depuis le ${formatUtcDateTime(entry.created_at)}.`}
+          onClose={() => setConfirming(false)}
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={() => setConfirming(false)}>
+                Annuler
+              </Button>
+              <Button
+                type="button"
+                loading={feedback.isPending}
+                disabled={feedback.isPending}
+                onClick={() =>
+                  feedback.mutate(
+                    { alertId: entry.id, body: { did_something: false, problem: 'fausse_alerte', action: 'rien' } },
+                    { onSuccess: () => setConfirming(false) },
+                  )
+                }
+              >
+                Déclarer une fausse alerte
+              </Button>
+            </>
+          }
+        >
+          <p className="text-sm text-text-secondary">
+            L&rsquo;alerte se ferme avec votre réponse. Le même écart ne la rouvrira pas pendant 24 h, sauf s&rsquo;il devient un vrai dépassement de
+            seuil.
+          </p>
+          <MutationError error={feedback.error} />
+        </Modal>
+      )}
+    </>
   )
 }

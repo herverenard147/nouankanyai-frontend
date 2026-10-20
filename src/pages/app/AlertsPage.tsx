@@ -91,6 +91,9 @@ export function AlertsPage() {
                       <p className="text-sm text-text-secondary">
                         {levelLabel(alert.level)}
                         {alert.closed_at && ` · fermée le ${formatUtcDateTime(alert.closed_at)}`}
+                        {(alert.reopen_count ?? 0) > 0 && ` · revenue ${alert.reopen_count === 1 ? 'une fois' : `${alert.reopen_count} fois`}`}
+                        {alert.is_open && alert.mute && ` · aucun relevé depuis le ${formatUtcDateTime(alert.last_reading_at)}`}
+                        {alert.is_open && alert.taken_at && ` · prise en charge${alert.taken_by_nom ? ` par ${alert.taken_by_nom}` : ''}`}
                         {provenance && (
                           <>
                             {' · source : '}
