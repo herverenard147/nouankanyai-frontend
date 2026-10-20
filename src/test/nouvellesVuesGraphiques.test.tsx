@@ -108,6 +108,22 @@ describe('Conso & coûts : nouvelle vue seule', () => {
     expect(screen.queryByRole('button', { name: 'Ancienne vue' })).toBeNull()
     expect(screen.queryByText('Par appareil')).toBeNull()
   })
+
+  it('un seul relevé ou des relevés arrêtés : la page le dit', async () => {
+    vi.mocked(rawConsumption).mockResolvedValue({ ...data, total: { ...data.total, points: [null, 200, null], couts: [null, 13000, null] } })
+    useSessionStore.setState({
+      session: { userId: 'u1', token: 't', refreshToken: 'r', profile: 'industrie', platformRole: null, displayName: 'X', subtitle: '', isTeamOwner: true, isTrial: false, isDemo: false },
+    })
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <ConsumptionPage />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+    await waitFor(() => expect(screen.getByText(/Une seule période de cette fenêtre a des relevés \(18\/10\)/)).toBeTruthy())
+  })
 })
 
 describe('Prédiction : intitulés des deux vues', () => {

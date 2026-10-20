@@ -59,6 +59,18 @@ export function ConsumptionNewView({
   children?: ReactNode
 }) {
   const hasReadings = data.total.points.some((p) => p !== null)
+  const measured = data.total.points.flatMap((p, i) => (p === null ? [] : [i]))
+  const lastIndex = measured[measured.length - 1]
+  // Un point seul ne trace pas de courbe, et une courbe qui s'arrête tôt semble cassée : on dit pourquoi
+  // (vu en production le 2026-10-20 : compte sans relevé depuis deux jours, un seul point en vue Heure et Mois).
+  const coverageNote =
+    !hasReadings || lastIndex === undefined
+      ? null
+      : measured.length === 1
+        ? `Une seule période de cette fenêtre a des relevés (${data.labels[lastIndex]}) : la courbe se dessinera avec les relevés suivants.`
+        : lastIndex < data.labels.length - 2
+          ? `Aucun relevé depuis ${data.labels[lastIndex]} : la courbe s’arrête là.`
+          : null
   const byHour = granularity === 'hour' && data.tarif.kind === 'plages_horaires'
   const bands = byHour ? tariffBands(data.starts) : []
   const name = data.machines[0]?.nom ?? 'appareil'
@@ -102,6 +114,7 @@ export function ConsumptionNewView({
             pour voir la consommation réelle.
           </p>
         )}
+        {coverageNote && <p className="text-sm font-semibold text-text-primary">{coverageNote}</p>}
         <p className="text-xs text-text-secondary">{data.prix_note}</p>
       </section>
 
