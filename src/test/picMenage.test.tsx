@@ -65,7 +65,7 @@ describe('pic du ménage', () => {
     expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled()
     fireEvent.change(field, { target: { value: '30' } })
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
-    await waitFor(() => expect(rawSetBreaker).toHaveBeenCalledWith(30))
+    await waitFor(() => expect(rawSetBreaker).toHaveBeenCalledWith(30, 's1'))
   })
 
   it('pas encore de relevé', async () => {

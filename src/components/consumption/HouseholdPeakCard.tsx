@@ -37,25 +37,29 @@ export function shortestPeak(site: BackendSitePeak) {
 export function HouseholdPeakCard({ day }: { day?: string }) {
   const jour = day ?? new Date().toISOString().slice(0, 10)
   const query = useQuery({ queryKey: ['power-peak', jour], queryFn: () => rawPowerPeak(jour) })
-  const site = query.data?.sites[0]
-  const peakNow = site ? shortestPeak(site) : null
+  const sites = query.data?.sites ?? []
 
   return (
     <section className={SECTION} aria-labelledby="pic-menage">
       <h2 id="pic-menage" className="text-section-title font-semibold text-text-primary">
         Ma plus forte consommation {day ? 'ce jour-là' : 'aujourd’hui'}
       </h2>
-      <MetricState status={query.status} isEmpty={!site}>
-        {site && (
-          <>
-            {peakNow ? (
-              <PeakFigures site={site} peak={peakNow} />
-            ) : (
-              <p className="text-sm text-text-secondary">Pas encore assez de relevés {day ? 'ce jour-là' : 'aujourd’hui'} pour la calculer.</p>
-            )}
-            <BreakerForm calibre={site.souscription?.amperes ?? null} />
-          </>
-        )}
+      <MetricState status={query.status} isEmpty={sites.length === 0}>
+        {/* Plusieurs logements (selon l'abonnement) : un bloc par logement, chacun face à son disjoncteur. */}
+        {sites.map((site) => {
+          const peakNow = shortestPeak(site)
+          return (
+            <div key={site.site_id ?? 'sans-logement'} className={`flex flex-col gap-3 ${sites.length > 1 ? 'border-t border-border pt-3' : ''}`}>
+              {sites.length > 1 && <h3 className="text-base font-semibold text-text-primary">{site.site_id ? site.site_nom : 'Appareils sans logement'}</h3>}
+              {peakNow ? (
+                <PeakFigures site={site} peak={peakNow} />
+              ) : (
+                <p className="text-sm text-text-secondary">Pas encore assez de relevés {day ? 'ce jour-là' : 'aujourd’hui'} pour la calculer.</p>
+              )}
+              {(site.site_id || sites.length === 1) && <BreakerForm calibre={site.souscription?.amperes ?? null} siteId={site.site_id} />}
+            </div>
+          )
+        })}
       </MetricState>
     </section>
   )
@@ -108,12 +112,12 @@ function PeakFigures({ site, peak }: { site: BackendSitePeak; peak: NonNullable<
   )
 }
 
-function BreakerForm({ calibre }: { calibre: number | null }) {
+function BreakerForm({ calibre, siteId }: { calibre: number | null; siteId: string | null }) {
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState(calibre !== null ? String(calibre) : '')
   const save = useMutation({
-    mutationFn: (amperes: number | null) => rawSetBreaker(amperes),
+    mutationFn: (amperes: number | null) => rawSetBreaker(amperes, siteId),
     onSuccess: () => {
       setEditing(false)
       void queryClient.invalidateQueries({ queryKey: ['power-peak'] })

@@ -146,6 +146,10 @@ Même gabarit (en-tête, `KpiStrip`, bloc prédiction + alertes, bloc résumé +
 | Alertes, Conso & coûts, Factures, Facturation / Abonnement, Rapports, Journal, Paramètres | identiques à tous les niveaux | | |
 
 Ménage : un seul niveau (débutant), pas d'Audit, pas de Plan d'action, pas de Machines/Équipements ; **a** une page Abonnement (paliers) et une page Rapports (PDF mensuel).
+Ménage, **logements** (2026-10-20) : Paramètres, carte « Mes logements » (jamais le mot « site ») : un logement en Découverte
+et Essentiel, jusqu'à trois en Optimum (refus du serveur affiché). Chaque logement : nom, type de compteur (à facture ou
+à carte, rechargé), calibre du disjoncteur. Le formulaire d'appareil montre « Logement » seulement s'il y en a plusieurs.
+PME et Industrie : « Type de compteur » par site dans la carte Sites.
 
 ## 5. État écran par écran
 

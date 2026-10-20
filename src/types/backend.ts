@@ -62,9 +62,12 @@ export interface BackendSite {
   cos_phi?: number | null
   cos_phi_retenu?: number
   souscription_kw?: number | null
+  /** Compteur à facture (« postpaye ») ou à carte, qu'on recharge (« prepaye ») : 2026-10-20. */
+  compteur_type?: MeterType
 }
 
 export type SubscriptionUnit = 'A' | 'kVA' | 'kW'
+export type MeterType = 'postpaye' | 'prepaye'
 
 /** GET /api/v1/consumption/pic : pic tenu d'une journée, site par site. */
 export interface BackendPowerPeak {
