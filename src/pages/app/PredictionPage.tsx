@@ -1,11 +1,14 @@
 import { useState } from 'react'
 
+import { ViewSwitch } from '@/components/charts/ViewSwitch'
+import { PredictionNewView } from '@/components/prediction/PredictionNewView'
 import { AdminPlatformPrediction } from '@/components/prediction/AdminPlatformPrediction'
 import { PredictionContent } from '@/components/prediction/PredictionPanel'
 import { MetricState } from '@/components/state/MetricState'
 import { Pill } from '@/components/ui/Pill'
 import { levelAtLeast } from '@/lib/levelGating'
 import { usePredictionsBundle } from '@/hooks/queries/usePrediction'
+import { useChartView } from '@/store/chartViewStore'
 import { useLevel } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 import type { PredictionGranularity } from '@/types/domain'
@@ -26,6 +29,7 @@ export function PredictionPage() {
   // ne jamais lancer la requête par compte en plus de la requête plateforme.
   const query = usePredictionsBundle(profile ?? 'menage', granularity, { enabled: profile !== 'admin' })
   const showModelDetails = levelAtLeast(level, 'technique')
+  const view = useChartView('prediction')
 
   if (!profile) return null
 
@@ -45,33 +49,44 @@ export function PredictionPage() {
       <p className="text-sm text-text-secondary">
         Projection de votre consommation à venir, recalibrée à chaque écart mesuré entre prévision et réalité.
       </p>
-      <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Granularité de la prédiction">
-        {GRANULARITIES.map((g) => (
-          <Pill key={g.id} active={granularity === g.id} onClick={() => setGranularity(g.id)}>
-            {g.label}
-          </Pill>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Granularité de la prédiction">
+          {GRANULARITIES.map((g) => (
+            <Pill key={g.id} active={granularity === g.id} onClick={() => setGranularity(g.id)}>
+              {g.label}
+            </Pill>
+          ))}
+        </div>
+        <ViewSwitch page="prediction" />
       </div>
 
-      <section className="flex flex-col gap-4 border-t-2 border-text-primary pt-4" aria-label="Prédiction globale">
+      {view === 'nouvelle' ? (
         <MetricState status={query.status} isEmpty={!query.data?.global}>
-          {query.data?.global && (
-            <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} />
-          )}
+          {query.data && <PredictionNewView bundle={query.data} granularity={granularity} showModelDetails={showModelDetails} />}
         </MetricState>
-      </section>
+      ) : (
+        <>
+          <section className="flex flex-col gap-4 border-t-2 border-text-primary pt-4" aria-label="Prédiction globale">
+            <MetricState status={query.status} isEmpty={!query.data?.global}>
+              {query.data?.global && (
+                <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} />
+              )}
+            </MetricState>
+          </section>
 
-      {query.data && query.data.perDevice.length > 1 && (
-        <section className="flex flex-col gap-3">
-          <h2 className="text-section-title font-semibold text-text-primary">Par équipement</h2>
-          <div className="flex flex-col">
-            {query.data.perDevice.map((prediction, index) => (
-              <div key={`${prediction.title}-${index}`} className="flex flex-col gap-4 border-t-2 border-text-primary py-4">
-                <PredictionContent prediction={prediction} showModelDetails={showModelDetails} />
+          {query.data && query.data.perDevice.length > 1 && (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-section-title font-semibold text-text-primary">Par équipement</h2>
+              <div className="flex flex-col">
+                {query.data.perDevice.map((prediction, index) => (
+                  <div key={`${prediction.title}-${index}`} className="flex flex-col gap-4 border-t-2 border-text-primary py-4">
+                    <PredictionContent prediction={prediction} showModelDetails={showModelDetails} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
+          )}
+        </>
       )}
     </div>
   )

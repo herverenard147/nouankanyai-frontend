@@ -1138,6 +1138,14 @@ export interface BackendConsumption {
   tarif: BackendConsumptionTariff
   prix_note: string
   factures_kwh_par_mois: { mois: string; kwh: number }[]
+  /** Puissance moyenne (kW) par jour de la semaine (lundi d'abord) et par heure, sur les 4 dernières semaines. */
+  habitudes?: BackendConsumptionHabits | null
+}
+
+export interface BackendConsumptionHabits {
+  semaines: number
+  /** 7 lignes (lundi à dimanche) de 24 valeurs ; `null` : aucune mesure à cette heure-là. */
+  kw: (number | null)[][]
 }
 
 /** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */

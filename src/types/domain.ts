@@ -117,6 +117,12 @@ export interface Prediction {
   provenance: Provenance
   series: PredictionSeriesPoint[]
   yAxisUnit: string
+  /** Début de chaque point, en millisecondes (temps universel). */
+  starts?: number[]
+  /** Coût estimé de toute la période prévue, en FCFA. */
+  costFcfa?: number
+  /** Code de l'appareil (absent pour la prévision globale). */
+  code?: string
 }
 
 /** Heure : prochaines 24h, une barre par heure, en kW (puissance instantanée).

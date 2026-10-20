@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom'
 
 import { rawConsumption } from '@/api/rawBackend'
 import { LineChart, type LineSeries } from '@/components/charts/LineChart'
+import { TimeChart } from '@/components/charts/TimeChart'
+import { ViewSwitch } from '@/components/charts/ViewSwitch'
+import { ConsumptionNewView } from '@/components/consumption/ConsumptionNewView'
 import { MainMeterCard } from '@/components/consumption/MainMeterCard'
 import { SERIES_COLORS } from '@/lib/chartColors'
 import { AdminPlatformConsumption } from '@/components/consumption/AdminPlatformConsumption'
@@ -11,6 +14,7 @@ import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { formatFcfa, formatNumberFr } from '@/lib/formatters'
 import { levelAtLeast } from '@/lib/levelGating'
+import { useChartView } from '@/store/chartViewStore'
 import { useLevel } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 import type { BackendConsumption, BackendConsumptionProvenance, ConsumptionGranularity } from '@/types/backend'
@@ -59,6 +63,7 @@ export function ConsumptionPage() {
     enabled: profile !== undefined && profile !== 'admin',
   })
   const deviceList = all.data?.machines ?? []
+  const view = useChartView('consommation')
 
   if (!profile) return null
   if (profile === 'admin') {
@@ -108,9 +113,22 @@ export function ConsumptionPage() {
             ))}
           </select>
         </label>
+        <div className="sm:ml-auto">
+          <ViewSwitch page="consommation" />
+        </div>
       </div>
 
-      <MetricState status={query.status}>{query.data && <ConsumptionView data={query.data} window={window} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)} />}</MetricState>
+      <MetricState status={query.status}>
+        {query.data &&
+          (view === 'nouvelle' ? (
+            <ConsumptionNewView data={query.data} window={window} granularity={granularity} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)}>
+              <TariffExplained data={query.data} />
+              <BillsChart data={query.data} />
+            </ConsumptionNewView>
+          ) : (
+            <ConsumptionView data={query.data} window={window} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)} />
+          ))}
+      </MetricState>
       {!machine && profile !== 'technicien' && <MainMeterCard granularity={granularity} window={window} profile={profile} />}
     </div>
   )
@@ -202,6 +220,25 @@ function ConsumptionView({ data, window, technical, single }: { data: BackendCon
         </section>
       )}
     </div>
+  )
+}
+
+/** Nouvelle vue : kWh lus sur les factures CIE, mois par mois, avec les axes du site. */
+function BillsChart({ data }: { data: BackendConsumption }) {
+  if (data.factures_kwh_par_mois.length === 0) return null
+  return (
+    <section className={SECTION}>
+      <h2 className="text-section-title font-semibold text-text-primary">D’après vos factures CIE</h2>
+      <p className="text-sm text-text-secondary">kWh par mois, lus sur vos factures (une facture de deux mois est partagée entre les deux).</p>
+      <TimeChart
+        labels={data.factures_kwh_par_mois.map((f) => monthLabel(f.mois))}
+        series={[{ name: 'Lu sur les factures', values: data.factures_kwh_par_mois.map((f) => f.kwh), color: 'var(--color-accent)', kind: 'area' }]}
+        unit="kWh"
+        yAxisLabel="Énergie (kWh par mois)"
+        xAxisLabel="Mois"
+        height={220}
+      />
+    </section>
   )
 }
 
