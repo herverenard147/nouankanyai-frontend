@@ -73,6 +73,8 @@ export interface ActionAlert {
   provenance: Provenance
   ctaLabel: string
   ctaTarget?: string
+  /** L'alerte enregistrée dont la carte est l'affichage (2026-10-20 : une seule source pour la liste et l'historique). */
+  registry?: import('./backend').BackendAlertEntry
 }
 
 export interface AutoAlert {

@@ -1,6 +1,7 @@
-import { getCachedMachines, rawPlatformAlerts, getCachedRecommend } from '@/api/rawBackend'
+import { getCachedMachines, rawAlertRegistry, rawPlatformAlerts, getCachedRecommend } from '@/api/rawBackend'
+import { alertProvenance } from '@/lib/alertRegistry'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
-import type { BackendMachine } from '@/types/backend'
+import type { BackendAlertEntry, BackendMachine } from '@/types/backend'
 import type { ActionAlert, AutoAlert, Profile } from '@/types/domain'
 
 /**
@@ -33,15 +34,8 @@ export async function fetchActionAlerts(profile: Profile): Promise<ActionAlert[]
       }))
   }
 
-  const { machines, recommendations } = await fetchRecommendations()
-  // Alertes = uniquement de vrais problèmes détectés (anomalie/surchauffe/
-  // vibration), jamais optimisation/efficacité (des suggestions, pas des
-  // défauts : "Marquer comme résolu" n'a aucun sens pour elles, voir
-  // src/api/recommendations.ts) ni délestage (déjà dans le Journal).
-  const diagnosed: ActionAlert[] = recommendations
-    .filter((rec) => rec.type === 'alerte')
-    .map((rec, i) => ({ ...accountCard(rec, i), tier: 'alerte' as const, level: `sévérité ${rec.severity}` }))
-  return [...diagnosed, ...pendingDiagnosisAlerts(machines, new Set(diagnosed.map((alert) => alert.machineId)))]
+  const { machines, cards } = await registryCards('alerte')
+  return [...cards, ...pendingDiagnosisAlerts(machines, new Set(cards.map((alert) => alert.machineId)))]
 }
 
 /**
@@ -79,28 +73,46 @@ export async function fetchToCheckAlerts(profile: Profile): Promise<ActionAlert[
       .filter((rec) => rec.type === 'a_verifier')
       .map((rec, i) => ({ ...adminCard(rec, i), tier: 'a_verifier' as const, level: 'à vérifier' }))
   }
-  const { recommendations } = await fetchRecommendations()
-  return recommendations
-    .filter((rec) => rec.type === 'a_verifier')
-    .map((rec, i) => ({ ...accountCard(rec, i), tier: 'a_verifier' as const, level: 'à vérifier' }))
+  return (await registryCards('a_verifier')).cards
 }
 
-type AccountRec = Awaited<ReturnType<typeof getCachedRecommend>>['recommendations'][number]
 type PlatformRec = Awaited<ReturnType<typeof rawPlatformAlerts>>['recommendations'][number]
 
-function accountCard(rec: AccountRec, i: number) {
-  return {
-    kind: 'action' as const,
-    id: `${rec.machine_id}-${rec.type}-${i}`,
-    machineId: rec.machine_id,
-    severity: rec.severity,
-    title: rec.title,
-    detail: frenchNumbersWithUnits(rec.description),
-    basis: frenchNumbersWithUnits(rec.action),
-    provenance: 'synthetique' as const,
-    ctaLabel: 'Voir les conseils',
-    ctaTarget: '/app/conseils',
+/**
+ * Une seule source (plan validé le 2026-10-20) : les listes « Alertes » et « À vérifier » sont les alertes OUVERTES du
+ * registre, comme l'historique. Avant, elles étaient recalculées par /api/recommend à chaque visite : une alerte
+ * pouvait être « en cours » dans l'historique et absente de la liste. /api/recommend est toujours appelé d'abord, car
+ * c'est lui qui met le registre à jour à la visite (en plus du balayage du serveur).
+ */
+async function registryCards(tier: 'alerte' | 'a_verifier'): Promise<{ machines: BackendMachine[]; cards: ActionAlert[] }> {
+  const { machines, recommendations } = await fetchRecommendations()
+  const open = machines.length ? await rawAlertRegistry('ouvertes', 200) : []
+  const severityOf = (entry: BackendAlertEntry): ActionAlert['severity'] => {
+    if (tier === 'a_verifier') return 'faible'
+    if (entry.kind === 'danger_visuel') return 'critique'
+    return recommendations.find((rec) => rec.machine_id === entry.machine_code && rec.type === 'alerte')?.severity ?? 'modérée'
   }
+  const cards = open
+    .filter((entry) => entry.level === tier)
+    .map((entry) => {
+      const severity = severityOf(entry)
+      return {
+        kind: 'action' as const,
+        id: entry.id,
+        tier,
+        machineId: entry.machine_code ?? '',
+        level: tier === 'a_verifier' ? 'à vérifier' : `sévérité ${severity}`,
+        severity,
+        title: `${entry.kind_label ?? entry.title ?? 'Alerte'} : ${entry.machine_nom ?? entry.machine_code ?? 'appareil'}`,
+        detail: frenchNumbersWithUnits(entry.description ?? ''),
+        basis: frenchNumbersWithUnits(entry.action ?? ''),
+        provenance: alertProvenance(entry) ?? ('synthetique' as const),
+        ctaLabel: 'Voir les conseils',
+        ctaTarget: '/app/conseils',
+        registry: entry,
+      }
+    })
+  return { machines, cards }
 }
 
 function adminCard(rec: PlatformRec, i: number) {

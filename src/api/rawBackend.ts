@@ -356,6 +356,7 @@ export const rawAlertRegistry = (status: BackendAlertStatus = 'toutes', limit = 
   api.get<BackendAlertEntry[]>(`/api/v1/alerts?status=${status}&limit=${limit}`)
 export const rawAlertFeedback = (alertId: string, body: BackendAlertFeedbackIn) =>
   api.post<BackendAlertEntry>(`/api/v1/alerts/${encodeURIComponent(alertId)}/feedback`, body)
+export const rawAlertTakeCharge = (alertId: string) => api.post<BackendAlertEntry>(`/api/v1/alerts/${encodeURIComponent(alertId)}/prise-en-charge`, {})
 
 export type { BackendAuditEvent, BackendPlanStatus }
 
