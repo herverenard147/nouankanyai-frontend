@@ -12,13 +12,15 @@ interface LevelSelectorProps {
   onChange?: (level: Level) => void
   readOnly?: boolean
   className?: string
+  /** Niveaux proposés (par défaut les trois) ; voir src/lib/pageLevels.ts. */
+  options?: Level[]
 }
 
 /** Sélecteur de niveau : le seul sélecteur qui reste dans l'interface, modifiable à tout moment. */
-export function LevelSelector({ value, onChange, readOnly, className }: LevelSelectorProps) {
+export function LevelSelector({ value, onChange, readOnly, className, options }: LevelSelectorProps) {
   return (
     <div className={`flex flex-wrap items-center gap-1.5 ${className ?? ''}`} role="group" aria-label="Niveau d'affichage">
-      {LEVELS.map((level) => (
+      {LEVELS.filter((level) => !options || options.includes(level.id)).map((level) => (
         <Pill
           key={level.id}
           active={value === level.id}
