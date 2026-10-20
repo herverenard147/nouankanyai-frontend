@@ -121,6 +121,21 @@ export function PredictionNewView({ bundle, granularity, showModelDetails }: { b
 
   return (
     <div className="flex flex-col gap-7">
+      {!bundle.global && (
+        <section className={SECTION} aria-label="Prévision de tout le compte">
+          <h2 className="text-section-title font-semibold text-text-primary">Tout le compte</h2>
+          <TimeChart
+            labels={Array.from({ length: 24 }, (_, h) => `${h} h`)}
+            series={[{ name: 'Prévu', values: Array.from({ length: 24 }, () => null), color: FORECAST, kind: 'dashed' }]}
+            unit="kW"
+            yAxisLabel="Puissance (kW)"
+            xAxisLabel={X_LABEL[granularity]}
+            height={320}
+            emptyMessage="Aucune prévision pour l’instant : elle part des relevés de vos appareils. Dès qu’un appareil envoie un relevé, la courbe se dessine."
+          />
+        </section>
+      )}
+
       {bundle.global && (
         <section className={SECTION} aria-label="Prévision de tout le compte">
           <h2 className="text-section-title font-semibold text-text-primary">Tout le compte</h2>

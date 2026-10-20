@@ -61,7 +61,7 @@ export function PredictionPage() {
       </div>
 
       {view === 'nouvelle' ? (
-        <MetricState status={query.status} isEmpty={!query.data?.global}>
+        <MetricState status={query.status}>
           {query.data && <PredictionNewView bundle={query.data} granularity={granularity} showModelDetails={showModelDetails} />}
         </MetricState>
       ) : (

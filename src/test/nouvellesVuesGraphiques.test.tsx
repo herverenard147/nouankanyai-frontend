@@ -138,3 +138,31 @@ describe('Prédiction : intitulés des deux vues', () => {
     expect(screen.queryByText('Nouvelle vue')).toBeNull()
   })
 })
+
+describe('Aucun relevé : graphiques vides et expliqués', () => {
+  afterEach(() => useSessionStore.setState({ session: null }))
+
+  it('la courbe, la répartition et la grille des habitudes restent affichées, avec la raison', async () => {
+    vi.mocked(rawConsumption).mockResolvedValue({
+      ...data,
+      total: { ...data.total, kwh: 0, cout_fcfa: 0, points: [null, null, null], couts: [null, null, null] },
+      machines: data.machines.map((m) => ({ ...m, kwh: 0, cout_fcfa: 0, points: [null, null, null] })),
+      habitudes: null,
+    })
+    useSessionStore.setState({
+      session: { userId: 'u1', token: 't', refreshToken: 'r', profile: 'industrie', platformRole: null, displayName: 'X', subtitle: '', isTeamOwner: true, isTrial: false, isDemo: false },
+    })
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <ConsumptionPage />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+    await waitFor(() => expect(screen.getByText(/la courbe reste vide, rien n’est inventé/)).toBeTruthy())
+    expect(screen.getAllByText(/axe des ordonnées/).length).toBeGreaterThanOrEqual(2)
+    expect(screen.getByText(/rien à répartir pour l’instant/)).toBeTruthy()
+    expect(screen.getByText(/la grille se remplira/)).toBeTruthy()
+  })
+})
