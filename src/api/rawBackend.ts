@@ -320,8 +320,10 @@ export const rawAuditEvents = (query: AuditQuery = {}) =>
 export const rawAdminAuditEvents = (query: AuditQuery = {}) =>
   api.get<BackendAuditPage>(`/api/v1/audit/admin/events${toQueryString({ ...query })}`)
 
-export const rawConsumption = (granularity: ConsumptionGranularity, machine?: string) =>
-  api.get<BackendConsumption>(`/api/v1/consumption?granularity=${granularity}${machine ? `&machine=${encodeURIComponent(machine)}` : ''}`)
+export const rawConsumption = (granularity: ConsumptionGranularity, machine?: string, jour?: string) =>
+  api.get<BackendConsumption>(
+    `/api/v1/consumption?granularity=${granularity}${machine ? `&machine=${encodeURIComponent(machine)}` : ''}${jour ? `&jour=${jour}` : ''}`,
+  )
 export const rawMainMeters = (granularity: ConsumptionGranularity) =>
   api.get<BackendMainMeterComparison>(`/api/v1/consumption/compteur-general?granularity=${granularity}`)
 export const rawCreateMainMeter = (siteId?: string) => api.post<{ code: string }>('/api/v1/consumption/compteur-general', { site_id: siteId || null })
