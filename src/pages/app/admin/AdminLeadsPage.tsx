@@ -30,7 +30,7 @@ export function AdminLeadsPage() {
       </p>
       <MutationError error={update.error} />
       <MetricState status={query.status} isEmpty={query.data?.length === 0}>
-        <div className="overflow-x-auto border-y border-border">
+        <div className="relative overflow-x-auto border-y border-border">
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead className="bg-bg-elevated">
               <tr>

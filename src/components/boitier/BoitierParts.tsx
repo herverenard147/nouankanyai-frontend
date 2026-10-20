@@ -66,7 +66,7 @@ export function CommandsTable({ commands, status }: { commands: BackendDeviceCom
       {commands.length === 0 ? (
         <p className="border-t border-border py-2.5 text-sm text-text-secondary">Le boîtier n’a encore rien éteint.</p>
       ) : (
-        <div className="overflow-x-auto border-y border-border">
+        <div className="relative overflow-x-auto border-y border-border">
           <table className="w-full min-w-[480px] border-collapse text-sm">
             <thead className="bg-bg-elevated">
               <tr>

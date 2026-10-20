@@ -37,7 +37,7 @@ export function JournalPage() {
       </div>
 
       <MetricState status={query.status} isEmpty={filtered.length === 0}>
-        <div className="overflow-x-auto border-y border-border">
+        <div className="relative overflow-x-auto border-y border-border">
           <table className="w-full min-w-[560px] border-collapse text-sm">
             <thead className="bg-bg-elevated">
               <tr>

@@ -57,7 +57,7 @@ export function AdminBoitiersPage() {
           {asks.length === 0 ? (
             <p className="border-t border-border py-2.5 text-sm text-text-secondary">Aucune demande pour le moment.</p>
           ) : (
-            <div className="overflow-x-auto border-y border-border">
+            <div className="relative overflow-x-auto border-y border-border">
               <table className="w-full min-w-[640px] border-collapse text-sm">
                 <thead className="bg-bg-elevated">
                   <tr>
@@ -113,7 +113,7 @@ export function AdminBoitiersPage() {
           {list.length === 0 ? (
             <p className="border-t border-border py-2.5 text-sm text-text-secondary">Aucun boîtier n’est associé pour le moment.</p>
           ) : (
-            <div className="overflow-x-auto border-y border-border">
+            <div className="relative overflow-x-auto border-y border-border">
               <table className="w-full min-w-[880px] border-collapse text-sm">
                 <thead className="bg-bg-elevated">
                   <tr>

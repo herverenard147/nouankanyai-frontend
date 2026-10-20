@@ -84,7 +84,7 @@ export function AdminDataPage() {
         <h2 className="text-section-title font-semibold text-text-primary">Appareil par appareil</h2>
         <p className="text-sm text-text-secondary">« Prêt » : au moins un mois de mesures, avec une mesure sur 80 % des heures au moins.</p>
         <MetricState status={machines.status} isEmpty={machines.data?.length === 0}>
-          <div className="overflow-x-auto border-y border-border">
+          <div className="relative overflow-x-auto border-y border-border">
             <table className="w-full min-w-[720px] text-sm">
               <thead>
                 <tr>
@@ -137,7 +137,7 @@ export function AdminDataPage() {
         <p className="text-sm text-text-secondary">Erreur relative : écart moyen entre la prévision et la mesure, rapporté à la consommation mesurée.</p>
         <MetricState status={review.status} isEmpty={review.data?.lignes.length === 0}>
           {review.data && (
-            <div className="overflow-x-auto border-y border-border">
+            <div className="relative overflow-x-auto border-y border-border">
               <p className="px-3 py-2 text-xs text-text-secondary">{formatNumberFr(review.data.previsions_servies, 0)} prévision(s) servie(s) sur la période</p>
               <table className="w-full min-w-[640px] text-sm">
                 <thead>

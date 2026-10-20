@@ -143,7 +143,7 @@ export function AdminMessagesPage() {
             {formatNumberFr(total)} message{total > 1 ? 's' : ''}
             {search ? ` pour « ${search} »` : ''}, page {page} sur {pages}
           </p>
-          <div className="overflow-x-auto border-y border-border">
+          <div className="relative overflow-x-auto border-y border-border">
             <table className="w-full min-w-[720px] border-collapse text-sm">
               <thead className="bg-bg-elevated">
                 <tr>
@@ -231,7 +231,7 @@ export function AdminMessagesPage() {
       <section className="flex flex-col gap-3">
         <h2 className="text-section-title font-semibold text-text-primary">Liste d&rsquo;attente et newsletter</h2>
         <MetricState status={waitlist.status} isEmpty={waitlist.data?.length === 0}>
-          <div className="overflow-x-auto border-y border-border">
+          <div className="relative overflow-x-auto border-y border-border">
             <table className="w-full min-w-[480px] border-collapse text-sm">
               <thead className="bg-bg-elevated">
                 <tr>

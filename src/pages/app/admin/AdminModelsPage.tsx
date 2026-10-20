@@ -58,7 +58,7 @@ const decimal = (value: number, digits: number) => value.toFixed(digits).replace
 
 function DriftTable({ report }: { report: BackendDriftReport }) {
   return (
-    <div className="overflow-x-auto border-y border-border">
+    <div className="relative overflow-x-auto border-y border-border">
       <table className="w-full min-w-[560px] border-collapse text-sm">
         <thead className="bg-bg-elevated">
           <tr>

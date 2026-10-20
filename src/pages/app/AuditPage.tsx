@@ -69,7 +69,7 @@ export function AuditPage() {
       <MetricState status={query.status} isEmpty={data?.events.length === 0}>
         {data && (
           <>
-            <div className="overflow-x-auto border-t-2 border-text-primary">
+            <div className="relative overflow-x-auto border-t-2 border-text-primary">
               <table className="w-full min-w-[640px] border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">

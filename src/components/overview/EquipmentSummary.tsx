@@ -21,7 +21,7 @@ export function EquipmentSummary({ columns, max = 5 }: { columns: PmeOverviewBlo
         </Link>
       </div>
       <MetricState status={query.status} isEmpty={query.data?.rows.length === 0}>
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full border-collapse sm:min-w-[34rem] text-[0.8125rem]">
             <thead>
               <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-secondary">
