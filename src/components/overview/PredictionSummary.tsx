@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
 
-import { BarChart, type ChartBar } from '@/components/charts/BarChart'
+import { TimeChart } from '@/components/charts/TimeChart'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { usePredictionsBundle } from '@/hooks/queries/usePrediction'
-import { computeYTicks } from '@/lib/formatters'
+import { hourlyDecor } from '@/lib/timeline'
 import type { Profile } from '@/types/domain'
 
 interface PredictionSummaryProps {
@@ -37,14 +37,8 @@ function PredictionBody({
   prediction: NonNullable<NonNullable<ReturnType<typeof usePredictionsBundle>['data']>['global']>
   showModelName: boolean
 }) {
-  const maxPoint = prediction.series.reduce((max, p) => (p.percent > max.percent ? p : max), prediction.series[0])
-  const yTicks = maxPoint ? computeYTicks(maxPoint.value, maxPoint.percent) : ['0', '0', '0']
-  const bars: ChartBar[] = prediction.series.map((point, i) => ({
-    key: `pred-${i}`,
-    x: point.label,
-    percent: point.percent,
-    tip: `${point.displayValue} ${prediction.unit}`,
-  }))
+  // Même graphique que les pages Conso et Prédiction (2026-10-20) : axes nommés, jours nommés, minuit marqué.
+  const decor = prediction.starts?.length === prediction.series.length ? hourlyDecor(prediction.starts) : null
 
   return (
     <>
@@ -63,7 +57,18 @@ function PredictionBody({
         <ProvenanceBadge value={prediction.provenance} className="ml-auto" />
       </div>
       {showModelName && <p className="text-xs text-text-tertiary">{prediction.modelName} · jeu de données : synthétique</p>}
-      <BarChart bars={bars} yTicks={yTicks} size="compact" xLabelEvery={6} />
+      <TimeChart
+        labels={decor?.labels ?? prediction.series.map((p) => p.label)}
+        ticks={decor?.ticks}
+        zones={decor?.zones}
+        separators={decor?.separators}
+        series={[{ name: 'Prévu', values: prediction.series.map((p) => p.value), color: '#2b6cb0', kind: 'area' }]}
+        unit={prediction.unit}
+        yAxisLabel={prediction.unit === 'kW' ? 'Puissance prévue (kW)' : `Énergie prévue (${prediction.unit})`}
+        xAxisLabel="Heure, 24 prochaines heures"
+        height={200}
+        showLegend={false}
+      />
     </>
   )
 }
