@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
+import { useBreadcrumbLabel } from '@/store/breadcrumbStore'
+
 import { CONNECTION_LABEL, connectionOf, lastActivity } from '@/api/boitiers'
 import { SOURCE_KIND_LABEL, kindOf } from '@/api/sources'
-import { BackLink, BoitierSectionBlock, DefinitionRows, Th } from '@/components/boitier/BoitierParts'
+import { BoitierSectionBlock, DefinitionRows, Th } from '@/components/boitier/BoitierParts'
 import { AddSourceModal } from '@/components/sources/AddSourceModal'
 import { FileSourcePanel } from '@/components/sources/FileSourcePanel'
 import { AliasesPanel, KeyPanel } from '@/components/sources/KeyAndAliasesPanel'
@@ -115,10 +117,10 @@ export function SourceDetailPage() {
   const navigate = useNavigate()
   const [revoking, setRevoking] = useState(false)
   const device = sources.data?.find((d) => d.id === deviceId)
+  useBreadcrumbLabel(device?.nom)
 
   return (
     <div className="flex flex-col gap-5">
-      <BackLink to={base}>Toutes les sources</BackLink>
       <MetricState status={sources.status}>
         {!device ? (
           <p className="text-sm text-text-secondary">Cette source n’existe plus, ou n’appartient pas à ce compte.</p>

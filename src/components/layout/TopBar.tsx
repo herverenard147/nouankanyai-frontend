@@ -1,6 +1,7 @@
 import { Menu } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 
+import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { LevelSelector } from '@/components/level/LevelSelector'
 import { NAV_BY_PROFILE } from '@/lib/navConfig'
@@ -38,6 +39,7 @@ export function TopBar() {
           <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
         <div>
+          <Breadcrumb profile={session.profile} />
           <h1 className="font-heading text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-text-primary">{currentEntry?.label ?? 'Nouankany'}</h1>
           <p className="text-sm text-text-secondary">
             {session.displayName} · {session.subtitle}

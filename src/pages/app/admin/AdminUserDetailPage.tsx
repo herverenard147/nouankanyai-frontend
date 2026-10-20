@@ -2,6 +2,8 @@ import { ArrowLeft } from 'lucide-react'
 import { TransferCard } from '@/components/import/TransferCard'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+
+import { useBreadcrumbLabel } from '@/store/breadcrumbStore'
 import type { EditableRole } from '@/api/adminUsers'
 
 import { MIN_PASSWORD_LENGTH } from '@/lib/validation'
@@ -45,6 +47,7 @@ export function AdminUserDetailPage() {
   const session = useSessionStore((s) => s.session)
   const usersQuery = useAdminUsers()
   const user = usersQuery.data?.find((u) => u.id === userId)
+  useBreadcrumbLabel(user?.name)
 
   const machinesQuery = useUserMachines(userId ?? null)
   const predictionsQuery = useUserPredictions(userId ?? null)
