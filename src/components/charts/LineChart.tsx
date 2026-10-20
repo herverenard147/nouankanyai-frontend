@@ -169,26 +169,30 @@ export function LineChart({ labels, series, unit, height = 220, xLabelEvery = 1 
           ))}
         </output>
       )}
-      <table className="sr-only">
-        <thead>
-          <tr>
-            <th>Période</th>
-            {series.map((s) => (
-              <th key={s.name}>{s.name}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {labels.map((label, i) => (
-            <tr key={label + i}>
-              <td>{label}</td>
+      {/* Un tableau ne prend pas la hauteur de 1 px de « sr-only » : il gardait toute sa hauteur et ajoutait une
+          grande page blanche en bas (vu le 2026-10-20). Le bloc qui l'entoure, lui, la respecte. */}
+      <div className="sr-only">
+        <table>
+          <thead>
+            <tr>
+              <th>Période</th>
               {series.map((s) => (
-                <td key={s.name}>{s.values[i] === null ? 'pas de relevé' : `${formatNumberFr(s.values[i] as number, 1)} ${unit}`}</td>
+                <th key={s.name}>{s.name}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {labels.map((label, i) => (
+              <tr key={label + i}>
+                <td>{label}</td>
+                {series.map((s) => (
+                  <td key={s.name}>{s.values[i] === null ? 'pas de relevé' : `${formatNumberFr(s.values[i] as number, 1)} ${unit}`}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
