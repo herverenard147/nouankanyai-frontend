@@ -7,6 +7,8 @@
 import { api, saveBlob } from '@/lib/apiClient'
 import { queryClient } from '@/lib/queryClient'
 import type {
+  BackendPowerPeak,
+  SubscriptionUnit,
   BackendCompteur,
   BackendCompteurDemande,
   BackendConsumption,
@@ -390,6 +392,9 @@ export const rawAdminSetRequestStatus = (id: string, status: 'a_livrer' | 'livre
 
 // --- Routes gardées sans écran jusqu'ici (voir lib/navConfig.ts pour qui y accède) ---
 export const rawDeleteSite = (siteId: string) => api.delete<null>(`/api/sites/${siteId}`)
+export const rawSetSiteSubscription = (siteId: string, payload: { valeur: number | null; unite: SubscriptionUnit | null; cos_phi: number | null }) =>
+  api.put<BackendSite>(`/api/sites/${siteId}/souscription`, payload)
+export const rawPowerPeak = (jour?: string) => api.get<BackendPowerPeak>(`/api/v1/consumption/pic${jour ? `?jour=${jour}` : ''}`)
 export const rawAnalyzeMachineMedia = (machineId: string, file: File) => {
   const form = new FormData()
   form.append('file', file)

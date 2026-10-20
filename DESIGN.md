@@ -56,6 +56,10 @@ Les maquettes sont dans le canvas « Nouankany — Propositions de design »
     marqué en vue horaire). Conso & coûts n'a plus que cette vue (validée par le propriétaire). Prédiction garde deux
     vues, au choix (`ViewSwitch`, gardé dans le navigateur) : « Mesuré et prévu » et « Prévision par appareil »
     (la vue d'avant). Sans relevé récent, la courbe commence au premier point utile, pas à hier 0 h.
+13. **Pic de puissance (2026-10-20)** : Conso & coûts (PME, Industrie), section « Pic de puissance face à la
+    puissance souscrite » : pic tenu 10 min, 15 min et 1 h (une durée trop courte pour l'écart entre relevés est dite,
+    pas calculée), courbe au quart d'heure avec la puissance souscrite en pointillé rouge, dépassements datés. La
+    puissance souscrite se saisit par site dans Paramètres (A, kVA ou kW, cos φ facultatif).
 
 ## 2. Langage visuel (déjà dans `src/styles/index.css`, `@theme`)
 

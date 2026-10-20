@@ -5,6 +5,7 @@ vi.mock('@/hooks/queries/useSites', () => ({
   useSites: () => ({ status: 'success', data: [{ id: 's1', nom: 'Atelier', localisation: 'Abidjan', user_id: 'u' }] }),
   useCreateSite: () => ({ mutate: vi.fn(), reset: vi.fn(), isPending: false, error: null }),
   useDeleteSite: () => ({ mutate: vi.fn(), reset: vi.fn(), isPending: false, error: null }),
+  useSetSiteSubscription: () => ({ mutate: vi.fn(), reset: vi.fn(), isPending: false, error: null }),
 }))
 vi.mock('@/hooks/queries/useBoitiers', () => ({
   useBoitiers: () => ({
