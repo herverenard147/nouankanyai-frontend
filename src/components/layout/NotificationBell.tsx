@@ -32,6 +32,7 @@ export function NotificationBell({ profile }: NotificationBellProps) {
   const { enabled, items, unseenCount, isUnseen, markSeen } = useNotifications(profile)
   const [open, setOpen] = useState(false)
   const boxRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const panelId = useId()
   const navigate = useNavigate()
 
@@ -41,7 +42,11 @@ export function NotificationBell({ profile }: NotificationBellProps) {
       if (!boxRef.current?.contains(event.target as Node)) setOpen(false)
     }
     function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') setOpen(false)
+      // Échap ferme et rend la main à la cloche, pour qui navigue au clavier.
+      if (event.key === 'Escape') {
+        setOpen(false)
+        buttonRef.current?.focus()
+      }
     }
     document.addEventListener('pointerdown', onPointer)
     document.addEventListener('keydown', onKey)
@@ -63,6 +68,7 @@ export function NotificationBell({ profile }: NotificationBellProps) {
   return (
     <div ref={boxRef} className="relative">
       <button
+        ref={buttonRef}
         type="button"
         aria-label={label}
         title={label}

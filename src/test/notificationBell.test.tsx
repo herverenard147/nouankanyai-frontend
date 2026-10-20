@@ -19,10 +19,10 @@ function Where() {
   return <p data-testid="where">{location.pathname + location.hash}</p>
 }
 
-function afficher(profile: Profile) {
+function afficher(profile: Profile, path = '/app/apercu') {
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <MemoryRouter initialEntries={['/app/apercu']}>
+      <MemoryRouter initialEntries={[path]}>
         <NotificationBell profile={profile} />
         <Routes>
           <Route path="*" element={<Where />} />
@@ -68,9 +68,68 @@ describe('cloche des notifications', () => {
     expect(screen.getByRole('button', { name: 'Notifications : rien de nouveau' })).not.toHaveTextContent(/\d/)
   })
 
-  it('absente pour un profil sans notifications de compte (technicien, admin)', () => {
+  it('absente pour un technicien', () => {
     afficher('technicien')
     expect(screen.queryByRole('button')).toBeNull()
+  })
+
+  it('administrateur : la collecte prête pour le réentraînement est notifiée', async () => {
+    vi.mocked(rawNotifications).mockResolvedValue([
+      { id: 'collecte-prete:12', kind: 'collecte', title: 'Données réelles prêtes', detail: '', at: '2026-10-20T08:00:00', link: '/app/admin/donnees', level: 'info' },
+    ])
+    vi.mocked(fetchAdvice).mockResolvedValue([])
+    afficher('admin')
+    fireEvent.click(await screen.findByRole('button', { name: 'Notifications : 1 nouvelle' }))
+    fireEvent.click(screen.getByText('Données réelles prêtes'))
+    expect(screen.getByTestId('where')).toHaveTextContent('/app/admin/donnees')
+  })
+
+  /** Test du site en ligne, 2026-10-20. */
+  it('industrie : un boîtier muet mène à « Sources de mesures », pas à une page interdite', async () => {
+    vi.mocked(rawNotifications).mockResolvedValue([
+      { id: 'boitier:d1:2026102008', kind: 'boitier', title: 'Le boîtier Atelier n’envoie plus rien', detail: '', at: '2026-10-20T08:00:00', link: '/app/boitier/d1', level: 'alerte' },
+    ])
+    vi.mocked(fetchAdvice).mockResolvedValue([])
+    afficher('industrie')
+    fireEvent.click(await screen.findByRole('button', { name: 'Notifications : 1 nouvelle' }))
+    fireEvent.click(screen.getByText('Le boîtier Atelier n’envoie plus rien'))
+    expect(screen.getByTestId('where')).toHaveTextContent('/app/sources/d1')
+  })
+
+  it('une panne déjà en alerte n’est pas répétée en conseil ; les nombres sont à la française', async () => {
+    vi.mocked(rawNotifications).mockResolvedValue([
+      { id: 'alerte:a1', kind: 'alerte', title: 'Alerte sur Four', detail: 'Four consomme 4.4kW', at: '2026-10-19T08:00:00', link: '/app/alertes#alerte-a1', level: 'alerte', machine: 'M1' },
+    ])
+    vi.mocked(fetchAdvice).mockResolvedValue([
+      { rank: '1', title: 'Anomalie détectée sur Four', detail: 'd', impactLabel: '', impactKind: 'severity', provenance: 'estime', machineId: 'M1' },
+      { rank: '2', title: 'Décalez la cuisson', detail: 'd', impactLabel: '3 000 FCFA', impactKind: 'gain', provenance: 'estime', machineId: 'M1' },
+    ])
+    afficher('pme')
+    fireEvent.click(await screen.findByRole('button', { name: 'Notifications : 2 nouvelles' }))
+    expect(screen.queryByText('Anomalie détectée sur Four')).toBeNull()
+    expect(screen.getByText('Décalez la cuisson')).toBeTruthy()
+    expect(screen.getByText(/4,4\s?kW/)).toBeTruthy()
+  })
+
+  it('ouvrir la page Alertes marque les alertes vues, comme le compteur du menu', async () => {
+    vi.mocked(rawNotifications).mockResolvedValue([
+      { id: 'alerte:a1', kind: 'alerte', title: 'Alerte sur Four', detail: '', at: '2026-10-19T08:00:00', link: '/app/alertes#alerte-a1', level: 'alerte' },
+      { id: 'facture:f1:validee', kind: 'facture', title: 'Facture validée', detail: '', at: '2026-10-19T07:00:00', link: '/app/factures#facture-f1', level: 'info' },
+    ])
+    vi.mocked(fetchAdvice).mockResolvedValue([])
+    afficher('pme', '/app/alertes')
+    expect(await screen.findByRole('button', { name: 'Notifications : 1 nouvelle' })).toBeTruthy()
+  })
+
+  it('Échap ferme la liste et rend la main à la cloche', async () => {
+    vi.mocked(rawNotifications).mockResolvedValue([])
+    vi.mocked(fetchAdvice).mockResolvedValue([])
+    afficher('pme')
+    const cloche = await screen.findByRole('button', { name: 'Notifications : rien de nouveau' })
+    fireEvent.click(cloche)
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.queryByRole('region', { name: 'Notifications' })).toBeNull()
+    expect(document.activeElement).toBe(cloche)
   })
 
   it('libellés', () => {

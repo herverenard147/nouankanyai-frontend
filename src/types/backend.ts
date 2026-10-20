@@ -1196,6 +1196,8 @@ export interface BackendNotification {
   /** Page et ancre de l'élément, par exemple « /app/factures#facture-<id> ». */
   link: string
   level: string
+  /** Code de l'appareil concerné (alertes), pour ne pas répéter la même panne en conseil. */
+  machine?: string | null
 }
 
 /** Numéro de compteur CIE du compte, verrouillé (décision du propriétaire, 2026-10-19). */
