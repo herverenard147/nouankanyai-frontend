@@ -29,6 +29,8 @@ const BY_PAGE: { path: string; levels: Level[]; industrie?: Level[] }[] = [
 export function pageLevels(profile: Profile, pathname: string): Level[] {
   if (profile === 'menage') return []
   if (profile !== 'pme' && profile !== 'industrie') return ALL
+  // La page d'un appareil est la même à tous les niveaux (2026-10-20) : pas de bouton.
+  if (/^\/app\/(machines|equipements)\/[^/]+/.test(pathname)) return []
   const page = BY_PAGE.find((p) => pathname === p.path || pathname.startsWith(`${p.path}/`))
   if (!page) return []
   return profile === 'industrie' && page.industrie ? page.industrie : page.levels

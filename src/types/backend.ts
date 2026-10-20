@@ -1242,3 +1242,31 @@ export interface BackendMainMeterComparison {
   labels: string[]
   compteurs: BackendMainMeter[]
 }
+
+/** GET /api/v1/consumption/appareil/{code} : page d'un appareil (2026-10-20). */
+export interface BackendApplianceDetail {
+  code: string
+  nom: string
+  categorie: string | null
+  puissance_nominale_kw: number | null
+  periode: '24h' | '7j' | '30j'
+  pas_min: number
+  starts: string[]
+  puissance_kw: (number | null)[]
+  temperature_c: (number | null)[]
+  vibration_mm_s: (number | null)[]
+  pression_bar: (number | null)[]
+  seuils: { puissance_kw: number | null; temperature_max_c: number | null; vibration_max_mm_s: number | null }
+  jours: { jour: string; kwh: number; cout_fcfa: number }[]
+  kwh: number
+  cout_fcfa: number
+  couverture_pct: number
+  heures_marche_par_jour: number | null
+  part_compte_pct: number | null
+  attendu_kwh_jour: number | null
+  attendu_source: string | null
+  kwh_par_jour: number | null
+  ecart_attendu_pct: number | null
+  habitude: { semaine: (number | null)[]; weekend: (number | null)[] }
+  derniere_mesure_at: string | null
+}

@@ -64,6 +64,12 @@ Les maquettes sont dans le canvas « Nouankany — Propositions de design »
     page sont proposés (`src/lib/pageLevels.ts`) ; deux niveaux identiques ne font qu'un bouton, au nom du plus élevé ;
     une page identique à tous les niveaux n'a pas de bouton. Le ménage garde un seul niveau, sans sélecteur ; l'Admin et
     le technicien gardent les trois. Toute nouvelle différence de niveau sur une page doit être reportée dans ce fichier.
+15. **Page d'un appareil (2026-10-20)** : `/app/machines/:code` (industrie) et `/app/equipements/:code` (PME, ménage),
+    ouverte depuis la fiche de la liste ou le tableau « Ce que coûte chaque appareil ». Période 24 h, 7 jours, 30 jours ;
+    consommé, coût, heures de marche, écart à l'attendu (source dite : fiche du modèle ou estimation), part du compte ;
+    puissance et chaque mesure relevée face au seuil de l'appareil (une mesure jamais relevée n'a pas de courbe) ; kWh par
+    jour face à l'attendu ; habitude semaine et week-end ; prévision 24 h ; alertes de l'appareil. Même vue à tous les
+    niveaux : pas de bouton de niveau.
 
 ## 2. Langage visuel (déjà dans `src/styles/index.css`, `@theme`)
 

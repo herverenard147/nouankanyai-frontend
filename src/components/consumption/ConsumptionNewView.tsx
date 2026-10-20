@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import { TimeChart, type TimeSeries } from '@/components/charts/TimeChart'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { SERIES_COLORS } from '@/lib/chartColors'
+import { isRouteAllowed } from '@/lib/navConfig'
+import { useSessionStore } from '@/store/sessionStore'
 import { formatFcfa, formatNumberFr } from '@/lib/formatters'
 import type { BackendConsumption, BackendConsumptionHabits, BackendConsumptionProvenance, ConsumptionGranularity } from '@/types/backend'
 import type { Provenance } from '@/types/domain'
@@ -206,6 +208,9 @@ function WhoUsesWhat({ data, granularity, window }: { data: BackendConsumption; 
 }
 
 function CostPerDevice({ data, technical }: { data: BackendConsumption; technical: boolean }) {
+  // Page de l'appareil : sous Machines (industrie) ou Équipements (PME, ménage), selon le menu du profil.
+  const profile = useSessionStore((st) => st.session?.profile)
+  const detailBase = profile && isRouteAllowed('/app/machines/x', profile) ? '/app/machines' : profile && isRouteAllowed('/app/equipements/x', profile) ? '/app/equipements' : null
   const totalCost = data.machines.reduce((sum, m) => sum + m.cout_fcfa, 0)
   const rows = [...data.machines].sort((a, b) => b.cout_fcfa - a.cout_fcfa)
   return (
@@ -228,7 +233,15 @@ function CostPerDevice({ data, technical }: { data: BackendConsumption; technica
               const share = totalCost > 0 ? (100 * m.cout_fcfa) / totalCost : 0
               return (
                 <tr key={m.code} className="border-b border-border">
-                  <td className="py-2 text-text-primary">{m.nom}</td>
+                  <td className="py-2 text-text-primary">
+                    {detailBase ? (
+                      <Link to={`${detailBase}/${encodeURIComponent(m.code)}`} className="focus-ring font-medium text-accent-cta hover:underline">
+                        {m.nom}
+                      </Link>
+                    ) : (
+                      m.nom
+                    )}
+                  </td>
                   <td className="py-2 pl-3 text-right tabular-nums">{formatNumberFr(m.kwh, m.kwh < 100 ? 1 : 0)}</td>
                   <td className="whitespace-nowrap py-2 pl-3 text-right font-semibold tabular-nums">{formatFcfa(m.cout_fcfa)}</td>
                   <td className="hidden py-2 pl-3 sm:table-cell">
