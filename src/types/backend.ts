@@ -462,6 +462,8 @@ export interface BackendElectricityBill {
   /** Une facture n'entre dans un relevé qu'une fois validée par un administrateur. */
   validation_status?: 'en_attente' | 'validee' | 'rejetee'
   created_at: string
+  /** Puissance souscrite lue sur la facture et ce qui en a été fait (2026-10-20). */
+  souscription_lue?: { valeur: number; unite: SubscriptionUnit; enregistree: boolean; site: string | null; raison: string | null } | null
 }
 export interface BackendNewManualBill {
   month: string

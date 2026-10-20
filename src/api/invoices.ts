@@ -75,6 +75,19 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
   if ((bill.period_months ?? 1) > 1) {
     rawFields.push({ key: 'duree', label: 'Durée couverte', value: `${bill.period_months} mois (bimestrielle)`, provenance: 'estime', editable: false })
   }
+  // Puissance souscrite lue sur la facture (2026-10-20) : enregistrée sur le seul site du compte s'il n'en avait pas,
+  // jamais écrasée ; sinon la page dit pourquoi et renvoie vers Paramètres.
+  if (bill.souscription_lue) {
+    const s = bill.souscription_lue
+    const what = `${formatNumberFr(s.valeur, s.valeur < 10 ? 1 : 0)} ${s.unite}`
+    rawFields.push({
+      key: 'souscription',
+      label: 'Puissance souscrite',
+      value: s.enregistree ? `${what}, enregistrée pour le site « ${s.site} »` : `${what}${s.raison ? ` (${s.raison})` : ''}`,
+      provenance: 'estime',
+      editable: false,
+    })
+  }
   if (bill.payment_reference) {
     rawFields.push({ key: 'reference', label: 'Référence', value: bill.payment_reference, provenance: 'estime', editable: false })
   }
