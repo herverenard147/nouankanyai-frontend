@@ -39,14 +39,17 @@ export function bucketize(
   points: Point[],
   granularity: PredictionGranularity,
   start: Date = firstForecastHour(),
-): { series: PredictionSeriesPoint[]; totalCostFcfa: number } {
+): { series: PredictionSeriesPoint[]; totalCostFcfa: number; starts: number[] } {
   const labels: string[] = []
+  // Début de chaque point (ms) : la nouvelle vue les place sur la même ligne de temps que le mesuré.
+  const starts: number[] = []
   const values: number[] = []
   const costs: number[] = []
 
   if (granularity === 'heure') {
     points.forEach((p, i) => {
       labels.push(`${new Date(start.getTime() + i * HOUR_MS).getUTCHours()} h`)
+      starts.push(start.getTime() + i * HOUR_MS)
       values.push(p.predicted_kw)
       costs.push(p.cost_fcfa)
     })
@@ -64,8 +67,9 @@ export function bucketize(
       byDay.set(key, day)
     })
     // Seulement les jours entiers : un jour entamé faisait un creux trompeur au début et à la fin de la courbe.
-    for (const day of byDay.values()) {
+    for (const [key, day] of byDay.entries()) {
       if (day.hours < 24) continue
+      starts.push(Date.parse(`${key}T00:00:00Z`))
       labels.push(dayLabel(day.date))
       values.push(day.kwh)
       costs.push(day.cost)
@@ -82,6 +86,7 @@ export function bucketize(
       const count = k === 0 ? daysInMonth - start.getUTCDate() + 1 : daysInMonth
       // Court : « (reste du mois) » chevauchait le mois suivant sur téléphone.
       labels.push(k === 0 ? `fin ${monthLabel(year, month)}` : monthLabel(year, month))
+      starts.push(k === 0 ? start.getTime() : Date.UTC(year, month, 1))
       values.push(dailyKwh * count)
       costs.push(dailyCost * count)
     }
@@ -94,10 +99,10 @@ export function bucketize(
     displayValue: formatNumberFr(value, 1),
     percent: Math.round((value / max) * 100),
   }))
-  return { series, totalCostFcfa: Math.round(costs.reduce((sum, c) => sum + c, 0)) }
+  return { series, totalCostFcfa: Math.round(costs.reduce((sum, c) => sum + c, 0)), starts }
 }
 
-function toPrediction(title: string, granularity: PredictionGranularity, bucketed: ReturnType<typeof bucketize>): Prediction {
+function toPrediction(title: string, granularity: PredictionGranularity, bucketed: ReturnType<typeof bucketize>, code?: string): Prediction {
   const unit = granularity === 'heure' ? 'kW' : 'kWh'
   // Heure : la puissance de l'heure qui vient ; Jour et Mois : le total de la période (avant : le premier jour,
   // souvent entamé, en gros chiffre).
@@ -116,6 +121,9 @@ function toPrediction(title: string, granularity: PredictionGranularity, buckete
     provenance: 'estime',
     yAxisUnit: unit,
     series: bucketed.series,
+    starts: bucketed.starts,
+    costFcfa: bucketed.totalCostFcfa,
+    code,
   }
 }
 
@@ -148,7 +156,7 @@ export async function fetchPredictionsBundle(_profile: Profile, granularity: Pre
     })),
   )
 
-  const perDevice: Prediction[] = perMachine.map(({ machine, bucketed }) => toPrediction(machine.nom, granularity, bucketed))
+  const perDevice: Prediction[] = perMachine.map(({ machine, bucketed }) => toPrediction(machine.nom, granularity, bucketed, machine.machine_id))
 
   // Somme point par point : même horizon pour tous les appareils, donc même nombre
   // de points prédits dans le même ordre : pas besoin de réaligner par date.
@@ -167,6 +175,7 @@ export async function fetchPredictionsBundle(_profile: Profile, granularity: Pre
   const global = toPrediction('Prédiction globale : tous les équipements', granularity, {
     series: globalSeries,
     totalCostFcfa: globalCostFcfa,
+    starts: perMachine[0]?.bucketed.starts ?? [],
   })
 
   return { global, perDevice }
