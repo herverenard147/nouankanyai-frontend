@@ -52,6 +52,15 @@ describe('barre du haut', () => {
     )
   }
 
+  it('fil d’Ariane sous le titre et le nom du compte (2026-10-20)', () => {
+    renderAt('/app/consommation')
+    const title = screen.getByRole('heading', { level: 1 })
+    const account = screen.getByText('Usine · Industrie')
+    const crumbs = screen.getByRole('navigation', { name: 'Fil d’Ariane' })
+    expect(title.compareDocumentPosition(account) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(account.compareDocumentPosition(crumbs) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
   it('Conso & coûts : Amateur et Technique seulement', () => {
     renderAt('/app/consommation')
     expect(screen.queryByRole('button', { name: 'Débutant' })).toBeNull()

@@ -42,11 +42,12 @@ export function TopBar() {
           <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
         <div>
-          <Breadcrumb profile={session.profile} />
           <h1 className="font-heading text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-text-primary">{currentEntry?.label ?? 'Nouankany'}</h1>
           <p className="text-sm text-text-secondary">
             {session.displayName} · {session.subtitle}
           </p>
+          {/* Sous le titre et le nom du compte (demande du propriétaire, 2026-10-20). */}
+          <Breadcrumb profile={session.profile} />
         </div>
       </div>
       <div className="ml-auto flex items-center gap-3">

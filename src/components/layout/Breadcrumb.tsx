@@ -44,7 +44,7 @@ export function Breadcrumb({ profile }: { profile: Profile }) {
   const crumbs = crumbsFor(profile, location.pathname, detailLabel)
   if (crumbs.length < 2) return null
   return (
-    <nav aria-label="Fil d’Ariane" className="text-sm text-text-secondary">
+    <nav aria-label="Fil d’Ariane" className="mt-2 text-sm text-text-secondary">
       <ol className="flex flex-wrap items-center gap-x-1.5">
         {crumbs.map((c, i) => (
           <li key={`${c.label}-${i}`} className="flex items-center gap-x-1.5">
