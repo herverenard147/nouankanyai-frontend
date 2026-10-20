@@ -29,7 +29,7 @@ export function notificationLink(profile: Profile, link: string): string {
 const SEEN_ON_PAGE: Record<string, BackendNotification['kind'][]> = {
   '/app/alertes': ['alerte', 'retour'],
   '/app/conseils': ['conseil'],
-  '/app/factures': ['facture'],
+  '/app/factures': ['facture', 'prepaye'],
   '/app/facturation': ['releve'],
   '/app/plan-action': ['plan'],
 }

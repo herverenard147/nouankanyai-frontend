@@ -177,6 +177,12 @@ function TariffExplained({ data }: { data: BackendConsumption }) {
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Votre tarif CIE</h2>
       <p className="text-sm text-text-secondary">{t.explication}</p>
+      {data.prix_reel_kwh != null && (
+        <p className="text-sm text-text-primary">
+          Compteur à carte : vos coûts sont calculés avec le prix réellement payé,{' '}
+          <span className="font-semibold">{formatNumberFr(data.prix_reel_kwh, 0)} FCFA le kWh</span> d’après vos recharges (redevances et taxes comprises).
+        </p>
+      )}
       {t.kind === 'plages_horaires' && t.plages && (
         <ul className="grid gap-3 sm:grid-cols-3">
           {t.plages.map((p) => (

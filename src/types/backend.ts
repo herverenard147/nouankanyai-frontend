@@ -1171,6 +1171,8 @@ export interface BackendConsumptionTariff {
 }
 
 export interface BackendConsumption {
+  /** Compteur à carte : prix réellement payé par kWh d'après les recharges ; null sinon (barème). */
+  prix_reel_kwh?: number | null
   granularity: ConsumptionGranularity
   since: string
   until: string
@@ -1195,7 +1197,7 @@ export interface BackendConsumptionHabits {
 /** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
 export interface BackendNotification {
   id: string
-  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil' | 'collecte'
+  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil' | 'collecte' | 'prepaye'
   title: string
   detail: string
   at: string | null
@@ -1279,4 +1281,33 @@ export interface BackendApplianceDetail {
   ecart_attendu_pct: number | null
   habitude: { semaine: (number | null)[]; weekend: (number | null)[] }
   derniere_mesure_at: string | null
+}
+
+/** Compteur à carte (2026-10-20) : GET /api/v1/prepaye, un élément par logement à carte. */
+export interface BackendRecharge {
+  id: string
+  site_id: string
+  date: string
+  montant_fcfa: number
+  kwh: number | null
+  prix_kwh: number | null
+  source: 'manuel' | 'photo'
+}
+
+export interface BackendPrepaid {
+  site_id: string
+  nom: string
+  credit: {
+    kwh: number | null
+    jours: number | null
+    epuise_le: string | null
+    rythme_kwh_jour: number | null
+    source_rythme: 'compteur_general' | 'recharges' | 'appareils' | null
+    reference: 'releve' | 'recharge' | null
+    reference_le: string | null
+  }
+  bientot_epuise: boolean
+  releve: { kwh: number; le: string } | null
+  prix_kwh_reel: number | null
+  recharges: BackendRecharge[]
 }
