@@ -2,11 +2,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
 import { rawCreateMainMeter, rawDeleteMainMeter, rawMainMeters, rawSites } from '@/api/rawBackend'
-import { LineChart } from '@/components/charts/LineChart'
+import { TimeChart } from '@/components/charts/TimeChart'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal, MutationError } from '@/components/ui/Modal'
-import { SERIES_COLORS } from '@/lib/chartColors'
 import { formatNumberFr } from '@/lib/formatters'
 import type { ConsumptionGranularity } from '@/types/backend'
 import type { Profile } from '@/types/domain'
@@ -30,7 +29,7 @@ export function MainMeterCard({ granularity, window, profile }: { granularity: C
   const create = useMutation({ mutationFn: () => rawCreateMainMeter(siteId || sites.data?.[0]?.id), onSuccess: refresh })
   const remove = useMutation({ mutationFn: (code: string) => rawDeleteMainMeter(code), onSuccess: () => { setRemoving(null); void refresh() } })
   const meters = query.data?.compteurs ?? []
-  const every = Math.max(1, Math.ceil((query.data?.labels.length ?? 0) / 12))
+  const unitLabel: Record<ConsumptionGranularity, string> = { hour: 'heure', day: 'jour', week: 'semaine', month: 'mois' }
 
   return (
     <section className={SECTION}>
@@ -88,13 +87,15 @@ export function MainMeterCard({ granularity, window, profile }: { granularity: C
                 Temps couvert par des relevés : compteur {formatNumberFr(m.couverture_compteur_pct, 0)} %, appareils {formatNumberFr(m.couverture_appareils_pct, 0)} %.
               </p>
               {m.points_compteur.some((p) => p !== null) && query.data && (
-                <LineChart
+                <TimeChart
                   labels={query.data.labels}
                   unit="kWh"
-                  xLabelEvery={every}
+                  yAxisLabel={`Énergie (kWh par ${unitLabel[granularity]})`}
+                  xAxisLabel={unitLabel[granularity].charAt(0).toUpperCase() + unitLabel[granularity].slice(1)}
+                  height={240}
                   series={[
-                    { name: 'Compteur général', values: m.points_compteur },
-                    { name: 'Somme des appareils', values: m.points_appareils, color: SERIES_COLORS[1] },
+                    { name: 'Compteur général', values: m.points_compteur, color: 'var(--color-text-primary)' },
+                    { name: 'Somme des appareils', values: m.points_appareils, color: '#2b6cb0' },
                   ]}
                 />
               )}
