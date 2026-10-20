@@ -60,6 +60,10 @@ Les maquettes sont dans le canvas « Nouankany — Propositions de design »
     puissance souscrite » : pic tenu 10 min, 15 min et 1 h (une durée trop courte pour l'écart entre relevés est dite,
     pas calculée), courbe au quart d'heure avec la puissance souscrite en pointillé rouge, dépassements datés. La
     puissance souscrite se saisit par site dans Paramètres (A, kVA ou kW, cos φ facultatif).
+14. **Bouton de niveau page par page (2026-10-20, PME et Industrie)** : seuls les niveaux qui changent vraiment la
+    page sont proposés (`src/lib/pageLevels.ts`) ; deux niveaux identiques ne font qu'un bouton, au nom du plus élevé ;
+    une page identique à tous les niveaux n'a pas de bouton. Le ménage garde un seul niveau, sans sélecteur ; l'Admin et
+    le technicien gardent les trois. Toute nouvelle différence de niveau sur une page doit être reportée dans ce fichier.
 
 ## 2. Langage visuel (déjà dans `src/styles/index.css`, `@theme`)
 

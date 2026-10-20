@@ -5,6 +5,7 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { LevelSelector } from '@/components/level/LevelSelector'
 import { NAV_BY_PROFILE } from '@/lib/navConfig'
+import { activeOption, pageLevels } from '@/lib/pageLevels'
 import { useLevel, useLevelStore } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 import { useUiStore } from '@/store/uiStore'
@@ -25,7 +26,9 @@ export function TopBar() {
   // choix. Sur mobile/tablette, le choix reste accessible uniquement depuis
   // /app/parametres (pas ici, pour ne pas surcharger l'en-tête) : voir
   // SettingsPage.
-  const showLevelSelector = session.profile !== 'menage'
+  // Seulement les niveaux qui changent cette page (tableau validé le 2026-10-20) ; aucun bouton sinon.
+  const levelOptions = pageLevels(session.profile, location.pathname)
+  const showLevelSelector = levelOptions.length > 1
 
   return (
     <header className="flex w-full max-w-[87.5rem] flex-wrap items-center justify-between gap-3 px-4 pb-3 pt-6 sm:px-6 lg:px-8">
@@ -50,7 +53,7 @@ export function TopBar() {
         {showLevelSelector && (
           <div className="hidden items-center gap-2 lg:flex">
             <span className="font-mono text-mono-axis uppercase tracking-wide text-text-tertiary">Niveau</span>
-            <LevelSelector value={level} onChange={(l) => setLevel(session.profile, l)} />
+            <LevelSelector value={activeOption(level, levelOptions)} options={levelOptions} onChange={(l) => setLevel(session.profile, l)} />
           </div>
         )}
         <NotificationBell profile={session.profile} />
