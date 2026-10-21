@@ -1,17 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
 import type { BackendBilling } from '@/types/backend'
 
 const billing = vi.hoisted(() => ({ current: null as unknown }))
-const requestTier = vi.fn()
-const cancelTier = vi.fn()
+const changeTier = vi.fn()
 vi.mock('@/hooks/queries/useBilling', () => ({
   useBilling: () => ({ status: 'success', data: billing.current }),
-  useRequestTier: () => ({ mutate: requestTier, isPending: false, error: null }),
-  useCancelTierRequest: () => ({ mutate: cancelTier, isPending: false, error: null }),
+  useChangeTier: () => ({ mutate: changeTier, isPending: false, isSuccess: false, error: null, reset: () => {} }),
 }))
 
 import { FacturationPage } from '@/pages/app/FacturationPage'
@@ -44,12 +42,16 @@ function show(data: BackendBilling) {
 }
 
 describe('page Facturation', () => {
-  it('le Ménage voit les trois paliers et peut demander un changement', () => {
+  it('le Ménage voit les trois formules et en change lui-même, après confirmation', () => {
     show(base)
     expect(screen.getByText('Votre formule')).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Demander Essentiel' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Demander Optimum' })).toBeTruthy()
-    expect(screen.getByText(/l’équipe Nouankany le valide/)).toBeTruthy()
+    expect(screen.getByText(/le changement s’applique tout de suite/)).toBeTruthy()
+    expect(screen.queryByText(/l’équipe Nouankany le valide/)).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Passer à Optimum' }))
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByText(/7\s?900\s?FCFA par mois/)).toBeTruthy()
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Passer à Optimum' }))
+    expect(changeTier.mock.calls[0][0]).toBe('optimum')
   })
 
   // Vu sur le staging (2026-10-11) : compte de démonstration affiché « Optimum », contrat en « Découverte ».
@@ -57,18 +59,7 @@ describe('page Facturation', () => {
     show({ ...base, effective_tier: 'optimum', access: { tier: 'decouverte', reason: 'demonstration', max_machines: null, assistant_ia: true, alertes_avancees: true } })
     expect(screen.getByText(/Compte de démonstration/)).toBeTruthy()
     expect(screen.queryByRole('button', { name: /Découverte/ })).toBeNull()
-    expect(screen.getByRole('button', { name: 'Demander Optimum' })).toBeTruthy()
-  })
-
-  it('une demande en cours se voit et s’annule par un bouton dédié', () => {
-    show({
-      ...base,
-      contract: { id: 'c', kind: 'menage', tier: 'decouverte', requested_tier: 'essentiel', audit_fee_fcfa: null, saas_fee_fcfa: null, savings_share_pct: null, baseline_kwh: null, baseline_period: null, start_month: null, end_month: null, status: 'actif' },
-    })
-    expect(screen.getByText('Demande envoyée')).toBeTruthy()
-    expect(screen.queryByRole('button', { name: 'Demander Essentiel' })).toBeNull()
-    screen.getByRole('button', { name: 'Annuler la demande' }).click()
-    expect(cancelTier).toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'Passer à Optimum' })).toBeTruthy()
   })
 
   it('pendant l’essai, la page dit quelle formule restera ensuite', () => {

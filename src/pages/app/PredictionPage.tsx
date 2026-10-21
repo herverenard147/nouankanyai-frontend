@@ -7,6 +7,8 @@ import { PredictionContent } from '@/components/prediction/PredictionPanel'
 import { MetricState } from '@/components/state/MetricState'
 import { Pill } from '@/components/ui/Pill'
 import { levelAtLeast } from '@/lib/levelGating'
+import { LOCKED, LockedFeature } from '@/components/billing/LockedFeature'
+import { useAccess } from '@/hooks/queries/useBilling'
 import { usePredictionsBundle } from '@/hooks/queries/usePrediction'
 import { useChartView } from '@/store/chartViewStore'
 import { useLevel } from '@/store/levelStore'
@@ -29,6 +31,7 @@ export function PredictionPage() {
   // ne jamais lancer la requête par compte en plus de la requête plateforme.
   const query = usePredictionsBundle(profile ?? 'menage', granularity, { enabled: profile !== 'admin' })
   const showModelDetails = levelAtLeast(level, 'technique')
+  const access = useAccess()
   const view = useChartView('prediction')
 
   if (!profile) return null
@@ -44,10 +47,22 @@ export function PredictionPage() {
     )
   }
 
+  // Prédictions selon la formule (2026-10-21) : aucune en Découverte, 2 ou 4 appareils sinon.
+  if (access.loaded && !access.predictions) {
+    return (
+      <div className="flex flex-col gap-7">
+        <LockedFeature {...LOCKED.predictions} />
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-7">
       <p className="text-sm text-text-secondary">
         Projection de votre consommation à venir, recalibrée à chaque écart mesuré entre prévision et réalité.
+        {access.maxPredictions !== null && access.maxPredictions > 0 && (
+          <> Votre formule prévoit {access.maxPredictions} appareils : ceux qui consomment le plus.</>
+        )}
       </p>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Granularité de la prédiction">

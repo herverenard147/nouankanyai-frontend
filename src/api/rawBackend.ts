@@ -169,8 +169,8 @@ export const rawUpdateAlertThresholds = (payload: BackendAlertThresholds) =>
 
 // --- Facturation Nouankany (/api/v1/billing) ---
 export const rawBilling = () => api.get<BackendBilling>('/api/v1/billing')
-export const rawRequestTier = (tier: BillingTierId) => api.post<BackendBillingContract>('/api/v1/billing/tier-request', { tier })
-export const rawCancelTierRequest = () => api.delete<BackendBillingContract>('/api/v1/billing/tier-request')
+/** Changement d'abonnement par le client, immédiat (2026-10-21) ; pas encore de paiement. */
+export const rawChangeTier = (tier: BillingTierId) => api.put<BackendBilling>('/api/v1/billing/tier', { tier })
 export const rawAdminUserBilling = (userId: string) => api.get<BackendBilling>(`/api/v1/billing/admin/users/${userId}`)
 export const rawAdminSaveContract = (userId: string, payload: BackendContractPayload) =>
   api.put<BackendBillingContract>(`/api/v1/billing/admin/users/${userId}/contract`, payload)

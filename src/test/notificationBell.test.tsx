@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 /** Correction 8 du test du site (2026-10-18) : une seule cloche, compteur, liste déroulante, clic vers l'élément. */
-vi.mock('@/api/rawBackend', () => ({ rawNotifications: vi.fn() }))
+vi.mock('@/api/rawBackend', () => ({ rawNotifications: vi.fn(), rawBilling: vi.fn(() => Promise.reject(new Error('sans abonnement'))) }))
 vi.mock('@/api/advice', () => ({ fetchAdvice: vi.fn() }))
 
 import { fetchAdvice } from '@/api/advice'

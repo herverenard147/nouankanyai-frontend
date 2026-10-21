@@ -95,7 +95,11 @@ function PrepaidMeter({ meter }: { meter: BackendPrepaid }) {
           </p>
         </div>
       ) : (
-        <p className="text-sm text-text-secondary">Ajoutez une recharge avec ses kWh pour estimer le crédit restant.</p>
+        <p className="text-sm text-text-secondary">
+          {c.reference
+            ? 'Pour estimer le crédit restant, il faut connaître votre rythme de consommation : ajoutez une deuxième recharge avec ses kWh, ou indiquez le chiffre affiché sur votre compteur.'
+            : 'Ajoutez une recharge avec ses kWh pour estimer le crédit restant.'}
+        </p>
       )}
 
       {meter.prix_kwh_reel !== null && (

@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom'
 import { UploadCard } from '@/components/upload/UploadCard'
 import { BulkInvoiceImport } from '@/components/import/BulkInvoiceImport'
 import { PrepaidSection } from '@/components/billing/PrepaidSection'
+import { useAccess } from '@/hooks/queries/useBilling'
 import {
   useAddManualInvoice,
   useAttachInvoicePhoto,
@@ -38,6 +39,8 @@ type Dialog =
  * validation). Photo et prévision gardent leur parcours. Voir DESIGN.md §8.
  */
 export function InvoicesPage() {
+  // Facture prévue : avec les prédictions (Essentiel et Optimum), 2026-10-21.
+  const access = useAccess()
   const profile = useSessionStore((s) => s.session?.profile)
   const invoicesQuery = useInvoices(profile!)
   const hasRealInvoice = (invoicesQuery.data ?? []).some((invoice) => !invoice.isForecast)
@@ -143,7 +146,7 @@ export function InvoicesPage() {
             />
           )}
         </section>
-        {hasRealInvoice && (
+        {hasRealInvoice && access.predictions && (
           <section aria-label="Prévision de facture" className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
             <h2 className="text-section-title font-semibold text-text-primary">Générer une prévision de facture</h2>
             <p className="text-sm text-text-secondary">

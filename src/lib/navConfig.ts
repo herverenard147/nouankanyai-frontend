@@ -20,6 +20,8 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/equipements', label: 'Mes appareils' },
     { path: '/app/consommation', label: 'Ma consommation' },
     { path: '/app/factures', label: 'Mes factures' },
+    // Dans le menu principal (demande du propriétaire, 2026-10-21 : il n'était qu'un lien de la page Mes factures).
+    { path: '/app/facturation', label: 'Abonnement' },
     { path: '/app/conseils', label: 'Conseils' },
     { path: '/app/alertes', label: 'À surveiller' },
     { path: '/app/boitier', label: 'Mon boîtier' },
@@ -27,7 +29,6 @@ export const NAV_BY_PROFILE: NavByProfile = {
     // Documentation dans le menu de chaque compte (demande du propriétaire, 2026-10-16 : dixième entrée du ménage).
     { path: '/app/aide', label: 'Documentation' },
     { path: '/app/prediction', label: 'Facture prévue', under: '/app/apercu' },
-    { path: '/app/facturation', label: 'Abonnement', under: '/app/factures' },
     { path: '/app/rapports', label: 'Rapports', under: '/app/factures' },
     { path: '/app/recommandations', label: 'Recommandations', under: '/app/conseils' },
   ],

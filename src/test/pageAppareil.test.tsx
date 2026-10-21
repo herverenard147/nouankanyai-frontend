@@ -17,7 +17,7 @@ const detail: BackendApplianceDetail = {
   habitude: { semaine: Array.from({ length: 24 }, (_, h) => (h >= 7 && h < 19 ? 30 : 3)), weekend: Array.from({ length: 24 }, () => 3) },
   derniere_mesure_at: '2026-10-20T11:00:00',
 }
-vi.mock('@/api/rawBackend', () => ({ rawApplianceDetail: vi.fn() }))
+vi.mock('@/api/rawBackend', () => ({ rawApplianceDetail: vi.fn(), rawBilling: vi.fn(() => Promise.reject(new Error('sans abonnement'))) }))
 vi.mock('@/hooks/queries/usePrediction', () => ({ usePredictionsBundle: () => ({ status: 'success', data: { global: null, perDevice: [] } }) }))
 vi.mock('@/hooks/queries/useAlertRegistry', () => ({ useAlertRegistry: () => ({ status: 'success', data: [] }) }))
 import { rawApplianceDetail } from '@/api/rawBackend'

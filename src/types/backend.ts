@@ -411,8 +411,14 @@ export interface BackendBilling {
     tier: BillingTierId | null
     reason: 'demonstration' | 'essai' | null
     max_machines: number | null
+    /** Droits par formule (2026-10-21) : logements, appareils prévus, détection d'anomalies. null : sans limite. */
+    max_logements?: number | null
+    max_previsions?: number | null
     assistant_ia: boolean
     alertes_avancees: boolean
+    detection_anomalies?: boolean
+    /** Codes des appareils dont la consommation est prévue ; null : tous. */
+    appareils_prevus?: string[] | null
     trial_ends_at?: string
   }
   tiers: BackendBillingTier[]

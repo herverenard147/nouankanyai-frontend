@@ -54,7 +54,11 @@ export function HouseholdPeakCard({ day }: { day?: string }) {
               {peakNow ? (
                 <PeakFigures site={site} peak={peakNow} />
               ) : (
-                <p className="text-sm text-text-secondary">Pas encore assez de relevés {day ? 'ce jour-là' : 'aujourd’hui'} pour la calculer.</p>
+                <p className="text-sm text-text-secondary">
+                  Pas encore assez de relevés {day ? 'ce jour-là' : 'aujourd’hui'} pour la calculer.
+                  {/* Le calibre saisi reste visible même sans relevé (test en ligne, 2026-10-21). */}
+                  {site.souscription?.amperes != null && <> Votre disjoncteur : {formatNumberFr(site.souscription.amperes, 0)}&nbsp;A.</>}
+                </p>
               )}
               {(site.site_id || sites.length === 1) && <BreakerForm calibre={site.souscription?.amperes ?? null} siteId={site.site_id} />}
             </div>
