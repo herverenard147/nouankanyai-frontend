@@ -86,6 +86,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/admin/facturation', label: 'Impayés et abonnements' },
     { path: '/app/journal', label: 'Journal' },
     { path: '/app/audit', label: 'Audit' },
+    { path: '/app/admin/prix-materiel', label: 'Prix du matériel' },
     { path: '/app/admin/boitiers', label: 'Boîtiers' },
     { path: '/app/parametres', label: 'Paramètres' },
     { path: '/app/aide', label: 'Documentation' },

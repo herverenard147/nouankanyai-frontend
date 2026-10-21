@@ -159,7 +159,7 @@ const CONNECTER: Section = {
     {
       kind: 'steps',
       items: [
-        'Sur la plateforme, demandez le code : « Mon boîtier », « J’ai reçu mon boîtier : demander mon code » (ou « Sources de mesures », « Ajouter une source »). Le code s’affiche une seule fois, vaut 15 minutes et ne sert qu’une fois : gardez la fenêtre ouverte.',
+        'Sur la plateforme, demandez le code : « Mon boîtier », « J’ai reçu mon boîtier » ou « J’ai déjà reçu mon boîtier : demander mon code » (ou « Sources de mesures », « Ajouter une source »). Le code s’affiche une seule fois, vaut 15 minutes et ne sert qu’une fois : gardez la fenêtre ouverte.',
         'Branchez le matériel. Au premier démarrage, il crée un Wi-Fi nommé « Nouankany-… » (la fin est propre à chaque appareil).',
         'Avec votre téléphone, connectez-vous à ce Wi-Fi, sans mot de passe. La page de réglage s’ouvre toute seule ; sinon, ouvrez le navigateur à l’adresse 192.168.4.1.',
         'Appuyez sur « Configure WiFi » : choisissez le Wi-Fi du lieu et tapez son mot de passe. Laissez l’adresse du serveur déjà remplie. Tapez le code dans « Code d’appairage », puis « Save ».',
@@ -642,7 +642,8 @@ const ADMIN: Guide = {
       title: 'Prix du matériel',
       blocks: [
         { kind: 'p', text: 'Le prix de chaque matériel est la somme de ses composants et de ses frais, montrée ligne par ligne au client avant sa demande : composants (prix relevés en Europe et sur les places de marché d’électronique, convertis à 1 € = 655,957 FCFA), transport et douane (25 % des composants), montage et essai, livraison à Abidjan, pose ou mise en service, marge de 20 %. Le prix est figé au moment de la demande.' },
-        { kind: 'p', text: 'Pour changer un prix (composant, frais, taux de douane ou de marge), modifiez le fichier backend/app/boitier/pricing.py : les nouvelles demandes prennent le nouveau prix, les demandes déjà faites gardent le leur. Les compteurs Modbus d’une passerelle ne sont pas compris : ils se chiffrent selon le tableau électrique.' },
+        { kind: 'steps', items: ['Menu « Prix du matériel » : chaque matériel avec ses composants et ses frais (libellé, montant), ce qui n’est pas compris, et les deux taux (transport et douane, marge).', 'Changez une ligne, ajoutez-en ou retirez-en : le prix se recalcule à l’écran, avec le prix enregistré à côté.', '« Enregistrer les prix » : la confirmation montre l’ancien et le nouveau prix de chaque matériel. Le changement est inscrit dans l’Audit ; les nouvelles demandes prennent le nouveau prix, les demandes déjà faites gardent le leur.', '« Revenir aux prix par défaut » rétablit les valeurs d’origine (backend/app/boitier/pricing.py).'] },
+        { kind: 'p', text: 'Les compteurs Modbus d’une passerelle ne sont pas compris : ils se chiffrent selon le tableau électrique.' },
         { kind: 'note', text: 'Boîtier qui parle : son programme (Raspberry Pi) doit ouvrir la même page de réglage que le capteur et la passerelle (Wi-Fi « Nouankany-… », code d’appairage). Il n’est pas encore dans le dépôt : à développer et vérifier avant la première livraison.' },
       ],
     },

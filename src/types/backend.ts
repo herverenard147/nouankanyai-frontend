@@ -1336,3 +1336,32 @@ export interface BackendPrepaid {
   prevision_30j: { kwh: number; fcfa: number | null; recharges: number | null; montant_habituel_fcfa: number | null } | null
   recharges: BackendRecharge[]
 }
+
+/** Prix du matériel réglés par un administrateur (2026-10-21) : GET/PUT/DELETE /api/v1/boitiers/admin/prix. */
+export interface PricingLineInput {
+  libelle: string
+  fcfa: number
+}
+
+export interface PricingKindConfig {
+  nom: string
+  description: string
+  composants: PricingLineInput[]
+  frais: PricingLineInput[]
+  non_compris: string[]
+}
+
+export interface PricingConfig {
+  import_rate: number
+  margin_rate: number
+  kinds: Record<HardwareKind, PricingKindConfig>
+}
+
+export interface BackendPricingView {
+  config: PricingConfig
+  defaults: PricingConfig
+  materiels: BackendHardwarePrice[]
+  modifie: boolean
+  modifie_le: string | null
+  modifie_par: string | null
+}

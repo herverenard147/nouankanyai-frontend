@@ -80,6 +80,8 @@ import type {
   BackendRecommendation,
   BackendSite,
   MeterType,
+  BackendPricingView,
+  PricingConfig,
   BackendPrepaid,
   BackendRecharge,
   BackendNewTeamMemberPayload,
@@ -469,3 +471,8 @@ export const rawUploadRechargePhoto = (siteId: string, file: File) => {
   form.append('site_id', siteId)
   return api.postForm<BackendRecharge>('/api/v1/prepaye/recharges/photo', form)
 }
+
+/** Prix du matériel (administrateurs, 2026-10-21). */
+export const rawAdminPricing = () => api.get<BackendPricingView>('/api/v1/boitiers/admin/prix')
+export const rawAdminSavePricing = (config: PricingConfig) => api.put<BackendPricingView>('/api/v1/boitiers/admin/prix', config)
+export const rawAdminResetPricing = () => api.delete<BackendPricingView>('/api/v1/boitiers/admin/prix')
