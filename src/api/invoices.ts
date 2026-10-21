@@ -104,6 +104,8 @@ function toInvoiceRecord(bill: BackendElectricityBill): InvoiceRecord {
     fields,
     hasPhoto: bill.has_photo,
     validationLabel: bill.is_forecast ? null : VALIDATION_LABEL[bill.validation_status ?? 'en_attente'],
+    rejectionReason: bill.motif_refus ?? null,
+    proofRequest: bill.justificatif_demande_motif && bill.justificatif_limite ? { motif: bill.justificatif_demande_motif, limite: bill.justificatif_limite } : null,
     // Une facture validée sert de base aux relevés : elle n'est plus modifiable (le serveur refuse aussi).
     locked: bill.validation_status === 'validee',
     raw: { month: bill.month, amountXof: bill.amount_xof, kwhConsumed: bill.kwh_consumed },

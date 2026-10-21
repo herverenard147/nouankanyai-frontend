@@ -18,7 +18,7 @@ interface ModalProps {
   actions: ReactNode
   /** Modale destructive : filet rouge en tête. */
   danger?: boolean
-  width?: 'md' | 'lg'
+  width?: 'md' | 'lg' | 'xl'
 }
 
 /**
@@ -87,7 +87,7 @@ export function Modal({ title, description, onClose, children, actions, danger =
         className={clsx(
           'relative flex max-h-[calc(100dvh-2rem)] w-full flex-col overflow-hidden border-t-4 bg-card shadow-assistant-panel overlay-panel-center',
           danger ? 'border-alert' : 'border-text-primary',
-          width === 'lg' ? 'max-w-[640px]' : 'max-w-[560px]',
+          width === 'xl' ? 'max-w-[min(1100px,96vw)]' : width === 'lg' ? 'max-w-[640px]' : 'max-w-[560px]',
         )}
       >
         <div className="flex shrink-0 items-start justify-between gap-4 px-6 pb-4 pt-6 sm:px-7 sm:pt-7">

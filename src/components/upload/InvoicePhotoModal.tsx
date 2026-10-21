@@ -2,6 +2,7 @@ import { X } from 'lucide-react'
 
 import { useInvoicePhoto } from '@/hooks/queries/useInvoices'
 import { onEscape } from '@/lib/a11y'
+import { ZoomableImage } from '@/components/ui/ZoomableImage'
 
 interface InvoicePhotoModalProps {
   billId: string
@@ -18,7 +19,7 @@ export function InvoicePhotoModal({ billId, period, onClose }: InvoicePhotoModal
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-bg/60 p-4 overlay-backdrop">
       <button type="button" aria-label="Fermer" className="absolute inset-0 cursor-default" onClick={onClose} />
       <div
-        className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-card bg-card shadow-assistant-panel overlay-panel-center"
+        className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-card bg-card shadow-assistant-panel overlay-panel-center"
         role="dialog"
         aria-modal="true"
         aria-label={`Facture ${period}`}
@@ -35,7 +36,7 @@ export function InvoicePhotoModal({ billId, period, onClose }: InvoicePhotoModal
         {photoQuery.status === 'pending' && <p className="text-sm text-text-secondary">Chargement de la photo…</p>}
         {photoQuery.status === 'error' && <p className="text-sm text-alert">Impossible de charger la photo.</p>}
         {photoQuery.status === 'success' && (
-          <img src={photoQuery.data} alt={`Photo de la facture ${period}`} className="w-full rounded-control border border-border" />
+          <ZoomableImage src={photoQuery.data} alt={`Photo de la facture ${period}`} />
         )}
         </div>
       </div>

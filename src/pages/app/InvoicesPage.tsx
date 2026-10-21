@@ -181,7 +181,7 @@ export function InvoicesPage() {
                         ? invoice.status === 'traitee' ? 'Confirmée' : 'Prévision en attente de confirmation'
                         : invoice.validationLabel}
                     </span>
-                    {!invoice.isForecast && !invoice.hasPhoto && !invoice.locked && (
+                    {!invoice.isForecast && (!invoice.hasPhoto || invoice.proofRequest) && !invoice.locked && (
                       <label className="focus-ring cursor-pointer text-sm font-semibold text-accent-cta hover:underline">
                         {attachMutation.isPending && attachMutation.variables?.billId === invoice.id ? 'Envoi…' : 'Joindre le justificatif'}
                         <input
@@ -226,6 +226,13 @@ export function InvoicesPage() {
                     )}
                   </div>
                 </div>
+                {invoice.proofRequest && (
+                  <p className="text-sm text-alert" role="status">
+                    Justificatif demandé : {invoice.proofRequest.motif}. Joignez-le avant le{' '}
+                    {new Date(invoice.proofRequest.limite).toLocaleDateString('fr-FR')}, sinon la facture sera refusée.
+                  </p>
+                )}
+                {invoice.rejectionReason && <p className="text-sm text-text-secondary">Motif du refus : {invoice.rejectionReason}</p>}
                 <OcrFieldList fields={invoice.fields} />
                 {attachMutation.isError && attachMutation.variables?.billId === invoice.id && <MutationError error={attachMutation.error} />}
                 {invoice.status === 'en_cours' && (

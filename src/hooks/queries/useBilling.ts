@@ -6,6 +6,7 @@ import {
   rawAdminMarkPaid,
   rawAdminRecordSubscription,
   rawAdminPendingBills,
+  rawAdminRequestProof,
   rawAdminValidateBill,
   rawAdminSaveContract,
   rawAdminTierRequests,
@@ -24,11 +25,19 @@ export const usePendingBills = () => useQuery({ queryKey: ['admin-pending-bills'
 export function useValidateBill() {
   const client = useQueryClient()
   return useMutation({
-    mutationFn: ({ billId, decision, compteur }: { billId: string; decision: 'validee' | 'rejetee'; compteur?: string }) =>
-      rawAdminValidateBill(billId, decision, compteur),
+    mutationFn: ({ billId, decision, compteur, note }: { billId: string; decision: 'validee' | 'rejetee'; compteur?: string; note?: string }) =>
+      rawAdminValidateBill(billId, decision, compteur, note),
     onSuccess: () => {
       for (const key of ['admin-pending-bills', 'admin-unpaid', 'admin-user-billing', 'compteur']) void client.invalidateQueries({ queryKey: [key] })
     },
+  })
+}
+
+export function useRequestProof() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: ({ billId, motif }: { billId: string; motif: string }) => rawAdminRequestProof(billId, motif),
+    onSuccess: () => void client.invalidateQueries({ queryKey: ['admin-pending-bills'] }),
   })
 }
 

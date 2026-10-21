@@ -663,6 +663,13 @@ const ADMIN: Guide = {
       ],
     },
     {
+      id: 'justificatifs',
+      title: 'Valider une facture CIE',
+      blocks: [
+        { kind: 'steps', items: ['Menu « Impayés et abonnements », section « Factures CIE à valider » : comparez la saisie au justificatif (« Voir le justificatif » : boutons − et + jusqu’à 400 %, glisser pour se déplacer).', 'Justificatif manquant ou illisible : « Demander le justificatif » avec ce qui manque. Le client est prévenu par email et dans sa cloche, rappel 2 jours avant la date limite ; dès qu’il joint une photo, la facture revient ici. Sans envoi sous 7 jours, elle est rejetée automatiquement avec ce motif.', '« Rejeter » demande toujours un motif : le client le voit sur sa facture et le reçoit par email.'] },
+      ],
+    },
+    {
       id: 'abonnements',
       title: 'Enregistrer un paiement d’abonnement',
       blocks: [
