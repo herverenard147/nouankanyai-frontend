@@ -35,4 +35,18 @@ describe('parts des économies', () => {
     render(<StatementList statements={[{ ...base, report_fcfa: 50000, total_fcfa: 119296 }]} />)
     expect(screen.getByText(/À régler avant le/).textContent).not.toMatch(/s’ajoute/)
   })
+
+  it('part provisoire (facture CIE en retard), remplacée, et avoir', () => {
+    render(
+      <StatementList
+        statements={[
+          { ...base, id: 'v', kind: 'part_provisoire', provisoire: true, status: 'remplacee', detail: { periode: 'août 2026' } },
+          { ...base, id: 'w', status: 'avoir', total_fcfa: -12000, detail: { periode: 'août 2026' } },
+        ]}
+      />,
+    )
+    expect(screen.getByText('Part provisoire : août 2026')).toBeTruthy()
+    expect(screen.getByText('Remplacée par la part de la facture')).toBeTruthy()
+    expect(screen.getByText('Avoir, déduit de la part suivante')).toBeTruthy()
+  })
 })

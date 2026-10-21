@@ -386,7 +386,7 @@ export interface BackendBillingStatement {
   id: string
   month: string
   /** « indicatif » : relevé calculé, pas une facture (facturation réelle pas encore ouverte). */
-  status: 'en_attente_facture' | 'indicatif' | 'a_payer' | 'paye' | 'reporte'
+  status: 'en_attente_facture' | 'indicatif' | 'a_payer' | 'paye' | 'reporte' | 'remplacee' | 'avoir'
   baseline_kwh: number | null
   actual_kwh: number | null
   savings_kwh: number | null
@@ -400,7 +400,7 @@ export interface BackendBillingStatement {
   /** Échéance du relevé à payer (billing/payment.py). */
   due_at?: string | null
   /** Part des économies par facture CIE (2026-10-21) : « part », « audit » ou « mensuel » (relevés d'avant). */
-  kind?: 'part' | 'audit' | 'mensuel'
+  kind?: 'part' | 'part_provisoire' | 'audit' | 'mensuel'
   periode_debut?: string | null
   periode_fin?: string | null
   bill_id?: string | null
