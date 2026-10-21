@@ -111,7 +111,7 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
           ? { label: 'Puissance', before: `${formatNumberFr(machine.power_kw * 1000, 0)} W`, after: form.power_kw ? `${formatNumberFr(Number(form.power_kw) * 1000, 0)} W` : '' }
           : { label: 'Puissance', before: `${formatNumberFr(machine.power_kw, 1)} kW`, after: form.power_kw ? `${formatNumberFr(Number(form.power_kw), 1)} kW` : '' },
         { label: 'Priorité', before: priorityLabel(machine.priority), after: priorityLabel(form.priority) },
-        { label: 'Site', before: siteName(machine.site_id ?? ''), after: siteName(form.site_id) },
+        { label: household ? 'Logement' : 'Site', before: siteName(machine.site_id ?? ''), after: siteName(form.site_id) },
       ].filter((change) => change.before !== change.after)
     : []
 
@@ -326,12 +326,15 @@ export function MachineFormDrawer({ machine, itemLabel, onClose }: MachineFormDr
             value={form.annee}
             onChange={(e) => setForm((f) => ({ ...f, annee: e.target.value }))}
           />
-          <SelectField
-            label="Site"
-            value={form.site_id}
-            onChange={(value) => setForm((f) => ({ ...f, site_id: value }))}
-            options={[{ value: '', label: 'Non associé' }, ...(sitesQuery.data?.map((site) => ({ value: site.id, label: site.nom })) ?? [])]}
-          />
+          {/* Ménage : « Logement », et seulement s'il en a plusieurs (un seul logement : les appareils en font partie). */}
+          {(!household || (sitesQuery.data?.length ?? 0) > 1) && (
+            <SelectField
+              label={household ? 'Logement' : 'Site'}
+              value={form.site_id}
+              onChange={(value) => setForm((f) => ({ ...f, site_id: value }))}
+              options={[{ value: '', label: 'Non associé' }, ...(sitesQuery.data?.map((site) => ({ value: site.id, label: site.nom })) ?? [])]}
+            />
+          )}
         </div>
         {!isEdit && <p className="text-xs text-text-secondary">Cette action sera enregistrée dans l’onglet Audit.</p>}
         <MutationError error={isEdit ? updateMutation.error : addMutation.error} />

@@ -4,6 +4,7 @@ import type { FormEvent } from 'react'
 import { CompteurCard } from '@/components/settings/CompteurCard'
 
 import { LevelSelector } from '@/components/level/LevelSelector'
+import { LogementsCard } from '@/components/settings/LogementsCard'
 import { SitesCard } from '@/components/settings/SitesCard'
 import { TransferCard } from '@/components/import/TransferCard'
 import { MetricState } from '@/components/state/MetricState'
@@ -636,6 +637,8 @@ export function SettingsPage() {
           <TeamCard isOwner={session.isTeamOwner} />
         </>
       )}
+
+      {session.profile === 'menage' && <LogementsCard />}
 
       {isClientProfile(session.profile) && <CompteurCard />}
       {isClientProfile(session.profile) && <ThresholdsCard />}

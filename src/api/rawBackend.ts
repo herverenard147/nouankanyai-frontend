@@ -79,6 +79,7 @@ import type {
   BackendPlatformRole,
   BackendRecommendation,
   BackendSite,
+  MeterType,
   BackendNewTeamMemberPayload,
   BackendTeamMember,
   BackendUser,
@@ -116,8 +117,11 @@ export const rawSendContactMessage = (payload: BackendContactMessagePayload) =>
 export const rawSeedDemoData = () => api.post<BackendDemoSeedResult>('/api/v1/demo/seed')
 
 export const rawSites = () => api.get<BackendSite[]>('/api/sites')
-export const rawCreateSite = (payload: { nom: string; localisation: string }) =>
+export const rawCreateSite = (payload: { nom: string; localisation?: string; compteur_type?: MeterType }) =>
   api.post<BackendSite>('/api/sites', payload)
+export const rawRenameSite = (siteId: string, nom: string) => api.put<BackendSite>(`/api/sites/${siteId}`, { nom })
+export const rawSetSiteMeter = (siteId: string, compteur_type: MeterType) =>
+  api.put<BackendSite>(`/api/sites/${siteId}/compteur`, { compteur_type })
 
 export const rawMachines = () => api.get<BackendMachine[]>('/api/machines')
 
@@ -397,8 +401,8 @@ export const rawAdminSetRequestStatus = (id: string, status: 'a_livrer' | 'livre
 // --- Routes gardées sans écran jusqu'ici (voir lib/navConfig.ts pour qui y accède) ---
 export const rawDeleteSite = (siteId: string) => api.delete<null>(`/api/sites/${siteId}`)
 /** Calibre du disjoncteur d'un ménage, en ampères (null pour l'effacer) : rangé sur son site « Domicile ». */
-export const rawSetBreaker = (amperes: number | null) =>
-  api.put<{ site_id: string | null; amperes: number | null }>('/api/v1/consumption/disjoncteur', { amperes })
+export const rawSetBreaker = (amperes: number | null, siteId?: string | null) =>
+  api.put<{ site_id: string | null; amperes: number | null }>('/api/v1/consumption/disjoncteur', { amperes, site_id: siteId ?? null })
 export const rawSetSiteSubscription = (siteId: string, payload: { valeur: number | null; unite: SubscriptionUnit | null; cos_phi: number | null }) =>
   api.put<BackendSite>(`/api/sites/${siteId}/souscription`, payload)
 export const rawApplianceDetail = (code: string, periode: '24h' | '7j' | '30j') =>

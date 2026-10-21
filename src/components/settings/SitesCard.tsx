@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal, Modal, MutationError } from '@/components/ui/Modal'
 import { RequiredMark, TextField } from '@/components/ui/TextField'
 import { useBoitiers } from '@/hooks/queries/useBoitiers'
-import { useCreateSite, useDeleteSite, useSetSiteSubscription, useSites } from '@/hooks/queries/useSites'
+import { METER_LABEL } from '@/components/settings/LogementsCard'
+import { useCreateSite, useDeleteSite, useSetSiteMeter, useSetSiteSubscription, useSites } from '@/hooks/queries/useSites'
 import { formatNumberFr } from '@/lib/formatters'
-import type { BackendSite, SubscriptionUnit } from '@/types/backend'
+import type { BackendSite, MeterType, SubscriptionUnit } from '@/types/backend'
 
 const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
 
@@ -25,6 +26,7 @@ export function SitesCard() {
   const [form, setForm] = useState({ nom: '', localisation: '' })
   const [removing, setRemoving] = useState<{ id: string; nom: string } | null>(null)
   const [subscribing, setSubscribing] = useState<BackendSite | null>(null)
+  const [metering, setMetering] = useState<BackendSite | null>(null)
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -58,6 +60,7 @@ export function SitesCard() {
                     'non renseignée'
                   )}
                 </p>
+                <p className="text-sm text-text-secondary">{METER_LABEL[site.compteur_type ?? 'postpaye']}</p>
               </div>
               <div className="flex flex-wrap gap-4">
                 <button
@@ -67,6 +70,14 @@ export function SitesCard() {
                   onClick={() => setSubscribing(site)}
                 >
                   Puissance souscrite
+                </button>
+                <button
+                  type="button"
+                  className="focus-ring text-sm font-semibold text-accent-cta hover:underline"
+                  aria-label={`Type de compteur du site ${site.nom}`}
+                  onClick={() => setMetering(site)}
+                >
+                  Type de compteur
                 </button>
                 <button
                   type="button"
@@ -119,6 +130,7 @@ export function SitesCard() {
       )}
 
       {subscribing && <SubscriptionModal site={subscribing} onClose={() => setSubscribing(null)} />}
+      {metering && <MeterModal site={metering} onClose={() => setMetering(null)} />}
 
       {removing && (
         <ConfirmDeleteModal
@@ -225,6 +237,50 @@ function SubscriptionModal({ site, onClose }: { site: BackendSite; onClose: () =
               : 'En moyenne tension, la puissance souscrite est en kW sur le contrat et la facture.'}{' '}
           {site.souscription_valeur != null && 'Videz la valeur pour l’effacer.'}
         </p>
+        <MutationError error={mutation.error} />
+      </form>
+    </Modal>
+  )
+}
+
+/** Compteur à facture ou à carte (2026-10-20) : un compteur à carte se suit par ses recharges. */
+function MeterModal({ site, onClose }: { site: BackendSite; onClose: () => void }) {
+  const mutation = useSetSiteMeter()
+  const [meter, setMeter] = useState<MeterType>(site.compteur_type ?? 'postpaye')
+  return (
+    <Modal
+      title={`Type de compteur du site « ${site.nom} »`}
+      onClose={onClose}
+      actions={
+        <>
+          <Button type="button" variant="outline" onClick={onClose}>
+            Annuler
+          </Button>
+          <Button loading={mutation.isPending} type="submit" form="compteur-type-form" disabled={mutation.isPending}>
+            Enregistrer
+          </Button>
+        </>
+      }
+    >
+      <form
+        id="compteur-type-form"
+        className="flex flex-col gap-2"
+        onSubmit={(e) => {
+          e.preventDefault()
+          mutation.mutate({ siteId: site.id, compteur_type: meter }, { onSuccess: onClose })
+        }}
+      >
+        <fieldset className="flex flex-col gap-2">
+          <legend className="mb-1 text-sm font-medium text-text-primary">
+            Type de compteur <RequiredMark />
+          </legend>
+          {(Object.keys(METER_LABEL) as MeterType[]).map((value) => (
+            <label key={value} className="flex items-center gap-2 text-sm text-text-primary">
+              <input type="radio" name="compteur-site" value={value} checked={meter === value} onChange={() => setMeter(value)} />
+              {METER_LABEL[value]}
+            </label>
+          ))}
+        </fieldset>
         <MutationError error={mutation.error} />
       </form>
     </Modal>
