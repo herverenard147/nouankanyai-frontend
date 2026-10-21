@@ -75,7 +75,7 @@ export const PARTS: Record<string, Record<string, PartInfo>> = {
       soc: { name: "Processeur Broadcom BCM2711", meta: "15 × 15 mm · 4 × Cortex-A72 1,5 GHz", real: false, text: "Sous son capot métal. C'est lui qui fait tourner l'assistant." },
       radiateur: { name: "Radiateur aluminium", meta: "14 × 14 × 7,5 mm", real: false, text: "Indispensable dans un boîtier fermé : le BCM2711 chauffe sous charge." },
       ram: { name: "Mémoire LPDDR4", meta: "1 à 8 Go", real: false, text: "À côté du processeur, comme sur la vraie carte." },
-      wifi: { name: "Module Wi-Fi 5 GHz / Bluetooth 5.0", meta: "capot blindé ≈ 11 × 13 mm", real: false, text: "La liaison avec la plateforme NouanKanyAI." },
+      wifi: { name: "Module Wi-Fi 5 GHz / Bluetooth 5.0", meta: "capot blindé ≈ 11 × 13 mm", real: false, text: "La liaison avec la plateforme Nouankany." },
       vl805: { name: "Contrôleur USB 3 VL805", meta: "≈ 6 × 6 mm", real: false, text: "Gère les deux ports bleus." },
       phy: { name: "Puce Ethernet Gigabit", meta: "≈ 6,5 × 6,5 mm", real: false, text: "Derrière la prise RJ45." },
       pmic: { name: "Gestion d'alimentation", meta: "≈ 5 × 5 mm", real: false, text: "Produit les tensions de la carte à partir du 5 V USB-C." },
