@@ -185,8 +185,11 @@ export const rawAdminUnpaid = () => api.get<BackendUnpaidStatement[]>('/api/v1/b
 export const rawAdminTierRequests = () => api.get<BackendTierRequest[]>('/api/v1/billing/admin/tier-requests')
 export const rawAdminPendingBills = () => api.get<BackendPendingBill[]>('/api/v1/billing/admin/bills/pending')
 export const rawAdminBillPhoto = (billId: string) => api.get<{ photo_data_url: string }>(`/api/v1/billing/admin/bills/${billId}/photo`)
-export const rawAdminValidateBill = (billId: string, decision: 'validee' | 'rejetee', compteur?: string) =>
-  api.post<BackendPendingBill>(`/api/v1/billing/admin/bills/${billId}/validate`, { decision, compteur: compteur || undefined })
+export const rawAdminValidateBill = (billId: string, decision: 'validee' | 'rejetee', compteur?: string, note?: string) =>
+  api.post<BackendPendingBill>(`/api/v1/billing/admin/bills/${billId}/validate`, { decision, compteur: compteur || undefined, note: note || undefined })
+/** Justificatif demandé au client (2026-10-21) : prévenu par email et dans la cloche ; rejet automatique à la date limite. */
+export const rawAdminRequestProof = (billId: string, motif: string) =>
+  api.post<BackendPendingBill>(`/api/v1/billing/admin/bills/${billId}/request-proof`, { motif })
 /** Justificatif (photo de la facture CIE) joint à une facture saisie à la main. */
 export const rawAttachBillPhoto = (billId: string, file: File) => {
   const form = new FormData()

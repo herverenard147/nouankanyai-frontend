@@ -269,6 +269,9 @@ export interface InvoiceRecord {
   hasPhoto: boolean
   /** Statut de validation par un administrateur (null pour une prévision). */
   validationLabel: string | null
+  /** Motif d'un refus ; justificatif demandé par l'administrateur, avec sa date limite (2026-10-21). */
+  rejectionReason?: string | null
+  proofRequest?: { motif: string; limite: string } | null
   /** Facture validée : plus modifiable ni supprimable. */
   locked: boolean
   /** Valeurs brutes pour pré-remplir la modale « Modifier ». */

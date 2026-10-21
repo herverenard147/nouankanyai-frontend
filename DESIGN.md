@@ -389,3 +389,9 @@ et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste**
 - **Facture CIE en retard (2026-10-21)** : « Part provisoire : août 2026 » (compteur général), statuts « Remplacée par la
   part de la facture » et « Avoir, déduit de la part suivante » ; notification « Facture CIE attendue : … » vers Factures.
 
+
+- **Justificatif des factures (2026-10-21)** : `ZoomableImage` (− et +, 100 à 400 %, défilement, glisser) dans la fenêtre du
+  justificatif, côté client (`InvoicePhotoModal`, élargie) et administrateur (fenêtre `xl`). Administrateur : « Demander le
+  justificatif » et « Rejeter » ouvrent une fenêtre avec motif obligatoire (5 caractères au moins) ; la demande en cours
+  s'affiche sous la facture avec la date du rejet automatique. Client : « Justificatif demandé … avant le … » en rouge et
+  « Joindre le justificatif » même si une photo existe ; « Motif du refus » sous une facture rejetée.

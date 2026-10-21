@@ -488,6 +488,10 @@ export interface BackendElectricityBill {
   created_at: string
   /** Puissance souscrite lue sur la facture et ce qui en a été fait (2026-10-20). */
   souscription_lue?: { valeur: number; unite: SubscriptionUnit; enregistree: boolean; site: string | null; raison: string | null } | null
+  /** Motif d'un refus ; justificatif demandé par l'administrateur et sa date limite (2026-10-21). */
+  motif_refus?: string | null
+  justificatif_demande_motif?: string | null
+  justificatif_limite?: string | null
 }
 export interface BackendNewManualBill {
   month: string
@@ -511,6 +515,11 @@ export interface BackendPendingBill {
   /** Contrôle du justificatif à l'envoi ; null pour une facture envoyée avant ce contrôle. */
   verification: BackendBillVerification | null
   compteur_cie: string | null
+  /** Justificatif demandé au client au lieu d'un rejet direct (2026-10-21) : rejet automatique à la date limite. */
+  justificatif_demande_at?: string | null
+  justificatif_demande_motif?: string | null
+  justificatif_limite?: string | null
+  motif_refus?: string | null
 }
 export interface BackendBillVerification {
   document: 'facture_cie' | 'inconnu' | null

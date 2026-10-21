@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom'
 
 import { rawAdminBillPhoto, rawAdminCompteurDemandes, rawAdminDecideCompteur } from '@/api/rawBackend'
 import { Button } from '@/components/ui/Button'
-import { MutationError } from '@/components/ui/Modal'
+import { Modal, MutationError } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
+import { ZoomableImage } from '@/components/ui/ZoomableImage'
 
 import { MetricState } from '@/components/state/MetricState'
-import { usePendingBills, useTierRequests, useUnpaidStatements, useValidateBill } from '@/hooks/queries/useBilling'
+import { usePendingBills, useRequestProof, useTierRequests, useUnpaidStatements, useValidateBill } from '@/hooks/queries/useBilling'
 import { formatFcfa, formatMonth, formatNumberFr } from '@/lib/formatters'
 import { verificationChecks as checks } from '@/lib/billVerification'
 
@@ -19,11 +20,23 @@ const TIER_LABEL: Record<string, string> = { decouverte: 'Découverte', essentie
 function PendingBills() {
   const pending = usePendingBills()
   const validate = useValidateBill()
-  const [photo, setPhoto] = useState<{ id: string; url: string } | null>(null)
+  const requestProof = useRequestProof()
+  const [photo, setPhoto] = useState<{ id: string; url: string; label: string } | null>(null)
+  // Rejet motivé ou justificatif demandé (2026-10-21) : le motif est obligatoire, le client le voit.
+  const [reason, setReason] = useState<{ id: string; label: string; mode: 'rejet' | 'demande' } | null>(null)
+  const [motif, setMotif] = useState('')
   const [compteurs, setCompteurs] = useState<Record<string, string>>({})
-  async function showPhoto(id: string) {
+  async function showPhoto(id: string, label: string) {
     const { photo_data_url } = await rawAdminBillPhoto(id)
-    setPhoto({ id, url: photo_data_url })
+    setPhoto({ id, url: photo_data_url, label })
+  }
+  const day = (iso: string) => new Date(iso).toLocaleDateString('fr-FR')
+  const busy = validate.isPending || requestProof.isPending
+  function submitReason() {
+    if (!reason) return
+    const done = { onSuccess: () => { setReason(null); setMotif('') } }
+    if (reason.mode === 'rejet') validate.mutate({ billId: reason.id, decision: 'rejetee', note: motif.trim() }, done)
+    else requestProof.mutate({ billId: reason.id, motif: motif.trim() }, done)
   }
   return (
     <section className={SECTION}>
@@ -67,25 +80,80 @@ function PendingBills() {
               )}
               <div className="flex flex-wrap items-center gap-3">
                 {b.has_photo ? (
-                  <button type="button" className="focus-ring font-semibold text-accent-cta hover:underline" onClick={() => void showPhoto(b.id)}>
+                  <button type="button" className="focus-ring font-semibold text-accent-cta hover:underline" onClick={() => void showPhoto(b.id, `${b.user_nom}, ${formatMonth(b.month)}`)}>
                     Voir le justificatif
                   </button>
                 ) : (
                   <span className="text-text-secondary">Justificatif manquant</span>
                 )}
-                <Button type="button" disabled={!b.has_photo || validate.isPending} onClick={() => validate.mutate({ billId: b.id, decision: 'validee', compteur: compteurs[b.id]?.trim() })}>
+                <Button type="button" disabled={!b.has_photo || busy} onClick={() => validate.mutate({ billId: b.id, decision: 'validee', compteur: compteurs[b.id]?.trim() })}>
                   Valider
                 </Button>
-                <Button type="button" variant="outline" disabled={validate.isPending} onClick={() => validate.mutate({ billId: b.id, decision: 'rejetee' })}>
+                {!b.justificatif_demande_at && (
+                  <Button type="button" variant="outline" disabled={busy} onClick={() => setReason({ id: b.id, label: `${b.user_nom}, ${formatMonth(b.month)}`, mode: 'demande' })}>
+                    Demander le justificatif
+                  </Button>
+                )}
+                <Button type="button" variant="outline" className="text-alert" disabled={busy} onClick={() => setReason({ id: b.id, label: `${b.user_nom}, ${formatMonth(b.month)}`, mode: 'rejet' })}>
                   Rejeter
                 </Button>
               </div>
-              {photo?.id === b.id && <img src={photo.url} alt={`Justificatif de la facture ${formatMonth(b.month)}`} className="max-h-96 w-fit rounded-card border border-border" />}
+              {b.justificatif_demande_at && b.justificatif_limite && (
+                <p className="text-xs text-text-secondary" role="status">
+                  Justificatif demandé le {day(b.justificatif_demande_at)} : « {b.justificatif_demande_motif} ». Sans envoi, rejet automatique le{' '}
+                  {day(b.justificatif_limite)}.
+                </p>
+              )}
             </li>
           ))}
         </ul>
       </MetricState>
-      <MutationError error={validate.error} />
+      <MutationError error={validate.error ?? requestProof.error} />
+      {photo && (
+        <Modal
+          title={`Justificatif : ${photo.label}`}
+          width="xl"
+          onClose={() => setPhoto(null)}
+          actions={
+            <Button type="button" variant="outline" onClick={() => setPhoto(null)}>
+              Fermer
+            </Button>
+          }
+        >
+          <ZoomableImage src={photo.url} alt={`Justificatif de la facture ${photo.label}`} />
+        </Modal>
+      )}
+      {reason && (
+        <Modal
+          title={reason.mode === 'rejet' ? `Rejeter la facture : ${reason.label}` : `Demander le justificatif : ${reason.label}`}
+          description={
+            reason.mode === 'rejet'
+              ? 'Le client verra ce motif et recevra un email.'
+              : 'Le client est prévenu par email et dans sa cloche. Sans justificatif sous 7 jours, la facture est rejetée automatiquement avec ce motif.'
+          }
+          onClose={() => setReason(null)}
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={() => setReason(null)}>
+                Annuler
+              </Button>
+              <Button type="button" loading={busy} disabled={motif.trim().length < 5} onClick={submitReason}>
+                {reason.mode === 'rejet' ? 'Rejeter' : 'Envoyer la demande'}
+              </Button>
+            </>
+          }
+        >
+          <TextField
+            label={reason.mode === 'rejet' ? 'Motif du refus' : 'Ce qui manque'}
+            required
+            maxLength={300}
+            value={motif}
+            onChange={(e) => setMotif(e.target.value)}
+            placeholder={reason.mode === 'rejet' ? 'Ex. : photo illisible, chiffres coupés' : 'Ex. : photo de la facture complète, recto'}
+          />
+          <MutationError error={validate.error ?? requestProof.error} />
+        </Modal>
+      )}
     </section>
   )
 }
