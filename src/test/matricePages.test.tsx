@@ -12,13 +12,13 @@ import { isRouteAllowed } from '@/lib/navConfig'
 const PAGES = ['apercu', 'premiers-pas', 'alertes', 'consommation', 'prediction', 'factures', 'conseils', 'recommandations', 'equipements',
   'machines', 'machines/X', 'equipements/X', 'rapports', 'facturation', 'journal', 'audit', 'plan-action', 'boitier', 'boitier/X',
   'parametres', 'sources', 'sources/X', 'aide', 'interventions', 'assistant', 'admin/boitiers', 'admin/sante', 'admin/modeles',
-  'admin/donnees', 'admin/utilisateurs', 'admin/leads', 'admin/messages', 'admin/facturation']
+  'admin/donnees', 'admin/utilisateurs', 'admin/leads', 'admin/messages', 'admin/facturation', 'admin/prix-materiel']
 
 const EXPECTED: Record<'menage' | 'pme' | 'industrie' | 'admin' | 'technicien', string> = {
   menage: 'apercu premiers-pas alertes consommation prediction factures conseils recommandations equipements equipements/X rapports facturation boitier boitier/X parametres aide assistant',
   pme: 'apercu premiers-pas alertes consommation prediction factures conseils recommandations equipements equipements/X rapports facturation audit plan-action boitier boitier/X parametres sources sources/X aide assistant',
   industrie: 'apercu premiers-pas alertes consommation prediction factures conseils recommandations machines machines/X rapports facturation journal audit plan-action parametres sources sources/X aide assistant',
-  admin: 'apercu premiers-pas alertes consommation prediction journal audit parametres aide assistant admin/boitiers admin/sante admin/modeles admin/donnees admin/utilisateurs admin/leads admin/messages admin/facturation',
+  admin: 'apercu premiers-pas alertes consommation prediction journal audit parametres aide assistant admin/boitiers admin/sante admin/modeles admin/donnees admin/utilisateurs admin/leads admin/messages admin/facturation admin/prix-materiel',
   technicien: 'parametres aide interventions assistant',
 }
 

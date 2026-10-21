@@ -1,4 +1,4 @@
-import {
+import { Tags,
   Bell,
   BookOpen,
   Boxes,
@@ -48,6 +48,7 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   '/app/audit': ShieldCheck,
   '/app/boitier': Speaker,
   '/app/admin/boitiers': Speaker,
+  '/app/admin/prix-materiel': Tags,
   '/app/parametres': SlidersHorizontal,
   '/app/admin/sante': HeartPulse,
   '/app/admin/modeles': Cpu,

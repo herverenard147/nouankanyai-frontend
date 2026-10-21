@@ -46,6 +46,7 @@ const SourceDetailPage = lazy(() => import('@/pages/app/SourcesPage').then((m) =
 const SourcesPage = lazy(() => import('@/pages/app/SourcesPage').then((m) => ({ default: m.SourcesPage })))
 const AdminBoitierDetailPage = lazy(() => import('@/pages/app/admin/AdminBoitierDetailPage').then((m) => ({ default: m.AdminBoitierDetailPage })))
 const AdminBoitiersPage = lazy(() => import('@/pages/app/admin/AdminBoitiersPage').then((m) => ({ default: m.AdminBoitiersPage })))
+const AdminPricingPage = lazy(() => import('@/pages/app/admin/AdminPricingPage').then((m) => ({ default: m.AdminPricingPage })))
 const AdminHealthPage = lazy(() => import('@/pages/app/admin/AdminHealthPage').then((m) => ({ default: m.AdminHealthPage })))
 const AdminBillingPage = lazy(() => import('@/pages/app/admin/AdminBillingPage').then((m) => ({ default: m.AdminBillingPage })))
 const AdminLeadsPage = lazy(() => import('@/pages/app/admin/AdminLeadsPage').then((m) => ({ default: m.AdminLeadsPage })))
@@ -118,6 +119,7 @@ export const router = createBrowserRouter([
               },
               { path: 'assistant', element: <AssistantPage /> },
               { path: 'admin/boitiers', element: <AdminBoitiersPage /> },
+              { path: 'admin/prix-materiel', element: <AdminPricingPage /> },
               { path: 'admin/boitiers/:deviceId', element: <AdminBoitierDetailPage /> },
               { path: 'admin/sante', element: <AdminHealthPage /> },
               { path: 'admin/modeles', element: <AdminModelsPage /> },
