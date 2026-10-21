@@ -60,6 +60,11 @@ Les maquettes sont dans le canvas « Nouankany — Propositions de design »
     puissance souscrite » : pic tenu 10 min, 15 min et 1 h (une durée trop courte pour l'écart entre relevés est dite,
     pas calculée), courbe au quart d'heure avec la puissance souscrite en pointillé rouge, dépassements datés. La
     puissance souscrite se saisit par site dans Paramètres (A, kVA ou kW, cos φ facultatif).
+    En basse tension (A ou kVA), chaque pic est aussi donné en ampères : A = kW × 1000 / (220 × cos φ), la formule de
+    l'ANARE-CI dans l'autre sens. **Ménage (version simple)** : Ma consommation, carte « Ma plus forte consommation
+    aujourd'hui » : le pic le plus court disponible en kW et en ampères (badge « estimé »), l'heure, la part du calibre du
+    disjoncteur (barre, message dès 80 %). Pas de tableau ni de trois durées. Le calibre se saisit dans la carte ou se lit
+    sur la facture (« Réglage disjoncteur ») ; il est rangé sur un site « Domicile » créé à ce moment-là.
 14. **Bouton de niveau page par page (2026-10-20, PME et Industrie)** : seuls les niveaux qui changent vraiment la
     page sont proposés (`src/lib/pageLevels.ts`) ; deux niveaux identiques ne font qu'un bouton, au nom du plus élevé ;
     une page identique à tous les niveaux n'a pas de bouton. Le ménage garde un seul niveau, sans sélecteur ; l'Admin et

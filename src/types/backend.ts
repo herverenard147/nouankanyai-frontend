@@ -80,9 +80,12 @@ export interface BackendSitePeak {
   source: 'compteur_general' | 'somme_appareils'
   appareils: number
   ecart_releves_min: number | null
-  souscription: { valeur: number; unite: SubscriptionUnit; cos_phi: number; kw: number } | null
+  /** `amperes` : calibre du disjoncteur (saisi en A, ou tiré des kVA) ; null en kW (moyenne tension). */
+  souscription: { valeur: number; unite: SubscriptionUnit; cos_phi: number; kw: number; amperes?: number | null } | null
+  /** Basse tension : les pics sont aussi donnés en ampères (A = kW × 1000 / (220 × cos φ)). */
+  basse_tension?: boolean
   /** Clés « 10 », « 15 », « 60 » : null si les relevés sont trop espacés pour cette durée, ou absents. */
-  pics: Record<string, { kw: number; debut: string } | null>
+  pics: Record<string, { kw: number; debut: string; amperes?: number | null } | null>
   quarts_kw: (number | null)[]
   depassements: { debut: string; fin: string; minutes: number; max_kw: number }[]
 }

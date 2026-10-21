@@ -396,6 +396,9 @@ export const rawAdminSetRequestStatus = (id: string, status: 'a_livrer' | 'livre
 
 // --- Routes gardées sans écran jusqu'ici (voir lib/navConfig.ts pour qui y accède) ---
 export const rawDeleteSite = (siteId: string) => api.delete<null>(`/api/sites/${siteId}`)
+/** Calibre du disjoncteur d'un ménage, en ampères (null pour l'effacer) : rangé sur son site « Domicile ». */
+export const rawSetBreaker = (amperes: number | null) =>
+  api.put<{ site_id: string | null; amperes: number | null }>('/api/v1/consumption/disjoncteur', { amperes })
 export const rawSetSiteSubscription = (siteId: string, payload: { valeur: number | null; unite: SubscriptionUnit | null; cos_phi: number | null }) =>
   api.put<BackendSite>(`/api/sites/${siteId}/souscription`, payload)
 export const rawApplianceDetail = (code: string, periode: '24h' | '7j' | '30j') =>

@@ -5,6 +5,7 @@ import { rawConsumption } from '@/api/rawBackend'
 import { TimeChart } from '@/components/charts/TimeChart'
 import { ConsumptionNewView } from '@/components/consumption/ConsumptionNewView'
 import { MainMeterCard } from '@/components/consumption/MainMeterCard'
+import { HouseholdPeakCard } from '@/components/consumption/HouseholdPeakCard'
 import { PowerPeakSection } from '@/components/consumption/PowerPeakSection'
 import { AdminPlatformConsumption } from '@/components/consumption/AdminPlatformConsumption'
 import { MetricState } from '@/components/state/MetricState'
@@ -143,6 +144,7 @@ export function ConsumptionPage() {
         )}
       </MetricState>
       {!machine && (profile === 'industrie' || profile === 'pme') && <PowerPeakSection fixedDay={day ?? undefined} />}
+      {!machine && profile === 'menage' && <HouseholdPeakCard day={day ?? undefined} />}
       {!machine && !day && profile !== 'technicien' && <MainMeterCard granularity={granularity} window={window} profile={profile} />}
     </div>
   )
