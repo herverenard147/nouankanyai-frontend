@@ -269,6 +269,16 @@ const CONTRAT_CLIENT: Section = {
   ],
 }
 
+// Factures CIE et justificatif (décision du propriétaire, 2026-10-21).
+const FACTURES_CLIENT: Section = {
+  id: 'factures-cie',
+  title: 'Vos factures CIE et leur justificatif',
+  blocks: [
+    { kind: 'steps', items: ['Page « Factures » : ajoutez une facture par photo ou PDF, ou saisissez-la à la main.', 'Saisie à la main : joignez la photo ou le PDF dans les 7 jours (« Joindre le justificatif »). Un rappel s’affiche dans la cloche dès la saisie et part par email 2 jours avant la limite.', 'Sans justificatif à la date limite, la facture est refusée automatiquement ; le motif s’affiche sous la facture. Vous pouvez la saisir de nouveau avec son justificatif.', 'Si notre équipe vous demande un justificatif (photo illisible, facture incomplète), même délai : 7 jours, avec ce qu’il faut joindre.'] },
+    { kind: 'note', text: 'Une facture ne compte dans vos économies qu’une fois validée par notre équipe, justificatif à l’appui. Pour bien la lire, utilisez « Voir plus » : boutons − et + pour agrandir.' },
+  ],
+}
+
 // Abonnement payé d'avance pour 30 jours (décision du propriétaire, 2026-10-21).
 const ABONNEMENT_MENAGE: Section = {
   id: 'abonnement',
@@ -344,6 +354,7 @@ const MENAGE: Guide = {
     CAPTEURS_CLIENT,
     ALERTES,
     ACCES_TECHNICIEN_CLIENT,
+    FACTURES_CLIENT,
     ABONNEMENT_MENAGE,
   ],
 }
@@ -351,7 +362,7 @@ const MENAGE: Guide = {
 const PME: Guide = {
   title: 'Guide PME',
   intro: 'Suivre vos sites et vos équipements, brancher vos mesures, être prévenu à temps et piloter vos économies.',
-  sections: [COMMENCER_PRO, SOURCES_CLIENT, CONNECTER, CAPTEURS_CLIENT, ALERTES, SEUILS_PRO, FICHIERS_CLIENT, CONTRAT_CLIENT, ACCES_TECHNICIEN_CLIENT, REFUS_DONNEES, ABONNEMENT_PRO],
+  sections: [COMMENCER_PRO, SOURCES_CLIENT, CONNECTER, CAPTEURS_CLIENT, ALERTES, SEUILS_PRO, FICHIERS_CLIENT, CONTRAT_CLIENT, ACCES_TECHNICIEN_CLIENT, REFUS_DONNEES, FACTURES_CLIENT, ABONNEMENT_PRO],
 }
 
 const INDUSTRIE: Guide = {
@@ -384,6 +395,7 @@ const INDUSTRIE: Guide = {
     CONTRAT_CLIENT,
     ACCES_TECHNICIEN_CLIENT,
     REFUS_DONNEES,
+    FACTURES_CLIENT,
     ABONNEMENT_PRO,
   ],
 }
@@ -666,7 +678,7 @@ const ADMIN: Guide = {
       id: 'justificatifs',
       title: 'Valider une facture CIE',
       blocks: [
-        { kind: 'steps', items: ['Menu « Impayés et abonnements », section « Factures CIE à valider » : comparez la saisie au justificatif (« Voir le justificatif » : boutons − et + jusqu’à 400 %, glisser pour se déplacer).', 'Justificatif manquant ou illisible : « Demander le justificatif » avec ce qui manque. Le client est prévenu par email et dans sa cloche, rappel 2 jours avant la date limite ; dès qu’il joint une photo, la facture revient ici. Sans envoi sous 7 jours, elle est rejetée automatiquement avec ce motif.', '« Rejeter » demande toujours un motif : le client le voit sur sa facture et le reçoit par email.'] },
+        { kind: 'steps', items: ['Menu « Impayés et abonnements », section « Factures CIE à valider » : comparez la saisie au justificatif (« Voir le justificatif » : boutons − et + jusqu’à 400 %, glisser pour se déplacer).', 'Justificatif manquant ou illisible : « Demander le justificatif » avec ce qui manque. Le client est prévenu par email et dans sa cloche, rappel 2 jours avant la date limite ; dès qu’il joint une photo, la facture revient ici. Sans envoi sous 7 jours, elle est rejetée automatiquement avec ce motif.', '« Rejeter » demande toujours un motif : le client le voit sur sa facture et le reçoit par email.', 'Facture saisie à la main par le client : le même délai de 7 jours court dès la saisie, sans que vous ayez à demander le justificatif.'] },
       ],
     },
     {
