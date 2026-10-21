@@ -269,6 +269,27 @@ const CONTRAT_CLIENT: Section = {
   ],
 }
 
+// Abonnement payé d'avance pour 30 jours (décision du propriétaire, 2026-10-21).
+const ABONNEMENT_MENAGE: Section = {
+  id: 'abonnement',
+  title: 'Votre abonnement',
+  blocks: [
+    { kind: 'p', text: 'Découverte est gratuite. Essentiel et Optimum se paient d’avance, pour 30 jours à partir du jour du paiement. Le paiement en ligne n’est pas encore ouvert : réglez auprès de l’équipe Nouankany (espèces, Wave, Orange Money, MTN Money, Moov Money, virement), qui l’enregistre.' },
+    { kind: 'steps', items: ['Menu « Abonnement » : la date de fin de la période payée et vos derniers paiements.', 'Un email vous prévient 5 jours avant la fin, puis le jour même.', 'Payé avant la fin : la nouvelle période suit l’actuelle, vous ne perdez aucun jour.', 'Payé après la fin : les 30 jours commencent le jour du paiement ; les jours sans abonnement ne vous sont pas facturés.'] },
+    { kind: 'note', text: 'Sans paiement, votre formule repasse en Découverte jusqu’au règlement. Votre compte, votre historique, vos appareils et vos factures restent là.' },
+  ],
+}
+
+const ABONNEMENT_PRO: Section = {
+  id: 'abonnement',
+  title: 'Abonnement et part des économies',
+  blocks: [
+    { kind: 'p', text: 'Deux montants distincts. L’abonnement (50 000 FCFA par défaut) se paie d’avance, pour 30 jours à partir du jour du paiement. La part des économies (40 % par défaut) se calcule sur vos factures CIE validées : un mois sans économie, elle est nulle.' },
+    { kind: 'steps', items: ['Menu « Facturation » : la date de fin de l’abonnement, vos paiements et vos relevés.', 'Un email vous prévient 5 jours avant la fin de l’abonnement, puis le jour même.', 'Payé avant la fin : la nouvelle période suit l’actuelle. Payé après : les 30 jours commencent le jour du paiement, les jours sans abonnement ne sont pas facturés.'] },
+    { kind: 'note', text: 'Sans abonnement payé, les analyses, l’assistant, les alertes, les prévisions et les boîtiers sont suspendus jusqu’au paiement. La connexion, l’historique, les factures, les relevés et le paiement restent toujours ouverts.' },
+  ],
+}
+
 // ----------------------------------------------------------------------------- guides
 
 const MENAGE: Guide = {
@@ -321,13 +342,14 @@ const MENAGE: Guide = {
     CAPTEURS_CLIENT,
     ALERTES,
     ACCES_TECHNICIEN_CLIENT,
+    ABONNEMENT_MENAGE,
   ],
 }
 
 const PME: Guide = {
   title: 'Guide PME',
   intro: 'Suivre vos sites et vos équipements, brancher vos mesures, être prévenu à temps et piloter vos économies.',
-  sections: [COMMENCER_PRO, SOURCES_CLIENT, CONNECTER, CAPTEURS_CLIENT, ALERTES, SEUILS_PRO, FICHIERS_CLIENT, CONTRAT_CLIENT, ACCES_TECHNICIEN_CLIENT, REFUS_DONNEES],
+  sections: [COMMENCER_PRO, SOURCES_CLIENT, CONNECTER, CAPTEURS_CLIENT, ALERTES, SEUILS_PRO, FICHIERS_CLIENT, CONTRAT_CLIENT, ACCES_TECHNICIEN_CLIENT, REFUS_DONNEES, ABONNEMENT_PRO],
 }
 
 const INDUSTRIE: Guide = {
@@ -360,6 +382,7 @@ const INDUSTRIE: Guide = {
     CONTRAT_CLIENT,
     ACCES_TECHNICIEN_CLIENT,
     REFUS_DONNEES,
+    ABONNEMENT_PRO,
   ],
 }
 
@@ -635,6 +658,15 @@ const ADMIN: Guide = {
             'Révoquer un boîtier ou une source (perte, vol, fin de contrat) : il perd l’accès immédiatement, même avec un jeton encore valable.',
           ],
         },
+      ],
+    },
+    {
+      id: 'abonnements',
+      title: 'Enregistrer un paiement d’abonnement',
+      blocks: [
+        { kind: 'p', text: 'L’abonnement se paie d’avance, pour 30 jours (décision du 21/10/2026). Pas de paiement en ligne : vous enregistrez chaque paiement reçu.' },
+        { kind: 'steps', items: ['Utilisateurs, puis le compte : section « Facturation Nouankany », bloc « Abonnement ».', 'Choisissez le mode (espèces, Wave, Orange Money, MTN Money, Moov Money, virement, autre), la date réelle du paiement et, si vous l’avez, la référence.', '« Enregistrer le paiement » : la période commence le jour du paiement, ou à la suite de la période en cours s’il arrive avant sa fin. Le paiement est inscrit dans l’Audit.'] },
+        { kind: 'note', text: 'Tant que la facturation réelle n’est pas ouverte (relevés indicatifs), rien n’est suspendu faute d’abonnement : la période est seulement affichée.' },
       ],
     },
     {

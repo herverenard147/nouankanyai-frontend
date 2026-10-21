@@ -427,6 +427,8 @@ export interface BackendBilling {
   real_billing_enabled?: boolean
   defaults: { audit_fee_fcfa: number; saas_fee_fcfa: number; savings_share_pct: number }
   statements: BackendBillingStatement[]
+  /** Abonnement payé d'avance pour 30 jours à partir du paiement (2026-10-21). */
+  abonnement?: BackendSubscription
   estimated_ai_savings: {
     month_total_fcfa: number
     weeks: { name: string; savings: number }[]
@@ -1366,4 +1368,38 @@ export interface BackendPricingView {
   modifie: boolean
   modifie_le: string | null
   modifie_par: string | null
+}
+
+/** Abonnement payé d'avance (GET /api/v1/billing, champ `abonnement`, 2026-10-21). */
+export type SubscriptionMode = 'especes' | 'wave' | 'orange_money' | 'mtn_money' | 'moov_money' | 'virement' | 'autre'
+
+export interface BackendSubscriptionPayment {
+  id: string
+  montant_fcfa: number
+  tier: string | null
+  debut: string
+  fin: string
+  paye_le: string
+  mode: SubscriptionMode
+  reference: string | null
+}
+
+export interface BackendSubscription {
+  /** Montant d'une période ; null : ce compte n'a pas d'abonnement payant. */
+  montant_fcfa: number | null
+  /** Exigé maintenant (facturation réelle ouverte). Sinon la période est seulement affichée. */
+  exige: boolean
+  actif: boolean
+  jusqu_au: string | null
+  termine_le: string | null
+  jours_restants: number
+  duree_jours: number
+  paiements: BackendSubscriptionPayment[]
+}
+
+export interface SubscriptionPaymentPayload {
+  mode: SubscriptionMode
+  paye_le?: string
+  montant_fcfa?: number
+  reference?: string
 }

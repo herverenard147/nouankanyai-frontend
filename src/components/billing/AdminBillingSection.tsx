@@ -2,13 +2,14 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 
 import { StatementList } from '@/components/billing/StatementList'
+import { SUBSCRIPTION_MODES, SubscriptionStatus } from '@/components/billing/SubscriptionStatus'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { MutationError, SelectField } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
 import { useUserBilling } from '@/hooks/queries/useAdminUsers'
 import { useAdminBillingMutations } from '@/hooks/queries/useBilling'
-import type { BackendBilling, BillingTierId } from '@/types/backend'
+import type { BackendBilling, BillingTierId, SubscriptionMode } from '@/types/backend'
 
 const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
 const currentMonth = () => new Date().toISOString().slice(0, 7)
@@ -25,6 +26,7 @@ export function AdminBillingSection({ userId }: { userId: string }) {
         {query.data && (
           <>
             {query.data.segment === 'menage' ? <TierEditor billing={query.data} userId={userId} /> : <ContractEditor billing={query.data} userId={userId} />}
+            <SubscriptionPayment billing={query.data} userId={userId} />
             <div className="flex flex-wrap items-end gap-3 border-t border-border pt-3">
               <TextField label="Mois (AAAA-MM)" required value={month} onChange={(e) => setMonth(e.target.value)} pattern="\d{4}-\d{2}" />
               <Button loading={m.compute.isPending} type="button" variant="outline" disabled={m.compute.isPending || !query.data.contract} onClick={() => m.compute.mutate(month)}>
@@ -128,5 +130,39 @@ function TierEditor({ billing, userId }: { billing: BackendBilling; userId: stri
       />
       <MutationError error={saveContract.error} />
     </div>
+  )
+}
+
+/** Paiement d'abonnement reçu hors ligne (2026-10-21) : 30 jours à partir de la date du paiement, ou à la suite de la
+ * période en cours s'il arrive avant sa fin. */
+function SubscriptionPayment({ billing, userId }: { billing: BackendBilling; userId: string }) {
+  const m = useAdminBillingMutations(userId)
+  const [mode, setMode] = useState<SubscriptionMode>('wave')
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
+  const [reference, setReference] = useState('')
+  const abo = billing.abonnement
+  if (!abo || (abo.montant_fcfa === null && abo.paiements.length === 0)) return null
+  function submit(event: FormEvent) {
+    event.preventDefault()
+    m.recordSubscription.mutate({ mode, paye_le: `${date}T12:00:00`, reference: reference.trim() || undefined })
+  }
+  return (
+    <form onSubmit={submit} className="flex flex-col gap-3 border-t border-border pt-3" aria-label="Paiement d’abonnement">
+      <h4 className="text-sm font-semibold text-text-primary">Abonnement</h4>
+      <SubscriptionStatus abonnement={abo} menage={billing.segment === 'menage'} />
+      {abo.montant_fcfa !== null && (
+        <div className="grid items-end gap-3 sm:grid-cols-3">
+          <SelectField label="Mode de paiement" value={mode} onChange={(v) => setMode(v as SubscriptionMode)} options={SUBSCRIPTION_MODES} />
+          <TextField label="Payé le" type="date" required value={date} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setDate(e.target.value)} />
+          <TextField label="Référence (facultatif)" maxLength={80} value={reference} onChange={(e) => setReference(e.target.value)} />
+        </div>
+      )}
+      {abo.montant_fcfa !== null && (
+        <Button type="submit" variant="outline" className="w-fit" loading={m.recordSubscription.isPending}>
+          Enregistrer le paiement de {new Intl.NumberFormat('fr-FR').format(abo.montant_fcfa)} FCFA
+        </Button>
+      )}
+      <MutationError error={m.recordSubscription.error} />
+    </form>
   )
 }

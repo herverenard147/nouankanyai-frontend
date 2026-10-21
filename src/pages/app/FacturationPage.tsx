@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { StatementList } from '@/components/billing/StatementList'
+import { SubscriptionStatus } from '@/components/billing/SubscriptionStatus'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
@@ -67,7 +68,7 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
           {[
             ['Ligne de base', `${formatNumberFr(c.baseline_kwh ?? 0)} kWh / mois`],
-            ['Redevance', `${formatFcfa(c.saas_fee_fcfa ?? 0)} / mois`],
+            ['Abonnement', `${formatFcfa(c.saas_fee_fcfa ?? 0)} / 30 jours`],
             ['Part des économies', `${formatNumberFr(c.savings_share_pct ?? 0)} %`],
             ['Audit de référence', formatFcfa(c.audit_fee_fcfa ?? 0)],
           ].map(([label, value]) => (
@@ -81,9 +82,10 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
           {c.baseline_period ? `Ligne de base relevée pendant : ${c.baseline_period}. ` : ''}
           Premier mois facturé : {c.start_month}. Pas d’ajustement saisonnier de la ligne de base dans cette version du contrat.
         </p>
+        {billing.abonnement && <SubscriptionStatus abonnement={billing.abonnement} />}
       </section>
       <section className={SECTION}>
-        <h2 className="text-section-title font-semibold text-text-primary">Relevés mensuels</h2>
+        <h2 className="text-section-title font-semibold text-text-primary">Part des économies</h2>
         <MetricState status="success" isEmpty={billing.statements.length === 0}>
           <StatementList statements={billing.statements} />
         </MetricState>
@@ -118,9 +120,10 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
           </p>
         )}
         <p className="text-sm text-text-secondary">
-          Changez de formule quand vous voulez : le changement s’applique tout de suite. Le paiement en ligne n’est pas encore ouvert, vos relevés
-          restent indicatifs.
+          Changez de formule quand vous voulez. Une formule payante se règle d’avance pour 30 jours, à partir du jour du paiement ; le
+          paiement en ligne n’est pas encore ouvert : réglez auprès de l’équipe Nouankany, qui l’enregistre.
         </p>
+        {billing.abonnement && contractTier !== 'decouverte' && <SubscriptionStatus abonnement={billing.abonnement} menage />}
         {change.isSuccess && (
           <p className="text-sm font-semibold text-confirm" role="status">
             Votre formule est maintenant {nameOf(contractTier)}.

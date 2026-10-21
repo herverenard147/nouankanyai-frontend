@@ -59,6 +59,7 @@ import type {
   BackendElectricityBill,
   BackendEquipmentCatalog,
   BackendBilling,
+  SubscriptionPaymentPayload,
   BackendBillingContract,
   BackendBillingStatement,
   BackendContractPayload,
@@ -480,3 +481,7 @@ export const rawUploadRechargePhoto = (siteId: string, file: File) => {
 export const rawAdminPricing = () => api.get<BackendPricingView>('/api/v1/boitiers/admin/prix')
 export const rawAdminSavePricing = (config: PricingConfig) => api.put<BackendPricingView>('/api/v1/boitiers/admin/prix', config)
 export const rawAdminResetPricing = () => api.delete<BackendPricingView>('/api/v1/boitiers/admin/prix')
+
+/** Paiement d'abonnement enregistré par un administrateur : 30 jours à partir du paiement (2026-10-21). */
+export const rawAdminRecordSubscription = (userId: string, payload: SubscriptionPaymentPayload) =>
+  api.post<BackendBilling>(`/api/v1/billing/admin/users/${encodeURIComponent(userId)}/abonnement`, payload)
