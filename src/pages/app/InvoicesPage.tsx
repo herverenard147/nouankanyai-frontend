@@ -148,7 +148,7 @@ export function InvoicesPage() {
         </section>
         {hasRealInvoice && access.predictions && (
           <section aria-label="Prévision de facture" className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
-            <h2 className="text-section-title font-semibold text-text-primary">Générer une prévision de facture</h2>
+            <h2 className="text-section-title font-semibold text-text-primary">Prévoir ma prochaine facture</h2>
             <p className="text-sm text-text-secondary">
               Basée sur l&rsquo;historique réel de vos factures (moyenne mobile, recalibrée à chaque écart mesuré).
             </p>

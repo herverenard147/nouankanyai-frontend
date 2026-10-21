@@ -914,6 +914,8 @@ export interface BackendDeviceState {
 }
 
 export interface BackendDeviceRequestPayload {
+  /** Matériel demandé (2026-10-21). */
+  kind?: HardwareKind
   site_id: string
   quantity: number
   contact: string
@@ -924,6 +926,8 @@ export interface BackendDeviceRequest {
   id: string
   site_id: string | null
   site_nom: string | null
+  kind?: HardwareKind
+  kind_nom?: string | null
   quantity: number
   contact: string
   notes: string | null
@@ -938,9 +942,22 @@ export interface BackendAdminDeviceRequest extends BackendDeviceRequest {
   account: string | null
 }
 
+export type HardwareKind = 'vocal' | 'capteur' | 'passerelle'
+
+/** Prix d'un matériel, somme de ses lignes (composants, frais, marge), 2026-10-21. */
+export interface BackendHardwarePrice {
+  kind: HardwareKind
+  nom: string
+  description: string
+  prix_fcfa: number
+  lignes: { libelle: string; fcfa: number; groupe: 'materiel' | 'frais' | 'marge' }[]
+  non_compris: string[]
+}
+
 export interface BackendBoitierPrice {
   unit_price_fcfa: number
   currency: string
+  materiels?: BackendHardwarePrice[]
 }
 
 /** POST /api/machines/{id}/analyze-media */

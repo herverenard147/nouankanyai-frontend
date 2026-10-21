@@ -91,7 +91,14 @@ export function PairingModal({ profile, onClose }: { profile: Profile; onClose: 
           >
             {groupCode(created.pairing_code ?? '')}
           </p>
-          <p className="text-sm text-text-primary">Entrez ce code sur le boîtier « {created.nom} » pour le connecter.</p>
+          <p className="text-sm text-text-primary">Pour connecter « {created.nom} » :</p>
+          {/* Même méthode pour le boîtier qui parle, le capteur et la passerelle (2026-10-21). */}
+          <ol className="list-decimal pl-5 text-sm text-text-primary">
+            <li>Branchez-le : au premier démarrage, il crée un Wi-Fi « Nouankany-… ».</li>
+            <li>Avec votre téléphone, connectez-vous à ce Wi-Fi : la page de réglage s’ouvre.</li>
+            <li>Choisissez le Wi-Fi de la maison et son mot de passe, tapez ce code, puis « Enregistrer ».</li>
+            <li>Il passe « En ligne » ici en moins d’une minute.</li>
+          </ol>
           <p className="text-xs text-text-secondary">
             Valable 15 minutes (jusqu’à {formatUtcDateTime(created.pairing_expires_at).slice(11, 16)} UTC), à usage unique. Il ne sera plus affiché une fois
             cette fenêtre fermée.

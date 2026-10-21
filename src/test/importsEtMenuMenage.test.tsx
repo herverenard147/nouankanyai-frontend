@@ -25,14 +25,14 @@ const file = (name: string) => new File(['x'], name)
 beforeEach(() => Object.values(api).forEach((mock) => mock.mockReset()))
 
 describe('menu resserré du Ménage (partie H2)', () => {
-  it('entrées au vocabulaire du quotidien, Documentation (2026-10-16) et Abonnement (2026-10-21), sans Prédiction, Rapports ni Recommandations', () => {
+  it('entrées au vocabulaire du quotidien, Documentation (2026-10-16), Abonnement et Facture prévue (2026-10-21), sans Rapports ni Recommandations', () => {
     expect(visibleNav('menage').map((entry) => entry.label)).toEqual([
-      'Accueil', 'Premiers pas', 'Mes appareils', 'Ma consommation', 'Mes factures', 'Abonnement', 'Conseils', 'À surveiller', 'Mon boîtier', 'Paramètres', 'Documentation',
+      'Accueil', 'Premiers pas', 'Mes appareils', 'Ma consommation', 'Facture prévue', 'Mes factures', 'Abonnement', 'Conseils', 'À surveiller', 'Mon boîtier', 'Paramètres', 'Documentation',
     ])
   })
   it('aucune fonction supprimée : les pages retirées du menu restent accessibles et rattachées à une entrée visible', () => {
     const shown = visibleNav('menage').map((entry) => entry.path)
-    for (const path of ['/app/prediction', '/app/rapports', '/app/recommandations']) {
+    for (const path of ['/app/rapports', '/app/recommandations']) {
       expect(isRouteAllowed(path, 'menage'), path).toBe(true)
       expect(shown).toContain(NAV_BY_PROFILE.menage.find((entry) => entry.path === path)?.under)
     }

@@ -133,7 +133,7 @@ const CAPTEURS_CLIENT: Section = {
       kind: 'steps',
       items: [
         'Ouvrez la fiche de l’appareil (Mes appareils, ou Machines), bloc « Capteur », puis « Ajouter un capteur ». Cochez « relais » s’il doit pouvoir couper, « sonde » pour un réfrigérateur, un congélateur ou un climatiseur.',
-        'Le code s’affiche une fois (15 minutes) : saisissez-le sur le capteur, qui se connecte au wifi.',
+        'Le code s’affiche une fois (15 minutes) : tapez-le sur la page de réglage du capteur (son Wi-Fi « Nouankany-… »), avec le Wi-Fi de la maison.',
         'Le capteur envoie une première lecture pour vérifier ses réglages. Ses mesures comptent seulement si cette lecture est plausible.',
       ],
     },
@@ -144,6 +144,35 @@ const CAPTEURS_CLIENT: Section = {
         'Couper un appareil : c’est toujours vous qui décidez s’il est éteignable (page Mon boîtier). Le boîtier vous demande de confirmer, le capteur coupe, puis confirme qu’il a bien coupé. Sans cette confirmation, l’ordre est marqué échoué, jamais « éteint ».',
         'Sans internet, la coupure à la voix ne passe pas : le boîtier comprend votre demande grâce à la plateforme.',
         'Un appareil n’a qu’un capteur. Pour le changer, révoquez l’ancien sur sa fiche (Sources de mesures).',
+      ],
+    },
+  ],
+}
+
+// Même méthode pour les trois matériels (décision du propriétaire, 2026-10-21) : code à usage unique demandé sur la
+// plateforme, puis page de réglage ouverte par le matériel sur un téléphone (firmware/nouankany-esp32, WiFiManager).
+const CONNECTER: Section = {
+  id: 'connecter',
+  title: 'Connecter un boîtier, un capteur ou une passerelle',
+  blocks: [
+    { kind: 'p', text: 'Les trois se connectent de la même façon : un code demandé sur la plateforme, puis une page de réglage que le matériel ouvre lui-même sur votre téléphone.' },
+    {
+      kind: 'steps',
+      items: [
+        'Sur la plateforme, demandez le code : « Mon boîtier », « J’ai reçu mon boîtier : demander mon code » (ou « Sources de mesures », « Ajouter une source »). Le code s’affiche une seule fois, vaut 15 minutes et ne sert qu’une fois : gardez la fenêtre ouverte.',
+        'Branchez le matériel. Au premier démarrage, il crée un Wi-Fi nommé « Nouankany-… » (la fin est propre à chaque appareil).',
+        'Avec votre téléphone, connectez-vous à ce Wi-Fi, sans mot de passe. La page de réglage s’ouvre toute seule ; sinon, ouvrez le navigateur à l’adresse 192.168.4.1.',
+        'Appuyez sur « Configure WiFi » : choisissez le Wi-Fi du lieu et tapez son mot de passe. Laissez l’adresse du serveur déjà remplie. Tapez le code dans « Code d’appairage », puis « Save ».',
+        'Le matériel se connecte au Wi-Fi du lieu et passe « En ligne » sur la plateforme en moins d’une minute. Un capteur ou une passerelle fait ensuite sa lecture d’essai.',
+      ],
+    },
+    {
+      kind: 'table',
+      head: ['Ce que vous voyez', 'Que faire'],
+      rows: [
+        ['Pas de Wi-Fi « Nouankany-… »', 'Le matériel est déjà réglé, ou la page s’est refermée (15 minutes sans réglage). Maintenez son bouton enfoncé pendant que vous le rebranchez : la page se rouvre.'],
+        ['« Code expiré » ou code refusé', 'Le code a plus de 15 minutes ou a déjà servi : demandez-en un nouveau sur la plateforme.'],
+        ['Reste « Hors ligne »', 'Mot de passe du Wi-Fi mal tapé, ou matériel trop loin de la box : rapprochez-le, rouvrez la page de réglage et recommencez.'],
       ],
     },
   ],
@@ -268,9 +297,9 @@ const MENAGE: Guide = {
         {
           kind: 'steps',
           items: [
-            'Demandez-le depuis « Mon boîtier » (le prix est affiché dans la demande).',
-            'À la réception, cliquez sur « Demander un code » : le code s’affiche une seule fois et vaut 15 minutes.',
-            'Saisissez-le sur le boîtier. Il apparaît « En ligne » dans la liste.',
+            'Commandez-le depuis « Mon boîtier », « Commander du matériel » : choisissez le boîtier qui parle (ou un capteur) ; le prix est détaillé ligne par ligne.',
+            'À la réception, cliquez sur « J’ai reçu mon boîtier : demander mon code » : le code s’affiche une seule fois et vaut 15 minutes.',
+            'Branchez le boîtier, connectez votre téléphone à son Wi-Fi « Nouankany-… » et tapez le code sur la page de réglage (détail dans « Connecter un boîtier, un capteur ou une passerelle »). Il apparaît « En ligne » dans la liste.',
           ],
         },
         { kind: 'p', text: 'Vous préférez qu’un technicien Nouankany l’installe ? Ouvrez-lui votre compte pour un jour (voir « Faire intervenir un technicien ») : il crée le boîtier, le connecte et vérifie vos appareils.' },
@@ -288,6 +317,7 @@ const MENAGE: Guide = {
         { kind: 'p', text: 'Le boîtier apparaît « Hors ligne » quand il ne s’est pas manifesté depuis 90 secondes : vérifiez qu’il est branché et que le wifi fonctionne.' },
       ],
     },
+    CONNECTER,
     CAPTEURS_CLIENT,
     ALERTES,
     ACCES_TECHNICIEN_CLIENT,
@@ -297,7 +327,7 @@ const MENAGE: Guide = {
 const PME: Guide = {
   title: 'Guide PME',
   intro: 'Suivre vos sites et vos équipements, brancher vos mesures, être prévenu à temps et piloter vos économies.',
-  sections: [COMMENCER_PRO, SOURCES_CLIENT, CAPTEURS_CLIENT, ALERTES, SEUILS_PRO, FICHIERS_CLIENT, CONTRAT_CLIENT, ACCES_TECHNICIEN_CLIENT, REFUS_DONNEES],
+  sections: [COMMENCER_PRO, SOURCES_CLIENT, CONNECTER, CAPTEURS_CLIENT, ALERTES, SEUILS_PRO, FICHIERS_CLIENT, CONTRAT_CLIENT, ACCES_TECHNICIEN_CLIENT, REFUS_DONNEES],
 }
 
 const INDUSTRIE: Guide = {
@@ -306,6 +336,7 @@ const INDUSTRIE: Guide = {
   sections: [
     COMMENCER_PRO,
     SOURCES_CLIENT,
+    CONNECTER,
     CAPTEURS_CLIENT,
     {
       id: 'passerelle',
@@ -385,6 +416,7 @@ const TECHNICIEN: Guide = {
         { kind: 'note', text: 'Préférez toujours la passerelle quand c’est possible : aucun travail pour le client, et nous maîtrisons les unités.' },
       ],
     },
+    CONNECTER,
     {
       id: 'menage',
       title: 'Chez un ménage',
@@ -394,7 +426,7 @@ const TECHNICIEN: Guide = {
           kind: 'steps',
           items: [
             'Dans l’intervention, « Ajouter une source », « Je veux le boîtier qui parle » : nommez-le (« Boîtier du salon »). Si le compte n’a pas de site, le boîtier couvre tous ses appareils.',
-            'Le code s’affiche une fois (15 minutes) : saisissez-le sur le boîtier. Il passe « En ligne ».',
+            'Le code s’affiche une fois (15 minutes) : branchez le boîtier, connectez votre téléphone à son Wi-Fi « Nouankany-… » et tapez le code sur la page de réglage, avec le Wi-Fi du foyer (voir « Connecter un boîtier, un capteur ou une passerelle »). Il passe « En ligne ».',
             'Vérifiez que les appareils du foyer sont déclarés avec leur vraie puissance (plaque signalétique).',
             'Montrez au client sa page « Mon boîtier » : c’est lui qui choisit les appareils que le boîtier peut éteindre, et les quatre lumières.',
           ],
@@ -411,7 +443,7 @@ const TECHNICIEN: Guide = {
           items: [
             'L’appareil doit être déclaré dans le compte, avec sa vraie puissance (plaque signalétique) : la lecture d’essai la compare.',
             'Dans l’intervention, fiche de l’appareil, « Ajouter un capteur » (ou « Ajouter une source », « Je veux un capteur sur un appareil »). Cochez relais et sonde selon le matériel posé.',
-            'Saisissez le code (15 minutes, une seule fois) sur le capteur, avec le wifi du client.',
+            'Branchez le capteur, connectez-vous à son Wi-Fi « Nouankany-… » et tapez le code (15 minutes, une seule fois) sur la page de réglage, avec le Wi-Fi du client.',
             'Attendez la lecture d’essai sur la fiche de la source : « En service », sinon voir « Comprendre la lecture d’essai ».',
             'Relais posé : montrez au client sa page « Mon boîtier ». C’est lui qui rend l’appareil éteignable ; faites un essai de coupure avec lui.',
           ],
@@ -427,7 +459,7 @@ const TECHNICIEN: Guide = {
           kind: 'steps',
           items: [
             'Sources de mesures, « Ajouter une source », « Passerelle de mesure » : nommez-la et choisissez le site.',
-            'Le code d’appairage s’affiche (une fois, 15 minutes) : saisissez-le sur la passerelle. Elle passe « En ligne ».',
+            'Le code d’appairage s’affiche (une fois, 15 minutes) : alimentez la passerelle, connectez-vous à son Wi-Fi « Nouankany-… » et tapez le code sur la page de réglage, avec le Wi-Fi du site. Elle passe « En ligne ».',
             'Câblage RS485 : paire torsadée, A sur A et B sur B tout le long, une résistance de 120 Ω à chaque extrémité de la ligne, une adresse (esclave) différente par compteur, la même vitesse partout.',
             'Sur la fiche de la passerelle, « Ajouter un compteur » pour chaque compteur : appareil mesuré, modèle, liaison (RS485 ou réseau), adresse.',
             'La passerelle fait une lecture d’essai dans la minute. Attendez « En service » ; la page se rafraîchit seule.',
@@ -597,13 +629,24 @@ const ADMIN: Guide = {
         {
           kind: 'steps',
           items: [
-            'Demandes à livrer (page Boîtiers) : contactez le client, livrez, puis « Marquer comme livré » (inscrit dans l’Audit du compte).',
+            'Demandes à livrer (page Boîtiers) : chaque demande dit le matériel (boîtier qui parle, capteur d’un appareil, passerelle de mesure), la quantité, le prix figé au moment de la demande et le contact. Contactez le client, livrez, puis « Marquer comme livré » (inscrit dans l’Audit du compte).',
+            'Mise en service : le client (ou le technicien en intervention) demande un code sur la plateforme et le tape sur la page de réglage du matériel, ouverte par son Wi-Fi « Nouankany-… » (section « Connecter un boîtier, un capteur ou une passerelle »).',
             'Liste de tous les boîtiers et sources : état de connexion, activité des dernières 24 heures.',
             'Révoquer un boîtier ou une source (perte, vol, fin de contrat) : il perd l’accès immédiatement, même avec un jeton encore valable.',
           ],
         },
       ],
     },
+    {
+      id: 'prix-materiel',
+      title: 'Prix du matériel',
+      blocks: [
+        { kind: 'p', text: 'Le prix de chaque matériel est la somme de ses composants et de ses frais, montrée ligne par ligne au client avant sa demande : composants (prix relevés en Europe et sur les places de marché d’électronique, convertis à 1 € = 655,957 FCFA), transport et douane (25 % des composants), montage et essai, livraison à Abidjan, pose ou mise en service, marge de 20 %. Le prix est figé au moment de la demande.' },
+        { kind: 'p', text: 'Pour changer un prix (composant, frais, taux de douane ou de marge), modifiez le fichier backend/app/boitier/pricing.py : les nouvelles demandes prennent le nouveau prix, les demandes déjà faites gardent le leur. Les compteurs Modbus d’une passerelle ne sont pas compris : ils se chiffrent selon le tableau électrique.' },
+        { kind: 'note', text: 'Boîtier qui parle : son programme (Raspberry Pi) doit ouvrir la même page de réglage que le capteur et la passerelle (Wi-Fi « Nouankany-… », code d’appairage). Il n’est pas encore dans le dépôt : à développer et vérifier avant la première livraison.' },
+      ],
+    },
+    CONNECTER,
     {
       id: 'sources',
       title: 'Sources de mesures et compteurs',
@@ -616,7 +659,7 @@ const ADMIN: Guide = {
       id: 'alertes',
       title: 'Alertes immédiates et emails',
       blocks: [
-        { kind: 'p', text: 'Chaque lot de mesures est comparé aux seuils ; un dépassement ouvre une alerte et envoie l’email « alerte critique sur un appareil » au titulaire, s’il n’a pas coupé ses avis. Chaque envoi est tracé (journal des emails), sans son contenu. Sans configuration SMTP, rien ne part et l’envoi est tracé « non configuré ».' },
+        { kind: 'p', text: 'Chaque lot de mesures est comparé aux seuils ; un dépassement ouvre une alerte et envoie l’email « alerte sur <appareil> » au titulaire, s’il n’a pas coupé ses avis et si sa formule inclut les alertes par email (ménage : Essentiel et Optimum ; PME et industrie : toujours). Chaque envoi est tracé (journal des emails), sans son contenu. Sans configuration SMTP, rien ne part et l’envoi est tracé « non configuré ».' },
       ],
     },
     {
