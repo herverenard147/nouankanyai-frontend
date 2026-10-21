@@ -90,7 +90,7 @@ function ContractEditor({ billing, userId }: { billing: BackendBilling; userId: 
       <TextField label="Premier mois facturé (AAAA-MM)" required pattern="\d{4}-\d{2}" {...field('start_month')} />
       <TextField label="Frais d’audit (FCFA)" type="number" min="0" {...field('audit_fee_fcfa')} />
       <TextField label="Redevance mensuelle (FCFA)" type="number" min="0" {...field('saas_fee_fcfa')} />
-      <TextField label="Part des économies (15 % par défaut, jusqu’à 50 %)" type="number" min="15" max="50" step="1" {...field('savings_share_pct')} />
+      <TextField label="Part des économies (40 % par défaut, de 30 à 50 %)" type="number" min="30" max="50" step="1" {...field('savings_share_pct')} />
       <TextField label="Puissance souscrite (kVA)" type="number" min="0.1" step="any" {...field('puissance_souscrite_kva')} />
       <TextField label="Ajustement de la ligne de base (kWh, IPMVP)" type="number" step="any" {...field('baseline_adjustment_kwh')} />
       <TextField label="Motif de l’ajustement" {...field('baseline_adjustment_note')} required={Boolean(form.baseline_adjustment_kwh)} />
