@@ -382,4 +382,8 @@ et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste**
   et Abonnement (ménage, formule payante) : « payé jusqu'au … (N jours) », ou « terminé le … » avec l'effet (services
   suspendus, ou Découverte pour un ménage) et la règle « les jours sans abonnement ne sont pas facturés » ; derniers
   paiements. Fiche utilisateur admin : bloc « Abonnement » (mode, date, référence, « Enregistrer le paiement »).
+- **Part des économies par facture CIE (2026-10-21)** : `StatementList` titre chaque relevé « Part des économies : novembre et
+  décembre 2026 » (période de la facture), « Frais d'audit », ou le mois (anciens relevés) ; statut « Reportée sur la part
+  suivante » ; sous une part à payer, l'échéance et, si elle ne contient pas déjà un report, la règle « s'ajoute à la part
+  suivante ; deux parts impayées de suite suspendent les services ».
 

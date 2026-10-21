@@ -284,7 +284,8 @@ const ABONNEMENT_PRO: Section = {
   id: 'abonnement',
   title: 'Abonnement et part des économies',
   blocks: [
-    { kind: 'p', text: 'Deux montants distincts. L’abonnement (50 000 FCFA par défaut) se paie d’avance, pour 30 jours à partir du jour du paiement. La part des économies (40 % par défaut) se calcule sur vos factures CIE validées : un mois sans économie, elle est nulle.' },
+    { kind: 'p', text: 'Deux montants distincts. L’abonnement (50 000 FCFA par défaut) se paie d’avance, pour 30 jours à partir du jour du paiement. La part des économies (40 % par défaut) se calcule à chaque facture CIE validée, sur les mois qu’elle couvre (un ou deux) : sans économie, elle est nulle.' },
+    { kind: 'p', text: 'Chaque part se règle dans les 15 jours. Impayée à son échéance, elle s’ajoute à la part suivante, comme sur une facture CIE ; si cette part-là reste aussi impayée 15 jours après son échéance, les services sont suspendus jusqu’au paiement. Les frais d’audit ont leur propre relevé, à la signature.' },
     { kind: 'steps', items: ['Menu « Facturation » : la date de fin de l’abonnement, vos paiements et vos relevés.', 'Un rappel s’affiche dans la cloche des notifications et part par email 5 jours avant la fin de l’abonnement, puis le jour même.', 'Payé avant la fin : la nouvelle période suit l’actuelle. Payé après : les 30 jours commencent le jour du paiement, les jours sans abonnement ne sont pas facturés.'] },
     { kind: 'note', text: 'Sans abonnement payé, les analyses, l’assistant, les alertes, les prévisions et les boîtiers sont suspendus jusqu’au paiement. La connexion, l’historique, les factures, les relevés et le paiement restent toujours ouverts.' },
   ],
