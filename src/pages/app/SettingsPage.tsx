@@ -5,6 +5,8 @@ import { CompteurCard } from '@/components/settings/CompteurCard'
 
 import { LevelSelector } from '@/components/level/LevelSelector'
 import { LogementsCard } from '@/components/settings/LogementsCard'
+import { LOCKED, LockedFeature } from '@/components/billing/LockedFeature'
+import { useAccess } from '@/hooks/queries/useBilling'
 import { SitesCard } from '@/components/settings/SitesCard'
 import { TransferCard } from '@/components/import/TransferCard'
 import { MetricState } from '@/components/state/MetricState'
@@ -304,6 +306,7 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
 }
 
 function ThresholdsCard() {
+  const access = useAccess()
   const query = useThresholds()
   const mutation = useUpdateThresholds()
   const [step, setStep] = useState<'form' | 'confirm' | null>(null)
@@ -339,6 +342,10 @@ function ThresholdsCard() {
           </dl>
         )}
       </MetricState>
+      {/* Seuils personnalisés : Essentiel et Optimum (2026-10-21) ; les seuils par défaut protègent tous les comptes. */}
+      {access.loaded && !access.customThresholds ? (
+        <LockedFeature {...LOCKED.thresholds} />
+      ) : (
       <Button
         type="button"
         variant="outline"
@@ -352,6 +359,7 @@ function ThresholdsCard() {
       >
         Modifier les seuils
       </Button>
+      )}
 
       {step === 'form' && (
         <Modal

@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 
 import { rawNotifications } from '@/api/rawBackend'
 import { useAdvice } from '@/hooks/queries/useAdvice'
+import { useAccess } from '@/hooks/queries/useBilling'
 import { frenchNumbersWithUnits } from '@/lib/frenchText'
 import { isRouteAllowed } from '@/lib/navConfig'
 import { adviceAnchor, kindsSeenOnPage, notificationLink } from '@/lib/notificationLinks'
@@ -35,6 +36,8 @@ export function useNotifications(profile: Profile) {
     refetchIntervalInBackground: false,
   })
   const advice = useAdvice(profile)
+  // Conseils : formule Optimum pour le ménage (2026-10-21).
+  const access = useAccess()
   const seen = useNotificationStore((s) => s.seenNotificationIds)
   const markSeen = useNotificationStore((s) => s.markNotificationsSeen)
 
@@ -42,7 +45,7 @@ export function useNotifications(profile: Profile) {
     const list = (server.data ?? []).map((n) => ({ ...n, detail: frenchNumbersWithUnits(n.detail ?? '') }))
     // Une panne déjà notifiée comme alerte n'est pas répétée en conseil ; un conseil d'économie chiffré reste.
     const alerted = new Set(list.filter((n) => n.kind === 'alerte' && n.machine).map((n) => n.machine!.toUpperCase()))
-    if (ADVICE_PROFILES.includes(profile) && advice.data) {
+    if (ADVICE_PROFILES.includes(profile) && access.anomalies && advice.data) {
       for (const a of advice.data) {
         if (a.impactKind !== 'gain' && a.machineId && alerted.has(a.machineId.toUpperCase())) continue
         list.push({
@@ -60,7 +63,7 @@ export function useNotifications(profile: Profile) {
     return list
       .map((n) => ({ ...n, link: notificationLink(profile, n.link) }))
       .filter((n) => isRouteAllowed(n.link.split('#')[0], profile))
-  }, [server.data, advice.data, profile])
+  }, [server.data, advice.data, profile, access.anomalies])
 
   // Nouvelle alerte pendant la visite : les données à l'écran se relisent (compteurs, pages, tuiles).
   const knownAlerts = useRef<Set<string> | null>(null)

@@ -6,6 +6,8 @@ import { rawApplianceDetail } from '@/api/rawBackend'
 import { TimeChart } from '@/components/charts/TimeChart'
 import { MetricState } from '@/components/state/MetricState'
 import { useAlertRegistry } from '@/hooks/queries/useAlertRegistry'
+import { LOCKED, LockedFeature } from '@/components/billing/LockedFeature'
+import { useAccess } from '@/hooks/queries/useBilling'
 import { usePredictionsBundle } from '@/hooks/queries/usePrediction'
 import { resolutionLabel } from '@/lib/alertRegistry'
 import { formatFcfa, formatNumberFr, formatUtcDateTime } from '@/lib/formatters'
@@ -58,6 +60,9 @@ export function MachineDetailPage() {
   const [period, setPeriod] = useState<Period>('7j')
   const query = useQuery({ queryKey: ['appliance-detail', code, period], queryFn: () => rawApplianceDetail(code, period) })
   const forecast = usePredictionsBundle(profile, 'heure')
+  const access = useAccess()
+  // Appareil hors de ceux que la formule prévoit (2026-10-21) : on le dit au lieu d'un graphique vide.
+  const forecastLocked = access.loaded && (!access.predictions || (access.predicted !== null && !access.predicted.includes(code ?? '')))
   const alerts = useAlertRegistry('toutes')
   useBreadcrumbLabel(query.data?.nom)
 
@@ -98,6 +103,12 @@ export function MachineDetailPage() {
 
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Prévision des 24 prochaines heures</h2>
+        {forecastLocked ? (
+          <LockedFeature
+            title="Prévision de cet appareil"
+            message={access.predictions ? `Votre formule prévoit ${access.maxPredictions} appareils, ceux qui consomment le plus ; celui-ci n’en fait pas partie. Optimum en prévoit 4.` : LOCKED.predictions.message}
+          />
+        ) : (
         <MetricState status={forecast.status} isEmpty={!device}>
           {device && (() => {
             const decor = device.starts?.length === device.series.length ? hourlyDecor(device.starts) : null
@@ -121,6 +132,7 @@ export function MachineDetailPage() {
             )
           })()}
         </MetricState>
+        )}
       </section>
 
       <section className={SECTION}>

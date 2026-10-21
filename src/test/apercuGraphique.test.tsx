@@ -18,6 +18,7 @@ vi.mock('@/hooks/queries/usePrediction', () => ({
     },
   }),
 }))
+vi.mock('@/hooks/queries/useBilling', () => ({ useAccess: () => ({ loaded: false, predictions: true, maxPredictions: null, predicted: null }) }))
 import { PredictionSummary } from '@/components/overview/PredictionSummary'
 
 describe('vue d’ensemble : prévision', () => {

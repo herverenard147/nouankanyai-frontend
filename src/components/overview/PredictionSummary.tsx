@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { TimeChart } from '@/components/charts/TimeChart'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
+import { LOCKED, LockedFeature } from '@/components/billing/LockedFeature'
+import { useAccess } from '@/hooks/queries/useBilling'
 import { usePredictionsBundle } from '@/hooks/queries/usePrediction'
 import { hourlyDecor } from '@/lib/timeline'
 import type { Profile } from '@/types/domain'
@@ -19,6 +21,8 @@ interface PredictionSummaryProps {
  */
 export function PredictionSummary({ profile, showModelName = false }: PredictionSummaryProps) {
   const query = usePredictionsBundle(profile, 'heure')
+  const access = useAccess()
+  if (access.loaded && !access.predictions) return <LockedFeature {...LOCKED.predictions} />
 
   return (
     <section aria-label="Prédiction IA" className="flex min-w-0 flex-col gap-2">

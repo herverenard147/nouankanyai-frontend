@@ -10,8 +10,7 @@ import {
   rawAdminTierRequests,
   rawAdminUnpaid,
   rawBilling,
-  rawCancelTierRequest,
-  rawRequestTier,
+  rawChangeTier,
 } from '@/api/rawBackend'
 import type { BackendContractPayload, BillingTierId } from '@/types/backend'
 
@@ -32,20 +31,27 @@ export function useValidateBill() {
   })
 }
 
-export function useCancelTierRequest() {
+/** Changement d'abonnement immédiat : tout ce qui dépend de la formule se relit (prédictions, alertes, conseils). */
+export function useChangeTier() {
   const client = useQueryClient()
   return useMutation({
-    mutationFn: rawCancelTierRequest,
-    onSuccess: () => client.invalidateQueries({ queryKey: ['billing'] }),
+    mutationFn: (tier: BillingTierId) => rawChangeTier(tier),
+    onSuccess: () => client.invalidateQueries(),
   })
 }
 
-export function useRequestTier() {
-  const client = useQueryClient()
-  return useMutation({
-    mutationFn: (tier: BillingTierId) => rawRequestTier(tier),
-    onSuccess: () => client.invalidateQueries({ queryKey: ['billing'] }),
-  })
+/** Ce que la formule permet maintenant. Sans réponse (chargement, administrateur), tout est permis : le serveur garde le dernier mot. */
+export function useAccess() {
+  const access = useBilling().data?.access
+  return {
+    loaded: Boolean(access),
+    assistant: access?.assistant_ia ?? true,
+    customThresholds: access?.alertes_avancees ?? true,
+    anomalies: access?.detection_anomalies ?? true,
+    predictions: access?.max_previsions !== 0,
+    maxPredictions: access?.max_previsions ?? null,
+    predicted: access?.appareils_prevus ?? null,
+  }
 }
 
 /** Actions admin sur la facturation d'un compte : tout rafraîchit la fiche, les impayés et les demandes. */

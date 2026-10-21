@@ -132,7 +132,12 @@ function toPrediction(title: string, granularity: PredictionGranularity, buckete
  * granularité demandée. `/api/predict` (XGBoost) est par machine, pas par compte :
  * on interroge chaque équipement séparément puis on agrège pour la vue globale.
  */
-export async function fetchPredictionsBundle(_profile: Profile, granularity: PredictionGranularity): Promise<PredictionsBundle> {
+export async function fetchPredictionsBundle(
+  _profile: Profile,
+  granularity: PredictionGranularity,
+  /** Codes des appareils couverts par la formule (2026-10-21 : 2 en Essentiel, 4 en Optimum) ; null : tous. */
+  allowed: string[] | null = null,
+): Promise<PredictionsBundle> {
   const machines = await getCachedMachines()
   // Aucun équipement enregistré (compte neuf, ou Admin qui n'a pas de site propre) : état vide, pas une
   // erreur réseau (DESIGN.md règle 1 : MetricState affiche « Aucune donnée pour le moment », jamais
@@ -142,7 +147,7 @@ export async function fetchPredictionsBundle(_profile: Profile, granularity: Pre
   }
 
   // Une prévision part d'un relevé réel : les machines sans relevé sont laissées de côté.
-  const measured = machines.filter(hasReading)
+  const measured = machines.filter(hasReading).filter((m) => allowed === null || allowed.includes(m.machine_id))
   if (measured.length === 0) {
     return { global: null, perDevice: [] }
   }

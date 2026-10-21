@@ -1,14 +1,15 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { StatementList } from '@/components/billing/StatementList'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
-import { MutationError } from '@/components/ui/Modal'
-import { useBilling, useCancelTierRequest, useRequestTier } from '@/hooks/queries/useBilling'
+import { Modal, MutationError } from '@/components/ui/Modal'
+import { useBilling, useChangeTier } from '@/hooks/queries/useBilling'
 import { formatFcfa, formatNumberFr } from '@/lib/formatters'
 import { useSessionStore } from '@/store/sessionStore'
-import type { BackendBilling } from '@/types/backend'
+import type { BackendBilling, BackendBillingTier } from '@/types/backend'
 
 const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
 
@@ -91,14 +92,14 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
 }
 
 function MenageSubscription({ billing }: { billing: BackendBilling }) {
-  const request = useRequestTier()
-  const cancel = useCancelTierRequest()
+  const change = useChangeTier()
+  const [target, setTarget] = useState<BackendBillingTier | null>(null)
   // La formule du contrat, pas l'accès du moment : pendant un essai ou sur un compte de
   // démonstration tout est ouvert, mais c'est cette formule qui reste ensuite.
   const contractTier = billing.access?.tier ?? billing.contract?.tier ?? 'decouverte'
   const reason = billing.access?.reason ?? null
-  const requested = billing.contract?.requested_tier
   const nameOf = (id: string | null | undefined) => billing.tiers.find((t) => t.id === id)?.nom ?? ''
+  const price = (t: BackendBillingTier) => (t.prix_mensuel_fcfa === 0 ? 'gratuit' : `${formatFcfa(t.prix_mensuel_fcfa)} par mois`)
   const trialEnd = billing.access?.trial_ends_at ? new Date(billing.access.trial_ends_at).toLocaleDateString('fr-FR') : null
   return (
     <>
@@ -107,7 +108,7 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
         {reason === 'essai' && (
           <p className="text-sm text-text-primary" role="status">
             Essai gratuit{trialEnd ? ` jusqu’au ${trialEnd}` : ''} : toutes les fonctions sont ouvertes. Ensuite, votre formule sera{' '}
-            <strong>{nameOf(contractTier)}</strong>, sauf si vous en demandez une autre.
+            <strong>{nameOf(contractTier)}</strong>, sauf si vous en choisissez une autre.
           </p>
         )}
         {reason === 'demonstration' && (
@@ -116,17 +117,13 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
           </p>
         )}
         <p className="text-sm text-text-secondary">
-          Un changement de formule se demande ici, puis l’équipe Nouankany le valide : le paiement en ligne n’est pas encore ouvert.
+          Changez de formule quand vous voulez : le changement s’applique tout de suite. Le paiement en ligne n’est pas encore ouvert, vos relevés
+          restent indicatifs.
         </p>
-        {requested && (
-          <div className="flex flex-wrap items-center gap-3" role="status">
-            <p className="text-sm text-text-primary">
-              Changement vers <strong>{nameOf(requested)}</strong> demandé : il sera actif après validation.
-            </p>
-            <Button type="button" variant="outline" loading={cancel.isPending} onClick={() => cancel.mutate()}>
-              Annuler la demande
-            </Button>
-          </div>
+        {change.isSuccess && (
+          <p className="text-sm font-semibold text-confirm" role="status">
+            Votre formule est maintenant {nameOf(contractTier)}.
+          </p>
         )}
         <div className="grid gap-4 sm:grid-cols-3">
           {billing.tiers.map((tier) => (
@@ -142,25 +139,46 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
                 <span className="mt-auto text-xs font-semibold text-text-secondary">
                   {reason === 'essai' ? 'Votre formule après l’essai' : 'Votre formule'}
                 </span>
-              ) : requested === tier.id ? (
-                <span className="mt-auto text-xs font-semibold text-confirm">Demande envoyée</span>
               ) : (
                 <Button
                   type="button"
                   variant="outline"
                   className="mt-auto"
-                  loading={request.isPending && request.variables === tier.id}
-                  disabled={request.isPending}
-                  onClick={() => request.mutate(tier.id)}
+                  onClick={() => {
+                    change.reset()
+                    setTarget(tier)
+                  }}
                 >
-                  Demander {tier.nom}
+                  Passer à {tier.nom}
                 </Button>
               )}
             </div>
           ))}
         </div>
-        <MutationError error={request.error ?? cancel.error} />
       </section>
+      {target && (
+        <Modal
+          title={`Passer à ${target.nom} ?`}
+          description={`${target.nom} : ${price(target)}. Le changement s’applique tout de suite ; le paiement en ligne n’est pas encore ouvert.`}
+          onClose={() => setTarget(null)}
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={() => setTarget(null)} disabled={change.isPending}>
+                Annuler
+              </Button>
+              <Button type="button" loading={change.isPending} onClick={() => change.mutate(target.id, { onSuccess: () => setTarget(null) })}>
+                Passer à {target.nom}
+              </Button>
+            </>
+          }
+        >
+          <p className="text-sm text-text-secondary">
+            Vous passez de {nameOf(contractTier)} à {target.nom}. Si la nouvelle formule permet moins d’appareils ou de logements que vous n’en avez,
+            le changement est refusé et nous vous disons quoi retirer.
+          </p>
+          <MutationError error={change.error} />
+        </Modal>
+      )}
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Relevés</h2>
         <MetricState status="success" isEmpty={billing.statements.length === 0}>
