@@ -386,4 +386,6 @@ et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste**
   décembre 2026 » (période de la facture), « Frais d'audit », ou le mois (anciens relevés) ; statut « Reportée sur la part
   suivante » ; sous une part à payer, l'échéance et, si elle ne contient pas déjà un report, la règle « s'ajoute à la part
   suivante ; deux parts impayées de suite suspendent les services ».
+- **Facture CIE en retard (2026-10-21)** : « Part provisoire : août 2026 » (compteur général), statuts « Remplacée par la
+  part de la facture » et « Avoir, déduit de la part suivante » ; notification « Facture CIE attendue : … » vers Factures.
 
