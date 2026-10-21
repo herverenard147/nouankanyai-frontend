@@ -280,9 +280,14 @@ export function InvoicesPage() {
               <input type="checkbox" checked={bimonthly} onChange={(e) => setBimonthly(e.target.checked)} />
               Facture bimestrielle (couvre ce mois et le suivant)
             </label>
+            <p className="text-sm text-text-primary" role="note">
+              Joignez ensuite la photo ou le PDF de la facture <strong>dans les 7 jours</strong> : un rappel s’affiche dans vos
+              notifications et part par email 2 jours avant la limite. Sans justificatif à cette date, la facture est refusée
+              automatiquement.
+            </p>
             <p className="text-xs text-text-secondary">
-              Joignez ensuite la photo de la facture : elle n’entre dans vos relevés Nouankany qu’une fois validée par notre équipe.
-              Cette action sera enregistrée dans l’onglet Audit.
+              Elle n’entre dans vos relevés Nouankany qu’une fois validée par notre équipe. Cette action sera enregistrée dans l’onglet
+              Audit.
             </p>
             <MutationError error={manualMutation.error} />
           </form>
