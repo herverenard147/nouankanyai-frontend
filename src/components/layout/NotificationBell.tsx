@@ -1,4 +1,4 @@
-import { AlertTriangle, BatteryLow, Bell, Box, ClipboardList, Database, FileText, Inbox, Lightbulb, MessageCircleQuestion, Receipt } from 'lucide-react'
+import { AlertTriangle, BatteryLow, Bell, Box, CalendarClock, ClipboardList, Database, FileText, Inbox, Lightbulb, MessageCircleQuestion, Receipt } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -23,6 +23,7 @@ const ICONS: Record<BackendNotification['kind'], typeof Bell> = {
   collecte: Database,
   prepaye: BatteryLow,
   admin: Inbox,
+  abonnement: CalendarClock,
 }
 
 /**

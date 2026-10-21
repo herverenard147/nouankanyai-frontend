@@ -1224,7 +1224,7 @@ export interface BackendConsumptionHabits {
 /** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
 export interface BackendNotification {
   id: string
-  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil' | 'collecte' | 'prepaye' | 'admin'
+  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil' | 'collecte' | 'prepaye' | 'admin' | 'abonnement'
   title: string
   detail: string
   at: string | null
