@@ -10,9 +10,11 @@ import { useBoitierMutations, useBoitierPrice } from '@/hooks/queries/useBoitier
 import { useSites } from '@/hooks/queries/useSites'
 import { EMPTY_SITE_CHOICE, resolveSiteId, siteChoiceReady } from '@/lib/boitierForms'
 import { formatFcfa } from '@/lib/formatters'
+import type { HardwareKind } from '@/types/backend'
 import type { Profile } from '@/types/domain'
 
-/** Demande d'un boîtier : le prix vient du backend et il est figé au moment de la demande. */
+/** Demande de matériel (2026-10-21) : boîtier qui parle, capteur d'un appareil ou passerelle. Le prix vient du backend,
+ * détaillé ligne par ligne, et il est figé au moment de la demande. */
 
 /** Même plafond que le serveur (`app/schemas/boitier.py`, quantity ≤ 20). */
 const MAX_BOITIERS = 20
@@ -21,6 +23,8 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
   const price = useBoitierPrice()
   const { request } = useBoitierMutations()
   const client = useQueryClient()
+  const [kind, setKind] = useState<HardwareKind>(profile === 'industrie' ? 'passerelle' : 'vocal')
+  const [showDetail, setShowDetail] = useState(false)
   const [site, setSite] = useState(EMPTY_SITE_CHOICE)
   const [quantity, setQuantity] = useState('1')
   const [contact, setContact] = useState('')
@@ -37,7 +41,10 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
       ? null
       : `Entre 1 et ${MAX_BOITIERS} boîtiers par demande. Pour plus, écrivez-nous dans Précisions.`
   const qty = profile === 'menage' || quantityError ? 1 : parsed
-  const unit = price.data?.unit_price_fcfa
+  const catalog = price.data?.materiels ?? []
+  const chosen = catalog.find((m) => m.kind === kind)
+  const unit = chosen?.prix_fcfa ?? (kind === 'vocal' ? price.data?.unit_price_fcfa : undefined)
+  const label = chosen?.nom.toLowerCase() ?? 'boîtier'
   const ready = sites.isSuccess && siteChoiceReady(siteList, site) && contact.trim().length >= 3 && unit !== undefined && !quantityError
 
   async function submit() {
@@ -48,6 +55,7 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
       if (siteList.length === 0) await client.invalidateQueries({ queryKey: ['sites'] })
       await request.mutateAsync({
         site_id: siteId,
+        kind,
         quantity: qty,
         contact: contact.trim(),
         notes: notes.trim() || null,
@@ -62,8 +70,8 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
 
   return (
     <Modal
-      title="Demander un boîtier"
-      description="Dites-nous où le boîtier sera installé."
+      title="Commander du matériel"
+      description="Choisissez le matériel et dites-nous où il sera installé."
       onClose={onClose}
       actions={
         <>
@@ -77,10 +85,29 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
       }
     >
       <div className="flex flex-col gap-3.5">
+        {catalog.length > 0 && (
+          <fieldset className="flex flex-col gap-2">
+            <legend className="mb-1 text-sm font-medium text-text-primary">
+              Matériel <span className="text-alert" aria-hidden="true">*</span>
+            </legend>
+            {catalog.map((m) => (
+              <label key={m.kind} className={`flex cursor-pointer items-start gap-2.5 border p-3 text-sm ${kind === m.kind ? 'border-text-primary' : 'border-border'}`}>
+                <input type="radio" name="materiel" value={m.kind} checked={kind === m.kind} onChange={() => setKind(m.kind)} className="mt-1" />
+                <span className="flex flex-1 flex-col gap-0.5">
+                  <span className="flex flex-wrap justify-between gap-2 font-semibold text-text-primary">
+                    {m.nom}
+                    <span className="tabular-nums">{formatFcfa(m.prix_fcfa)}</span>
+                  </span>
+                  <span className="text-xs text-text-secondary">{m.description}</span>
+                </span>
+              </label>
+            ))}
+          </fieldset>
+        )}
         <SiteFields sites={siteList} value={site} onChange={setSite} label="Où sera-t-il installé ?" />
         {profile !== 'menage' && (
           <TextField
-            label="Nombre de boîtiers"
+            label="Quantité"
             required
             type="number"
             min={1}
@@ -117,14 +144,32 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
         <div className="flex flex-col gap-1 bg-bg-elevated px-3.5 py-3 text-sm" aria-live="polite">
           {profile !== 'menage' && (
             <div className="flex justify-between">
-              <span>Prix par boîtier</span>
+              <span>Prix à l’unité</span>
               <b>{unit === undefined ? '…' : formatFcfa(unit)}</b>
             </div>
           )}
           <div className="flex items-baseline justify-between">
-            <span>{profile === 'menage' ? 'Prix du boîtier' : `Total pour ${qty} boîtier${qty > 1 ? 's' : ''}`}</span>
+            <span>{profile === 'menage' ? `Prix du ${label}` : `Total pour ${qty}`}</span>
             <b className="font-heading text-lg">{unit === undefined ? '…' : formatFcfa(unit * qty)}</b>
           </div>
+          {chosen && (
+            <button type="button" className="focus-ring self-start text-xs font-semibold text-accent-cta hover:underline" aria-expanded={showDetail} onClick={() => setShowDetail((v) => !v)}>
+              {showDetail ? 'Masquer le détail du prix' : 'Voir le détail du prix'}
+            </button>
+          )}
+          {chosen && showDetail && (
+            <ul className="flex flex-col gap-0.5 border-t border-border pt-2 text-xs text-text-secondary">
+              {chosen.lignes.map((l) => (
+                <li key={l.libelle} className="flex justify-between gap-3">
+                  <span>{l.libelle}</span>
+                  <span className="tabular-nums">{formatFcfa(l.fcfa)}</span>
+                </li>
+              ))}
+              {chosen.non_compris.map((n) => (
+                <li key={n}>Non compris : {n}</li>
+              ))}
+            </ul>
+          )}
         </div>
         <p className="text-xs text-text-secondary">Votre demande est transmise à l’équipe Nouankany, qui vous contacte pour la livraison.</p>
         <MutationError error={siteError} />

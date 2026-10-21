@@ -58,11 +58,12 @@ export function AdminBoitiersPage() {
             <p className="border-t border-border py-2.5 text-sm text-text-secondary">Aucune demande pour le moment.</p>
           ) : (
             <div className="relative overflow-x-auto border-y border-border">
-              <table className="w-full min-w-[640px] border-collapse text-sm">
+              <table className="w-full min-w-[760px] border-collapse text-sm">
                 <thead className="bg-bg-elevated">
                   <tr>
                     <Th>Compte</Th>
                     <Th>Site</Th>
+                    <Th>Matériel</Th>
                     <Th>Quantité</Th>
                     <Th>Total</Th>
                     <Th>Contact</Th>
@@ -76,6 +77,7 @@ export function AdminBoitiersPage() {
                     <tr key={ask.id} className="border-t border-border">
                       <td className="px-3 py-2.5 font-semibold text-text-primary">{ask.account ?? '-'}</td>
                       <td className="px-3 py-2.5 text-text-primary">{ask.site_nom ?? '-'}</td>
+                      <td className="px-3 py-2.5 text-text-primary">{ask.kind_nom ?? 'Boîtier qui parle'}</td>
                       <td className="px-3 py-2.5 tabular-nums">{ask.quantity}</td>
                       <td className="px-3 py-2.5 tabular-nums">{formatFcfa(ask.total_fcfa)}</td>
                       <td className="px-3 py-2.5 text-text-secondary">{ask.contact}</td>

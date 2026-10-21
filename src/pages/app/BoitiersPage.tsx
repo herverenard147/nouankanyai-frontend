@@ -20,9 +20,9 @@ import type { BackendDeviceRequest } from '@/types/backend'
 type Dialog = 'request' | 'code' | null
 
 const STEPS = [
-  ['Demandez un boîtier', 'Depuis cette page, en indiquant où il sera installé.'],
+  ['Commandez le matériel', 'Boîtier qui parle, capteur d’un appareil ou passerelle, avec le prix détaillé.'],
   ['Recevez-le', 'L’équipe Nouankany vous contacte pour la livraison.'],
-  ['Demandez votre code', 'À la réception, demandez un code ici et saisissez-le sur le boîtier.'],
+  ['Connectez-le', 'À la réception, demandez un code ici, puis tapez-le sur la page de réglage du matériel (Wi-Fi « Nouankany-… »).'],
 ] as const
 
 /**
@@ -75,7 +75,7 @@ export function BoitiersPage() {
                   Demander un code pour un autre boîtier
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setDialog('request')}>
-                  Demander un boîtier
+                  Commander du matériel
                 </Button>
               </div>
             </div>
@@ -185,11 +185,11 @@ function EmptyOrWaiting({ waiting, delivered, onRequest, onCode, onCancel, cance
       <div className="flex max-w-[640px] flex-col gap-3 border-t-2 border-text-primary pt-6">
         <div className="flex items-center gap-2.5">
           <span aria-hidden="true" className="inline-block h-4 w-4 rounded-full" style={{ background: isDelivered ? '#35C773' : '#F2A20C' }} />
-          <h2 className="text-h2-secondary font-bold text-text-primary">{isDelivered ? 'Boîtier livré' : 'Demande envoyée, en attente de livraison'}</h2>
+          <h2 className="text-h2-secondary font-bold text-text-primary">{isDelivered ? `${request.kind_nom ?? 'Boîtier'} livré` : 'Demande envoyée, en attente de livraison'}</h2>
         </div>
         <p className="max-w-[62ch] text-sm text-text-secondary">
           {isDelivered
-            ? `Votre boîtier pour le site « ${request.site_nom ?? '-'} » a été livré. Demandez maintenant le code qui le relie à votre compte.`
+            ? `Votre ${(request.kind_nom ?? 'boîtier').toLowerCase()} pour le site « ${request.site_nom ?? '-'} » a été livré. Demandez maintenant le code qui le relie à votre compte.`
             : `Demande du ${formatUtcDateTime(request.created_at).slice(0, 10)} pour le site « ${request.site_nom ?? '-'} ». Prix : ${formatFcfa(request.total_fcfa)}. L’équipe Nouankany vous contactera pour la livraison. Vous n’avez rien d’autre à faire pour l’instant.`}
         </p>
         <div className="mt-2 flex flex-col gap-2 border-t border-border pt-4">
@@ -225,7 +225,7 @@ function EmptyOrWaiting({ waiting, delivered, onRequest, onCode, onCancel, cance
       </p>
       <div className="flex flex-wrap gap-3">
         <Button type="button" onClick={onRequest}>
-          Demander un boîtier
+          Commander du matériel
         </Button>
         <Button type="button" variant="outline" onClick={onCode}>
           J’ai déjà reçu mon boîtier : demander mon code
