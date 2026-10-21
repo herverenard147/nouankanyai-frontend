@@ -12,6 +12,7 @@ import { OcrFieldList } from '@/components/upload/OcrFieldList'
 import { Link } from 'react-router-dom'
 import { UploadCard } from '@/components/upload/UploadCard'
 import { BulkInvoiceImport } from '@/components/import/BulkInvoiceImport'
+import { PrepaidSection } from '@/components/billing/PrepaidSection'
 import {
   useAddManualInvoice,
   useAttachInvoicePhoto,
@@ -122,6 +123,8 @@ export function InvoicesPage() {
           <Link to="/app/rapports" className="focus-ring text-accent-cta hover:text-accent-cta-hover">Mes rapports →</Link>
         </nav>
       )}
+      {/* Compteur à carte (2026-10-20) : recharges et crédit restant, avant les factures. */}
+      <PrepaidSection />
       <div className="grid gap-7 lg:grid-cols-3 lg:gap-8">
         <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
           <UploadCard

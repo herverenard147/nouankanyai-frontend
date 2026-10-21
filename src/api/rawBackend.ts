@@ -80,6 +80,8 @@ import type {
   BackendRecommendation,
   BackendSite,
   MeterType,
+  BackendPrepaid,
+  BackendRecharge,
   BackendNewTeamMemberPayload,
   BackendTeamMember,
   BackendUser,
@@ -453,3 +455,17 @@ export const rawMlDriftLog = (window = 500) =>
   api.post<{ status: string; log_file: string; report: BackendDriftReport }>(`/api/v1/ml/drift/log?window=${window}`)
 export const rawColdStart = () => api.get<BackendColdStartSegment[]>('/api/v1/ml/cold-start')
 export const rawColdStartEvaluate = () => api.post<BackendColdStartSegment[]>('/api/v1/ml/cold-start/evaluate')
+
+/** Compteur à carte (2026-10-20) : crédit restant, prix réel, recharges. */
+export const rawPrepaid = () => api.get<BackendPrepaid[]>('/api/v1/prepaye')
+export const rawAddRecharge = (payload: { site_id?: string; date: string; montant_fcfa: number; kwh?: number | null }) =>
+  api.post<BackendRecharge>('/api/v1/prepaye/recharges', payload)
+export const rawDeleteRecharge = (id: string) => api.delete<null>(`/api/v1/prepaye/recharges/${id}`)
+export const rawSetPrepaidReading = (siteId: string, creditKwh: number) =>
+  api.put<BackendPrepaid>('/api/v1/prepaye/releve', { site_id: siteId, credit_kwh: creditKwh })
+export const rawUploadRechargePhoto = (siteId: string, file: File) => {
+  const form = new FormData()
+  form.append('file', file)
+  form.append('site_id', siteId)
+  return api.postForm<BackendRecharge>('/api/v1/prepaye/recharges/photo', form)
+}

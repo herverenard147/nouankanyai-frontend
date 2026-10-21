@@ -150,6 +150,12 @@ Ménage, **logements** (2026-10-20) : Paramètres, carte « Mes logements » (ja
 et Essentiel, jusqu'à trois en Optimum (refus du serveur affiché). Chaque logement : nom, type de compteur (à facture ou
 à carte, rechargé), calibre du disjoncteur. Le formulaire d'appareil montre « Logement » seulement s'il y en a plusieurs.
 PME et Industrie : « Type de compteur » par site dans la carte Sites.
+**Compteur à carte** (2026-10-20) : page Factures, une section par logement à carte (ancre `#prepaye-<id>`) : crédit
+restant estimé (badge, rythme et point de départ dits), date limite de recharge (en rouge sous trois jours), prix
+réellement payé par kWh (montant ÷ kWh des recharges, redevances et taxes comprises), recharges (à la main ou photo du
+reçu, suppression confirmée), « J'ai lu mon compteur » pour corriger. Notification « Crédit bientôt épuisé » sous trois
+jours, email sous deux (une fois par recharge). Les coûts de Conso & coûts et des rapports prennent le prix réel quand
+tous les logements du compte sont à carte.
 
 ## 5. État écran par écran
 
