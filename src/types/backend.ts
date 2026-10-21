@@ -386,7 +386,7 @@ export interface BackendBillingStatement {
   id: string
   month: string
   /** « indicatif » : relevé calculé, pas une facture (facturation réelle pas encore ouverte). */
-  status: 'en_attente_facture' | 'indicatif' | 'a_payer' | 'paye'
+  status: 'en_attente_facture' | 'indicatif' | 'a_payer' | 'paye' | 'reporte'
   baseline_kwh: number | null
   actual_kwh: number | null
   savings_kwh: number | null
@@ -395,10 +395,20 @@ export interface BackendBillingStatement {
   savings_share_fcfa: number | null
   audit_fee_fcfa: number | null
   total_fcfa: number | null
-  detail: { formule?: string; etapes?: string[]; raison?: string; palier_nom?: string; mention?: string; bareme_a_confirmer?: boolean; bareme_note?: string }
+  detail: { formule?: string; etapes?: string[]; raison?: string; palier_nom?: string; mention?: string; bareme_a_confirmer?: boolean; bareme_note?: string; periode?: string }
   paid_at: string | null
   /** Échéance du relevé à payer (billing/payment.py). */
   due_at?: string | null
+  /** Part des économies par facture CIE (2026-10-21) : « part », « audit » ou « mensuel » (relevés d'avant). */
+  kind?: 'part' | 'audit' | 'mensuel'
+  periode_debut?: string | null
+  periode_fin?: string | null
+  bill_id?: string | null
+  provisoire?: boolean
+  /** Parts précédentes impayées à leur échéance, reprises sur celle-ci. */
+  report_fcfa?: number | null
+  /** Part qui a repris celle-ci (statut « reporte »). */
+  reporte_sur?: string | null
 }
 export interface BackendBilling {
   segment: 'menage' | 'pme_industrie'
