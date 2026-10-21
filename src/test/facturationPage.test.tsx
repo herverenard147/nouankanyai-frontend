@@ -45,7 +45,7 @@ describe('page Facturation', () => {
   it('le Ménage voit les trois formules et en change lui-même, après confirmation', () => {
     show(base)
     expect(screen.getByText('Votre formule')).toBeTruthy()
-    expect(screen.getByText(/le changement s’applique tout de suite/)).toBeTruthy()
+    expect(screen.getByText(/se règle d’avance pour 30 jours/)).toBeTruthy()
     expect(screen.queryByText(/l’équipe Nouankany le valide/)).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Passer à Optimum' }))
     const dialog = screen.getByRole('dialog')

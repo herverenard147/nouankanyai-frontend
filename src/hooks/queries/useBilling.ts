@@ -4,6 +4,7 @@ import {
   rawAdminApproveTier,
   rawAdminComputeStatement,
   rawAdminMarkPaid,
+  rawAdminRecordSubscription,
   rawAdminPendingBills,
   rawAdminValidateBill,
   rawAdminSaveContract,
@@ -12,7 +13,7 @@ import {
   rawBilling,
   rawChangeTier,
 } from '@/api/rawBackend'
-import type { BackendContractPayload, BillingTierId } from '@/types/backend'
+import type { BackendContractPayload, BillingTierId, SubscriptionPaymentPayload } from '@/types/backend'
 
 export const useBilling = () => useQuery({ queryKey: ['billing'], queryFn: rawBilling })
 export const useUnpaidStatements = () => useQuery({ queryKey: ['admin-unpaid'], queryFn: rawAdminUnpaid })
@@ -65,5 +66,9 @@ export function useAdminBillingMutations(userId: string) {
     approveTier: useMutation({ mutationFn: () => rawAdminApproveTier(userId), onSuccess: refresh }),
     compute: useMutation({ mutationFn: (month: string) => rawAdminComputeStatement(userId, month), onSuccess: refresh }),
     markPaid: useMutation({ mutationFn: (statementId: string) => rawAdminMarkPaid(statementId), onSuccess: refresh }),
+    recordSubscription: useMutation({
+      mutationFn: (payload: SubscriptionPaymentPayload) => rawAdminRecordSubscription(userId, payload),
+      onSuccess: refresh,
+    }),
   }
 }

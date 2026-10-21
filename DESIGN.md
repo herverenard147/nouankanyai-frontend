@@ -378,4 +378,8 @@ et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste**
   les comptes de démonstration). Sous 50 relevés réels : « Pas assez de relevés réels », avec le nombre, et pas
   d'archivage. Avant, « Critique » s'affichait partout parce que la simulation était comparée aux machines de
   l'entraînement.
+- **Abonnement payé d'avance (2026-10-21)** : `SubscriptionStatus` sur Facturation (PME, industrie, sous « Votre contrat »)
+  et Abonnement (ménage, formule payante) : « payé jusqu'au … (N jours) », ou « terminé le … » avec l'effet (services
+  suspendus, ou Découverte pour un ménage) et la règle « les jours sans abonnement ne sont pas facturés » ; derniers
+  paiements. Fiche utilisateur admin : bloc « Abonnement » (mode, date, référence, « Enregistrer le paiement »).
 
