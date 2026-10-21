@@ -23,7 +23,9 @@ const WEEKDAY = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 
 const RATE_SOURCE: Record<NonNullable<BackendPrepaid['credit']['source_rythme']>, string> = {
   compteur_general: 'mesuré au compteur général',
   recharges: 'd’après vos recharges successives',
-  appareils: 'd’après vos appareils suivis seulement : les autres ne sont pas comptés, le crédit peut baisser plus vite',
+  appareils: 'd’après les relevés de vos appareils suivis sur 4 semaines : les autres ne sont pas comptés, le crédit peut baisser plus vite',
+  factures: 'd’après vos factures CIE',
+  appareils_declares: 'estimé d’après vos appareils déclarés et leur usage habituel : un relevé ou une deuxième recharge l’affinera',
 }
 
 /**
@@ -31,6 +33,28 @@ const RATE_SOURCE: Record<NonNullable<BackendPrepaid['credit']['source_rythme']>
  * restant estimé, le prix réellement payé par kWh, les recharges (à la main ou par photo du reçu) et le chiffre lu sur
  * le compteur pour corriger l'estimation. Rien si le compte n'a pas de compteur à carte.
  */
+/** Prévision sur 30 jours : kWh, coût au prix réel, recharges à prévoir. Aussi sur la page Prédiction. */
+export function PrepaidForecast({ meter }: { meter: BackendPrepaid }) {
+  const f = meter.prevision_30j
+  if (!f) return null
+  return (
+    <p className="text-sm text-text-primary">
+      Sur les 30 prochains jours : environ <span className="font-semibold">{formatNumberFr(f.kwh, 0)}&nbsp;kWh</span>
+      {f.fcfa !== null && (
+        <>
+          , soit <span className="font-semibold">{formatFcfa(f.fcfa)}</span>
+        </>
+      )}
+      {f.recharges !== null && f.montant_habituel_fcfa !== null && (
+        <>
+          {' '}: environ {formatNumberFr(f.recharges, 1)} recharge{f.recharges >= 2 ? 's' : ''} de {formatFcfa(f.montant_habituel_fcfa)}
+        </>
+      )}
+      . <ProvenanceBadge value="estime" className="lowercase" />
+    </p>
+  )
+}
+
 export function PrepaidSection() {
   const query = useQuery({ queryKey: ['prepaid'], queryFn: rawPrepaid })
   if (!query.data?.length) return null
@@ -101,6 +125,8 @@ function PrepaidMeter({ meter }: { meter: BackendPrepaid }) {
             : 'Ajoutez une recharge avec ses kWh pour estimer le crédit restant.'}
         </p>
       )}
+
+      <PrepaidForecast meter={meter} />
 
       {meter.prix_kwh_reel !== null && (
         <p className="text-sm text-text-primary">

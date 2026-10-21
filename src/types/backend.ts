@@ -1308,12 +1308,14 @@ export interface BackendPrepaid {
     jours: number | null
     epuise_le: string | null
     rythme_kwh_jour: number | null
-    source_rythme: 'compteur_general' | 'recharges' | 'appareils' | null
+    source_rythme: 'compteur_general' | 'recharges' | 'appareils' | 'factures' | 'appareils_declares' | null
     reference: 'releve' | 'recharge' | null
     reference_le: string | null
   }
   bientot_epuise: boolean
   releve: { kwh: number; le: string } | null
   prix_kwh_reel: number | null
+  /** Prévision sur 30 jours au rythme estimé (2026-10-21). */
+  prevision_30j: { kwh: number; fcfa: number | null; recharges: number | null; montant_habituel_fcfa: number | null } | null
   recharges: BackendRecharge[]
 }
