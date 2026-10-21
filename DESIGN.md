@@ -395,3 +395,8 @@ et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste**
   justificatif » et « Rejeter » ouvrent une fenêtre avec motif obligatoire (5 caractères au moins) ; la demande en cours
   s'affiche sous la facture avec la date du rejet automatique. Client : « Justificatif demandé … avant le … » en rouge et
   « Joindre le justificatif » même si une photo existe ; « Motif du refus » sous une facture rejetée.
+- **CGU et confidentialité en pages (2026-10-21)** : `/cgu` et `/confidentialite` (`src/pages/legal/`, gabarit
+  `LegalDocument`) au lieu d'une fenêtre : en-tête, sommaire, puis chaque section avec le type de compte qu'elle concerne
+  (Tous les comptes, Ménage, PME, PME et Industrie). Pied de page : liens vers les pages ; inscription : liens ouverts dans
+  un nouvel onglet pour ne pas perdre le formulaire. `LegalModal`, `CguContent` et `PrivacyContent` supprimés.
+

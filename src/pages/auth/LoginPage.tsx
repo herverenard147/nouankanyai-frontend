@@ -3,9 +3,6 @@ import type { FormEvent } from 'react'
 import { Link, Navigate, useLocation, useSearchParams } from 'react-router-dom'
 
 import { MIN_PASSWORD_LENGTH } from '@/lib/validation'
-import { CguContent } from '@/components/legal/CguContent'
-import { LegalModal } from '@/components/legal/LegalModal'
-import { PrivacyContent } from '@/components/legal/PrivacyContent'
 import { Button } from '@/components/ui/Button'
 import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
@@ -40,7 +37,6 @@ export function LoginPage() {
   const [formError, setFormError] = useState<string | null>(null)
   const [status, setStatus] = useState<'idle' | 'loading'>('idle')
   const [accepted, setAccepted] = useState(false)
-  const [openDoc, setOpenDoc] = useState<'cgu' | 'privacy' | null>(null)
 
   if (session) {
     const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? firstRouteFor(session.profile)
@@ -162,13 +158,14 @@ export function LoginPage() {
               <input type="checkbox" className="mt-0.5 h-4 w-4" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
               <span>
                 J&rsquo;accepte les{' '}
-                <button type="button" className="font-semibold text-accent-cta underline" onClick={() => setOpenDoc('cgu')}>
+                {/* Pages à part (2026-10-21), ouvertes dans un nouvel onglet pour ne pas perdre le formulaire. */}
+                <a href="/cgu" target="_blank" rel="noopener" className="font-semibold text-accent-cta underline">
                   conditions d&rsquo;utilisation
-                </button>{' '}
+                </a>{' '}
                 et la{' '}
-                <button type="button" className="font-semibold text-accent-cta underline" onClick={() => setOpenDoc('privacy')}>
+                <a href="/confidentialite" target="_blank" rel="noopener" className="font-semibold text-accent-cta underline">
                   politique de confidentialité
-                </button>
+                </a>
                 . Si je supprime mon compte, mes données techniques sont gardées sans lien avec moi pour améliorer les
                 prévisions.
               </span>
@@ -192,16 +189,6 @@ export function LoginPage() {
           </Link>
         </p>
 
-        {openDoc === 'cgu' && (
-          <LegalModal title="Conditions Générales d’Utilisation" onClose={() => setOpenDoc(null)}>
-            <CguContent />
-          </LegalModal>
-        )}
-        {openDoc === 'privacy' && (
-          <LegalModal title="Politique de confidentialité" onClose={() => setOpenDoc(null)}>
-            <PrivacyContent />
-          </LegalModal>
-        )}
 
         {/* En développement seulement : ces identifiants sont publics (constat C6 de l'audit du 2026-10-10). */}
         {import.meta.env.DEV && (

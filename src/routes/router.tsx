@@ -12,6 +12,8 @@ import { LoginPage } from '@/pages/auth/LoginPage'
 import { ResetPasswordPage } from '@/pages/auth/ResetPasswordPage'
 import { VerifyEmailPage } from '@/pages/auth/VerifyEmailPage'
 import { HowItWorksPage } from '@/pages/landing/HowItWorksPage'
+import { CguPage } from '@/pages/legal/CguPage'
+import { PrivacyPage } from '@/pages/legal/PrivacyPage'
 import { LandingPage } from '@/pages/landing/LandingPage'
 import { InterventionLayout, InterventionsPage } from '@/pages/app/InterventionsPage'
 import { AppIndexRedirect } from '@/routes/AppIndexRedirect'
@@ -68,6 +70,8 @@ export const router = createBrowserRouter([
       { path: 'reinitialiser-mot-de-passe', element: <ResetPasswordPage /> },
       { path: 'confirmer-email', element: <VerifyEmailPage /> },
       { path: 'comment-ca-marche', element: <HowItWorksPage /> },
+      { path: 'cgu', element: <CguPage /> },
+      { path: 'confidentialite', element: <PrivacyPage /> },
       { path: 'le-boitier', element: <BoitierPage /> },
       { path: 'demander-un-audit', element: <AuditRequestPage /> },
     ],
