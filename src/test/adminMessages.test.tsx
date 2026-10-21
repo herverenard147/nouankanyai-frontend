@@ -6,17 +6,29 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('@/api/rawBackend', () => ({
   rawContactMessages: vi.fn(),
   rawMarkContactMessage: vi.fn().mockResolvedValue({}),
+  rawMarkContactMessages: vi.fn().mockResolvedValue({ modifies: 2 }),
+  rawDeleteContactMessagesByIds: vi.fn().mockResolvedValue({ supprimes: 1 }),
   rawDeleteExportedContactMessages: vi.fn().mockResolvedValue({ supprimes: 2 }),
   rawDeleteSpamMessages: vi.fn().mockResolvedValue({ supprimes: 120 }),
   downloadContactCsv: vi.fn().mockResolvedValue(undefined),
   rawWaitlistEntries: vi.fn().mockResolvedValue([]),
 }))
-import { rawContactMessages, rawDeleteExportedContactMessages, rawDeleteSpamMessages, rawMarkContactMessage } from '@/api/rawBackend'
+import {
+  rawContactMessages,
+  rawDeleteContactMessagesByIds,
+  rawDeleteExportedContactMessages,
+  rawDeleteSpamMessages,
+  rawMarkContactMessage,
+  rawMarkContactMessages,
+} from '@/api/rawBackend'
 import { AdminMessagesPage } from '@/pages/app/admin/AdminMessagesPage'
 
 function page() {
   vi.mocked(rawContactMessages).mockResolvedValue({
-    items: [{ id: 'm1', nom: 'x', email: 'x@x.com', message: 'test', created_at: '2026-08-29T10:00:00', handled_at: null, exported_at: null }],
+    items: [
+      { id: 'm1', nom: 'x', email: 'x@x.com', message: 'test', created_at: '2026-08-29T10:00:00', handled_at: null, exported_at: null },
+      { id: 'm2', nom: 'y', email: 'y@x.com', message: 'test', created_at: '2026-08-29T10:00:00', handled_at: null, exported_at: null },
+    ],
     total: 120,
     page: 1,
     per_page: 50,
@@ -33,7 +45,7 @@ describe('Messages de contact (admin)', () => {
     page()
     await waitFor(() => expect(screen.getByText(/120 messages, page 1 sur 3/)).toBeTruthy())
     expect(vi.mocked(rawContactMessages)).toHaveBeenCalledWith('a_traiter', '', 1, 50)
-    fireEvent.click(screen.getByRole('button', { name: 'Marquer traité' }))
+    fireEvent.click(screen.getAllByRole('button', { name: 'Marquer traité' })[0])
     await waitFor(() => expect(rawMarkContactMessage).toHaveBeenCalledWith('m1', true))
     fireEvent.click(screen.getByRole('button', { name: 'Suivante' }))
     await waitFor(() => expect(vi.mocked(rawContactMessages)).toHaveBeenCalledWith('a_traiter', '', 2, 50))
@@ -64,5 +76,19 @@ describe('Messages de contact (admin)', () => {
     fireEvent.change(field, { target: { value: '120' } })
     fireEvent.click(buttons()[buttons().length - 1])
     await waitFor(() => expect(rawDeleteSpamMessages).toHaveBeenCalledWith('x@x.com', 120))
+  })
+
+  it('plusieurs messages cochés : traités ensemble, ou supprimés après confirmation (test du 2026-10-21)', async () => {
+    page()
+    await waitFor(() => expect(screen.getByText(/120 messages/)).toBeTruthy())
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Cocher tous les messages de la page' }))
+    expect(screen.getByText('2 messages cochés')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Marquer traités' }))
+    await waitFor(() => expect(rawMarkContactMessages).toHaveBeenCalledWith(['m1', 'm2'], true))
+    await waitFor(() => expect(screen.queryByText(/cochés?$/)).toBeNull())
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Cocher le message de y' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer les cochés' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer les messages cochés' }))
+    await waitFor(() => expect(rawDeleteContactMessagesByIds).toHaveBeenCalledWith(['m2']))
   })
 })

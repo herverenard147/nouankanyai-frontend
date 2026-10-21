@@ -4,9 +4,11 @@ import { useState } from 'react'
 import {
   downloadContactCsv,
   rawContactMessages,
+  rawDeleteContactMessagesByIds,
   rawDeleteExportedContactMessages,
   rawDeleteSpamMessages,
   rawMarkContactMessage,
+  rawMarkContactMessages,
   rawWaitlistEntries,
 } from '@/api/rawBackend'
 import { MetricState } from '@/components/state/MetricState'
@@ -28,6 +30,7 @@ const FILTERS: { value: ContactMessageFilter; label: string }[] = [
  * Messages du formulaire de contact et inscrits à la liste d'attente. Test du site (2026-10-18) : des milliers de
  * messages de test sans pagination, sans « traité » ni suppression. Maintenant : filtre et recherche, 50 par page,
  * « traité », export CSV, puis suppression des messages exportés (jamais avant : la copie existe hors du site).
+ * Test du 2026-10-21 : cases à cocher (une par message, et « toute la page ») pour traiter ou supprimer plusieurs messages.
  */
 export function AdminMessagesPage() {
   const queryClient = useQueryClient()
@@ -39,6 +42,8 @@ export function AdminMessagesPage() {
   // Spam : nombre de messages de la recherche, tous statuts confondus (celui que l'admin doit retaper).
   const [spamCount, setSpamCount] = useState<number | null>(null)
   const [exportError, setExportError] = useState<unknown>(null)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [confirmSelected, setConfirmSelected] = useState(false)
   const messages = useQuery({
     queryKey: ['admin-contact', statut, search, page],
     queryFn: () => rawContactMessages(statut, search, page, PER_PAGE),
@@ -46,6 +51,40 @@ export function AdminMessagesPage() {
   })
   const waitlist = useQuery({ queryKey: ['admin-waitlist'], queryFn: rawWaitlistEntries })
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['admin-contact'] })
+  const clearSelection = () => setSelected(new Set())
+  const markMany = useMutation({
+    mutationFn: (traite: boolean) => rawMarkContactMessages([...selected], traite),
+    onSuccess: () => {
+      clearSelection()
+      void refresh()
+    },
+  })
+  const removeSelected = useMutation({
+    mutationFn: () => rawDeleteContactMessagesByIds([...selected]),
+    onSuccess: () => {
+      setConfirmSelected(false)
+      clearSelection()
+      void refresh()
+    },
+  })
+  const pageIds = messages.data?.items.map((m) => m.id) ?? []
+  const allOnPage = pageIds.length > 0 && pageIds.every((id) => selected.has(id))
+  const toggle = (id: string) =>
+    setSelected((s) => {
+      const next = new Set(s)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  const togglePage = () =>
+    setSelected((s) => {
+      const next = new Set(s)
+      for (const id of pageIds) {
+        if (allOnPage) next.delete(id)
+        else next.add(id)
+      }
+      return next
+    })
   const mark = useMutation({ mutationFn: ({ id, traite }: { id: string; traite: boolean }) => rawMarkContactMessage(id, traite), onSuccess: refresh })
   const remove = useMutation({
     mutationFn: () => rawDeleteExportedContactMessages(search),
@@ -96,6 +135,7 @@ export function AdminMessagesPage() {
                 onClick={() => {
                   setStatut(f.value)
                   setPage(1)
+                  clearSelection()
                 }}
                 className={`focus-ring min-h-10 px-4 text-sm font-semibold ${statut === f.value ? 'bg-dark-bg text-white' : 'bg-card text-text-primary hover:bg-bg-elevated'}`}
               >
@@ -109,6 +149,7 @@ export function AdminMessagesPage() {
               e.preventDefault()
               setSearch(q)
               setPage(1)
+              clearSelection()
             }}
           >
             <label className="flex flex-col gap-1.5 text-sm font-medium text-text-primary">
@@ -137,7 +178,26 @@ export function AdminMessagesPage() {
             </Button>
           </div>
         </div>
-        <MutationError error={exportError ?? mark.error} />
+        <MutationError error={exportError ?? mark.error ?? markMany.error} />
+        {selected.size > 0 && (
+          <div role="region" aria-label="Messages cochés" className="flex flex-wrap items-center gap-2 border border-border bg-bg-elevated px-3 py-2">
+            <span className="text-sm font-semibold text-text-primary">
+              {formatNumberFr(selected.size)} message{selected.size > 1 ? 's' : ''} coché{selected.size > 1 ? 's' : ''}
+            </span>
+            <Button type="button" variant="outline" loading={markMany.isPending} onClick={() => markMany.mutate(true)}>
+              Marquer traités
+            </Button>
+            <Button type="button" variant="outline" disabled={markMany.isPending} onClick={() => markMany.mutate(false)}>
+              Remettre à traiter
+            </Button>
+            <Button type="button" variant="outline" className="text-alert" onClick={() => setConfirmSelected(true)}>
+              Supprimer les cochés
+            </Button>
+            <Button type="button" variant="ghost" onClick={clearSelection}>
+              Tout décocher
+            </Button>
+          </div>
+        )}
         <MetricState status={messages.status} isEmpty={total === 0}>
           <p className="text-sm text-text-secondary">
             {formatNumberFr(total)} message{total > 1 ? 's' : ''}
@@ -147,6 +207,15 @@ export function AdminMessagesPage() {
             <table className="w-full min-w-[720px] border-collapse text-sm">
               <thead className="bg-bg-elevated">
                 <tr>
+                  <th className={`${TH} w-10`}>
+                    <input
+                      type="checkbox"
+                      aria-label="Cocher tous les messages de la page"
+                      checked={allOnPage}
+                      onChange={togglePage}
+                      className="h-4 w-4 accent-[var(--color-accent-cta)]"
+                    />
+                  </th>
                   {['Reçu le', 'Nom', 'Email', 'Message', ''].map((label) => (
                     <th key={label} className={TH}>
                       {label}
@@ -156,7 +225,16 @@ export function AdminMessagesPage() {
               </thead>
               <tbody>
                 {messages.data?.items.map((m) => (
-                  <tr key={m.id} className="border-t border-border align-top">
+                  <tr key={m.id} className={`border-t border-border align-top ${selected.has(m.id) ? 'bg-bg-elevated' : ''}`}>
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        aria-label={`Cocher le message de ${m.nom}`}
+                        checked={selected.has(m.id)}
+                        onChange={() => toggle(m.id)}
+                        className="h-4 w-4 accent-[var(--color-accent-cta)]"
+                      />
+                    </td>
                     <td className="whitespace-nowrap px-4 py-3 tabular-nums text-text-secondary">{date(m.created_at)}</td>
                     <td className="px-4 py-3 text-text-primary">{m.nom}</td>
                     <td className="px-4 py-3 text-text-secondary">{m.email}</td>
@@ -209,6 +287,22 @@ export function AdminMessagesPage() {
           error={spam.error}
           onConfirm={() => spam.mutate(spamCount)}
           onCancel={() => setSpamCount(null)}
+        />
+      )}
+
+      {confirmSelected && (
+        <ConfirmDeleteModal
+          title="Supprimer les messages cochés ?"
+          description={`${formatNumberFr(selected.size)} message${selected.size > 1 ? 's' : ''} coché${selected.size > 1 ? 's' : ''}.`}
+          consequences={[
+            'Seuls des messages déjà exportés peuvent être supprimés : la copie est dans le fichier CSV téléchargé.',
+            'Si un message coché n’a pas encore été exporté, rien n’est supprimé et le site le dit.',
+          ]}
+          confirmLabel="Supprimer les messages cochés"
+          pending={removeSelected.isPending}
+          error={removeSelected.error}
+          onConfirm={() => removeSelected.mutate()}
+          onCancel={() => setConfirmSelected(false)}
         />
       )}
 

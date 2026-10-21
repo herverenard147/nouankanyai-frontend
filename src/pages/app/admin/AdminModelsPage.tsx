@@ -9,7 +9,7 @@ import { useAdminModelPanel, useReloadModels } from '@/hooks/queries/useAdminMod
 import type { BackendDriftReport } from '@/types/backend'
 
 const HEALTH_LABEL: Record<string, string> = { healthy: 'Opérationnel', degraded: 'Dégradé', unhealthy: 'Indisponible' }
-const DRIFT_LABEL: Record<string, string> = { stable: 'Stable', warning: 'À surveiller', critical: 'Critique' }
+const DRIFT_LABEL: Record<string, string> = { stable: 'Stable', warning: 'À surveiller', critical: 'Critique', insuffisant: 'Pas assez de relevés réels' }
 const FEATURE_LABEL: Record<string, string> = {
   power_kw: 'Puissance',
   temperature_c: 'Température',
@@ -154,7 +154,10 @@ function DriftPanel() {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h2 className="text-section-title font-semibold text-text-primary">Dérive des données</h2>
-          <p className="text-sm text-text-secondary">500 derniers relevés comparés à la distribution d&rsquo;entraînement.</p>
+          <p className="text-sm text-text-secondary">
+            500 derniers relevés réels (boîtiers des clients, sans la simulation ni les comptes de démonstration) comparés aux données
+            d&rsquo;entraînement.
+          </p>
         </div>
         {query.data && (
           <span className="text-xs font-semibold text-text-secondary">
@@ -162,10 +165,20 @@ function DriftPanel() {
           </span>
         )}
       </div>
-      <MetricState status={query.status}>{query.data && <DriftTable report={query.data} />}</MetricState>
+      <MetricState status={query.status}>
+        {query.data &&
+          (query.data.global_status === 'insuffisant' ? (
+            <p className="text-sm text-text-secondary">
+              {query.data.sample_size} relevé{query.data.sample_size > 1 ? 's' : ''} réel{query.data.sample_size > 1 ? 's' : ''} pour{' '}
+              {query.data.min_sample_size ?? 50} nécessaires : la dérive se mesurera quand les boîtiers des clients auront envoyé assez de relevés.
+            </p>
+          ) : (
+            <DriftTable report={query.data} />
+          ))}
+      </MetricState>
       {query.isError && <MutationError error={query.error} />}
       <div className="flex flex-wrap items-center gap-3">
-        <Button loading={archive.isPending} type="button" variant="ghost" disabled={archive.isPending || !query.data} onClick={() => archive.mutate()}>
+        <Button loading={archive.isPending} type="button" variant="ghost" disabled={archive.isPending || !query.data || query.data.global_status === 'insuffisant'} onClick={() => archive.mutate()}>
           {archive.isPending ? 'Archivage…' : 'Archiver ce rapport'}
         </Button>
         {archive.isSuccess && <p className="text-sm text-confirm">Rapport archivé dans l&rsquo;historique de dérive.</p>}

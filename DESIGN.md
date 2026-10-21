@@ -1,7 +1,7 @@
 # Nouankany — DESIGN.md (dashboard et landing)
 
 Document d'orientation pour qui continue le design dans ce dépôt (Claude Code en local compris).
-Mis à jour le 2026-10-16. Il dit **les règles à suivre**, ce qui est fait et ce qui reste à faire pour chaque écran et
+Mis à jour le 2026-10-21. Il dit **les règles à suivre**, ce qui est fait et ce qui reste à faire pour chaque écran et
 chaque type de compte. Il complète `CLAUDE.md` (pièges techniques) et `README.md` (structure, API).
 
 Les maquettes sont dans le canvas « Nouankany — Propositions de design »
@@ -187,7 +187,7 @@ pas été revérifiée écran par écran depuis le 2026-10-09.
 | Interventions `/app/interventions` | technicien | §12 |
 | Documentation `/app/aide` | tous | §12 |
 | Paramètres `/app/parametres` | tous | sélecteur de niveau (hors Ménage) |
-| Admin : santé, modèles, utilisateurs, demandes d'audit, messages, impayés, boîtiers | Admin | aucune |
+| Admin : santé, modèles, données d'entraînement, utilisateurs, demandes d'audit, messages, impayés, prix du matériel, boîtiers | Admin | aucune |
 
 Pour chaque écran modifié : en-tête (titre + sous-titre court), filets au lieu de cartes, provenance sur
 chaque donnée, états vides, mobile 390 px sans défilement horizontal. Contraste WCAG AA (4,5 pour le texte courant) : audit axe-core
@@ -356,8 +356,26 @@ et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste**
   premier chargement.
 - **Cloche des notifications** (2026-10-18, `NotificationBell`) : à droite de la barre du haut et en tête du menu
   (ordinateur et tiroir mobile), elle mène à `/app/alertes` et porte le même compteur que l'entrée du menu (alertes à
-  traiter pas encore vues). Absente pour le technicien, qui n'a pas de page d'alertes.
+  traiter pas encore vues). Absente pour le technicien, qui n'a pas de page d'alertes. Depuis le 2026-10-18, elle
+  ouvre la liste de tout ce qui notifie (alertes, conseils, factures, relevés, plan, boîtiers, crédit). Administrateur
+  (2026-10-21) : une ligne par file d'attente (« 3 factures CIE à valider », « 12 messages à traiter »…), icône boîte
+  de réception, qui mène à la page qui la traite et revient à chaque nouvelle arrivée.
 - **Technicien** : onglet Alertes en intervention (`InterventionAlertsPage`) ; ses réponses portent « documentée par un
   technicien Nouankany ».
 - **Capteur d'un appareil** : ajouté depuis la fiche de l'appareil ; état du capteur, essai, coupure réelle quand il a un
   relais. Une machine arrêtée s'affiche « Éteint ».
+
+## 14. Administration (2026-10-21)
+
+- **Prix du matériel** (`/app/admin/prix-materiel`, avant « Boîtiers ») : deux taux (transport et douane, marge) et, par
+  matériel, nom, description, composants et frais (lignes ajoutées ou retirées), non compris. Prix recalculé à l'écran
+  avec le même calcul que le serveur (arrondi à 500 FCFA, la moitié vers le haut), prix enregistré à côté. Enregistrer
+  ouvre une confirmation qui montre ancien et nouveau prix ; « Revenir aux prix par défaut » est confirmé aussi.
+- **Messages de contact** : une case par message et une case « toute la page » ; une barre « N messages cochés » propose
+  « Marquer traités », « Remettre à traiter », « Supprimer les cochés » (seulement s'ils sont exportés, confirmé) et
+  « Tout décocher ». Changer de filtre ou de recherche décoche tout.
+- **Modèles & observabilité, dérive** : calculée sur les seuls vrais relevés (boîtiers des clients, sans la simulation ni
+  les comptes de démonstration). Sous 50 relevés réels : « Pas assez de relevés réels », avec le nombre, et pas
+  d'archivage. Avant, « Critique » s'affichait partout parce que la simulation était comparée aux machines de
+  l'entraînement.
+

@@ -438,6 +438,10 @@ export async function downloadContactCsv(statut: ContactMessageFilter, q: string
   const { blob, filename } = await api.getBlob(`/api/v1/contact/export.csv?${contactQuery(statut, q)}`)
   saveBlob(blob, filename ?? 'messages-nouankany.csv')
 }
+/** Messages cochés (test du 2026-10-21) : traités ou remis à traiter d'un coup ; suppression des cochés déjà exportés. */
+export const rawMarkContactMessages = (ids: string[], traite: boolean) =>
+  api.post<{ modifies: number }>('/api/v1/contact/traiter', { ids, traite })
+export const rawDeleteContactMessagesByIds = (ids: string[]) => api.post<{ supprimes: number }>('/api/v1/contact/supprimer', { ids })
 export const rawDeleteExportedContactMessages = (q: string) =>
   api.post<{ supprimes: number }>('/api/v1/contact/supprimer', q.trim() ? { q: q.trim() } : { tous: true })
 /** Spam évident : suppression sans export, si `confirmation` est exactement le nombre de messages de la recherche. */
