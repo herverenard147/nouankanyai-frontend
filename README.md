@@ -14,8 +14,8 @@ mapping entre le contrat du backend et ces types.
 
 L'état vérifié du projet (ce qui est en ligne, ce qui est fait, pièges, points ouverts) est tenu dans le
 dépôt backend : `docs/SUIVI_TECHNIQUE.md`, avec le journal PR par PR `docs/JOURNAL_AVANCEMENT.md`.
-Ici : `DESIGN.md` (règles et état des écrans) et `MISE_EN_LIGNE.md` (déploiement). Au 2026-10-16,
-253 tests passent.
+Ici : `DESIGN.md` (règles et état des écrans) et `MISE_EN_LIGNE.md` (déploiement). Au 2026-10-21,
+344 tests passent.
 
 ## Lancement
 
@@ -220,7 +220,8 @@ sécurité du site sont dans `vercel.json`.
 ## Vérification
 
 - À chaque PR, la CI lance `tsc -b`, `vitest run`, `oxlint` et `vite build` ; le nombre minimal
-  de tests est dans `.github/test-baseline.json`. Au 2026-10-16 : 253 tests passent.
+  de tests est dans `.github/test-baseline.json`. Au 2026-10-21 : 344 tests passent (CI GitHub
+  suspendue jusqu'au 1er novembre 2026 : mêmes commandes lancées en local avant chaque fusion).
 - `src/test/backendIntegration.smoke.test.ts` exerce le vrai backend local (comptes de
   `seed_demo.py`) : lectures et mutations câblées à l'interface. Il est sauté sans backend local
   et ne tourne pas en CI.

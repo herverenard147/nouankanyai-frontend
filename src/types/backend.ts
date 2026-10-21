@@ -1024,9 +1024,11 @@ export interface BackendDriftReport {
   timestamp: string
   sample_size: number
   features: BackendDriftFeature[]
-  global_status: 'stable' | 'warning' | 'critical'
+  /** « insuffisant » : trop peu de vrais relevés (2026-10-21), la dérive ne se mesure que sur les boîtiers des clients. */
+  global_status: 'stable' | 'warning' | 'critical' | 'insuffisant'
   features_in_warning: number
   features_in_critical: number
+  min_sample_size?: number
 }
 
 /** GET /api/v1/ml/cold-start (administrateurs) : bascule par segment vers la prédiction par similarité. */
@@ -1220,7 +1222,7 @@ export interface BackendConsumptionHabits {
 /** GET /api/v1/notifications : tout ce qui notifie le compte (correction 8, 2026-10-19). */
 export interface BackendNotification {
   id: string
-  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil' | 'collecte' | 'prepaye'
+  kind: 'alerte' | 'retour' | 'facture' | 'releve' | 'plan' | 'boitier' | 'conseil' | 'collecte' | 'prepaye' | 'admin'
   title: string
   detail: string
   at: string | null
