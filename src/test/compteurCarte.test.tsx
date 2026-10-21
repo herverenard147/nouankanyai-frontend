@@ -23,6 +23,7 @@ const meter: BackendPrepaid = {
   bientot_epuise: true,
   releve: { kwh: 12, le: '2026-10-20T20:00:00' },
   prix_kwh_reel: 125,
+  prevision_30j: { kwh: 293, fcfa: 36600, recharges: 7.3, montant_habituel_fcfa: 5000 },
   recharges: [
     { id: 'r2', site_id: 's1', date: '2026-10-18T12:00:00', montant_fcfa: 5000, kwh: 41, prix_kwh: 122, source: 'photo' },
     { id: 'r1', site_id: 's1', date: '2026-10-14T12:00:00', montant_fcfa: 5000, kwh: 39, prix_kwh: 128.2, source: 'manuel' },
@@ -56,6 +57,8 @@ describe('compteur à carte', () => {
     expect(screen.getByText(/9,8\s*kWh par jour, d’après vos recharges/)).toBeTruthy()
     expect(screen.getByText(/125\s*FCFA le kWh/)).toBeTruthy()
     expect(screen.getByText('Lue sur le reçu')).toBeTruthy()
+    expect(screen.getByText(/Sur les 30 prochains jours : environ/)).toBeTruthy()
+    expect(screen.getByText(/7,3 recharges de/)).toBeTruthy()
     expect(document.getElementById('prepaye-s1')).toBeTruthy()
   })
 
@@ -94,5 +97,22 @@ describe('compteur à carte', () => {
     const input = screen.getByLabelText('Photo du reçu de recharge pour Maison')
     fireEvent.change(input, { target: { files: [new File(['x'], 'recu.png', { type: 'image/png' })] } })
     expect(await screen.findByText(/saisissez la recharge à la main/)).toBeTruthy()
+  })
+})
+
+describe('compteur à carte dans la page Prédiction', () => {
+  it('date d’épuisement et prévision sur 30 jours', async () => {
+    const { PrepaidPredictionCard } = await import('@/components/prediction/PrepaidPredictionCard')
+    const { MemoryRouter } = await import('react-router-dom')
+    vi.mocked(rawPrepaid).mockResolvedValue([meter])
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <MemoryRouter>
+          <PrepaidPredictionCard />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+    expect(await screen.findByText(/épuisé vers le jeudi 22\/10/)).toBeTruthy()
+    expect(screen.getByText(/Sur les 30 prochains jours/)).toBeTruthy()
   })
 })

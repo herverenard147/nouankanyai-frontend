@@ -8,6 +8,7 @@ import { MetricState } from '@/components/state/MetricState'
 import { Pill } from '@/components/ui/Pill'
 import { levelAtLeast } from '@/lib/levelGating'
 import { LOCKED, LockedFeature } from '@/components/billing/LockedFeature'
+import { PrepaidPredictionCard } from '@/components/prediction/PrepaidPredictionCard'
 import { useAccess } from '@/hooks/queries/useBilling'
 import { usePredictionsBundle } from '@/hooks/queries/usePrediction'
 import { useChartView } from '@/store/chartViewStore'
@@ -64,6 +65,7 @@ export function PredictionPage() {
           <> Votre formule prévoit {access.maxPredictions} appareils : ceux qui consomment le plus.</>
         )}
       </p>
+      <PrepaidPredictionCard />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Granularité de la prédiction">
           {GRANULARITIES.map((g) => (
