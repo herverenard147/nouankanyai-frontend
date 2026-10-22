@@ -95,9 +95,11 @@ describe('Inscription : consentement', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/Acceptez les conditions/i)
   })
 
-  it('ouvre la politique de confidentialité depuis le formulaire', () => {
+  it('mène aux pages des CGU et de la confidentialité, dans un nouvel onglet (2026-10-21)', () => {
     at('/login?mode=signup', <LoginPage />)
-    fireEvent.click(screen.getByRole('button', { name: /politique de confidentialité/i }))
-    expect(screen.getByRole('dialog', { name: /Politique de confidentialité/i })).toHaveTextContent(/ARTCI/)
+    const privacy = screen.getByRole('link', { name: /politique de confidentialité/i })
+    expect(privacy.getAttribute('href')).toBe('/confidentialite')
+    expect(privacy.getAttribute('target')).toBe('_blank')
+    expect(screen.getByRole('link', { name: /conditions d’utilisation/i }).getAttribute('href')).toBe('/cgu')
   })
 })

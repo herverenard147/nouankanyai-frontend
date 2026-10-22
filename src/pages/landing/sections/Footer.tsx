@@ -1,12 +1,7 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { CguContent } from '@/components/legal/CguContent'
-import { LegalModal } from '@/components/legal/LegalModal'
-import { PrivacyContent } from '@/components/legal/PrivacyContent'
 
 export function Footer() {
-  const [openDoc, setOpenDoc] = useState<'cgu' | 'confidentialite' | null>(null)
 
   return (
     <footer className="bg-dark-bg py-14 text-dark-text">
@@ -86,18 +81,14 @@ export function Footer() {
             <h4 className="text-[0.95rem] font-bold text-white">Légal</h4>
             <ul className="mt-2 flex flex-col text-sm text-dark-text">
               <li>
-                <button type="button" onClick={() => setOpenDoc('cgu')} className="py-1.5 text-left hover:text-white">
+                <Link to="/cgu" className="inline-block py-1.5 hover:text-white">
                   Conditions Générales d&rsquo;Utilisation
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => setOpenDoc('confidentialite')}
-                  className="py-1.5 text-left hover:text-white"
-                >
+                <Link to="/confidentialite" className="inline-block py-1.5 hover:text-white">
                   Politique de confidentialité
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -108,16 +99,6 @@ export function Footer() {
         </div>
       </div>
 
-      {openDoc === 'cgu' && (
-        <LegalModal title="Conditions Générales d’Utilisation" onClose={() => setOpenDoc(null)}>
-          <CguContent />
-        </LegalModal>
-      )}
-      {openDoc === 'confidentialite' && (
-        <LegalModal title="Politique de confidentialité" onClose={() => setOpenDoc(null)}>
-          <PrivacyContent />
-        </LegalModal>
-      )}
     </footer>
   )
 }
