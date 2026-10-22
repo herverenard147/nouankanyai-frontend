@@ -68,7 +68,7 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
           {[
             ['Ligne de base', `${formatNumberFr(c.baseline_kwh ?? 0)} kWh / mois`],
-            ['Abonnement', `${formatFcfa(c.saas_fee_fcfa ?? 0)} / 30 jours`],
+            ['Abonnement', `${formatFcfa(c.saas_fee_fcfa ?? 0)} / mois`],
             ['Part des économies', `${formatNumberFr(c.savings_share_pct ?? 0)} %`],
             ['Audit de référence', formatFcfa(c.audit_fee_fcfa ?? 0)],
           ].map(([label, value]) => (
