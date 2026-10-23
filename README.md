@@ -1,21 +1,20 @@
-# Nouankany — front-end
+# Nouankany : front-end
 
 Front-end fonctionnel de Nouankany : landing publique, connexion et dashboard
 multi-pages (Ménage, PME, Industrie, Portail Admin), **branché sur le backend réel**
 [`herverenard147/NouanKanyAI`](https://github.com/herverenard147/NouanKanyAI)
 (branche `main`). Seul `main` est mis en ligne (Vercel).
 
-Construit au départ à partir du handoff de design d'août 2026 (`design_handoff_nouankanyai/`,
-gardé pour mémoire) ; les règles de design qui font foi aujourd'hui sont dans `DESIGN.md`. Puis intégré au backend réel en conservant l'architecture, les composants et les
-types déjà en place — voir « Couche d'adaptation » plus bas pour le détail du
+Construit au départ à partir d'un handoff de design d'août 2026 (retiré du dépôt le 2026-10-23, il reste dans l'historique git) ; les règles de design qui font foi sont dans `DESIGN.md`. Puis intégré au backend réel en conservant l'architecture, les composants et les
+types déjà en place : voir « Couche d'adaptation » plus bas pour le détail du
 mapping entre le contrat du backend et ces types.
 
 ## Suivi du projet
 
 L'état vérifié du projet (ce qui est en ligne, ce qui est fait, pièges, points ouverts) est tenu dans le
 dépôt backend : `docs/SUIVI_TECHNIQUE.md`, avec le journal PR par PR `docs/JOURNAL_AVANCEMENT.md`.
-Ici : `DESIGN.md` (règles et état des écrans) et `MISE_EN_LIGNE.md` (déploiement). Au 2026-10-21,
-344 tests passent.
+Ici : `DESIGN.md` (règles et état des écrans) et `MISE_EN_LIGNE.md` (déploiement). Nombre de tests de
+référence : voir ce suivi.
 
 ## Lancement
 
@@ -33,7 +32,7 @@ python backend/main.py
 ```
 
 `FRONTEND_URL` est aussi lisible depuis `backend/.env` (déjà renseigné avec
-`http://localhost:5173` pour le dev local — voir garde-fous CLAUDE.md du
+`http://localhost:5173` pour le dev local : voir garde-fous CLAUDE.md du
 backend, seule variable ajoutée à ce fichier).
 
 Frontend :
@@ -46,7 +45,7 @@ npm run dev        # http://localhost:5173, VITE_API_BASE_URL=http://localhost:8
 Autres commandes :
 
 ```bash
-npm run build       # tsc -b && vite build — build de production
+npm run build       # tsc -b && vite build : build de production
 npm run preview      # sert le build de production en local
 npm run test         # vitest, suite de tests légers + smoke test d'intégration backend
 npm run lint          # oxlint
@@ -83,9 +82,9 @@ src/
 ├── pages/
 │   ├── landing/     Landing publique (statique, indépendante du backend)
 │   ├── auth/        Connexion + inscription
-│   ├── legal/        Stubs CGU / confidentialité
+│   ├── legal/        Pages CGU et confidentialité (règles par type de compte)
 │   └── app/          Les pages du dashboard (app/overview/ = 4 vues par
-│                       profil, app/admin/ = 9 pages réservées à l'Admin ;
+│                       profil, app/admin/ = pages réservées à l'Admin : utilisateurs, facturation, modèles, données d'entraînement, prix du matériel, boîtiers, messages, demandes d'audit, santé ;
 │                       sources de mesures, interventions, documentation)
 ├── components/       Composants transverses, inchangés par l'intégration
 │   (provenance, alerts, level, kpi, tariff, charts, prediction, advice, plan,
@@ -122,7 +121,7 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   `POST /api/recommend`, qui renvoie des recommandations typées
   (`alerte`/`optimisation`/`efficacite`/`délestage`). `/app/alertes` et
   `/app/conseils` (`alerts.ts`/`advice.ts`) filtrent toutes deux sur
-  `type === 'alerte'` uniquement — un vrai problème détecté
+  `type === 'alerte'` uniquement, un vrai problème détecté
   (anomalie/surchauffe/vibration), en stricte correspondance : les deux pages
   montrent exactement les mêmes éléments, la première avec un bouton
   « Marquer comme résolu » (re-mesure simulée tant qu'aucun capteur n'est branché, `POST
@@ -130,7 +129,7 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   détaillées et un bouton « Lancer le diagnostic » (même endpoint). Le
   champ `auto_resolu` vaut toujours `false` : aucun délestage n'est exécuté par
   `/api/recommend` (Volet 2, C3). `optimisation`/`efficacite` (des suggestions, pas des
-  problèmes — pas de sens à les « résoudre ») sont filtrées à part par
+  problèmes : pas de sens à les « résoudre ») sont filtrées à part par
   `recommendations.ts` vers la page dédiée `/app/recommandations`, sans
   bouton de résolution.
 - **Registre des alertes** (`/app/alertes`, depuis le 2026-10-16) : la page lit
@@ -141,11 +140,11 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   en intervention a son onglet Alertes (`InterventionAlertsPage`).
 - **KPI** : dérivés de `/api/machines` + `/api/v1/billing` (client), ou de
   `/api/admin/metrics.system` (admin).
-- **Prédiction** : `/api/predict` (XGBoost) est par machine — `prediction.ts`
+- **Prédiction** : `/api/predict` (rythme réel de l'appareil, modèles relatifs en renfort, XGBoost en repli) est par machine, `prediction.ts`
   interroge chaque équipement du compte séparément puis agrège en une
   prédiction globale (somme point par point). `/app/prediction` affiche les
   deux, avec un sélecteur Heure (24 barres, kW) / Jour (7 barres, kWh) /
-  Semaine (4 barres, kWh) — même horizon backend, juste agrégé différemment
+  Semaine (4 barres, kWh) : même horizon backend, juste agrégé différemment
   côté frontend (`predict_next_hours()` fait déjà varier heure-du-jour et
   jour-de-semaine sur tout l'horizon demandé). L'aperçu compact des pages Vue
   d'ensemble (`PredictionPanel`) n'affiche que la prédiction globale, à
@@ -164,7 +163,7 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
 - **Actions admin réelles** : `/app/admin/utilisateurs` a un drill-down par
   utilisateur (ses machines + sa facturation du mois, `GET
   /api/admin/users/{id}/machines|facturation`) et un bouton promouvoir/rétrograder
-  (`PATCH .../role`, visible seulement si le compte connecté est superadmin — le
+  (`PATCH .../role`, visible seulement si le compte connecté est superadmin : le
   backend renvoie 403 sinon) ; `/app/admin/modeles` a un bouton « Recharger les
   modèles » (`POST /api/v1/ml/reload`) ; `/app/factures` a une action « la vraie
   facture est arrivée » pour confirmer le montant réel d'une prévision (`PATCH
@@ -175,28 +174,28 @@ Mappings notables (le detail exact est commenté dans chaque fichier) :
   déployé.
 - **Profil** (`/app/parametres`) : `useAuthMe`/`GET /api/auth/me` affiche
   email, type de compte, membre depuis, dernière connexion ; le nom est
-  modifiable (`PATCH /api/auth/me`, restreint au nom — `type_compte`
+  modifiable (`PATCH /api/auth/me`, restreint au nom : `type_compte`
   n'est volontairement pas éditable en self-service, il détermine tout le
   profil produit) et le mot de passe se change via `POST
   /api/auth/change-password`.
 
 Chaque bloc d'UI (une carte KPI, un panneau admin, un registre d'alerte…) reste
 alimenté par sa **propre requête** (`src/hooks/queries/`), jamais un appel
-global — une carte peut passer en état « indisponible » (backend indisponible,
+global : une carte peut passer en état « indisponible » (backend indisponible,
 requête en erreur) sans casser le reste de la page (voir
 `src/components/state/MetricState.tsx`). Ce n'est plus une simulation : c'est
 le comportement réel face à une vraie panne réseau ou backend.
 
-## OCR factures — extraction NouankanyAI
+## Lecture des factures par photo
 
 `/app/factures` a un vrai bouton d'upload photo (`POST
-/api/bills/upload-photo`), branché sur l'extraction NouankanyAI côté backend
-(`backend/app/ai/nouankany_vision.py` — vision Gemini, pas le pipeline
+/api/bills/upload-photo`), branché sur la lecture de facture côté backend
+(`backend/app/ai/nouankany_vision.py` : vision Gemini, pas le pipeline
 ReceiptFlow/Donut, écarté car fine-tuné sur un domaine sans rapport, voir le
 README backend). Un seul et même bouton couvre deux types de documents,
 détectés automatiquement par le modèle : une facture CIE papier
 (mois/montant/kWh) ou un reçu de paiement numérique (Wave, Orange Money, MTN
-Money, Moov Money, application CIE — montant/opérateur/référence). Les
+Money, Moov Money, application CIE : montant/opérateur/référence). Les
 champs optionnels correspondants (`document_type`, `payment_operator`,
 `payment_reference`) s'affichent via `OcrFieldList` sur la fiche facture. La
 prévision statistique (`POST /api/bills/forecast`) et la saisie manuelle
@@ -220,7 +219,7 @@ sécurité du site sont dans `vercel.json`.
 ## Vérification
 
 - À chaque PR, la CI lance `tsc -b`, `vitest run`, `oxlint` et `vite build` ; le nombre minimal
-  de tests est dans `.github/test-baseline.json`. Au 2026-10-21 : 344 tests passent (CI GitHub
+  de tests est dans `.github/test-baseline.json`. Nombre de tests : voir le suivi (CI GitHub
   suspendue jusqu'au 1er novembre 2026 : mêmes commandes lancées en local avant chaque fusion).
 - `src/test/backendIntegration.smoke.test.ts` exerce le vrai backend local (comptes de
   `seed_demo.py`) : lectures et mutations câblées à l'interface. Il est sauté sans backend local

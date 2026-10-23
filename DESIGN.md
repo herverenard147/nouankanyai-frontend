@@ -1,10 +1,10 @@
-# Nouankany — DESIGN.md (dashboard et landing)
+# Nouankany : DESIGN.md (dashboard et landing)
 
 Document d'orientation pour qui continue le design dans ce dépôt (Claude Code en local compris).
-Mis à jour le 2026-10-21. Il dit **les règles à suivre**, ce qui est fait et ce qui reste à faire pour chaque écran et
+Mis à jour le 2026-10-23. Il dit **les règles à suivre**, ce qui est fait et ce qui reste à faire pour chaque écran et
 chaque type de compte. Il complète `CLAUDE.md` (pièges techniques) et `README.md` (structure, API).
 
-Les maquettes sont dans le canvas « Nouankany — Propositions de design »
+Les maquettes sont dans le canvas « Nouankany : Propositions de design »
 (https://claude.ai/artifact/WnHgKLuo5DF81qHQ7XucGe) :
 - **validées** : `E` (landing complète), `F2` (section « problème »), `G1` (vue d'ensemble Industrie, bureau
   1440×900, niveau technique) et `G2` (même vue, mobile) ;
@@ -33,7 +33,7 @@ Les maquettes sont dans le canvas « Nouankany — Propositions de design »
 6. **Pas de motifs « IA »** : pas de petits libellés en capitales au-dessus de chaque titre, pas de cartes
    numérotées, pas de dégradés, pas de pastille « badge » décorative, pas d'icônes-lettres.
 7. **Un sous-titre par type de compte**, en haut de chaque vue d'ensemble, sous `DemoDataBanner` (absent
-   pour l'Admin) — textes décidés, déjà en place :
+   pour l'Admin) : textes décidés, déjà en place :
    - Ménage : « Vue d'ensemble de votre foyer : consommation, prédiction et dernière facture CIE en un coup d'œil. »
    - PME : « Vue d'ensemble de votre activité : consommation, prédiction et équipements déclarés sur vos sites. »
    - Industrie : « Vue d'ensemble de votre site industriel : consommation, prédiction, machines suivies et plan d'action en cours. »
@@ -42,7 +42,7 @@ Les maquettes sont dans le canvas « Nouankany — Propositions de design »
    `frenchNumbersWithUnits` pour les textes venus du backend. **Une seule famille pour tous les chiffres**
    (Hanken Grotesk, chiffres tabulaires) : les petits nombres n'ont plus de police mono, qui les différenciait
    des grands et élargissait l'espace entre « 1 500 » et « FCFA ». Dans les maquettes, l'espace est une espace
-   fine insécable (U+202F) ; dans le code `formatters.ts` normalise encore en espace normale (voir §9, à faire).
+   fine insécable (U+202F) ; dans le code `formatters.ts` utilise la même espace fine insécable (voir §9, fait).
 9. **Niveau technique : parler des appareils, pas du modèle.** Aucune mention de « modèle », « XGBoost », « jeu de
    données » ni de « capteur / simulé » dans les écrans client. On explique ce qui se passe sur chaque appareil
    (puissance attendue, température, vibration, pression comparées aux seuils d'alerte). Le détail des modèles
@@ -111,7 +111,7 @@ Niveau par défaut (`levelStore.ts`) : **Ménage = débutant (fixe, aucun sélec
 **Industrie = technique**, **Admin = technique**. Le choix est local (`localStorage`, clé `nouankany-level`) et
 conservé après rechargement. Sélecteur : `TopBar` (bureau), `Paramètres` (mobile).
 
-### Industrie — IMPLÉMENTÉ (`src/lib/overviewLevels.ts`, testé)
+### Industrie : IMPLÉMENTÉ (`src/lib/overviewLevels.ts`, testé)
 
 | Bloc | Débutant | Amateur | Technique |
 |---|---|---|---|
@@ -127,8 +127,8 @@ Même gabarit (en-tête, `KpiStrip`, bloc prédiction + alertes, bloc résumé +
 | Profil | Niveaux | Contenu proposé de la vue d'ensemble |
 |---|---|---|
 | **PME** (amateur par défaut) | 3 | `KpiStrip` (cibles : puissance/machines → `/app/equipements`, économies → `/app/facturation`, anomalies → `/app/alertes`) ; prédiction + alertes ; résumé des équipements déclarés (`Catégorie, Site, Statut` ; dès amateur `+ Marque, Modèle, Priorité`, comme aujourd'hui) ; raccourcis Conseils, Recommandations, Factures CIE, Facturation Nouankany. |
-| **Ménage** (débutant, sans sélecteur) | 1 | Gabarit le plus court : `KpiStrip` avec « Économies estimées ce mois » (indicatif) ; prédiction + alertes ; « Dernière facture CIE » ; raccourcis Conseils, Recommandations, Abonnement, Paliers. Entrées « Abonnement » et « Rapports » dans sa navigation (après Factures). |
-| **Admin** (technique par défaut) | 3 | `KpiStrip` télémétrie (base de données, uptime, latence 5 min, machines plateforme — provenance « télémétrie système ») ; alertes tous profils ; les 4 outils d'administration en raccourcis ; pas de `DemoDataBanner`. |
+| **Ménage** (débutant, sans sélecteur) | 1 | Gabarit le plus court : `KpiStrip` avec « Économies estimées ce mois » (indicatif) ; prédiction + alertes ; « Dernière facture CIE » ; raccourcis Conseils, Recommandations, Abonnement, Paliers. « Abonnement » et « Rapports » n'ont pas d'entrée propre dans son menu (ils s'ouvrent depuis l'accueil et « Mes factures », voir §5 bis). |
+| **Admin** (technique par défaut) | 3 | `KpiStrip` télémétrie (base de données, uptime, latence 5 min, machines plateforme : provenance « télémétrie système ») ; alertes tous profils ; les 4 outils d'administration en raccourcis ; pas de `DemoDataBanner`. |
 
 ### Ce que change le niveau, écran par écran (tel que dessiné dans les planches `H-*`)
 
@@ -217,21 +217,21 @@ ci-dessus sans les mettre à jour dans ce fichier.
   PME, Industrie et Admin gardent « machines » et « anomalie ». Menu du Ménage resserré (dix entrées avec
   Documentation).
 
-## 6. Décisions en attente (ne pas trancher sans le propriétaire)
+## 6. Décisions prises (historique ; toute nouvelle décision en attente se note ici)
 
 1. ~~Part de 10 %~~ **Décidé, puis remplacé le 2026-10-08** : PME et Industrie paient audit, redevance et 40 % (30 à 50)
    des économies mesurées ; la landing continue de dire « Structure définie lors de l'audit ».
-2. ~~Plan d'action et Audit~~ : maquettes validées, endpoints créés (PR NouanKanyAI#2, §9), branchés.
+2. ~~Plan d'action et Audit~~ : maquettes validées, endpoints créés (PR Nouankany#2, §9), branchés.
 3. ~~KPI « Part sur les économies » pour le Ménage~~ **Remplacé le 2026-10-08** : le Ménage paie un abonnement par palier
    (Découverte gratuit, Essentiel, Optimum) ; le KPI devient « Économies estimées ce mois », indicatif.
 4. ~~« Gratuit pour commencer »~~ **Décidé** : libellé retiré de la landing (offre pas encore ouverte). Aucun prix affiché pour
    la formule Ménage.
-5. **Textes générés par le backend** : article manquant corrigé (« Éteignez l'appareil « Compresseur d'air » », PR NouanKanyAI#2).
+5. **Textes générés par le backend** : article manquant corrigé (« Éteignez l'appareil « Compresseur d'air » », PR Nouankany#2).
    « Les capteurs de … montrent un comportement anormal » est **conservé** : le mot « capteur » reste permis quand il
    désigne un élément précis (décision du propriétaire).
 
 **Décidé par le propriétaire :** encadré « Vos appareils » dans la barre latérale (validé) ; page Admin « Modèles &
-observabilité » conservée ; aucune mention du modèle (nom, jeu de données) dans la Prédiction **côté client** à aucun niveau — les mentions de modèles restent dans le volet **Admin** (page « Modèles & observabilité » et, pour l'Admin seulement, nom du modèle sur la page Prédiction) ; planches `H-*`
+observabilité » conservée ; aucune mention du modèle (nom, jeu de données) dans la Prédiction **côté client** à aucun niveau : les mentions de modèles restent dans le volet **Admin** (page « Modèles & observabilité » et, pour l'Admin seulement, nom du modèle sur la page Prédiction) ; planches `H-*`
 validées. Le câblage frontend et la mise en ligne (frontend sur Vercel, backend sur Render) sont faits par Claude Code en local.
 
 > Mise en ligne (Vercel, Render), données et tests après déploiement : voir `MISE_EN_LIGNE.md`.
@@ -239,11 +239,11 @@ validées. Le câblage frontend et la mise en ligne (frontend sur Vercel, backen
 ## 7. Tester en local, avec le vrai backend
 
 ```bash
-# 1) Backend (dépôt herverenard147/nouankanyai ; PostgreSQL requis)
+# 1) Backend (dépôt herverenard147/NouanKanyAI ; PostgreSQL requis)
 DATABASE_URL=postgresql://… JWT_SECRET=… \
 FRONTEND_URL=http://localhost:5173 AI_MODE=mock PORT=8001 python backend/main.py
-# 2) Comptes et données de démonstration (script de la PR NouanKanyAI#1, idempotent)
-python backend/scripts/seed_demo.py --with-alert --with-history   # + factures, équipe, plan, vérifications (PR NouanKanyAI#2)
+# 2) Comptes et données de démonstration (script de la PR Nouankany#1, idempotent)
+python backend/scripts/seed_demo.py --with-alert --with-history   # + factures, équipe, plan, vérifications (PR Nouankany#2)
 python backend/scripts/promote_admin.py --email admin@nouankany.demo --role superadmin   # rôle admin : jamais automatique
 # 3) Frontend
 npm run dev            # http://localhost:5173, VITE_API_BASE_URL=http://localhost:8001
@@ -274,7 +274,7 @@ mêmes champs que l'API (`POST/PATCH /api/machines`, `/api/bills`, `/api/alert-t
 
 ## 9. Backend créé pour l'Audit, le Plan d'action et l'Historique des résolutions
 
-PR `herverenard147/NouanKanyAI#2` (branche `claude/audit-plan-endpoints`, empilée sur la PR #1). 150 tests passent.
+PR `herverenard147/NouanKanyAI#2` (branche `claude/audit-plan-endpoints`, empilée sur la PR #1).
 
 | Route | Rôle |
 |---|---|
@@ -315,7 +315,7 @@ Maquettes : planches `I`, `I2` (page) et `J` (annonce + navbar) du canvas. Code 
 ## 11. Boîtier dans le tableau de bord (`/app/boitier`, `/app/admin/boitiers`)
 
 Parcours décidé par le propriétaire : un compte n'a **aucun boîtier** au départ. Il en **demande** un (prix affiché dans la
-demande, 35 000 FCFA par boîtier, venu du backend et figé à la demande), le **reçoit**, puis **demande son code** de connexion
+demande, prix détaillé ligne par ligne venu du backend, `GET /api/v1/boitiers/price`, et figé à la demande, voir §14), le **reçoit**, puis **demande son code** de connexion
 et le saisit sur le boîtier. Dès qu'il y en a un, la page devient la **liste** ; chaque ligne ouvre la **fiche**.
 
 - Écrans : vide → demande (fenêtre) → « en attente de livraison » → code (formulaire puis code affiché une seule fois) →

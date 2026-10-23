@@ -43,7 +43,7 @@
   /* Border radii — README §Rayons de bordure
      Consolidé (30 sept, audit visuel) : 8 valeurs quasi-doublons (12-28px)
      ramenées à 2 paliers réels dérivés de --radius-base/--radius-elevated,
-     conformément au brief (design_handoff_nouankanyai/nouankanyai-design-brief.md :
+     conformément au brief de design d'août 2026 (retiré du dépôt, voir l'historique git) :
      "composants standards 10px, cartes segment/pricing 14-16px"). Les noms de
      classe (rounded-card, rounded-segment...) sont inchangés — seule la valeur
      réelle change — pour ne pas casser les usages existants. */
