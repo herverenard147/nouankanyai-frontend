@@ -19,10 +19,15 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
   retries: 0,
+  // Sans ces bornes Playwright attend sans limite (actionTimeout et navigationTimeout valent 0) : un
+  // sélecteur introuvable bloquait le test jusqu'à son délai global (15 min de CI le 2026-11-07).
+  timeout: 60_000,
   reporter: 'list',
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'retain-on-failure',
+    actionTimeout: 10_000,
+    navigationTimeout: 30_000,
   },
   projects: [
     {

@@ -46,7 +46,7 @@ async function login(page: Page, email: string, password: string) {
 }
 
 test('consommation et prédiction : trois profils, chaque vue', async ({ browser }) => {
-  test.setTimeout(25 * 60_000)
+  test.setTimeout(6 * 60_000) // mesuré : 2,3 min en CI
   const problems: string[] = []
   const accounts = seedAccounts()
   expect(Object.keys(accounts).length).toBe(3)

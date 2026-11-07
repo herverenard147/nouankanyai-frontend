@@ -26,7 +26,8 @@ const VIEWPORTS = [
 
 // Boutons qui ouvrent une fenêtre (jamais une action directe) ; les actions sans retour sont exclues.
 const OPENS_DIALOG = /^(\+ )?(Ajouter|Modifier|Nouve|Supprimer|Importer|Créer|Inviter|Changer|Demander|Voir|Détail|Mentions|Confidentialit|Conditions|Rôle|Retirer|Renommer|Saisir|Joindre)/i
-const NEVER_CLICK = /définitivement|déconnexion|se déconnecter/i
+// « Retirer « ligne » » (éditeur de prix) retire une ligne du brouillon : aucune fenêtre ne s'ouvre.
+const NEVER_CLICK = /définitivement|déconnexion|se déconnecter|^Retirer «/i
 
 const TYPE_COMPTE = { menage: 'Particulier', pme: 'PME', industrie: 'Industrie', admin: 'PME' } as const
 type ProfileKey = keyof typeof TYPE_COMPTE
@@ -76,7 +77,8 @@ async function inViewport(page: Page, selector: ReturnType<Page['locator']>) {
 
 for (const profile of ['menage', 'pme', 'industrie', 'admin'] as const) {
   test(`modales ${profile} : tiennent dans un écran bas`, async ({ page, request }) => {
-    test.setTimeout(15 * 60_000)
+    // Mesuré : 1,7 à 2,2 min par profil en CI (4,4 min au plus sur un poste chargé) ; un blocage doit échouer vite, pas consommer 15 min de quota.
+    test.setTimeout(6 * 60_000)
     const problems: string[] = []
     const checked: string[] = []
     const email = await createAccount(request, profile)
@@ -98,7 +100,8 @@ for (const profile of ['menage', 'pme', 'industrie', 'admin'] as const) {
         }
         for (const name of names) {
           const where = `${profile} ${viewport.name} ${entry.path} « ${name} »`
-          const button = page.locator('#main-content button:visible', { hasText: name }).first()
+          // Par rôle et nom accessible : un bouton à icône seule n'a pas de texte, `hasText` ne le trouvait jamais.
+          const button = page.locator('#main-content').getByRole('button', { name }).first()
           if (!(await button.isEnabled().catch(() => false))) continue
           await button.scrollIntoViewIfNeeded().catch(() => {})
           await button.click().catch(() => {})
