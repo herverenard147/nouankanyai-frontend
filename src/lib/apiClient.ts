@@ -124,11 +124,19 @@ function refreshSession(): Promise<boolean> {
   return refreshing
 }
 
+/** Après un rechargement le jeton d'accès (gardé en mémoire seulement) est vide : on le ré-obtient
+ * par le renouvellement, partagé avec les autres requêtes en cours. */
+async function ensureAccessToken(): Promise<void> {
+  const session = useSessionStore.getState().session
+  if (session && !session.token) await refreshSession()
+}
+
 async function request<T>(path: string, options: RequestOptions = {}, retried = false): Promise<T> {
   const { method = 'GET', body, rawBody, auth = true } = options
   const headers: Record<string, string> = {}
 
   if (auth) {
+    await ensureAccessToken()
     const token = useSessionStore.getState().session?.token
     if (token) headers.Authorization = `Bearer ${token}`
     // Technicien en intervention : seulement sur les routes d'installation (le backend refuse ailleurs de toute façon).
@@ -187,6 +195,7 @@ async function request<T>(path: string, options: RequestOptions = {}, retried = 
  */
 async function requestBlob(path: string, method: 'GET' | 'POST', body?: unknown): Promise<{ blob: Blob; filename: string | null }> {
   const headers: Record<string, string> = {}
+  await ensureAccessToken()
   const token = useSessionStore.getState().session?.token
   if (token) headers.Authorization = `Bearer ${token}`
   let requestBody: BodyInit | undefined

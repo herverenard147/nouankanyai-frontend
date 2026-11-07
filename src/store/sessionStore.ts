@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware'
 
 import { api, ApiError } from '@/lib/apiClient'
 import { ACCOUNT_TYPE_LABELS, deriveProfile } from '@/lib/profileMapping'
@@ -30,6 +30,31 @@ function toSession(result: BackendAuthResult): Session {
 function friendlyAuthError(error: unknown): string {
   if (error instanceof ApiError) return error.message
   return 'Une erreur inattendue est survenue.'
+}
+
+const STORAGE_KEY = 'nouankany-session'
+
+/** Jeton de renouvellement en sessionStorage (l'accès reste en mémoire, voir partialize). Une
+ * ancienne clé localStorage est lue une fois, son accès jeté, puis supprimée : pas de clair. */
+const sessionTabStorage: StateStorage = {
+  getItem: (name) => {
+    try {
+      const legacy = localStorage.getItem(name)
+      if (legacy !== null) {
+        localStorage.removeItem(name)
+        if (sessionStorage.getItem(name) === null) {
+          const parsed = JSON.parse(legacy)
+          if (parsed?.state?.session) parsed.state.session.token = ''
+          sessionStorage.setItem(name, JSON.stringify(parsed))
+        }
+      }
+    } catch {
+      // stockage indisponible ou ancienne valeur illisible : repartir sans session
+    }
+    return sessionStorage.getItem(name)
+  },
+  setItem: (name, value) => sessionStorage.setItem(name, value),
+  removeItem: (name) => sessionStorage.removeItem(name),
 }
 
 interface SessionState {
@@ -83,6 +108,11 @@ export const useSessionStore = create<SessionState>()(
       setDisplayName: (nom) =>
         set((state) => (state.session ? { session: { ...state.session, displayName: nom } } : state)),
     }),
-    { name: 'nouankany-session' },
+    {
+      name: STORAGE_KEY,
+      storage: createJSONStorage(() => sessionTabStorage),
+      // Jeton d'accès jamais écrit : après rechargement, il est ré-obtenu par le renouvellement.
+      partialize: (state) => ({ session: state.session && { ...state.session, token: '' } }),
+    },
   ),
 )

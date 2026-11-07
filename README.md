@@ -71,7 +71,7 @@ Le backend n'a pas de champ "profil" natif : `src/lib/profileMapping.ts` dérive
 `menage | pme | industrie | admin` à partir de `type_compte` (texte libre saisi
 à l'inscription, valeurs reconnues : Ménage/PME/Industrie) et `platform_role`
 (`admin`/`superadmin` → toujours `admin`, prioritaire ; `technicien` → profil technicien : Interventions, Documentation, Paramètres). La session
-(`sessionStore`, persistée en `localStorage`) porte le JWT réel du backend.
+(`sessionStore`) porte le JWT réel du backend : jeton d'accès en mémoire, jeton de renouvellement en `sessionStorage`.
 
 ## Structure des dossiers
 
@@ -212,7 +212,7 @@ branché : sur le site en ligne, les relevés restent simulés. Le champ `proven
 
 ## Sécurité
 
-Le jeton de session vit dans le stockage du navigateur (`sessionStore`) : un passage en cookie
+Le jeton d'accès n'est gardé qu'en mémoire et le jeton de renouvellement en `sessionStorage` (rien en `localStorage`) : recharger la page renouvelle l'accès, fermer l'onglet déconnecte (compromis assumé). Un passage en cookie
 protégé est reporté (il demande que l'API passe par le même domaine que le site). Les en-têtes de
 sécurité du site sont dans `vercel.json`.
 
