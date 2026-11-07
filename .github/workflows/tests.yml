@@ -3,8 +3,18 @@ name: Tests
 on:
   push:
     branches: [main]
+    paths-ignore: ["**.md", "docs/**"]
   pull_request:
     branches: [main]
+    paths-ignore: ["**.md", "docs/**"]
+
+# Quota GitHub : un nouveau push annule l'exécution périmée. Voir ~/Documents/dev-standards/ci-github.md.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   frontend-tests:
