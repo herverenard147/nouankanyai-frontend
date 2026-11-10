@@ -21,7 +21,7 @@ import { JournalPage } from '@/pages/app/JournalPage'
 import { useSessionStore } from '@/store/sessionStore'
 
 const FACTEUR = {
-  kg_par_kwh: 0.5, // valeur volontairement différente de 0,436 : le site doit afficher ce que l'API envoie
+  kg_par_kwh: 0.5, // valeur volontairement différente de 0,405 : le site doit afficher ce que l'API envoie
   source: 'Source de test',
   annee: 2019,
   methode: 'estimation par facteur réseau, jamais une mesure',
