@@ -74,14 +74,14 @@ export function ConsumptionPage() {
 
   const window = day ? `le ${dayLong(day)}, heure par heure` : (GRANULARITIES.find((g) => g.value === granularity)?.window ?? '')
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex min-w-0 max-w-full flex-col gap-7">
       <p className="text-sm text-text-secondary">
         Ce que vos appareils ont réellement consommé, calculé à partir de leurs relevés, et ce que cela coûte. Une période sans relevé reste vide :
         rien n’est inventé.
       </p>
 
-      <div className="flex flex-wrap items-end gap-4">
-        <fieldset className="flex flex-wrap border border-border">
+      <div className="flex min-w-0 flex-wrap items-end gap-4">
+        <fieldset className="flex max-w-full flex-wrap border border-border">
           <legend className="sr-only">Période</legend>
           {GRANULARITIES.map((g) => (
             <button
@@ -118,12 +118,13 @@ export function ConsumptionPage() {
             />
           </label>
         )}
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-text-primary">
+        {/* min-w-0 / max-w-full (N-01) : un nom d'appareil long élargissait la liste au-delà de l'écran. */}
+        <label className="flex min-w-0 max-w-full flex-col gap-1.5 text-sm font-medium text-text-primary">
           Appareil
           <select
             value={machine}
             onChange={(e) => setMachine(e.target.value)}
-            className="focus-ring min-h-10 rounded-control border border-border bg-card px-3 text-sm"
+            className="focus-ring min-h-10 w-full max-w-full rounded-control border border-border bg-card px-3 text-sm"
           >
             <option value="">Tous les appareils</option>
             {deviceList.map((m) => (
