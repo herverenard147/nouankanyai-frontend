@@ -16,6 +16,10 @@ import type { Profile } from '@/types/domain'
 /** Demande de matériel (2026-10-21) : boîtier qui parle, capteur d'un appareil ou passerelle. Le prix vient du backend,
  * détaillé ligne par ligne, et il est figé au moment de la demande. */
 
+/** D11 (décisions CNID du 2026-11-10) : le programme du boîtier qui parle n'est pas dans le dépôt ; il reste un
+ * prototype et ne se commande pas. Capteurs et passerelle restent proposés. */
+const NON_COMMERCIALISE: HardwareKind[] = ['vocal']
+
 /** Même plafond que le serveur (`app/schemas/boitier.py`, quantity ≤ 20). */
 const MAX_BOITIERS = 20
 export function RequestBoitierModal({ profile, onClose }: { profile: Profile; onClose: () => void }) {
@@ -23,7 +27,7 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
   const price = useBoitierPrice()
   const { request } = useBoitierMutations()
   const client = useQueryClient()
-  const [kind, setKind] = useState<HardwareKind>(profile === 'industrie' ? 'passerelle' : 'vocal')
+  const [kind, setKind] = useState<HardwareKind>(profile === 'industrie' ? 'passerelle' : 'capteur')
   const [showDetail, setShowDetail] = useState(false)
   const [site, setSite] = useState(EMPTY_SITE_CHOICE)
   const [quantity, setQuantity] = useState('1')
@@ -90,18 +94,24 @@ export function RequestBoitierModal({ profile, onClose }: { profile: Profile; on
             <legend className="mb-1 text-sm font-medium text-text-primary">
               Matériel <span className="text-alert" aria-hidden="true">*</span>
             </legend>
-            {catalog.map((m) => (
-              <label key={m.kind} className={`flex cursor-pointer items-start gap-2.5 border p-3 text-sm ${kind === m.kind ? 'border-text-primary' : 'border-border'}`}>
-                <input type="radio" name="materiel" value={m.kind} checked={kind === m.kind} onChange={() => setKind(m.kind)} className="mt-1" />
-                <span className="flex flex-1 flex-col gap-0.5">
-                  <span className="flex flex-wrap justify-between gap-2 font-semibold text-text-primary">
-                    {m.nom}
-                    <span className="tabular-nums">{formatFcfa(m.prix_fcfa)}</span>
+            {catalog.map((m) => {
+              const prototype = NON_COMMERCIALISE.includes(m.kind)
+              return (
+                <label
+                  key={m.kind}
+                  className={`flex items-start gap-2.5 border p-3 text-sm ${prototype ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'} ${kind === m.kind ? 'border-text-primary' : 'border-border'}`}
+                >
+                  <input type="radio" name="materiel" value={m.kind} checked={kind === m.kind} disabled={prototype} onChange={() => setKind(m.kind)} className="mt-1" />
+                  <span className="flex flex-1 flex-col gap-0.5">
+                    <span className="flex flex-wrap justify-between gap-2 font-semibold text-text-primary">
+                      {m.nom}
+                      {prototype ? <span>Disponible après le pilote</span> : <span className="tabular-nums">{formatFcfa(m.prix_fcfa)}</span>}
+                    </span>
+                    <span className="text-xs text-text-secondary">{prototype ? 'Prototype, non commercialisé.' : m.description}</span>
                   </span>
-                  <span className="text-xs text-text-secondary">{m.description}</span>
-                </span>
-              </label>
-            ))}
+                </label>
+              )
+            })}
           </fieldset>
         )}
         <SiteFields sites={siteList} value={site} onChange={setSite} label="Où sera-t-il installé ?" />

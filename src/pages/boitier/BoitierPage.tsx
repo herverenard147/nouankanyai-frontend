@@ -20,6 +20,8 @@ export function BoitierPage() {
       <main id="main-content">
         <section className="bg-dark-bg py-12 text-white lg:py-16">
           <div className="mx-auto max-w-[75rem] px-6">
+            {/* D11 (décisions CNID du 2026-11-10) : le programme du boîtier n'est pas dans le dépôt. */}
+            <p className="mb-3 font-mono text-sm font-semibold text-[#f59e6b]">Prototype, non commercialisé : disponible après le pilote</p>
             <h1 className="max-w-[20ch] text-[clamp(2.25rem,5vw,3.25rem)] font-bold leading-[1.05] tracking-[-0.025em]">
               Un coup d&rsquo;œil, et vous savez.
             </h1>

@@ -21,11 +21,12 @@ export function AboutSection() {
         </div>
         <div>
           <h2 className="max-w-[18ch] text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em] text-text-primary">
-            Une entreprise ivoirienne dédiée à la performance énergétique.
+            Une équipe basée à Abidjan, dédiée à la performance énergétique.
           </h2>
           <p className="mt-6 text-[1.25rem] leading-snug text-text-primary">
-            Nouankany conçoit une plateforme d&rsquo;efficacité énergétique qui combine intelligence artificielle et
-            instrumentation IoT ciblée.
+            {/* D5 (décisions CNID du 2026-11-10) : le code fait des moyennes et des seuils, pas de « l'IA prédictive ». */}
+            Nouankany conçoit une plateforme d&rsquo;efficacité énergétique : analyse statistique de la consommation,
+            lecture automatique de la facture par IA, masquage des données personnelles, et instrumentation IoT ciblée.
           </p>
           <p className="mt-4 text-text-secondary">
             Nous aidons les entreprises fortement consommatrices d&rsquo;électricité, industries, grande distribution,
@@ -33,8 +34,8 @@ export function AboutSection() {
             évitable. L&rsquo;équipe est basée à Abidjan.
           </p>
           <p className="mt-4 text-text-secondary">
-            Notre approche : rester agiles, rester spécialisés en IA prédictive et en pilotage énergétique, et
-            prouver la valeur sur le terrain, mesures à l&rsquo;appui, avant toute généralisation.
+            Notre approche : rester agiles, rester spécialisés en pilotage énergétique, et prouver la valeur sur le
+            terrain, mesures à l&rsquo;appui, avant toute généralisation.
           </p>
         </div>
       </div>

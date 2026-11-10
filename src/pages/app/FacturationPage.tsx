@@ -86,6 +86,11 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
       </section>
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Part des économies</h2>
+        {/* D12 : le calcul est testé mais pas encore validé par un juriste et un comptable (prévu pendant le pilote). */}
+        <p className="text-sm text-text-secondary">
+          Relevés indicatifs : ce ne sont pas des factures. La facturation n’est pas encore ouverte ; le calcul sera validé par un
+          juriste et un comptable pendant le pilote.
+        </p>
         <MetricState status="success" isEmpty={billing.statements.length === 0}>
           <StatementList statements={billing.statements} />
         </MetricState>
@@ -120,8 +125,9 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
           </p>
         )}
         <p className="text-sm text-text-secondary">
-          Changez de formule quand vous voulez. Une formule payante se règle d’avance pour 30 jours, à partir du jour du paiement ; le
-          paiement en ligne n’est pas encore ouvert : réglez auprès de l’équipe Nouankany, qui l’enregistre.
+          {/* D10 (décisions CNID du 2026-11-10) : aujourd'hui une formule payante s'active sans paiement ; on le dit. */}
+          Changez de formule quand vous voulez. Essentiel et Optimum sont gratuits pendant la phase pilote, paiement non encore ouvert.
+          À l’ouverture du paiement, une formule payante se règle d’avance pour 30 jours, au prix affiché.
         </p>
         {billing.abonnement && contractTier !== 'decouverte' && <SubscriptionStatus abonnement={billing.abonnement} menage />}
         {change.isSuccess && (

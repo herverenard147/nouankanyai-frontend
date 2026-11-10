@@ -80,3 +80,27 @@ export function formatMonth(value: string | null | undefined): string {
   if (!m || Number(m[2]) < 1 || Number(m[2]) > 12) return value ?? ''
   return `${MONTHS_FR[Number(m[2]) - 1]} ${m[1]}`
 }
+
+const MONTHS_FR_SHORT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
+
+/**
+ * Période réelle d'une facture (D18, décisions CNID du 2026-11-10) : une facture bimestrielle « 12/2023 » couvre
+ * octobre et novembre ; n'afficher qu'« octobre 2023 » faisait croire à une erreur (test réel, constat N-19).
+ * `printed` est la période imprimée sur la facture CIE (« AAAA-MM »), lue sur la photo, sinon absente.
+ */
+export function formatBillPeriod(month: string | null | undefined, periodMonths: number | null | undefined, printed?: string | null): string {
+  const m = /^(\d{4})-(\d{2})$/.exec(month ?? '')
+  const p = /^(\d{4})-(\d{2})$/.exec(printed ?? '')
+  const suffix = p && printed !== month ? `, facture CIE ${p[2]}/${p[1]}` : ''
+  if (!m || (periodMonths ?? 1) < 2) return `${formatMonth(month)}${suffix}`
+  const year = Number(m[1])
+  const index = Number(m[2]) - 1
+  if (index < 0 || index > 11) return month ?? ''
+  const end = index + (periodMonths ?? 1) - 1
+  const endYear = year + Math.floor(end / 12)
+  const range =
+    endYear === year
+      ? `${MONTHS_FR_SHORT[index]}-${MONTHS_FR_SHORT[end % 12]} ${year}`
+      : `${MONTHS_FR_SHORT[index]} ${year}-${MONTHS_FR_SHORT[end % 12]} ${endYear}`
+  return `${range}${suffix}`
+}

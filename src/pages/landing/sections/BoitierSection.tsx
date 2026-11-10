@@ -22,6 +22,8 @@ export function BoitierSection() {
     <section id="boitier" className="bg-dark-bg py-20 text-white lg:py-28">
       <div className="mx-auto grid max-w-[75rem] items-center gap-12 px-6 md:grid-cols-2 md:gap-10 lg:gap-[4.5rem]">
         <div>
+          {/* D11 (décisions CNID du 2026-11-10) : le programme du boîtier n'est pas dans le dépôt. */}
+          <p className="mb-3 font-mono text-sm font-semibold text-[#f59e6b]">Prototype, non commercialisé</p>
           <h2 className="max-w-[18ch] text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em]">
             Un boîtier qui dit l&rsquo;état de vos appareils.
           </h2>

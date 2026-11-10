@@ -46,6 +46,8 @@ export const CGU_SECTIONS: LegalSection[] = [
           'Optimum, 7 900 FCFA pour 30 jours : appareils illimités, prévision de 4 appareils, jusqu’à 3 logements, assistant, conseils et anomalies « À vérifier ».',
         ],
       },
+      // D10 (décisions CNID du 2026-11-10).
+      'Pendant la phase pilote, le paiement n’est pas encore ouvert : Essentiel et Optimum sont gratuits. Les prix ci-dessus s’appliqueront à l’ouverture du paiement.',
       'Un essai de 14 jours, à l’inscription, ouvre toutes les fonctions. Vous changez de formule vous-même, depuis la page Abonnement ; une formule plus petite est refusée tant que vos appareils ou logements dépassent ses limites, et rien n’est supprimé à votre place.',
       'Une formule payante se paie d’avance, pour 30 jours à partir du jour du paiement. Payée avant la fin de la période en cours, la nouvelle période suit l’actuelle, sans perdre de jour. Payée après, elle commence le jour du paiement : les jours sans abonnement ne sont jamais facturés. Sans paiement, le compte repasse en Découverte jusqu’au règlement ; vos données et votre historique restent intacts.',
       'Un rappel s’affiche dans vos notifications et vous est envoyé par email 5 jours avant la fin de la période, puis le jour de la fin.',

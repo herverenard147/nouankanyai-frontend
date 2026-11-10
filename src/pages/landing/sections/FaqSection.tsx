@@ -7,13 +7,14 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
   {
     question: 'Nouankany, c’est quoi exactement ?',
     answer:
-      'Pas un simple compteur : une plateforme qui vous dit quel appareil dérive, quand agir et combien vous allez économiser.',
+      'Pas un simple compteur : une plateforme qui vous dit quel appareil dérive, quand agir et combien vous pouvez économiser, chiffre estimé à l’appui.',
   },
   {
     question: 'Qui peut utiliser Nouankany aujourd’hui ?',
     answer: (
       <>
-        Les PME et Industries dès aujourd&rsquo;hui (pilote de 6 à 9 mois), les ménages ensuite.{' '}
+        Les PME et Industries, après un audit et un pilote de 6 à 9 mois. Les ménages, en accès anticipé, gratuit pendant
+        la phase pilote.{' '}
         <Link to="/comment-ca-marche" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
           Voir le détail du fonctionnement
         </Link>
@@ -24,7 +25,8 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
   {
     question: 'Faut-il acheter du matériel pour commencer ?',
     answer:
-      'Non. Nouankany finance les capteurs et se rémunère sur les économies mesurées, plus un abonnement mensuel. Seul l’audit de départ est facturé.',
+      // S-09 et A1-16 (audits du 2026-11-10) : Nouankany ne finance pas le matériel, son prix est donné avant commande.
+      'Non. Le logiciel démarre à partir de vos factures CIE, sans capteur. Les capteurs utiles se choisissent pendant l’audit ; leur prix est donné ligne par ligne avant toute commande.',
   },
   {
     question: 'Est-ce que je choisis moi-même quels équipements instrumenter ?',
@@ -34,12 +36,18 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
   {
     question: 'Comment les économies sont-elles mesurées ?',
     answer:
-      'On compare votre consommation réelle à celle mesurée pendant l’audit. Pas d’estimation, des mesures.',
+      'On compare, en kWh, vos factures CIE validées à la ligne de base relevée pendant l’audit. Les gains affichés avant la facture sont des estimations, et sont marqués comme telles.',
   },
   {
     question: 'Que se passe-t-il à la fin du pilote de 6 à 9 mois ?',
     answer:
       'Si les résultats sont bons, on étend à d’autres équipements ou sites. Sinon, rien n’est imposé.',
+  },
+  {
+    // D6 : « personne ne fait du suivi continu » était faux ; on nomme les acteurs et on dit ce qui diffère.
+    question: 'D’autres font-ils déjà cela ?',
+    answer:
+      'Oui, en partie : Smart Energy, EDF et Dalkia, Conergies et ARIC, les frigoristes locaux, ou ColdHubs et Koolboks pour le froid solaire. Nouankany assemble trois choses : la lecture de votre facture CIE, les kWh appareil par appareil, et le partage des économies, en indiquant l’origine de chaque chiffre.',
   },
   {
     question: 'Les données affichées sur le dashboard sont-elles réelles ?',
@@ -50,7 +58,8 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
     question: 'Quand la formule Ménage sera-t-elle disponible ?',
     answer: (
       <>
-        Elle l&rsquo;est déjà : la formule Découverte est gratuite.{' '}
+        Elle l&rsquo;est déjà, en accès anticipé : la formule Découverte est gratuite, et Essentiel et Optimum le sont
+        aussi pendant la phase pilote.{' '}
         <Link to="/login?mode=signup&type=menage" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
           Créer un compte
         </Link>

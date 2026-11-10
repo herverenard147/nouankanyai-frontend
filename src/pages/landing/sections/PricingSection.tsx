@@ -15,11 +15,13 @@ interface Tier {
   features: string[]
   /**
    * Ménage : un seul CTA, self-service direct vers l'inscription (déjà un
-   * essai gratuit). PME/Industrie : deux CTA : "Demander un audit" reste le
+   * essai gratuit). PME : deux CTA : "Demander un audit" reste le
    * parcours commercial réel (vente consultative, voir Business Plan §9),
    * "Essayer gratuitement" ouvre en plus un compte self-service marqué
    * essai (`is_trial`) pour explorer le produit avec des données simulées
-   * avant de s'engager dans un audit.
+   * avant de s'engager dans un audit. Industrie : "Demander un audit" seul
+   * (D9, décisions CNID du 2026-11-10) : le serveur ne donne pas d'essai à
+   * l'industrie, le bouton menait à un compte vide.
    */
   ctas: TierCta[]
   featured?: boolean
@@ -30,12 +32,14 @@ const TIERS: Tier[] = [
     name: 'Découverte',
     audience: 'Ménages, Côte d’Ivoire',
     priceLabel: 'Gratuit',
-    badge: 'Inscription ouverte',
+    badge: 'Accès anticipé',
     features: [
       'Suivi de consommation à partir de votre facture CIE',
       'Jusqu’à 3 appareils, rapport mensuel',
       'Conseils classés par impact',
-      'Essentiel (2 900 FCFA/mois) et Optimum (7 900 FCFA/mois) depuis votre espace',
+      'Compteur à carte : le jour où le crédit sera épuisé, estimé d’après vos recharges',
+      // D10 : les formules payantes s'activent sans paiement aujourd'hui ; on le dit au lieu d'afficher un prix.
+      'Essentiel et Optimum : gratuits pendant la phase pilote, paiement non encore ouvert',
     ],
     ctas: [{ label: 'Créer mon compte', href: '/login?mode=signup&type=menage', primary: true }],
   },
@@ -48,7 +52,7 @@ const TIERS: Tier[] = [
     features: [
       'Audit initial et ligne de base de votre consommation',
       'Plateforme complète : dashboards, alertes, recommandations',
-      'Part sur les économies réellement mesurées, pas un forfait figé',
+      'Part sur les économies constatées sur vos factures CIE, pas un forfait figé (relevés indicatifs pendant le pilote)',
       'Contrat pilote de 6 à 9 mois avant généralisation',
     ],
     ctas: [
@@ -65,13 +69,10 @@ const TIERS: Tier[] = [
     features: [
       'Audit et instrumentation IoT ciblée sur vos équipements prioritaires',
       'Détection d’anomalies et plan d’action chiffré',
-      'Part sur les économies réellement mesurées, pas un forfait figé',
+      'Part sur les économies constatées sur vos factures CIE, pas un forfait figé (relevés indicatifs pendant le pilote)',
       'Contrat pilote de 6 à 9 mois avant généralisation',
     ],
-    ctas: [
-      { label: 'Demander un audit', href: '/demander-un-audit?type=industrie', primary: true },
-      { label: 'Essayer gratuitement', href: '/login?mode=signup&type=industrie&trial=1', primary: false },
-    ],
+    ctas: [{ label: 'Demander un audit', href: '/demander-un-audit?type=industrie', primary: true }],
   },
 ]
 

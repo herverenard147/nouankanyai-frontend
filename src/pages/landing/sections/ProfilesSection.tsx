@@ -35,9 +35,10 @@ const PROFILES: { tag: string; caption: string; images: string[]; title: string;
       '/images/profiles/menage-televiseur.jpg',
     ],
     title: 'Comprendre et anticiper',
-    body: 'Votre facture prévue à l’avance. Fini la mauvaise surprise en fin de mois.',
+    body: 'Votre facture prévue à l’avance. Compteur à carte : le jour où le crédit sera épuisé, estimé d’après vos recharges.',
     level: 'debutant',
-    badge: 'Bientôt disponible',
+    // D8 : ouvert en accès anticipé (l'inscription marche), gratuit pendant la phase pilote.
+    badge: 'Accès anticipé, gratuit pendant la phase pilote',
   },
 ]
 
@@ -49,7 +50,7 @@ export function ProfilesSection() {
           Le dashboard s&rsquo;adapte à qui l&rsquo;utilise
         </h2>
         <p className="mt-4 max-w-[60ch] text-text-secondary">
-          PME et Industrie dès aujourd&rsquo;hui, Ménage ensuite. Le niveau de détail suit votre profil.
+          PME et Industrie en pilote après un audit, Ménage en accès anticipé. Le niveau de détail suit votre profil.
         </p>
 
         <div className="mt-14 flex flex-col gap-16 lg:mt-16 lg:gap-20">

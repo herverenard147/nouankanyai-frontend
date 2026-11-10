@@ -483,6 +483,8 @@ export interface BackendElectricityBill {
   has_photo: boolean
   /** 2 pour une facture bimestrielle : ses kWh sont répartis sur deux mois. */
   period_months?: number
+  /** Période imprimée sur la facture CIE (« AAAA-MM »), lue sur la photo ; absente pour une saisie (D18). */
+  periode_facture?: string | null
   /** Une facture n'entre dans un relevé qu'une fois validée par un administrateur. */
   validation_status?: 'en_attente' | 'validee' | 'rejetee'
   created_at: string

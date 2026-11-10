@@ -20,7 +20,7 @@ import type { BackendDeviceRequest } from '@/types/backend'
 type Dialog = 'request' | 'code' | null
 
 const STEPS = [
-  ['Commandez le matériel', 'Boîtier qui parle, capteur d’un appareil ou passerelle, avec le prix détaillé.'],
+  ['Commandez le matériel', 'Capteur d’un appareil ou passerelle, avec le prix détaillé. Le boîtier qui parle est un prototype : disponible après le pilote.'],
   ['Recevez-le', 'L’équipe Nouankany vous contacte pour la livraison.'],
   ['Connectez-le', 'À la réception, demandez un code ici, puis tapez-le sur la page de réglage du matériel (Wi-Fi « Nouankany-… »).'],
 ] as const
@@ -48,6 +48,8 @@ export function BoitiersPage() {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* D11 (décisions CNID du 2026-11-10) : le boîtier qui parle reste un prototype, il ne se commande pas. */}
+      <p className="text-sm font-semibold text-text-primary">Boîtier qui parle : prototype, non commercialisé. Disponible après le pilote.</p>
       <p className="text-sm text-text-secondary">
         {rows.length === 0
           ? 'Aucun boîtier n’est encore relié à votre compte.'

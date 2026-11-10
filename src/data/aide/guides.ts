@@ -330,7 +330,7 @@ const MENAGE: Guide = {
         {
           kind: 'steps',
           items: [
-            'Commandez-le depuis « Mon boîtier », « Commander du matériel » : choisissez le boîtier qui parle (ou un capteur) ; le prix est détaillé ligne par ligne.',
+            'Le boîtier qui parle est un prototype, non commercialisé : disponible après le pilote. Depuis « Mon boîtier », « Commander du matériel », vous pouvez déjà demander un capteur ou une passerelle ; le prix est détaillé ligne par ligne.',
             'À la réception, cliquez sur « J’ai reçu mon boîtier : demander mon code » : le code s’affiche une seule fois et vaut 15 minutes.',
             'Branchez le boîtier, connectez votre téléphone à son Wi-Fi « Nouankany-… » et tapez le code sur la page de réglage (détail dans « Connecter un boîtier, un capteur ou une passerelle »). Il apparaît « En ligne » dans la liste.',
           ],

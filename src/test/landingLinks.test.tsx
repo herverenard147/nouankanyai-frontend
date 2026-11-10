@@ -23,14 +23,16 @@ describe('inscription des ménages', () => {
   })
 })
 
-describe('graphique du tarif moyen', () => {
-  it('cite une source officielle et les dates d’application du 79 et du 87', () => {
+describe('graphique du prix du kWh', () => {
+  // Décision D4 du 2026-11-10 : « 79 → 87 » (et ses dates) n'avait aucune source retrouvée ; il est remplacé par le
+  // prix lu sur une vraie facture CIE basse tension. L'ancien test vérifiait le chiffre retiré.
+  it('cite une facture CIE réelle et ses deux tranches, hors taxes', () => {
     const tarif = LANDING_CHARTS.find((chart) => chart.id === 'tarif')
-    expect(tarif?.headline).toBe('79 → 87')
+    expect(tarif?.headline).toBe('94,94')
     expect(tarif?.bars.map((bar) => [bar.x, bar.value])).toEqual([
-      ['juil. 2023', 79],
-      ['janv. 2024', 87],
+      ['Tranche 1', 94.94],
+      ['Tranche 2', 80.74],
     ])
-    expect(tarif?.source).toMatch(/gouvernement/i)
+    expect(tarif?.source).toMatch(/facture CIE basse tension réelle/i)
   })
 })
