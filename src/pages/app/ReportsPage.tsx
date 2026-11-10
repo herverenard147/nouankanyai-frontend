@@ -29,9 +29,10 @@ const FORMAT_LABELS: Record<ReportFormat, string> = {
  * des documents à retravailler ou présenter. */
 export const REPORT_OPTIONS: Record<Exclude<Profile, 'admin' | 'technicien'>, { types: ReportType[]; formats: ReportFormat[] }> = {
   menage: { types: ['monthly'], formats: ['pdf'] },
-  pme: { types: ['monthly', 'weekly', 'energy_audit'], formats: ['pdf', 'xlsx'] },
+  // « Audit énergétique » retiré (S-08, 2026-11-10) : son contenu était celui du rapport mensuel, rien de plus.
+  pme: { types: ['monthly', 'weekly'], formats: ['pdf', 'xlsx'] },
   industrie: {
-    types: ['monthly', 'weekly', 'daily', 'energy_audit', 'anomaly_report', 'performance_report'],
+    types: ['monthly', 'weekly', 'daily', 'anomaly_report', 'performance_report'],
     formats: ['pdf', 'docx', 'pptx', 'xlsx'],
   },
 }

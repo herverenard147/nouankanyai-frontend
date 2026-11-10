@@ -445,6 +445,23 @@ export interface BackendBilling {
     actions: { timestamp: string; action: string; status: string }[]
   }
   legacy_invoices: { id: string; month: string; amount_xof: number | null }[]
+  /** Gain attendu des actions du plan faites ce mois (D13), avec le facteur CO2 du serveur (D3, jamais recopié ici). */
+  economies_estimees?: BackendEstimatedSavings
+}
+export interface BackendCo2Factor {
+  kg_par_kwh: number
+  source: string
+  annee: number
+  methode: string
+}
+export interface BackendEstimatedSavings {
+  mois: string
+  actions_faites: number
+  fcfa: number
+  kwh: number
+  kg_co2: number
+  provenance: 'estime'
+  facteur_co2: BackendCo2Factor
 }
 export type BackendUnpaidStatement = BackendBillingStatement & { user_id: string; user_nom: string; user_email: string }
 export type BackendTierRequest = BackendBillingContract & { user_id: string; user_nom: string; user_email: string }
