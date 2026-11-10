@@ -99,6 +99,22 @@ export const NAV_BY_PROFILE: NavByProfile = {
   ],
 }
 
+/**
+ * Menu court d'un compte de démonstration (S-14, audits du 2026-11-10) : 17 entrées pour l'industrie et la PME, trop
+ * pour une démonstration de quelques minutes. Six entrées d'abord, le menu complet à un clic (SideRail) ; les droits
+ * ne changent pas, toutes les pages restent ouvertes.
+ */
+export const DEMO_NAV_PATHS: Record<'pme' | 'industrie', string[]> = {
+  industrie: ['/app/apercu', '/app/alertes', '/app/machines', '/app/consommation', '/app/factures', '/app/rapports'],
+  pme: ['/app/apercu', '/app/alertes', '/app/equipements', '/app/consommation', '/app/factures', '/app/rapports'],
+}
+
+export function demoNav(profile: Profile) {
+  if (profile !== 'pme' && profile !== 'industrie') return null
+  const paths = DEMO_NAV_PATHS[profile]
+  return visibleNav(profile).filter((entry) => paths.includes(entry.path))
+}
+
 /** Entrées affichées dans le menu : toutes, sauf les pages rattachées à une autre (`under`). */
 export function visibleNav(profile: Profile) {
   return NAV_BY_PROFILE[profile].filter((entry) => !entry.under)

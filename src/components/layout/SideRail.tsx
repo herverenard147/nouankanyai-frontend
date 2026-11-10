@@ -1,9 +1,10 @@
 import { LogOut } from 'lucide-react'
+import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import { SensorDisclaimer } from '@/components/layout/SensorDisclaimer'
 import { useAlertsBadgeCount, useAdviceBadgeCount } from '@/hooks/useNotificationBadges'
-import { NAV_BY_PROFILE, visibleNav } from '@/lib/navConfig'
+import { NAV_BY_PROFILE, demoNav, visibleNav } from '@/lib/navConfig'
 import { NAV_ICONS } from '@/lib/navIcons'
 import { useSessionStore } from '@/store/sessionStore'
 
@@ -31,9 +32,12 @@ export function SideRail({ onNavigate }: SideRailProps) {
   const logout = useSessionStore((s) => s.logout)
   const alertsBadge = useAlertsBadgeCount(session?.profile ?? 'menage')
   const adviceBadge = useAdviceBadgeCount(session?.profile ?? 'menage')
+  const [fullMenu, setFullMenu] = useState(false)
 
   if (!session) return null
-  const entries = visibleNav(session.profile)
+  // Compte de démonstration PME ou industrie : menu court d'abord (S-14), le complet à la demande.
+  const shortMenu = session.isDemo && !fullMenu ? demoNav(session.profile) : null
+  const entries = shortMenu ?? visibleNav(session.profile)
   // Page ouverte sans entrée propre (menu resserré) : son entrée de rattachement reste surlignée.
   const parentOfCurrent = NAV_BY_PROFILE[session.profile].find(
     (entry) => entry.under && (location.pathname === entry.path || location.pathname.startsWith(`${entry.path}/`)),
@@ -71,6 +75,15 @@ export function SideRail({ onNavigate }: SideRailProps) {
             </NavLink>
           )
         })}
+        {shortMenu && (
+          <button
+            type="button"
+            onClick={() => setFullMenu(true)}
+            className="focus-ring mt-1 flex min-h-11 items-center px-3.5 text-left text-sm font-semibold text-dark-text underline underline-offset-4 hover:bg-dark-field/60"
+          >
+            Afficher tout le menu
+          </button>
+        )}
       </nav>
 
       <SensorDisclaimer />
