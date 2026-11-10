@@ -119,7 +119,9 @@ export const rawJoinWaitlist = (payload: BackendWaitlistPayload) =>
 export const rawSendContactMessage = (payload: BackendContactMessagePayload) =>
   api.post<BackendContactMessage>('/api/v1/contact', payload, false)
 
-export const rawSeedDemoData = () => api.post<BackendDemoSeedResult>('/api/v1/demo/seed')
+/** `supermarche` : chambres froides simulées, compte industrie seulement (D14, 2026-11-10). */
+export const rawSeedDemoData = (scenario?: 'supermarche') =>
+  api.post<BackendDemoSeedResult>(scenario ? `/api/v1/demo/seed?scenario=${scenario}` : '/api/v1/demo/seed')
 
 export const rawSites = () => api.get<BackendSite[]>('/api/sites')
 export const rawCreateSite = (payload: { nom: string; localisation?: string; compteur_type?: MeterType }) =>

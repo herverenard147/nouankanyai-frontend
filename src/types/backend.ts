@@ -288,6 +288,8 @@ export interface BackendAlertFeedbackIn {
 
 export interface BackendDemoSeedResult {
   profile: string
+  scenario?: 'supermarche'
+  alerts_opened?: number
   sites_created: number
   machines_created: number
   bills_created: number
