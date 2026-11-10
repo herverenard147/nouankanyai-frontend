@@ -9,7 +9,7 @@ export function Footer() {
         <div className="mb-9 grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr))]">
           <div>
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Nouankany" className="h-[26px] w-[26px] object-contain" />
+              <img src="/logo-96.png" alt="Nouankany" className="h-[26px] w-[26px] object-contain" />
               <span className="font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
                 Nouankany
               </span>

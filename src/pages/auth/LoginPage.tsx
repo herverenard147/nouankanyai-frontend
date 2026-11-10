@@ -78,7 +78,7 @@ export function LoginPage() {
     <div id="main-content" className="flex min-h-screen items-center justify-center bg-bg px-6 py-12">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center gap-3 text-center">
-          <img src="/logo.png" alt="Nouankany" className="h-10 w-10 object-contain" />
+          <img src="/logo-96.png" alt="Nouankany" className="h-10 w-10 object-contain" />
           <h1 className="text-h2-secondary font-bold text-text-primary">{mode === 'login' ? 'Connexion' : 'Créer un compte'}</h1>
           <p className="text-sm text-text-secondary">Accédez à votre dashboard Nouankany.</p>
         </div>

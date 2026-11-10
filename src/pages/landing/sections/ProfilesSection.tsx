@@ -8,10 +8,10 @@ const PROFILES: { tag: string; caption: string; images: string[]; title: string;
     caption:
       'Équipements des 4 secteurs pilotes : industrie, grande distribution, hôtellerie, santé',
     images: [
-      '/images/profiles/industrie-technicien.jpg',
-      '/images/profiles/supermarche.jpg',
-      '/images/profiles/industrie-hotellerie-clim.jpg',
-      '/images/profiles/industrie-sante-generateur.jpg',
+      '/images/profiles/industrie-technicien.webp',
+      '/images/profiles/supermarche.webp',
+      '/images/profiles/industrie-hotellerie-clim.webp',
+      '/images/profiles/industrie-sante-generateur.webp',
     ],
     title: 'Piloter la charge',
     body: 'Chaque machine surveillée, chaque dérive signalée, un plan d’action chiffré.',
@@ -21,7 +21,7 @@ const PROFILES: { tag: string; caption: string; images: string[]; title: string;
     tag: 'PME',
     caption:
       'Pressing (machines à laver, séchoirs) et bureau informatique (postes, serveur), les deux gros postes de consommation PME',
-    images: ['/images/profiles/pme-pressing.jpg', '/images/profiles/pme-informatique.jpg'],
+    images: ['/images/profiles/pme-pressing.webp', '/images/profiles/pme-informatique.webp'],
     title: 'Arbitrer sans risque',
     body: 'Des conseils classés par ce qu’ils vous font gagner, un rapport clair chaque semaine.',
     level: 'amateur',
@@ -30,9 +30,9 @@ const PROFILES: { tag: string; caption: string; images: string[]; title: string;
     tag: 'Ménage',
     caption: 'Climatiseur, réfrigérateur, téléviseur : les équipements domestiques les plus énergivores',
     images: [
-      '/images/profiles/menage-climatiseur.jpg',
-      '/images/profiles/menage-frigo.jpg',
-      '/images/profiles/menage-televiseur.jpg',
+      '/images/profiles/menage-climatiseur.webp',
+      '/images/profiles/menage-frigo.webp',
+      '/images/profiles/menage-televiseur.webp',
     ],
     title: 'Comprendre et anticiper',
     body: 'Votre facture prévue à l’avance. Compteur à carte : le jour où le crédit sera épuisé, estimé d’après vos recharges.',

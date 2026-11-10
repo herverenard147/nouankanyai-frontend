@@ -43,7 +43,7 @@ export function SideRail({ onNavigate }: SideRailProps) {
     <div className="flex h-full flex-col gap-4 bg-dark-bg px-2.5 py-4 text-dark-text">
       <div className="flex items-center justify-between gap-2 pr-1">
         <Link to="/app/apercu" onClick={onNavigate} className="focus-ring flex items-center gap-2.5 px-3.5 pb-2 pt-1">
-          <img src="/logo.png" alt="Nouankany" className="h-7 w-7 object-contain" />
+          <img src="/logo-96.png" alt="Nouankany" className="h-7 w-7 object-contain" />
           <span className="text-base font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
             Nouankany
           </span>
