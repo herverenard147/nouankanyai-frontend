@@ -1,4 +1,16 @@
 import { MutationCache, QueryClient } from '@tanstack/react-query'
+import { ApiError } from './apiClient'
+
+/**
+ * Nouvelle tentative des lectures (S-11, audit P8) : l'hébergement gratuit du backend se réveille en environ 100 s.
+ * On retente 2 fois seulement une panne réseau (statut 0) ou une passerelle indisponible (502, 503, 504) ; jamais
+ * une erreur de requête (401, 403, 404, 422) ni une erreur 500, qui ne changeraient pas au second essai.
+ */
+export const shouldRetry = (failureCount: number, error: unknown): boolean =>
+  failureCount < 2 && error instanceof ApiError && [0, 502, 503, 504].includes(error.status)
+
+/** 3 s, puis 6 s, au plus 30 s. */
+export const retryDelay = (attempt: number): number => Math.min(3000 * (attempt + 1), 30_000)
 
 /**
  * Instance partagée, exportée (pas seulement locale à App.tsx) pour que la
@@ -25,7 +37,8 @@ export const queryClient: QueryClient = new QueryClient({
   }),
   defaultOptions: {
     queries: {
-      retry: false,
+      retry: shouldRetry,
+      retryDelay,
       refetchOnWindowFocus: false,
       staleTime: 20_000,
     },

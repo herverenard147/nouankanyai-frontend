@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { BackendMachine } from '@/types/backend'
 
@@ -9,6 +9,7 @@ vi.mock('@/api/rawBackend', async (importOriginal) => {
   return { ...original, getCachedMachines: vi.fn(), rawPredict: vi.fn(), rawBilling: vi.fn() }
 })
 
+import { queryClient } from '@/lib/queryClient'
 import { fetchKpiSet } from '@/api/kpis'
 import { fetchMachinesTable } from '@/api/machinesTable'
 import { fetchPredictionsBundle } from '@/api/prediction'
@@ -53,6 +54,9 @@ describe('Machine sans relevé (M7)', () => {
 })
 
 describe('Provenance des indicateurs (M20)', () => {
+  // Les autres appels de fetchKpiSet ne sont pas simulés et échouent (réseau, statut 0) : sans nouvelle tentative
+  // (S-11 les retente 3 s et 6 s en production), le test reste rapide.
+  beforeAll(() => queryClient.setDefaultOptions({ queries: { retry: false } }))
   it('la puissance et les alertes, tirées de relevés simulés, sont « synthétiques »', async () => {
     vi.mocked(getCachedMachines).mockResolvedValue([machine({ temperature_c: 30, vibration_mm_s: 1, pressure_bar: 1, has_reading: true })])
     vi.mocked(rawBilling).mockResolvedValue({
