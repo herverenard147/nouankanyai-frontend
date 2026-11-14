@@ -20,7 +20,7 @@ describe('boîtier : navigation et accès', () => {
     for (const profile of ['menage', 'pme', 'admin'] as const) {
       const entries = NAV_BY_PROFILE[profile]
       const index = entries.findIndex((e) => e.label === 'Paramètres')
-      expect(entries[index - 1]?.label).toMatch(/^(Mon boîtier|Boîtiers?)$/)
+      expect(entries[index - 1]?.label).toMatch(/^(Mon boîtier \(prototype\)|Boîtier \(prototype\)|Boîtiers)$/)
     }
   })
 

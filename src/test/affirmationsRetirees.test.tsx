@@ -1,7 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { readFileSync, readdirSync, statSync } from 'node:fs'
-import { join } from 'node:path'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -30,15 +28,10 @@ import { AboutSection } from '@/pages/landing/sections/AboutSection'
 import { FaqSection } from '@/pages/landing/sections/FaqSection'
 import { NAV_BY_PROFILE } from '@/lib/navConfig'
 
-const INTERDITS = [/IA prédictive/i, /prédit votre/i, /prédire votre/i, /finance les capteurs/i, /Pas d.estimation/i, /entreprise ivoirienne/i, /Une entreprise ivoirienne/i]
+const INTERDITS = [/IA prédictive/i, /prédit votre/i, /prédire votre/i, /finance les capteurs/i, /Pas d.estimation/i, /entreprise ivoirienne/i, /réellement mesurées/i, /pas estimées a priori/i]
 
-function sources(dir: string): string[] {
-  return readdirSync(dir).flatMap((name) => {
-    const path = join(dir, name)
-    if (statSync(path).isDirectory()) return name === 'test' ? [] : sources(path)
-    return /\.(tsx?|html)$/.test(name) ? [path] : []
-  })
-}
+const SOURCES = import.meta.glob<string>(['/src/**/*.{ts,tsx}', '!/src/test/**'], { query: '?raw', import: 'default', eager: true })
+const INDEX_HTML: string = (import.meta.glob<string>('/index.html', { query: '?raw', import: 'default', eager: true })['/index.html'])
 
 function wrap(node: React.ReactNode) {
   return render(
@@ -50,13 +43,13 @@ function wrap(node: React.ReactNode) {
 
 describe('affirmations retirées du site de base (S-09)', () => {
   it('aucune source du front ni la méta-description ne porte une formulation interdite', () => {
-    const fichiers = [...sources('src'), 'index.html']
-    const trouves = fichiers.flatMap((f) => INTERDITS.filter((re) => re.test(readFileSync(f, 'utf8'))).map((re) => `${f} : ${re}`))
+    const fichiers: Record<string, string> = { ...SOURCES, '/index.html': INDEX_HTML }
+    const trouves = Object.entries(fichiers).flatMap(([f, texte]) => INTERDITS.filter((re) => re.test(texte)).map((re) => `${f} : ${re}`))
     expect(trouves).toEqual([])
   })
 
   it('la méta-description décrit ce que le produit fait', () => {
-    const html = readFileSync('index.html', 'utf8')
+    const html = INDEX_HTML
     expect(html).toMatch(/analyse statistique de la consommation/)
     expect(html).toMatch(/lecture automatique de la facture par IA/)
   })
@@ -70,7 +63,8 @@ describe('affirmations retirées du site de base (S-09)', () => {
   it('Comment ça marche : pas de prédiction', () => {
     wrap(<HowItWorksPage />)
     expect(document.body.textContent).not.toMatch(/prédit|prédictive/i)
-    expect(document.body.textContent).toMatch(/analyse statistique de la consommation/)
+    expect(document.body.textContent).toMatch(/analyse statistiquement votre consommation/)
+    expect(document.body.textContent).not.toMatch(/réellement mesurées|pas estimées/)
   })
 
   it('FAQ : le matériel est vendu, les économies viennent des factures CIE déclarées', () => {
