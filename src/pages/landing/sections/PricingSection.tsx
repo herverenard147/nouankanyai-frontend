@@ -48,7 +48,7 @@ const TIERS: Tier[] = [
     features: [
       'Audit initial et ligne de base de votre consommation',
       'Plateforme complète : dashboards, alertes, recommandations',
-      'Part sur les économies réellement mesurées, pas un forfait figé',
+      'Part sur les économies constatées sur factures CIE validées, pas un forfait figé',
       'Contrat pilote de 6 à 9 mois avant généralisation',
     ],
     ctas: [
@@ -65,7 +65,7 @@ const TIERS: Tier[] = [
     features: [
       'Audit et instrumentation IoT ciblée sur vos équipements prioritaires',
       'Détection d’anomalies et plan d’action chiffré',
-      'Part sur les économies réellement mesurées, pas un forfait figé',
+      'Part sur les économies constatées sur factures CIE validées, pas un forfait figé',
       'Contrat pilote de 6 à 9 mois avant généralisation',
     ],
     ctas: [

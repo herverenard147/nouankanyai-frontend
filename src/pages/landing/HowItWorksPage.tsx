@@ -20,7 +20,7 @@ const PHASES = [
     step: '03',
     title: 'Exploitation terrain',
     period: 'Mois 4 à 6',
-    body: 'Amélioration continue des modèles. Les économies générées sur vos équipements prioritaires sont mesurées, pas estimées a priori.',
+    body: 'Amélioration continue des modèles. Les économies générées sur vos équipements prioritaires sont constatées sur vos factures CIE validées, par rapport à la ligne de base.',
   },
   {
     step: '04',
@@ -37,7 +37,7 @@ const REVENUE_LINES = [
   },
   {
     title: 'Part sur les économies constatées',
-    body: 'Un pourcentage des économies réellement mesurées, pas un forfait figé.',
+    body: 'Un pourcentage des économies constatées sur factures CIE validées, pas un forfait figé.',
   },
   {
     title: 'Abonnement SaaS',
@@ -124,10 +124,10 @@ export function HowItWorksPage() {
             </div>
             <div className="max-w-[40rem] rounded-card border border-border bg-card p-6">
               <p className="text-small-body text-text-secondary">
-                Vous prenez en photo votre facture CIE. Nouankany prédit votre prochaine consommation et vous dit
+                Vous prenez en photo votre facture CIE. Nouankany analyse statistiquement votre consommation, lit la facture par IA (données personnelles masquées) et vous dit
                 quels appareils pèsent le plus et comment mieux les régler pour payer moins (chez un particulier, le prix
                 du kWh ne dépend pas de l&rsquo;heure). Sans capteur pour commencer : ce parcours repose sur votre
-                facture et votre déclaration d&rsquo;équipements ; un boîtier peut s&rsquo;ajouter ensuite.
+                facture et votre déclaration d&rsquo;équipements ; un boîtier (prototype, non commercialisé) pourra s&rsquo;ajouter après le pilote.
               </p>
               <p className="mt-3 text-small-body text-text-secondary">
                 La formule Découverte est gratuite (jusqu&rsquo;à 3 appareils).

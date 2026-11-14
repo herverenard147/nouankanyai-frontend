@@ -24,7 +24,7 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
   {
     question: 'Faut-il acheter du matériel pour commencer ?',
     answer:
-      'Non. Nouankany finance les capteurs et se rémunère sur les économies mesurées, plus un abonnement mensuel. Seul l’audit de départ est facturé.',
+      'Pas pour commencer : le parcours repose sur vos factures CIE. Le matériel de mesure n’est pas financé par Nouankany : quand il sera utile, il s’achète auprès de Nouankany, et sa commande ouvre après le pilote. Nouankany se rémunère par un abonnement mensuel et une part des économies constatées sur vos factures CIE validées ; l’audit de départ est facturé à part.',
   },
   {
     question: 'Est-ce que je choisis moi-même quels équipements instrumenter ?',
@@ -34,7 +34,7 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
   {
     question: 'Comment les économies sont-elles mesurées ?',
     answer:
-      'On compare votre consommation réelle à celle mesurée pendant l’audit. Pas d’estimation, des mesures.',
+      'On compare vos factures CIE déclarées et validées à la ligne de base fixée pendant l’audit. Ce sont des relevés indicatifs, pas des mesures de terrain.',
   },
   {
     question: 'Que se passe-t-il à la fin du pilote de 6 à 9 mois ?',
