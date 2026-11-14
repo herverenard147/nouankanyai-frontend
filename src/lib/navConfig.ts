@@ -26,7 +26,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/facturation', label: 'Abonnement' },
     { path: '/app/conseils', label: 'Conseils' },
     { path: '/app/alertes', label: 'À surveiller' },
-    { path: '/app/boitier', label: 'Mon boîtier' },
+    { path: '/app/boitier', label: 'Mon boîtier (prototype)' },
     { path: '/app/parametres', label: 'Paramètres' },
     // Documentation dans le menu de chaque compte (demande du propriétaire, 2026-10-16 : dixième entrée du ménage).
     { path: '/app/aide', label: 'Documentation' },
@@ -48,7 +48,7 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/rapports', label: 'Rapports' },
     { path: '/app/audit', label: 'Audit' },
     { path: '/app/sources', label: 'Sources de mesures' },
-    { path: '/app/boitier', label: 'Boîtier' },
+    { path: '/app/boitier', label: 'Boîtier (prototype)' },
     { path: '/app/parametres', label: 'Paramètres' },
     { path: '/app/aide', label: 'Documentation' },
   ],

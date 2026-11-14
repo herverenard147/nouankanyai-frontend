@@ -294,7 +294,7 @@ const ABONNEMENT_PRO: Section = {
   id: 'abonnement',
   title: 'Abonnement et part des économies',
   blocks: [
-    { kind: 'p', text: 'Deux montants distincts. L’abonnement (50 000 FCFA par défaut) se paie d’avance, pour 30 jours à partir du jour du paiement. La part des économies (40 % par défaut) se calcule à chaque facture CIE validée, sur les mois qu’elle couvre (un ou deux) : sans économie, elle est nulle.' },
+    { kind: 'p', text: 'Relevés indicatifs, aucune facture n’est émise pour l’instant. Deux montants distincts. L’abonnement (50 000 FCFA par défaut) se paie d’avance, pour 30 jours à partir du jour du paiement. La part des économies (40 % par défaut) se calcule à chaque facture CIE validée, sur les mois qu’elle couvre (un ou deux) : sans économie, elle est nulle.' },
     { kind: 'p', text: 'Chaque part se règle dans les 15 jours. Impayée à son échéance, elle s’ajoute à la part suivante, comme sur une facture CIE ; si cette part-là reste aussi impayée 15 jours après son échéance, les services sont suspendus jusqu’au paiement. Les frais d’audit ont leur propre relevé, à la signature.' },
     { kind: 'p', text: 'Facture CIE en retard : 30 jours après la fin de sa période, un rappel s’affiche dans la cloche et part par email. Si le compteur général de votre site est mesuré par un boîtier, une part provisoire est calculée sur ses relevés, puis remplacée par la vraie part à l’arrivée de la facture, ou corrigée en plus ou en moins si elle était déjà payée. Sans compteur mesuré, les services sont suspendus 15 jours après le rappel, jusqu’à l’envoi de la facture (même avant sa validation).' },
     { kind: 'steps', items: ['Menu « Facturation » : la date de fin de l’abonnement, vos paiements et vos relevés.', 'Un rappel s’affiche dans la cloche des notifications et part par email 5 jours avant la fin de l’abonnement, puis le jour même.', 'Payé avant la fin : la nouvelle période suit l’actuelle. Payé après : les 30 jours commencent le jour du paiement, les jours sans abonnement ne sont pas facturés.'] },
@@ -330,7 +330,7 @@ const MENAGE: Guide = {
         {
           kind: 'steps',
           items: [
-            'Commandez-le depuis « Mon boîtier », « Commander du matériel » : choisissez le boîtier qui parle (ou un capteur) ; le prix est détaillé ligne par ligne.',
+            'Le boîtier est un prototype, non commercialisé : la commande est fermée (« Disponible après le pilote »).',
             'À la réception, cliquez sur « J’ai reçu mon boîtier : demander mon code » : le code s’affiche une seule fois et vaut 15 minutes.',
             'Branchez le boîtier, connectez votre téléphone à son Wi-Fi « Nouankany-… » et tapez le code sur la page de réglage (détail dans « Connecter un boîtier, un capteur ou une passerelle »). Il apparaît « En ligne » dans la liste.',
           ],
