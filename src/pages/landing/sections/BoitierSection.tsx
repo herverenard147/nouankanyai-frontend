@@ -27,7 +27,7 @@ export function BoitierSection() {
           </h2>
           <p className="mt-5 max-w-[50ch] text-[1.2rem] leading-snug text-dark-text">
             Vert, orange ou rouge : vous savez d&rsquo;un coup d&rsquo;œil. Et il vous répond : &laquo;&nbsp;{WAKE_PHRASE},
-            tout va bien&nbsp;?&nbsp;&raquo;
+            tout va bien&nbsp;?&nbsp;&raquo; Prototype, non commercialisé.
           </p>
           <p className="mt-8">
             <Link

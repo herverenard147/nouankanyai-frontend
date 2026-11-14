@@ -27,7 +27,7 @@ beforeEach(() => Object.values(api).forEach((mock) => mock.mockReset()))
 describe('menu resserré du Ménage (partie H2)', () => {
   it('entrées au vocabulaire du quotidien, Documentation (2026-10-16), Abonnement et Facture prévue (2026-10-21), sans Rapports ni Recommandations', () => {
     expect(visibleNav('menage').map((entry) => entry.label)).toEqual([
-      'Accueil', 'Premiers pas', 'Mes appareils', 'Ma consommation', 'Facture prévue', 'Mes factures', 'Abonnement', 'Conseils', 'À surveiller', 'Mon boîtier', 'Paramètres', 'Documentation',
+      'Accueil', 'Premiers pas', 'Mes appareils', 'Ma consommation', 'Facture prévue', 'Mes factures', 'Abonnement', 'Conseils', 'À surveiller', 'Mon boîtier (prototype)', 'Paramètres', 'Documentation',
     ])
   })
   it('aucune fonction supprimée : les pages retirées du menu restent accessibles et rattachées à une entrée visible', () => {

@@ -115,8 +115,8 @@ export const STEPS_BY_PROFILE: Record<Profile, StartStep[]> = {
     },
     {
       id: 'boitier',
-      title: 'Demander un boîtier de mesure',
-      what: 'Le boîtier mesure vos appareils en continu. Sans lui, les relevés affichés sont des simulations.',
+      title: 'Relier un boîtier (prototype)',
+      what: 'Le boîtier est un prototype, non commercialisé : sa commande ouvre après le pilote. Sans lui, les relevés affichés sont des simulations.',
       to: '/app/boitier',
       cta: 'Voir le boîtier',
       check: 'boitiers',

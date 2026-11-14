@@ -40,10 +40,9 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
           {/* Décisions du propriétaire : prix de l'audit fixé avec chaque client, abonnement de 50 000 FCFA dû chaque mois (2026-10-18
               et 21), 40 % des économies par défaut, de 30 à 50 % selon le contrat (retour au business plan le 2026-10-21). */}
           Aucun contrat pour l’instant. Tout commence par un audit de référence qui mesure votre consommation actuelle ; son prix est
-          fixé avec vous, selon votre site. Ensuite : un abonnement de {formatFcfa(d.saas_fee_fcfa)} par mois et, par défaut,{' '}
-          {formatNumberFr(d.savings_share_pct)} % des économies réellement mesurées sur vos factures CIE. Ce pourcentage peut être revu
-          lors de l’audit, selon les capteurs et équipements à installer. L’abonnement est dû chaque mois, même sans économie ; la part des
-          économies est calculée dès que la facture CIE du mois est validée.
+          fixé avec vous, selon votre site. Ensuite, des relevés indicatifs seront établis à partir de vos factures CIE validées : à titre
+          d’exemple, un abonnement de {formatFcfa(d.saas_fee_fcfa)} par mois et {formatNumberFr(d.savings_share_pct)} % des économies
+          constatées par défaut, pourcentage revu lors de l’audit. Ces montants ne sont pas encore facturés.
         </p>
         {billing.effective_tier === 'decouverte_pro' && billing.pme_free_tier && (
           <p className="text-sm text-text-secondary">
@@ -85,7 +84,10 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
         {billing.abonnement && <SubscriptionStatus abonnement={billing.abonnement} />}
       </section>
       <section className={SECTION}>
-        <h2 className="text-section-title font-semibold text-text-primary">Part des économies</h2>
+        <h2 className="text-section-title font-semibold text-text-primary">Relevés indicatifs</h2>
+        <p className="text-sm text-text-secondary">
+          Ces relevés ne sont ni des factures ni des demandes de paiement : aucune facture n’est émise tant que le modèle de facturation n’est pas validé.
+        </p>
         <MetricState status="success" isEmpty={billing.statements.length === 0}>
           <StatementList statements={billing.statements} />
         </MetricState>
@@ -184,7 +186,10 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
         </Modal>
       )}
       <section className={SECTION}>
-        <h2 className="text-section-title font-semibold text-text-primary">Relevés</h2>
+        <h2 className="text-section-title font-semibold text-text-primary">Relevés indicatifs</h2>
+        <p className="text-sm text-text-secondary">
+          Ces relevés ne sont ni des factures ni des demandes de paiement : aucune facture n’est émise tant que le modèle de facturation n’est pas validé.
+        </p>
         <MetricState status="success" isEmpty={billing.statements.length === 0}>
           <StatementList statements={billing.statements} />
         </MetricState>

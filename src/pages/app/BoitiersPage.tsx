@@ -6,28 +6,27 @@ import { kindOf } from '@/api/sources'
 import { CONNECTION_LABEL, LANGUAGE_LABEL, LIGHT_SHORT, lastActivity } from '@/api/boitiers'
 import { LightDot, Th } from '@/components/boitier/BoitierParts'
 import { PairingModal } from '@/components/boitier/PairingModal'
-import { RequestBoitierModal } from '@/components/boitier/RequestBoitierModal'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { MutationError } from '@/components/ui/Modal'
-import { useBoitierMutations, useBoitierPrice, useBoitierRequests, useBoitiers } from '@/hooks/queries/useBoitiers'
+import { useBoitierMutations, useBoitierRequests, useBoitiers } from '@/hooks/queries/useBoitiers'
 import { boitierListColumns } from '@/lib/boitierLevels'
-import { formatFcfa, formatUtcDateTime } from '@/lib/formatters'
+import { formatUtcDateTime } from '@/lib/formatters'
 import { useLevel } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 import type { BackendDeviceRequest } from '@/types/backend'
 
-type Dialog = 'request' | 'code' | null
+type Dialog = 'code' | null
 
 const STEPS = [
-  ['Commandez le matériel', 'Boîtier qui parle, capteur d’un appareil ou passerelle, avec le prix détaillé.'],
+  ['Commande du matériel', 'Fermée : le boîtier est un prototype, non commercialisé. La commande ouvre après le pilote.'],
   ['Recevez-le', 'L’équipe Nouankany vous contacte pour la livraison.'],
   ['Connectez-le', 'À la réception, demandez un code ici, puis tapez-le sur la page de réglage du matériel (Wi-Fi « Nouankany-… »).'],
 ] as const
 
 /**
- * Boîtier vocal : un compte n'a au départ aucun boîtier. Il en demande un (prix affiché), le reçoit, puis demande ici le
- * code qui le relie à son compte. Dès qu'il y en a un, la page devient la liste ; chaque ligne ouvre la fiche du boîtier.
+ * Boîtier vocal (S-09, 2026-11-14) : prototype, non commercialisé. La commande et le prix sont retirés jusqu'après le
+ * pilote ; un boîtier déjà livré se relie ici avec son code. Dès qu'il y en a un, la page devient la liste ; chaque ligne ouvre la fiche du boîtier.
  */
 export function BoitiersPage() {
   const profile = useSessionStore((s) => s.session?.profile)
@@ -48,6 +47,7 @@ export function BoitiersPage() {
 
   return (
     <div className="flex flex-col gap-5">
+      <p className="w-fit rounded-pill bg-bg-elevated px-3 py-1 text-xs font-semibold text-text-secondary">Prototype, non commercialisé</p>
       <p className="text-sm text-text-secondary">
         {rows.length === 0
           ? 'Aucun boîtier n’est encore relié à votre compte.'
@@ -59,7 +59,6 @@ export function BoitiersPage() {
           <EmptyOrWaiting
             waiting={waiting}
             delivered={delivered}
-            onRequest={() => setDialog('request')}
             onCode={() => setDialog('code')}
             onCancel={(id) => cancelRequest.mutate(id)}
             cancelError={cancelRequest.error}
@@ -74,8 +73,8 @@ export function BoitiersPage() {
                 <Button type="button" onClick={() => setDialog('code')}>
                   Demander un code pour un autre boîtier
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setDialog('request')}>
-                  Commander du matériel
+                <Button type="button" variant="outline" disabled>
+                  Disponible après le pilote
                 </Button>
               </div>
             </div>
@@ -142,7 +141,6 @@ export function BoitiersPage() {
         )}
       </MetricState>
 
-      {dialog === 'request' && <RequestBoitierModal profile={profile} onClose={() => setDialog(null)} />}
       {dialog === 'code' && <PairingModal profile={profile} onClose={() => setDialog(null)} />}
     </div>
   )
@@ -155,7 +153,7 @@ function WaitingRequests({ requests, onCancel }: { requests: BackendDeviceReques
       {requests.map((request) => (
         <div key={request.id} className="flex flex-wrap items-center justify-between gap-3 text-sm text-text-secondary">
           <span>
-            {request.quantity} boîtier{request.quantity > 1 ? 's' : ''} pour le site « {request.site_nom ?? '-'} » · {formatFcfa(request.total_fcfa)} · demandé
+            {request.quantity} boîtier{request.quantity > 1 ? 's' : ''} pour le site « {request.site_nom ?? '-'} » · demandé
             le {formatUtcDateTime(request.created_at).slice(0, 10)}
           </span>
           <button type="button" onClick={() => onCancel(request.id)} className="focus-ring font-semibold text-accent-cta">
@@ -170,14 +168,12 @@ function WaitingRequests({ requests, onCancel }: { requests: BackendDeviceReques
 interface EmptyOrWaitingProps {
   waiting: BackendDeviceRequest[]
   delivered: BackendDeviceRequest[]
-  onRequest: () => void
   onCode: () => void
   onCancel: (id: string) => void
   cancelError: unknown
 }
 
-function EmptyOrWaiting({ waiting, delivered, onRequest, onCode, onCancel, cancelError }: EmptyOrWaitingProps) {
-  const price = useBoitierPrice().data?.unit_price_fcfa
+function EmptyOrWaiting({ waiting, delivered, onCode, onCancel, cancelError }: EmptyOrWaitingProps) {
   if (waiting.length > 0 || delivered.length > 0) {
     const isDelivered = waiting.length === 0
     const request = (isDelivered ? delivered : waiting)[0]
@@ -190,7 +186,7 @@ function EmptyOrWaiting({ waiting, delivered, onRequest, onCode, onCancel, cance
         <p className="max-w-[62ch] text-sm text-text-secondary">
           {isDelivered
             ? `Votre ${(request.kind_nom ?? 'boîtier').toLowerCase()} pour le site « ${request.site_nom ?? '-'} » a été livré. Demandez maintenant le code qui le relie à votre compte.`
-            : `Demande du ${formatUtcDateTime(request.created_at).slice(0, 10)} pour le site « ${request.site_nom ?? '-'} ». Prix : ${formatFcfa(request.total_fcfa)}. L’équipe Nouankany vous contactera pour la livraison. Vous n’avez rien d’autre à faire pour l’instant.`}
+            : `Demande du ${formatUtcDateTime(request.created_at).slice(0, 10)} pour le site « ${request.site_nom ?? '-'} ». L’équipe Nouankany vous contactera pour la livraison. Vous n’avez rien d’autre à faire pour l’instant.`}
         </p>
         <div className="mt-2 flex flex-col gap-2 border-t border-border pt-4">
           {!isDelivered && (
@@ -224,16 +220,15 @@ function EmptyOrWaiting({ waiting, delivered, onRequest, onCode, onCancel, cance
         Le boîtier affiche une lumière sur l’état de vos appareils et répond à la voix. Il n’apparaît ici qu’une fois connecté à votre compte.
       </p>
       <div className="flex flex-wrap gap-3">
-        <Button type="button" onClick={onRequest}>
-          Commander du matériel
+        <Button type="button" disabled>
+          Disponible après le pilote
         </Button>
         <Button type="button" variant="outline" onClick={onCode}>
           J’ai déjà reçu mon boîtier : demander mon code
         </Button>
       </div>
       <ol className="mt-3">
-        {STEPS.map(([title, base], index) => {
-          const text = index === 1 && price !== undefined ? `${base} Prix : ${formatFcfa(price)}.` : base
+        {STEPS.map(([title, text], index) => {
           return (
             <li key={title} className="flex items-baseline gap-3.5 border-t border-border py-2.5">
               <span className="w-5 font-heading text-lg font-bold">{index + 1}</span>
