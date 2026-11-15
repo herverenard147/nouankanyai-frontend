@@ -26,7 +26,7 @@ export function MachinesSummary({ columns, max = 5 }: MachinesSummaryProps) {
           Toutes les machines →
         </Link>
       </div>
-      <MetricState status={query.status} isEmpty={query.data?.rows.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.rows.length === 0} emptyAction={{ to: '/app/machines', label: 'Ajouter une machine' }}>
         <div className="relative overflow-x-auto">
           <table className="w-full border-collapse sm:min-w-[34rem] text-[0.8125rem]">
             <thead>

@@ -1,3 +1,5 @@
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
+
 interface RowActionsProps {
   onEdit: () => void
   onDelete: () => void
@@ -12,9 +14,11 @@ export function RowActions({ onEdit, onDelete, label }: RowActionsProps) {
       <button type="button" onClick={onEdit} className="focus-ring text-sm font-semibold text-accent-cta hover:text-accent-cta-hover" aria-label={`Modifier ${label}`}>
         Modifier
       </button>
-      <button type="button" onClick={onDelete} className="focus-ring text-sm font-semibold text-alert hover:underline" aria-label={`Supprimer ${label}`}>
-        Supprimer
-      </button>
+      <OwnerOnly>
+        <button type="button" onClick={onDelete} className="focus-ring text-sm font-semibold text-alert hover:underline" aria-label={`Supprimer ${label}`}>
+          Supprimer
+        </button>
+      </OwnerOnly>
     </span>
   )
 }

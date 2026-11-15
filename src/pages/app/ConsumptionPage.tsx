@@ -135,7 +135,7 @@ export function ConsumptionPage() {
         </label>
       </div>
 
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data && (
           <ConsumptionNewView data={query.data} window={window} granularity={effective} technical={levelAtLeast(level, 'technique')} single={Boolean(machine)}>
             <TariffExplained data={query.data} />

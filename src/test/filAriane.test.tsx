@@ -35,6 +35,6 @@ describe('fil d’Ariane', () => {
   })
 })
 
-it('ménage : « Facture prévue » est rangée sous « Accueil »', () => {
-  expect(crumbsFor('menage', '/app/prediction', null)).toEqual([{ label: 'Accueil', to: '/app/apercu' }, { label: 'Facture prévue' }])
+it('ménage : « Facture prévue » est rangée sous « Ma consommation » (menu resserré du 2026-11-15)', () => {
+  expect(crumbsFor('menage', '/app/prediction', null)).toEqual([{ label: 'Ma consommation', to: '/app/consommation' }, { label: 'Facture prévue' }])
 })

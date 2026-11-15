@@ -32,10 +32,11 @@ const TIERS: Tier[] = [
     priceLabel: 'Gratuit',
     badge: 'Inscription ouverte',
     features: [
-      'Suivi de consommation à partir de votre facture CIE',
-      'Jusqu’à 3 appareils, rapport mensuel',
-      'Conseils classés par impact',
-      'Essentiel (2 900 FCFA/mois) et Optimum (7 900 FCFA/mois) depuis votre espace',
+      'Gratuite : suivi de consommation, jusqu’à 3 appareils, factures, alertes de sécurité et rapport mensuel',
+      'Les 14 premiers jours, toutes les fonctions sont ouvertes ; ensuite, la facture prévue demande Essentiel et les conseils demandent Optimum',
+      'Essentiel, 2 900 FCFA pour 30 jours : facture prévue, seuils et alertes par email',
+      'Optimum, 7 900 FCFA pour 30 jours : conseils et anomalies, assistant, 3 logements',
+      'Le paiement n’est pas encore ouvert : aucune somme n’est due aujourd’hui. À l’ouverture, ces formules se paieront d’avance, pour 30 jours',
     ],
     ctas: [{ label: 'Créer mon compte', href: '/login?mode=signup&type=menage', primary: true }],
   },
@@ -47,8 +48,8 @@ const TIERS: Tier[] = [
     featured: true,
     features: [
       'Audit initial et ligne de base de votre consommation',
-      'Plateforme complète : dashboards, alertes, recommandations',
-      'Part sur les économies constatées sur factures CIE validées, pas un forfait figé',
+      'Plateforme complète : tableaux de bord, alertes, recommandations',
+      'Abonnement de 50 000 FCFA par mois, dû même sans économie, plus 40 % des économies constatées sur factures CIE validées (30 à 50 % selon le contrat)',
       'Contrat pilote de 6 à 9 mois avant généralisation',
     ],
     ctas: [
@@ -65,12 +66,11 @@ const TIERS: Tier[] = [
     features: [
       'Audit et instrumentation IoT ciblée sur vos équipements prioritaires',
       'Détection d’anomalies et plan d’action chiffré',
-      'Part sur les économies constatées sur factures CIE validées, pas un forfait figé',
+      'Abonnement de 50 000 FCFA par mois, dû même sans économie, plus 40 % des économies constatées sur factures CIE validées (30 à 50 % selon le contrat)',
       'Contrat pilote de 6 à 9 mois avant généralisation',
     ],
     ctas: [
       { label: 'Demander un audit', href: '/demander-un-audit?type=industrie', primary: true },
-      { label: 'Essayer gratuitement', href: '/login?mode=signup&type=industrie&trial=1', primary: false },
     ],
   },
 ]

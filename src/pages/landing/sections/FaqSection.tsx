@@ -13,7 +13,7 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
     question: 'Qui peut utiliser Nouankany aujourd’hui ?',
     answer: (
       <>
-        Les PME et Industries dès aujourd&rsquo;hui (pilote de 6 à 9 mois), les ménages ensuite.{' '}
+        Les PME et Industries (pilote de 6 à 9 mois) et les ménages : l&rsquo;inscription des ménages est ouverte, avec la formule gratuite Découverte.{' '}
         <Link to="/comment-ca-marche" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
           Voir le détail du fonctionnement
         </Link>
@@ -42,7 +42,7 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
       'Si les résultats sont bons, on étend à d’autres équipements ou sites. Sinon, rien n’est imposé.',
   },
   {
-    question: 'Les données affichées sur le dashboard sont-elles réelles ?',
+    question: 'Les données affichées sur le tableau de bord sont-elles réelles ?',
     answer:
       'Chaque chiffre indique son origine : mesuré, estimé ou synthétique. Jamais une valeur inventée.',
   },
@@ -50,7 +50,8 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
     question: 'Quand la formule Ménage sera-t-elle disponible ?',
     answer: (
       <>
-        Elle l&rsquo;est déjà : la formule Découverte est gratuite.{' '}
+        Elle l&rsquo;est déjà. Découverte est gratuite (suivi, 3 appareils, factures, alertes de sécurité, rapport mensuel) ;
+        les prévisions demandent Essentiel (2&nbsp;900 FCFA pour 30 jours) et les conseils Optimum (7&nbsp;900 FCFA). Les 14 premiers jours ouvrent tout.{' '}
         <Link to="/login?mode=signup&type=menage" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
           Créer un compte
         </Link>

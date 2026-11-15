@@ -19,6 +19,7 @@ import { isRouteAllowed } from '@/lib/navConfig'
 import { useInterventionStore } from '@/store/interventionStore'
 import { useSessionStore } from '@/store/sessionStore'
 import type { BackendDevice } from '@/types/backend'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 /**
  * Sources de mesures (étape 6, 2026-10-16) : comment les mesures du compte arrivent (boîtier, passerelle, logiciel du
@@ -49,7 +50,7 @@ export function SourcesPage() {
         </Button>
       </div>
 
-      <MetricState status={sources.status}>
+      <MetricState status={sources.status} onRetry={() => void sources.refetch()}>
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">Aucune source pour le moment. « Ajouter une source » vous guide selon votre installation.</p>
         ) : (
@@ -121,7 +122,7 @@ export function SourceDetailPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <MetricState status={sources.status}>
+      <MetricState status={sources.status} onRetry={() => void sources.refetch()}>
         {!device ? (
           <p className="text-sm text-text-secondary">Cette source n’existe plus, ou n’appartient pas à ce compte.</p>
         ) : (
@@ -129,9 +130,11 @@ export function SourceDetailPage() {
             <BoitierSectionBlock
               title={device.nom}
               action={
-                <Button type="button" variant="ghost" onClick={() => setRevoking(true)}>
-                  Révoquer la source
-                </Button>
+                <OwnerOnly>
+                  <Button type="button" variant="ghost" onClick={() => setRevoking(true)}>
+                    Révoquer la source
+                  </Button>
+                </OwnerOnly>
               }
             >
               <DefinitionRows

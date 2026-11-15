@@ -32,7 +32,7 @@ export function AlertsSummary({ profile, max = 2 }: AlertsSummaryProps) {
         </Link>
       </div>
 
-      <MetricState status={query.status} isEmpty={alerts.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={alerts.length === 0}>
         <ul>
           {shown.map((alert) => {
             const critical = alert.level.toLowerCase().includes('critique')

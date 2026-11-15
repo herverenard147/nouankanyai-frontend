@@ -78,9 +78,9 @@ export function LoginPage() {
     <div id="main-content" className="flex min-h-screen items-center justify-center bg-bg px-6 py-12">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center gap-3 text-center">
-          <img src="/logo.png" alt="Nouankany" className="h-10 w-10 object-contain" />
+          <img src="/logo.webp" alt="Nouankany" className="h-10 w-10 object-contain" />
           <h1 className="text-h2-secondary font-bold text-text-primary">{mode === 'login' ? 'Connexion' : 'Créer un compte'}</h1>
-          <p className="text-sm text-text-secondary">Accédez à votre dashboard Nouankany.</p>
+          <p className="text-sm text-text-secondary">Accédez à votre tableau de bord Nouankany.</p>
         </div>
 
         {isTrialSignup && mode === 'signup' && (
@@ -94,6 +94,7 @@ export function LoginPage() {
           <button
             type="button"
             onClick={() => setMode('login')}
+            aria-pressed={mode === 'login'}
             className={`focus-ring min-w-0 flex-1 rounded-control px-3 py-2 text-sm font-semibold ${mode === 'login' ? 'bg-card text-text-primary shadow-sm' : 'text-text-secondary'}`}
           >
             Se connecter
@@ -101,6 +102,7 @@ export function LoginPage() {
           <button
             type="button"
             onClick={() => setMode('signup')}
+            aria-pressed={mode === 'signup'}
             className={`focus-ring min-w-0 flex-1 rounded-control px-3 py-2 text-sm font-semibold ${mode === 'signup' ? 'bg-card text-text-primary shadow-sm' : 'text-text-secondary'}`}
           >
             Créer un compte
@@ -119,6 +121,7 @@ export function LoginPage() {
                       key={type}
                       type="button"
                       onClick={() => setAccountType(type)}
+                      aria-pressed={accountType === type}
                       className={`focus-ring min-w-0 flex-1 rounded-control border px-3 py-2 text-sm font-medium ${
                         accountType === type ? 'border-text-primary bg-text-primary text-white' : 'border-border text-text-secondary'
                       }`}
@@ -185,7 +188,7 @@ export function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-text-secondary">
           <Link to="/" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
-            Retour à la landing
+            Retour à l’accueil du site
           </Link>
         </p>
 

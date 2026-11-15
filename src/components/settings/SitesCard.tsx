@@ -11,6 +11,7 @@ import { METER_LABEL } from '@/components/settings/LogementsCard'
 import { useCreateSite, useDeleteSite, useSetSiteMeter, useSetSiteSubscription, useSites } from '@/hooks/queries/useSites'
 import { formatNumberFr } from '@/lib/formatters'
 import type { BackendSite, MeterType, SubscriptionUnit } from '@/types/backend'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
 
@@ -42,7 +43,7 @@ export function SitesCard() {
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Sites</h2>
       <p className="text-sm text-text-secondary">Les lieux où se trouvent vos équipements. Un boîtier écoute un site.</p>
-      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0}>
         <ul>
           {query.data?.map((site) => (
             <li key={site.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-border py-2.5">
@@ -79,17 +80,19 @@ export function SitesCard() {
                 >
                   Type de compteur
                 </button>
-                <button
-                  type="button"
-                  className="focus-ring text-sm font-semibold text-alert hover:underline"
-                  aria-label={`Supprimer le site ${site.nom}`}
-                  onClick={() => {
-                    deleteMutation.reset()
-                    setRemoving({ id: site.id, nom: site.nom })
-                  }}
-                >
-                  Supprimer
-                </button>
+                <OwnerOnly>
+                  <button
+                    type="button"
+                    className="focus-ring text-sm font-semibold text-alert hover:underline"
+                    aria-label={`Supprimer le site ${site.nom}`}
+                    onClick={() => {
+                      deleteMutation.reset()
+                      setRemoving({ id: site.id, nom: site.nom })
+                    }}
+                  >
+                    Supprimer
+                  </button>
+                </OwnerOnly>
               </div>
             </li>
           ))}

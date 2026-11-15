@@ -81,7 +81,7 @@ export function AdminPricingPage() {
         Le prix de chaque matériel est la somme de ses composants, du transport et de la douane, des frais (montage, livraison, pose) et de la marge,
         arrondie à 500 FCFA. Le client le voit ligne par ligne avant de commander. Les demandes déjà faites gardent leur prix.
       </p>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {draft && query.data && (
           <>
             <section className={SECTION} aria-label="Taux">

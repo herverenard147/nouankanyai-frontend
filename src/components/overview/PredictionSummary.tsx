@@ -17,7 +17,7 @@ interface PredictionSummaryProps {
 
 /**
  * Prédiction globale à l'heure, en aperçu : valeur, coût estimé, un graphique compact et le
- * raccourci vers la page Prédiction.
+ * raccourci vers la page Prévision (Facture prévue pour un ménage).
  */
 export function PredictionSummary({ profile, showModelName = false }: PredictionSummaryProps) {
   const query = usePredictionsBundle(profile, 'heure')
@@ -25,10 +25,10 @@ export function PredictionSummary({ profile, showModelName = false }: Prediction
   if (access.loaded && !access.predictions) return <LockedFeature {...LOCKED.predictions} />
 
   return (
-    <section aria-label="Prédiction IA" className="flex min-w-0 flex-col gap-2">
-      {!query.data?.global && <h2 className="text-base font-bold text-text-primary">Prédiction</h2>}
-      <MetricState status={query.status} isEmpty={!query.data?.global}>
-        {query.data?.global && <PredictionBody prediction={query.data.global} showModelName={showModelName} />}
+    <section aria-label={profile === 'menage' ? 'Facture prévue' : 'Prévision'} className="flex min-w-0 flex-col gap-2">
+      {!query.data?.global && <h2 className="text-base font-bold text-text-primary">{profile === 'menage' ? 'Facture prévue' : 'Prévision'}</h2>}
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={!query.data?.global}>
+        {query.data?.global && <PredictionBody prediction={query.data.global} showModelName={showModelName} profile={profile} />}
       </MetricState>
     </section>
   )
@@ -37,7 +37,9 @@ export function PredictionSummary({ profile, showModelName = false }: Prediction
 function PredictionBody({
   prediction,
   showModelName,
+  profile,
 }: {
+  profile: PredictionSummaryProps['profile']
   prediction: NonNullable<NonNullable<ReturnType<typeof usePredictionsBundle>['data']>['global']>
   showModelName: boolean
 }) {
@@ -49,7 +51,7 @@ function PredictionBody({
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-base font-bold text-text-primary">{prediction.title}</h2>
         <Link to="/app/prediction" className="focus-ring shrink-0 text-[0.8125rem] font-semibold text-accent-cta hover:text-accent-cta-hover">
-          Voir la prédiction →
+          Voir {profile === 'menage' ? 'la facture prévue' : 'la prévision'} →
         </Link>
       </div>
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">

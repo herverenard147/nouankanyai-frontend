@@ -31,7 +31,7 @@ export function TechnicianAccessPanel({ rule = true }: { rule?: boolean }) {
           En savoir plus
         </Link>
       </p>
-      <MetricState status={access.status}>
+      <MetricState status={access.status} onRetry={() => void access.refetch()}>
         {access.data?.active ? (
           <div className="flex flex-wrap items-center gap-3">
             <p className="text-sm text-text-primary">

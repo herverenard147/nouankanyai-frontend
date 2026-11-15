@@ -27,7 +27,7 @@ export function MenageOverview() {
       <DemoDataBanner />
       <GettingStartedStrip />
       <p className="text-sm text-text-secondary">
-        Vue d&rsquo;ensemble de votre foyer : consommation, prédiction et dernière facture CIE en un coup d&rsquo;œil.
+        Vue d&rsquo;ensemble de votre foyer : consommation, facture prévue et dernière facture CIE en un coup d&rsquo;œil.
       </p>
 
       <KpiStrip profile="menage" targets={kpiTargets('menage')} />
@@ -45,7 +45,7 @@ export function MenageOverview() {
               Toutes les factures →
             </Link>
           </div>
-          <MetricState status={invoicesQuery.status} isEmpty={!latestInvoice}>
+          <MetricState status={invoicesQuery.status} onRetry={() => void invoicesQuery.refetch()} isEmpty={!latestInvoice}>
             {latestInvoice && <OcrFieldList fields={latestInvoice.fields} />}
           </MetricState>
         </section>

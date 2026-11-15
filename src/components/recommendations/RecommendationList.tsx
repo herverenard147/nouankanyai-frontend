@@ -1,5 +1,6 @@
+import { addEquipmentAction } from '@/lib/navConfig'
 import { Spinner } from '@/components/ui/Button'
-import { impactClassName } from '@/lib/severity'
+import { ImpactFigure } from '@/components/advice/ImpactFigure'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
@@ -30,7 +31,7 @@ export function RecommendationList({ profile, level }: RecommendationListProps) 
         Des suggestions pour réduire votre consommation, pas des problèmes à résoudre, juste de bonnes pratiques
         pour chaque équipement.
       </p>
-      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0} emptyAction={addEquipmentAction(profile)}>
         <div className="flex flex-col border-t-2 border-text-primary">
           {query.data?.map((reco) => (
             <RecommendationRow key={reco.rank} reco={reco} showImpact={showImpact} canApply={canApply} />
@@ -58,7 +59,7 @@ function RecommendationRow({ reco, showImpact, canApply }: { reco: Advice; showI
           />
         )}
       </div>
-      {showImpact && <span className={`text-lg font-semibold tabular-nums ${impactClassName(reco.impactKind, reco.impactLabel)}`}>{reco.impactLabel}</span>}
+      {showImpact && <ImpactFigure advice={reco} />}
       <ProvenanceBadge value={reco.provenance} />
       {showApplyButton &&
         (applyMutation.isSuccess ? (

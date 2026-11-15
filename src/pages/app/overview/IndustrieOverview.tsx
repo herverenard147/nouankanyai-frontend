@@ -24,7 +24,7 @@ export function IndustrieOverview() {
       <DemoDataBanner />
       <GettingStartedStrip />
       <p className="text-sm text-text-secondary">
-        Vue d&rsquo;ensemble de votre site industriel : consommation, prédiction, machines suivies et plan d&rsquo;action
+        Vue d&rsquo;ensemble de votre site industriel : consommation, prévision, machines suivies et plan d&rsquo;action
         en cours.
       </p>
 

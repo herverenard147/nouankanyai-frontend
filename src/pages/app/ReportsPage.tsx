@@ -50,7 +50,7 @@ export function ReportsPage() {
 
   return (
     <div className="flex flex-col gap-7">
-      <h1 className="text-section-title font-semibold text-text-primary">Rapports</h1>
+      <h2 className="text-section-title font-semibold text-text-primary">Rapports</h2>
       <p className="text-sm text-text-secondary">
         Un rapport reprend vos équipements, leurs derniers relevés, votre dernière facture CIE et les alertes de la période.
         Quand une valeur est estimée faute de mesure, le rapport le signale.

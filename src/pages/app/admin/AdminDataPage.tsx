@@ -36,7 +36,7 @@ export function AdminDataPage() {
           Seules les mesures envoyées par les boîtiers des comptes clients servent à réentraîner les modèles : ni simulation, ni démonstration,
           ni compte de test.
         </p>
-        <MetricState status={status.status}>
+        <MetricState status={status.status} onRetry={() => void status.refetch()}>
           {s && (
             <div className="flex flex-col gap-3">
               <dl className="grid gap-3 text-sm sm:grid-cols-3">
@@ -83,7 +83,7 @@ export function AdminDataPage() {
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Appareil par appareil</h2>
         <p className="text-sm text-text-secondary">« Prêt » : au moins un mois de mesures, avec une mesure sur 80 % des heures au moins.</p>
-        <MetricState status={machines.status} isEmpty={machines.data?.length === 0}>
+        <MetricState status={machines.status} onRetry={() => void machines.refetch()} isEmpty={machines.data?.length === 0}>
           <div className="relative overflow-x-auto border-y border-border">
             <table className="w-full min-w-[720px] text-sm">
               <thead>
@@ -135,7 +135,7 @@ export function AdminDataPage() {
           </label>
         </div>
         <p className="text-sm text-text-secondary">Erreur relative : écart moyen entre la prévision et la mesure, rapporté à la consommation mesurée.</p>
-        <MetricState status={review.status} isEmpty={review.data?.lignes.length === 0}>
+        <MetricState status={review.status} onRetry={() => void review.refetch()} isEmpty={review.data?.lignes.length === 0}>
           {review.data && (
             <div className="relative overflow-x-auto border-y border-border">
               <p className="px-3 py-2 text-xs text-text-secondary">{formatNumberFr(review.data.previsions_servies, 0)} prévision(s) servie(s) sur la période</p>

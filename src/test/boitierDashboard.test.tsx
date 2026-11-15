@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { connectionOf, CONNECTION_LABEL, LIGHT_SENTENCE, COMMAND_RESULT_LABEL } from '@/api/boitiers'
 import { boitierDetailBlocks, boitierListColumns } from '@/lib/boitierLevels'
 import { EMPTY_SITE_CHOICE, groupCode, siteChoiceReady } from '@/lib/boitierForms'
-import { NAV_BY_PROFILE, isRouteAllowed } from '@/lib/navConfig'
+import { NAV_BY_PROFILE, isRouteAllowed, visibleNav } from '@/lib/navConfig'
 import type { BackendSite } from '@/types/backend'
 
 const site = (id: string): BackendSite => ({ id, nom: 'Domicile', localisation: 'Abidjan', user_id: 'u' })
@@ -16,11 +16,15 @@ describe('boîtier : navigation et accès', () => {
     expect(NAV_BY_PROFILE.industrie.some((e) => e.path.includes('boitier'))).toBe(false)
   })
 
-  it('met « Boîtier » juste avant « Paramètres »', () => {
-    for (const profile of ['menage', 'pme', 'admin'] as const) {
-      const entries = NAV_BY_PROFILE[profile]
-      const index = entries.findIndex((e) => e.label === 'Paramètres')
-      expect(entries[index - 1]?.label).toMatch(/^(Mon boîtier \(prototype\)|Boîtier \(prototype\)|Boîtiers)$/)
+  it('la page Boîtier reste atteignable depuis le menu resserré : rangée sous une entrée visible pour l’admin (Santé plateforme), le ménage et la PME (2026-11-15, parents revus)', () => {
+    const shown = (profile: 'menage' | 'pme' | 'admin') => visibleNav(profile).map((e) => e.path)
+    const boitier = (profile: 'menage' | 'pme') => NAV_BY_PROFILE[profile].find((e) => e.path === '/app/boitier')
+    const adminBoitiers = NAV_BY_PROFILE.admin.find((e) => e.path === '/app/admin/boitiers')
+    expect(adminBoitiers?.under).toBe('/app/admin/sante')
+    expect(shown('admin')).toContain('/app/admin/sante')
+    for (const profile of ['menage', 'pme'] as const) {
+      expect(boitier(profile)?.under, profile).toBeTruthy()
+      expect(shown(profile), profile).toContain(boitier(profile)?.under)
     }
   })
 

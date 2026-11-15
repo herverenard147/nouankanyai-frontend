@@ -53,7 +53,7 @@ export function MachinesPage() {
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-section-title font-semibold text-text-primary">{query.data?.title ?? 'Machines suivies'}</h1>
+        <h2 className="text-section-title font-semibold text-text-primary">{query.data?.title ?? 'Machines suivies'}</h2>
         <Button type="button" onClick={() => setAdding(true)}>
           Ajouter une machine
         </Button>
@@ -61,7 +61,10 @@ export function MachinesPage() {
       <p className="text-sm text-text-secondary">{levelAtLeast(level, 'technique')
           ? 'Ce qui se passe sur chaque appareil : puissance relevée et, là où une sonde est posée, température, comparées aux seuils de l’appareil. Un appareil qui dépasse un seuil passe en « Anomalie détectée » et apparaît dans Alertes.'
           : 'Les appareils de votre site, leur état et leur priorité d’intervention.'}</p>
-      <MetricState status={query.status} isEmpty={query.data?.rows.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}
+        isEmpty={query.data?.rows.length === 0}
+        emptyAction={{ label: 'Ajouter une machine', onClick: () => setAdding(true) }}
+      >
         {query.data && (
           <DataTable
             columns={columns}
@@ -90,7 +93,7 @@ export function MachinesPage() {
           title={`Supprimer « ${deleting.nom} » ?`}
           consequences={[
             'Ses relevés et son historique d’alertes sont supprimés.',
-            'Les prédictions et le plan d’action ne tiendront plus compte de cet appareil.',
+            'Les prévisions et le plan d’action ne tiendront plus compte de cet appareil.',
             'Les factures déjà saisies ne changent pas.',
           ]}
           confirmText={deleting.nom}

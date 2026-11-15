@@ -4,7 +4,7 @@ export function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-dark-bg text-white">
       <img
-        src="/images/profiles/industrie-hotellerie-clim.jpg"
+        src="/images/profiles/industrie-hotellerie-clim.webp"
         alt=""
         className="absolute inset-0 -z-10 h-full w-full object-cover opacity-40"
       />

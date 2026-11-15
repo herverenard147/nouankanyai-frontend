@@ -1,3 +1,4 @@
+import { addEquipmentAction } from '@/lib/navConfig'
 import { Spinner } from '@/components/ui/Button'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -6,7 +7,7 @@ import { adviceSectionTitle } from '@/api/advice'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { levelAtLeast } from '@/lib/levelGating'
 import { measureOrigin, measuredReading } from '@/lib/formatters'
-import { impactClassName } from '@/lib/severity'
+import { ImpactFigure } from '@/components/advice/ImpactFigure'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { useAdvice } from '@/hooks/queries/useAdvice'
@@ -60,7 +61,7 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
           <p className="font-semibold text-text-primary">{advice.title}</p>
           <p className="text-sm text-text-secondary">{advice.detail}</p>
         </div>
-        {showImpact && <span className={`text-lg font-semibold tabular-nums ${impactClassName(advice.impactKind, advice.impactLabel)}`}>{advice.impactLabel}</span>}
+        {showImpact && <ImpactFigure advice={advice} />}
         <ProvenanceBadge value={advice.provenance} />
       </div>
 
@@ -124,7 +125,7 @@ export function AdviceList({ profile, level, markSeenOnView, maxItems }: AdviceL
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-section-title font-semibold text-text-primary">{title}</h2>
-      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0} emptyAction={addEquipmentAction(profile)}>
         <div className="flex flex-col border-t-2 border-text-primary">
           {visibleAdvice?.map((advice) => (
             <AdviceCard key={`${advice.machineId ?? ''}-${advice.title}`} advice={advice} showImpact={showImpact} />

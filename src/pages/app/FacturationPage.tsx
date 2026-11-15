@@ -20,7 +20,7 @@ export function FacturationPage() {
   const query = useBilling()
   return (
     <div className="flex flex-col gap-7">
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data && (query.data.segment === 'menage' ? <MenageSubscription billing={query.data} /> : <BusinessContract billing={query.data} />)}
       </MetricState>
       {query.data && <EstimatedSavings billing={query.data} />}
@@ -35,7 +35,7 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
     const d = billing.defaults
     return (
       <section className={SECTION}>
-        <h1 className="text-section-title font-semibold text-text-primary">Facturation Nouankany</h1>
+        <h2 className="text-section-title font-semibold text-text-primary">Facturation Nouankany</h2>
         <p className="text-sm text-text-secondary">
           {/* Décisions du propriétaire : prix de l'audit fixé avec chaque client, abonnement de 50 000 FCFA dû chaque mois (2026-10-18
               et 21), 40 % des économies par défaut, de 30 à 50 % selon le contrat (retour au business plan le 2026-10-21). */}
@@ -63,7 +63,7 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
   return (
     <>
       <section className={SECTION}>
-        <h1 className="text-section-title font-semibold text-text-primary">Votre contrat</h1>
+        <h2 className="text-section-title font-semibold text-text-primary">Votre contrat</h2>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
           {[
             ['Ligne de base', `${formatNumberFr(c.baseline_kwh ?? 0)} kWh / mois`],
@@ -109,7 +109,7 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
   return (
     <>
       <section className={SECTION}>
-        <h1 className="text-section-title font-semibold text-text-primary">Abonnement</h1>
+        <h2 className="text-section-title font-semibold text-text-primary">Abonnement</h2>
         {reason === 'essai' && (
           <p className="text-sm text-text-primary" role="status">
             Essai gratuit{trialEnd ? ` jusqu’au ${trialEnd}` : ''} : toutes les fonctions sont ouvertes. Ensuite, votre formule sera{' '}

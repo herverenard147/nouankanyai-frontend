@@ -116,3 +116,30 @@ vrai clic et mesurer par script. La technique de l'iframe ne vaut qu'avec le sit
   (`estimé`/`synthétique`/`télémétrie système`/`mesuré`), jamais codé en dur.
 - `backend/.env` (dans l'autre dépôt) n'est plus suivi par git depuis le
   2026-10-08 ; les anciennes clés de son historique ne servent plus.
+
+## Lot front du 2026-11-15 (S-13, S-15, S-16, S-46)
+
+- `vercel.json` : `/assets/*` en `Cache-Control: public, max-age=31536000, immutable` (fichiers hachés). Logo servi en `/logo.webp` (256 px) ; `logo.png` ne sert plus que d'icône d'onglet (64 px). Photos de `public/images/profiles/` en WebP.
+- Tuiles de la vue d'ensemble (`src/api/kpis.ts`) : la provenance suit l'origine des relevés lue sur `/api/v1/consumption` (mesure, déclaré, démonstration, simulation) ; mélange : la moins sûre l'emporte ; origine inconnue : « synthétique ». Libellé « Puissance en ce moment ».
+- Un gain en FCFA est affiché avec « ordre de grandeur » (`ImpactFigure`). Les pourcentages et les textes par famille viennent du moteur backend : à corriger là-bas (S-16).
+- `MetricState` accepte `emptyAction` (lien dans l'état vide) ; `addEquipmentAction(profile)` dans `navConfig.ts`.
+- **Menus resserrés (2026-11-15, S-14)** : au plus dix entrées visibles par profil (Ménage 8, PME 9, Industrie 9, Admin 10, Technicien 3). Les pages marquées `under` dans `src/lib/navConfig.ts` n'ont pas d'entrée propre : elles s'ouvrent depuis leur page parente, via la rangée « Pages liées » (`components/layout/RelatedPages.tsx`, montée dans `AppLayout`), et la barre latérale surligne le parent. Aucune route supprimée (le test `importsEtMenuMenage.test.tsx` garde la liste des routes d'avant). Décision du propriétaire : en cas de contradiction avec une ancienne décision, retenir le meilleur choix ; « Abonnement » et « Facture prévue » du Ménage (mis dans le menu le 2026-10-21 parce qu'introuvables) sont donc rangés sous « Mes factures » et « Ma consommation ». Tests réécrits pour ce contrat : `importsEtMenuMenage`, `pagesLiees`, `premiersPas`, `boitierDashboard`, `filAriane`, `landingLinks`.
+- **Prix moyen** : la landing affiche la série annuelle officielle 71 → 83 FCFA/kWh HT (Direction générale de l'Économie), plus « 79 → 87 » ni « 73 → 87 » (mélange de tarifs de presse). La carte Industrie n'a plus « Essayer gratuitement » (compte vide) : seulement « Demander un audit ».
+
+## Lot front du 2026-11-15, suite (S-03, S-20, S-21, S-26, S-27, performance, accessibilité)
+
+- S-26 : `logout()` (`sessionStore.ts`) appelle `POST /api/auth/logout` avec le jeton de renouvellement, sans attendre ni bloquer ; la route existe côté API (PR backend #160).
+- S-20 : `Session.isTrial` vient de `trial_active` (essai en cours), plus de `is_trial` (vrai à vie).
+- S-27 : la fiche client admin n'a plus de champ mot de passe ; le serveur envoie un lien au titulaire, erreur 503 si le mailer n'est pas configuré.
+- S-21 : `OwnerOnly`/`useCanDelete` (`components/ui/OwnerOnly.tsx`) masquent les suppressions pour un membre PME/Industrie (profil sans `isTeamOwner`). Le serveur ne refuse (403) aujourd'hui que site, facture et machine ; boîtier, compteur, recharge et item de plan sont masqués d'avance, à faire suivre côté API.
+- S-03 : « ×1,65 » de l'accueil = 94,21 / 57,17 (grille ANARE-CI 2019, moyenne tension). Le chiffre « 79 → 87 » reste à trancher par le propriétaire (73 ou 79).
+- Visualiseur 3D (`BoitierViewer`) : three.js et le GLB (2,18 Mo) ne se chargent qu'à l'approche du viewport, jamais sous 768 px, avec `prefers-reduced-data` ou `saveData`. En-têtes de cache de `/images`, `/models`, `/logo.*` : `max-age=86400, stale-while-revalidate=604800` (fichiers non hachés).
+- Accessibilité : bordure des champs `text-tertiary` (#6e6e64, 5,15:1 sur blanc, ancien 1,31:1), erreurs de champ en `role="alert"`, onglets Connexion/Inscription en `aria-pressed`. Reste : les autres contrôles (listes déroulantes, etc.) non revus.
+
+## Lot front du 2026-11-15, fin (communication des formules, accessibilité, vocabulaire)
+
+- **Formules ménage dites vraies** : Découverte (gratuite : suivi, 3 appareils, factures, alertes de sécurité, rapport mensuel), Essentiel (2 900 FCFA/30 jours : facture prévue, seuils, alertes par email), Optimum (7 900 : conseils et anomalies, assistant, 3 logements) ; l'essai de 14 jours ouvre tout. Source : `backend/billing/plans.py`. Landing (`PricingSection`, `ProfilesSection`, `FaqSection`), Premiers pas et `LockedFeature` le disent ; le paiement n'est pas encore ouvert (drapeau `NOUANKANY_FACTURATION_REELLE`), la CGU et la landing le disent pareil. Cartes PME/Industrie : abonnement 50 000 FCFA/mois plus 40 % des économies (30 à 50 %). Test : `formulesVraies`.
+- `MetricState` : erreur en `role="alert"`, bouton « Réessayer » via `onRetry` (branché sur 69 vues react-query), `emptyAction` accepte `onClick` (ajout depuis la page elle-même). `MutationError` en `role="alert"`.
+- `DataTable` : lignes cliquables avec `tabIndex=0`, Entrée/Espace (pas de `role` ajouté : une ligne reste une ligne). `MobileDrawer` : focus piégé, retour au déclencheur, Échap ; `aria-expanded`/`aria-controls` sur le bouton de `TopBar`.
+- Vocabulaire : `/app/prediction` = « Facture prévue » (ménage) et « Prévision » (autres) ; le fil d'Ariane suit le libellé du menu du profil (« À surveiller » pour le ménage) ; « appareil » pour le ménage ; plus de « dashboard » ni de « landing » visibles. Un seul `<h1>` par page (celui de `TopBar`).
+- Parents de menu revus : Rapports sous Conso (tous profils), Abonnement du ménage sous Paramètres, Messages sous « Demandes d'audit » (visible dans le menu Admin à la place de Boîtiers, rangé sous Santé plateforme), Prix du matériel sous Paramètres (commande fermée, route conservée).

@@ -22,7 +22,8 @@ function toSession(result: BackendAuthResult): Session {
     // Seuls les PME/Industrie sans owner_id (compte principal, pas membre d'une
     // équipe) peuvent gérer des membres : voir app/api/v1/team/ côté backend.
     isTeamOwner: (profile === 'pme' || profile === 'industrie') && !result.user.owner_id,
-    isTrial: result.user.is_trial,
+    // S-20 : `trial_active` (essai en cours), pas `is_trial` qui reste vrai à vie.
+    isTrial: result.user.trial_active,
     isDemo: Boolean(result.user.is_demo),
   }
 }
@@ -97,7 +98,11 @@ export const useSessionStore = create<SessionState>()(
         }
       },
       logout: () => {
+        const refreshToken = useSessionStore.getState().session?.refreshToken
         set({ session: null })
+        // S-26 : révocation côté serveur du jeton de cet appareil. Sans attente ni blocage : si
+        // l'appel échoue, le jeton expirera de lui-même et la déconnexion locale reste faite.
+        if (refreshToken) api.post('/api/auth/logout', { refresh_token: refreshToken }, false).catch(() => {})
         // Le "vu" des alertes/conseils est par appareil (localStorage), pas par
         // compte : sans ce reset, le compte suivant sur un poste partagé/démo
         // hérite du "vu" du précédent (voir notificationStore.resetSeen).

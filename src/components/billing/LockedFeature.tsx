@@ -10,6 +10,9 @@ export function LockedFeature({ title, message }: { title: string; message: stri
         {title}
       </p>
       <p className="text-sm text-text-secondary">{message}</p>
+      <p className="text-sm text-text-secondary">
+        Votre formule actuelle ne l’inclut pas (l’essai de 14 jours, lui, ouvre tout). Pour l’ouvrir, choisissez une formule qui la contient sur la page Abonnement.
+      </p>
       <Link to="/app/facturation" className="focus-ring w-fit text-sm font-semibold text-accent-cta hover:underline">
         Voir les formules →
       </Link>
@@ -18,7 +21,7 @@ export function LockedFeature({ title, message }: { title: string; message: stri
 }
 
 export const LOCKED = {
-  predictions: { title: 'Prédictions', message: 'Les prédictions et la facture prévue sont incluses dans Essentiel (2 appareils) et Optimum (4 appareils).' },
+  predictions: { title: 'Facture prévue', message: 'La facture prévue et les prévisions par appareil sont incluses dans Essentiel (2 appareils) et Optimum (4 appareils).' },
   anomalies: { title: 'Conseils et détection d’anomalies', message: 'Les conseils et les écarts « À vérifier » sont inclus dans la formule Optimum.' },
   thresholds: { title: 'Seuils d’alerte personnalisés', message: 'Régler vos propres seuils et recevoir les alertes par email : formules Essentiel et Optimum. Les seuils par défaut vous protègent déjà.' },
 }

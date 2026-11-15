@@ -5,7 +5,7 @@ import { useBreadcrumbStore } from '@/store/breadcrumbStore'
 import type { Profile } from '@/types/domain'
 
 /** Segments connus sous une page (le reste est un identifiant : le nom donné par la page, sinon « Détail »). */
-const SEGMENT_LABEL: Record<string, string> = { alertes: 'Alertes', sources: 'Sources de mesures' }
+const SEGMENT_LABEL: Record<string, string> = { sources: 'Sources de mesures' }
 
 const OUTSIDE_MENU: { path: string; label: string; under?: string }[] = [{ path: '/app/boitier', label: 'Boîtier' }]
 
@@ -32,7 +32,8 @@ export function crumbsFor(profile: Profile, pathname: string, detailLabel: strin
   rest.forEach((segment, i) => {
     path = `${path}/${segment}`
     const last = i === rest.length - 1
-    const known = SEGMENT_LABEL[segment]
+    // « alertes » prend le nom que le menu du profil donne à la page (« À surveiller » pour un ménage).
+    const known = segment === 'alertes' ? (entries.find((e) => e.path === '/app/alertes')?.label ?? 'Alertes') : SEGMENT_LABEL[segment]
     crumbs.push({ label: known ?? (last ? (detailLabel ?? 'Détail') : 'Compte'), to: path })
   })
   return crumbs.map((c, i) => (i === crumbs.length - 1 ? { label: c.label } : c))

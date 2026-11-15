@@ -55,7 +55,7 @@ export function PowerPeakSection({ fixedDay }: { fixedDay?: string } = {}) {
           ))}
         </fieldset>
       )}
-      <MetricState status={query.status} isEmpty={query.data?.sites.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.sites.length === 0}>
         {query.data?.sites.map((site) => <SitePeak key={site.site_id ?? 'sans-site'} site={site} ongoing={query.data.en_cours} />)}
       </MetricState>
       <p className="text-xs text-text-secondary">

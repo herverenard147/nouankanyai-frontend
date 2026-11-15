@@ -9,6 +9,7 @@ import { ConfirmDeleteModal, MutationError } from '@/components/ui/Modal'
 import { formatNumberFr } from '@/lib/formatters'
 import type { ConsumptionGranularity } from '@/types/backend'
 import type { Profile } from '@/types/domain'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 const SECTION = 'flex flex-col gap-4 border-t-2 border-text-primary pt-4'
 const kwh = (v: number) => `${formatNumberFr(v, v < 100 ? 1 : 0)} kWh`
@@ -38,7 +39,7 @@ export function MainMeterCard({ granularity, window, profile }: { granularity: C
         Un capteur posé sur le compteur général mesure tout ce que le site consomme. Comparé à la somme de vos appareils suivis, il montre la part
         de consommation qui n’est pas suivie et vérifie nos mesures.
       </p>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {meters.length === 0 ? (
           <div className="flex flex-wrap items-end gap-3">
             {hasSites && (sites.data?.length ?? 0) > 1 && (
@@ -99,9 +100,11 @@ export function MainMeterCard({ granularity, window, profile }: { granularity: C
                   ]}
                 />
               )}
-              <Button type="button" variant="outline" className="w-fit" onClick={() => setRemoving(m.code)}>
-                Retirer ce compteur
-              </Button>
+              <OwnerOnly>
+                <Button type="button" variant="outline" className="w-fit" onClick={() => setRemoving(m.code)}>
+                  Retirer ce compteur
+                </Button>
+              </OwnerOnly>
             </div>
           ))
         )}

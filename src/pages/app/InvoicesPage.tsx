@@ -9,7 +9,6 @@ import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, type FieldC
 import { TextField } from '@/components/ui/TextField'
 import { InvoicePhotoModal } from '@/components/upload/InvoicePhotoModal'
 import { OcrFieldList } from '@/components/upload/OcrFieldList'
-import { Link } from 'react-router-dom'
 import { UploadCard } from '@/components/upload/UploadCard'
 import { BulkInvoiceImport } from '@/components/import/BulkInvoiceImport'
 import { PrepaidSection } from '@/components/billing/PrepaidSection'
@@ -28,6 +27,7 @@ import { ApiError } from '@/lib/apiClient'
 import { formatFcfa, formatMonth, formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 import { useSessionStore } from '@/store/sessionStore'
 import type { InvoiceRecord } from '@/types/domain'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 type Dialog =
   | { kind: 'add' }
@@ -120,12 +120,6 @@ export function InvoicesPage() {
 
   return (
     <div className="flex flex-col gap-7">
-      {profile === 'menage' && (
-        <nav aria-label="Autres pages liées aux factures" className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
-          <Link to="/app/facturation" className="focus-ring text-accent-cta hover:text-accent-cta-hover">Mon abonnement →</Link>
-          <Link to="/app/rapports" className="focus-ring text-accent-cta hover:text-accent-cta-hover">Mes rapports →</Link>
-        </nav>
-      )}
       {/* Compteur à carte (2026-10-20) : recharges et crédit restant, avant les factures. */}
       <PrepaidSection />
       <div className="grid gap-7 lg:grid-cols-3 lg:gap-8">
@@ -169,7 +163,7 @@ export function InvoicesPage() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-section-title font-semibold text-text-primary">Factures</h2>
-        <MetricState status={invoicesQuery.status} isEmpty={invoicesQuery.data?.length === 0}>
+        <MetricState status={invoicesQuery.status} onRetry={() => void invoicesQuery.refetch()} isEmpty={invoicesQuery.data?.length === 0}>
           <div className="flex flex-col border-t-2 border-text-primary">
             {invoicesQuery.data?.map((invoice) => (
               <article key={invoice.id} id={`facture-${invoice.id}`} className="flex flex-col gap-3 border-b border-border py-4">
@@ -212,17 +206,19 @@ export function InvoicesPage() {
                       </button>
                     )}
                     {!invoice.locked && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          deleteMutation.reset()
-                          setDialog({ kind: 'delete', invoice })
-                        }}
-                        className="focus-ring text-sm font-semibold text-alert hover:underline"
-                        aria-label={`Supprimer la facture ${invoice.period}`}
-                      >
-                        Supprimer
-                      </button>
+                      <OwnerOnly>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            deleteMutation.reset()
+                            setDialog({ kind: 'delete', invoice })
+                          }}
+                          className="focus-ring text-sm font-semibold text-alert hover:underline"
+                          aria-label={`Supprimer la facture ${invoice.period}`}
+                        >
+                          Supprimer
+                        </button>
+                      </OwnerOnly>
                     )}
                   </div>
                 </div>
@@ -286,8 +282,7 @@ export function InvoicesPage() {
               automatiquement.
             </p>
             <p className="text-xs text-text-secondary">
-              Elle n’entre dans vos relevés Nouankany qu’une fois validée par notre équipe. Cette action sera enregistrée dans l’onglet
-              Audit.
+              Elle n’entre dans vos relevés Nouankany qu’une fois validée par notre équipe.{profile !== 'menage' && ' Cette action sera enregistrée dans la page Audit.'}
             </p>
             <MutationError error={manualMutation.error} />
           </form>

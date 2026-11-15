@@ -25,7 +25,7 @@ export function AdminPlatformConsumption() {
         <h2 className="text-section-title font-semibold text-text-primary">Puissance active par compte</h2>
         <ProvenanceBadge value="synthetique" />
       </div>
-      <MetricState status={query.status} isEmpty={rows.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={rows.length === 0}>
         <div className="flex flex-col">
           {rows.map((row) => (
             <button
@@ -54,7 +54,7 @@ export function AdminPlatformConsumption() {
           onClose={() => setOpenOwnerId(null)}
           actions={null}
         >
-          <MetricState status={machinesQuery.status} isEmpty={machinesQuery.data?.length === 0}>
+          <MetricState status={machinesQuery.status} onRetry={() => void machinesQuery.refetch()} isEmpty={machinesQuery.data?.length === 0}>
             <div className="flex flex-col">
               {machinesQuery.data?.map((m) => (
                 <div key={m.machine_id} className="flex items-center justify-between gap-3 border-t border-border py-2.5 text-sm">

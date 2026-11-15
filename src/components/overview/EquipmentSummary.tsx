@@ -20,7 +20,7 @@ export function EquipmentSummary({ columns, max = 5 }: { columns: PmeOverviewBlo
           Tous les équipements →
         </Link>
       </div>
-      <MetricState status={query.status} isEmpty={query.data?.rows.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.rows.length === 0} emptyAction={{ to: '/app/equipements', label: 'Ajouter un équipement' }}>
         <div className="relative overflow-x-auto">
           <table className="w-full border-collapse sm:min-w-[34rem] text-[0.8125rem]">
             <thead>

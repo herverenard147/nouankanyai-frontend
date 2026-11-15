@@ -20,7 +20,7 @@ export function PmeOverview() {
       <DemoDataBanner />
       <GettingStartedStrip />
       <p className="text-sm text-text-secondary">
-        Vue d&rsquo;ensemble de votre activité : consommation, prédiction et équipements déclarés sur vos sites.
+        Vue d&rsquo;ensemble de votre activité : consommation, prévision et équipements déclarés sur vos sites.
       </p>
 
       <KpiStrip profile="pme" targets={kpiTargets('pme')} />

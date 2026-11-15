@@ -41,7 +41,7 @@ export function PredictionPage() {
     return (
       <div className="flex flex-col gap-7">
         <p className="text-sm text-text-secondary">
-          Prédiction de consommation par équipement, pour tous les comptes de la plateforme.
+          Prévision de consommation par équipement, pour tous les comptes de la plateforme.
         </p>
         <AdminPlatformPrediction />
       </div>
@@ -67,7 +67,7 @@ export function PredictionPage() {
       </p>
       <PrepaidPredictionCard />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Granularité de la prédiction">
+        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Granularité de la prévision">
           {GRANULARITIES.map((g) => (
             <Pill key={g.id} active={granularity === g.id} onClick={() => setGranularity(g.id)}>
               {g.label}
@@ -78,13 +78,13 @@ export function PredictionPage() {
       </div>
 
       {view === 'nouvelle' ? (
-        <MetricState status={query.status}>
+        <MetricState status={query.status} onRetry={() => void query.refetch()}>
           {query.data && <PredictionNewView bundle={query.data} granularity={granularity} showModelDetails={showModelDetails} />}
         </MetricState>
       ) : (
         <>
-          <section className="flex flex-col gap-4 border-t-2 border-text-primary pt-4" aria-label="Prédiction globale">
-            <MetricState status={query.status} isEmpty={!query.data?.global}>
+          <section className="flex flex-col gap-4 border-t-2 border-text-primary pt-4" aria-label="Prévision globale">
+            <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={!query.data?.global}>
               {query.data?.global && (
                 <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} />
               )}

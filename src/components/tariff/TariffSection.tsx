@@ -20,7 +20,7 @@ function TariffSectionContent({ profile }: TariffSectionProps) {
   return (
     <section className="flex flex-col gap-2 border-t-2 border-text-primary pt-4">
       <h3 className="text-sm font-medium text-text-secondary">Paliers tarifaires CIE</h3>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data && <TariffBar nowLabel={query.data.nowLabel} />}
       </MetricState>
     </section>

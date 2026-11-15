@@ -42,7 +42,7 @@ function PendingBills() {
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Factures CIE à valider</h2>
       <p className="text-sm text-text-secondary">Comparez la saisie au justificatif avant de valider : une facture validée sert de base aux relevés et n’est plus modifiable.</p>
-      <MetricState status={pending.status} isEmpty={pending.data?.length === 0}>
+      <MetricState status={pending.status} onRetry={() => void pending.refetch()} isEmpty={pending.data?.length === 0}>
         <ul>
           {pending.data?.map((b) => (
             <li key={b.id} className="flex flex-col gap-2 border-t border-border py-2.5 text-sm">
@@ -172,7 +172,7 @@ function CompteurRequests() {
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Changements de compteur à valider</h2>
       <p className="text-sm text-text-secondary">Comparez le nouveau numéro à la photo de la facture, telle que le client l’a envoyée.</p>
-      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0}>
         <ul>
           {query.data?.map((d) => (
             <li key={d.id} className="flex flex-col gap-2 border-t border-border py-2.5 text-sm">
@@ -219,7 +219,7 @@ export function AdminBillingPage() {
       <CompteurRequests />
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Relevés à payer</h2>
-        <MetricState status={unpaid.status} isEmpty={unpaid.data?.length === 0}>
+        <MetricState status={unpaid.status} onRetry={() => void unpaid.refetch()} isEmpty={unpaid.data?.length === 0}>
           <ul>
             {unpaid.data?.map((s) => (
               <li key={s.id} className="flex flex-wrap items-baseline justify-between gap-2 border-t border-border py-2.5 text-sm">
@@ -235,7 +235,7 @@ export function AdminBillingPage() {
       </section>
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Demandes de changement d&rsquo;abonnement</h2>
-        <MetricState status={requests.status} isEmpty={requests.data?.length === 0}>
+        <MetricState status={requests.status} onRetry={() => void requests.refetch()} isEmpty={requests.data?.length === 0}>
           <ul>
             {requests.data?.map((r) => (
               <li key={r.id} className="flex flex-wrap items-baseline justify-between gap-2 border-t border-border py-2.5 text-sm">

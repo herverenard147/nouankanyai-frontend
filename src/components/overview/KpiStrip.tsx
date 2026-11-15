@@ -59,7 +59,7 @@ function KpiTile({ profile, kpiId, to, index }: { profile: Profile; kpiId: strin
           {window.sampleCount !== undefined ? ` · ${window.sampleCount.toLocaleString('fr-FR')} échantillons` : ''}
         </p>
       )}
-      <MetricState status={setQuery.status} isEmpty={setQuery.status === 'success' && !kpi}>
+      <MetricState status={setQuery.status} onRetry={() => void setQuery.refetch()} isEmpty={setQuery.status === 'success' && !kpi}>
         {kpi && (
           <>
             <p className="font-heading text-[clamp(1.75rem,3vw,2.25rem)] font-bold leading-tight tracking-[-0.02em] tabular-nums text-text-primary">

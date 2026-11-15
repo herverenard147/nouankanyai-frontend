@@ -39,7 +39,7 @@ export function CompteurCard() {
         Il est écrit sur votre facture CIE, dans le cadre « Relevé compteur ». Il permet de vérifier que chaque facture envoyée est bien
         la vôtre. Une fois enregistré, il ne se modifie plus que par une demande examinée par Nouankany.
       </p>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {c && c.verrouille && (
           <div className="flex flex-col gap-2 text-sm">
             <p>

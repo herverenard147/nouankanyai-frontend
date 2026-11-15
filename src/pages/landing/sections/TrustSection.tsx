@@ -24,7 +24,7 @@ export function TrustSection() {
             Une donnée est mesurée, estimée, ou synthétique. Jamais inventée.
           </h2>
           <p className="mt-6 text-[1.25rem] leading-snug text-text-primary">
-            Chaque chiffre affiché sur votre dashboard porte l&rsquo;origine de son calcul.
+            Chaque chiffre affiché sur votre tableau de bord porte l&rsquo;origine de son calcul.
           </p>
           <p className="mt-4 text-text-secondary">
             Pas de promesse d&rsquo;IA gonflée. Si un capteur n&rsquo;est pas encore installé chez vous, on vous le

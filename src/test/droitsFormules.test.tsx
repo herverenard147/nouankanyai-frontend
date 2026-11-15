@@ -38,7 +38,7 @@ describe('droits des formules', () => {
   it('Découverte : l’aperçu montre l’encadré au lieu d’un chargement sans fin', () => {
     access.current = { loaded: true, predictions: false, anomalies: false, maxPredictions: 0, predicted: [] }
     show(<PredictionSummary profile="menage" />)
-    expect(screen.getByRole('region', { name: 'Prédictions' })).toBeTruthy()
+    expect(screen.getByRole('region', { name: 'Facture prévue' })).toBeTruthy()
   })
 
   it('Essentiel : la page dit combien d’appareils sont prévus', () => {
