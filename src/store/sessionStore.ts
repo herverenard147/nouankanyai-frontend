@@ -22,7 +22,8 @@ function toSession(result: BackendAuthResult): Session {
     // Seuls les PME/Industrie sans owner_id (compte principal, pas membre d'une
     // équipe) peuvent gérer des membres : voir app/api/v1/team/ côté backend.
     isTeamOwner: (profile === 'pme' || profile === 'industrie') && !result.user.owner_id,
-    isTrial: result.user.is_trial,
+    // S-20 : `trial_active` (essai en cours), pas `is_trial` qui reste vrai à vie.
+    isTrial: result.user.trial_active,
     isDemo: Boolean(result.user.is_demo),
   }
 }

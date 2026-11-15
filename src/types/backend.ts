@@ -17,7 +17,8 @@ export interface BackendUser {
   role: string
   platform_role: BackendPlatformRole
   owner_id: string | null
-  is_trial: boolean
+  /** Essai gratuit encore en cours (calculé par le serveur). */
+  trial_active: boolean
   /** Compte de démonstration décidé par le serveur (jamais par l'adresse). */
   is_demo?: boolean
   /** Adresse confirmée par le lien reçu par email. */
