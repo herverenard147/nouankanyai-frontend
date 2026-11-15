@@ -94,6 +94,7 @@ export function LoginPage() {
           <button
             type="button"
             onClick={() => setMode('login')}
+            aria-pressed={mode === 'login'}
             className={`focus-ring min-w-0 flex-1 rounded-control px-3 py-2 text-sm font-semibold ${mode === 'login' ? 'bg-card text-text-primary shadow-sm' : 'text-text-secondary'}`}
           >
             Se connecter
@@ -101,6 +102,7 @@ export function LoginPage() {
           <button
             type="button"
             onClick={() => setMode('signup')}
+            aria-pressed={mode === 'signup'}
             className={`focus-ring min-w-0 flex-1 rounded-control px-3 py-2 text-sm font-semibold ${mode === 'signup' ? 'bg-card text-text-primary shadow-sm' : 'text-text-secondary'}`}
           >
             Créer un compte

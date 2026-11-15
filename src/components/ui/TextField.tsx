@@ -34,7 +34,8 @@ export function TextField({ label, error, className, id, ...rest }: TextFieldPro
         id={fieldId}
         className={clsx(
           'focus-ring min-h-11 rounded-control border bg-card px-3.5 py-3 text-sm text-text-primary placeholder:text-text-tertiary',
-          error ? 'border-alert' : 'border-border',
+          // Bordure #6e6e64 (5,15:1 sur blanc) : l'ancien --color-border (1,31:1) échouait WCAG 1.4.11.
+          error ? 'border-alert' : 'border-text-tertiary',
           className,
         )}
         aria-invalid={error ? true : undefined}
@@ -50,7 +51,7 @@ export function TextField({ label, error, className, id, ...rest }: TextFieldPro
         }}
       />
       {error && (
-        <p id={errorId} className="text-sm text-alert">
+        <p id={errorId} role="alert" className="text-sm text-alert">
           {error}
         </p>
       )}
