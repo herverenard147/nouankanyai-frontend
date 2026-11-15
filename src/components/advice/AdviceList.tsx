@@ -1,3 +1,4 @@
+import { addEquipmentAction } from '@/lib/navConfig'
 import { Spinner } from '@/components/ui/Button'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -124,7 +125,7 @@ export function AdviceList({ profile, level, markSeenOnView, maxItems }: AdviceL
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-section-title font-semibold text-text-primary">{title}</h2>
-      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+      <MetricState status={query.status} isEmpty={query.data?.length === 0} emptyAction={addEquipmentAction(profile)}>
         <div className="flex flex-col border-t-2 border-text-primary">
           {visibleAdvice?.map((advice) => (
             <AdviceCard key={`${advice.machineId ?? ''}-${advice.title}`} advice={advice} showImpact={showImpact} />

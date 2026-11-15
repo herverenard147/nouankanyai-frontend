@@ -1,8 +1,11 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 
 interface MetricStateProps {
   status: 'pending' | 'error' | 'success'
   isEmpty?: boolean
+  /** Lien proposé quand il n'y a rien à montrer : un état vide doit dire quoi faire. */
+  emptyAction?: { to: string; label: string }
   children: ReactNode
 }
 
@@ -11,7 +14,7 @@ interface MetricStateProps {
  * La carte parente garde toujours son titre (et sa mention de fenêtre) visibles
  * autour de ce composant : jamais d'écran d'erreur global, un bloc à la fois.
  */
-export function MetricState({ status, isEmpty, children }: MetricStateProps) {
+export function MetricState({ status, isEmpty, emptyAction, children }: MetricStateProps) {
   if (status === 'pending') {
     return (
       <div className="animate-pulse space-y-2" role="status" aria-label="Chargement en cours">
@@ -31,7 +34,19 @@ export function MetricState({ status, isEmpty, children }: MetricStateProps) {
   }
 
   if (isEmpty) {
-    return <p className="text-sm text-text-secondary">Aucune donnée pour le moment.</p>
+    return (
+      <p className="text-sm text-text-secondary">
+        Aucune donnée pour le moment.
+        {emptyAction && (
+          <>
+            {' '}
+            <Link to={emptyAction.to} className="focus-ring font-semibold text-accent-cta hover:text-accent-cta-hover">
+              {emptyAction.label} →
+            </Link>
+          </>
+        )}
+      </p>
+    )
   }
 
   return <>{children}</>

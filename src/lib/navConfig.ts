@@ -128,3 +128,9 @@ export function isRouteAllowed(path: string, profile: Profile): boolean {
 export function firstRouteFor(profile: Profile): string {
   return NAV_BY_PROFILE[profile][0]?.path ?? '/app/apercu'
 }
+
+/** Action proposée par un état vide de conseils ou de résumé : aller ajouter l'appareil dont tout part. */
+export function addEquipmentAction(profile: Profile): { to: string; label: string } {
+  if (profile === 'industrie') return { to: '/app/machines', label: 'Ajouter une machine' }
+  return { to: '/app/equipements', label: profile === 'menage' ? 'Ajouter un appareil' : 'Ajouter un équipement' }
+}
