@@ -97,7 +97,11 @@ export const useSessionStore = create<SessionState>()(
         }
       },
       logout: () => {
+        const refreshToken = useSessionStore.getState().session?.refreshToken
         set({ session: null })
+        // S-26 : révocation côté serveur du jeton de cet appareil. Sans attente ni blocage : si
+        // l'appel échoue, le jeton expirera de lui-même et la déconnexion locale reste faite.
+        if (refreshToken) api.post('/api/auth/logout', { refresh_token: refreshToken }, false).catch(() => {})
         // Le "vu" des alertes/conseils est par appareil (localStorage), pas par
         // compte : sans ce reset, le compte suivant sur un poste partagé/démo
         // hérite du "vu" du précédent (voir notificationStore.resetSeen).
