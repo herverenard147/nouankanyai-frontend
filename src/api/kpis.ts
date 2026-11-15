@@ -1,12 +1,13 @@
 import { formatFcfa, formatMonth, formatNumberFr } from '@/lib/formatters'
-import { getCachedAdminMetrics, rawBilling, getCachedMachines, getCachedRecommend, hasReading } from '@/api/rawBackend'
-import type { Kpi, KpiWindow, Profile } from '@/types/domain'
+import { getCachedAdminMetrics, rawBilling, rawConsumption, getCachedMachines, getCachedRecommend, hasReading } from '@/api/rawBackend'
+import type { BackendConsumptionProvenance } from '@/types/backend'
+import type { Kpi, KpiWindow, Profile, Provenance } from '@/types/domain'
 
 const CLIENT_KPI_IDS = ['puissance-totale', 'machines-actives', 'economies-mois', 'anomalies-actives'] as const
 const ADMIN_KPI_IDS = ['base-donnees', 'uptime', 'latence-moyenne', 'machines-plateforme'] as const
 
 const CLIENT_LABELS: Record<(typeof CLIENT_KPI_IDS)[number], string> = {
-  'puissance-totale': 'Puissance active totale',
+  'puissance-totale': 'Puissance en ce moment',
   'machines-actives': 'Machines actives',
   'economies-mois': 'Économies estimées ce mois',
   'anomalies-actives': 'Machines en anomalie',
@@ -24,7 +25,7 @@ const MENAGE_LABELS: typeof CLIENT_LABELS = {
 
 /** PME : « équipements », comme partout ailleurs dans son espace (test du site, 2026-10-18 : « machines » ici seulement). */
 const PME_LABELS: typeof CLIENT_LABELS = {
-  'puissance-totale': 'Puissance active totale',
+  'puissance-totale': 'Puissance en ce moment',
   'machines-actives': 'Équipements sans alerte',
   'economies-mois': 'Économies estimées ce mois',
   'anomalies-actives': 'Équipements en anomalie',
@@ -64,6 +65,26 @@ function formatUptime(seconds: number): string {
   return days > 0 ? `${days} j ${hours} h` : `${hours} h`
 }
 
+/** Du moins sûr au plus sûr : une tuile qui mêle plusieurs origines prend la moins sûre, jamais « mesuré » à tort. */
+const PROVENANCE_ORDER: [BackendConsumptionProvenance, Provenance][] = [
+  ['simulation', 'synthetique'],
+  ['demonstration', 'demonstration'],
+  ['declare', 'declare'],
+  ['mesure', 'mesure'],
+]
+
+/** Origine des relevés des appareils mesurés, lue sur la consommation. Origine inconnue : « synthétique » par prudence. */
+async function readingsProvenance(measuredIds: Set<string>): Promise<Provenance> {
+  if (measuredIds.size === 0) return 'synthetique'
+  try {
+    const { machines } = await rawConsumption('day')
+    const present = new Set(machines.filter((m) => measuredIds.has(m.code)).map((m) => m.provenance))
+    return PROVENANCE_ORDER.find(([origin]) => present.has(origin))?.[1] ?? 'synthetique'
+  } catch {
+    return 'synthetique'
+  }
+}
+
 async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>> {
   const labels = profile === 'menage' ? MENAGE_LABELS : profile === 'pme' ? PME_LABELS : CLIENT_LABELS
   const noun = profile === 'menage' ? 'appareil' : profile === 'pme' ? 'équipement' : 'machine'
@@ -81,6 +102,7 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
   // (test du site, 2026-10-18 : « 1,4 kW en ce moment » pour un foyer sans aucune mesure).
   const measured = machines.filter(hasReading)
   const totalPower = measured.reduce((sum, m) => sum + m.power_kw, 0)
+  const readingsOrigin = await readingsProvenance(new Set(measured.map((m) => m.machine_id)))
 
   return {
     'puissance-totale': {
@@ -91,7 +113,7 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
       note: measured.length
         ? `${measured.length} ${noun}${plural(measured.length)} mesuré${plural(measured.length)} sur ${machines.length}`
         : 'Aucune mesure : reliez un boîtier ou importez des relevés',
-      provenance: 'synthetique',
+      provenance: readingsOrigin,
     },
     'machines-actives': {
       id: 'machines-actives',
@@ -99,7 +121,7 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
       value: String(activeMachines.length),
       unit: `/ ${machines.length}`,
       note: alerteMachines.length > 0 ? `${alerteMachines.length} ${profile === 'menage' ? 'à surveiller' : 'en alerte'}` : 'Aucune alerte active',
-      provenance: 'synthetique',
+      provenance: readingsOrigin,
     },
     'economies-mois': {
       id: 'economies-mois',
@@ -117,7 +139,7 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
       value: String(alerteMachines.length),
       unit: `${noun}${plural(alerteMachines.length)}`,
       note: alerteMachines.length > 0 ? alerteMachines.map((m) => m.nom).join(', ') : 'Aucune',
-      provenance: 'synthetique',
+      provenance: readingsOrigin,
     },
   }
 }
