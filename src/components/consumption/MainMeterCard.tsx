@@ -9,6 +9,7 @@ import { ConfirmDeleteModal, MutationError } from '@/components/ui/Modal'
 import { formatNumberFr } from '@/lib/formatters'
 import type { ConsumptionGranularity } from '@/types/backend'
 import type { Profile } from '@/types/domain'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 const SECTION = 'flex flex-col gap-4 border-t-2 border-text-primary pt-4'
 const kwh = (v: number) => `${formatNumberFr(v, v < 100 ? 1 : 0)} kWh`
@@ -99,9 +100,11 @@ export function MainMeterCard({ granularity, window, profile }: { granularity: C
                   ]}
                 />
               )}
-              <Button type="button" variant="outline" className="w-fit" onClick={() => setRemoving(m.code)}>
-                Retirer ce compteur
-              </Button>
+              <OwnerOnly>
+                <Button type="button" variant="outline" className="w-fit" onClick={() => setRemoving(m.code)}>
+                  Retirer ce compteur
+                </Button>
+              </OwnerOnly>
             </div>
           ))
         )}

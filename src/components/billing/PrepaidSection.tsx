@@ -9,6 +9,7 @@ import { ConfirmDeleteModal, Modal, MutationError } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
 import { formatFcfa, formatNumberFr } from '@/lib/formatters'
 import type { BackendPrepaid, BackendRecharge } from '@/types/backend'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 const SECTION = 'flex scroll-mt-24 flex-col gap-4 border-t-2 border-text-primary pt-4'
 const KEYS = ['prepaid', 'notifications', 'consumption']
@@ -185,17 +186,19 @@ function PrepaidMeter({ meter }: { meter: BackendPrepaid }) {
                   <td className="py-2 pr-3 tabular-nums">{r.prix_kwh !== null ? `${formatNumberFr(r.prix_kwh, 0)} FCFA` : '-'}</td>
                   <td className="py-2 pr-3">{r.source === 'photo' ? 'Lue sur le reçu' : 'Saisie à la main'}</td>
                   <td className="py-2">
-                    <button
-                      type="button"
-                      className="focus-ring text-sm font-semibold text-alert hover:underline"
-                      aria-label={`Supprimer la recharge du ${day(r.date)}`}
-                      onClick={() => {
-                        remove.reset()
-                        setRemoving(r)
-                      }}
-                    >
-                      Supprimer
-                    </button>
+                    <OwnerOnly>
+                      <button
+                        type="button"
+                        className="focus-ring text-sm font-semibold text-alert hover:underline"
+                        aria-label={`Supprimer la recharge du ${day(r.date)}`}
+                        onClick={() => {
+                          remove.reset()
+                          setRemoving(r)
+                        }}
+                      >
+                        Supprimer
+                      </button>
+                    </OwnerOnly>
                   </td>
                 </tr>
               ))}

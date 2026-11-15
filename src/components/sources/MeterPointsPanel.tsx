@@ -12,6 +12,7 @@ import { formatUtcDateTime } from '@/lib/formatters'
 import { DATA_TYPES, MEASURE_FIELDS, buildCustomMap } from '@/lib/sourceForms'
 import type { RegisterDraft } from '@/lib/sourceForms'
 import type { BackendCustomMeterMap, BackendMeterPoint, BackendMeterPointCreate } from '@/types/backend'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 const STATUS_CLASS: Record<BackendMeterPoint['status'], string> = {
   a_tester: 'text-text-secondary',
@@ -85,9 +86,11 @@ export function MeterPointsPanel({ deviceId, sensor = false }: { deviceId: strin
                           </Button>
                         )}
                         {!sensor && (
-                          <Button type="button" variant="ghost" onClick={() => setRemoving(p)}>
-                            Retirer
-                          </Button>
+                          <OwnerOnly>
+                            <Button type="button" variant="ghost" onClick={() => setRemoving(p)}>
+                              Retirer
+                            </Button>
+                          </OwnerOnly>
                         )}
                       </div>
                     </td>

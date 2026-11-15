@@ -14,6 +14,7 @@ import { planBlocks } from '@/lib/planLevels'
 import { useLevel } from '@/store/levelStore'
 import { useSessionStore } from '@/store/sessionStore'
 import type { ActionPlanItem, PlanStatus } from '@/types/domain'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 type Dialog =
   | { kind: 'add' }
@@ -132,17 +133,19 @@ export function PlanActionPage() {
                   <button type="button" className="focus-ring font-semibold text-accent-cta hover:underline" onClick={() => openEdit(item)} aria-label={`Modifier ${item.title}`}>
                     Modifier
                   </button>
-                  <button
-                    type="button"
-                    className="focus-ring font-semibold text-alert hover:underline"
-                    aria-label={`Retirer ${item.title} du plan`}
-                    onClick={() => {
-                      remove.reset()
-                      setDialog({ kind: 'delete', item })
-                    }}
-                  >
-                    Retirer du plan
-                  </button>
+                  <OwnerOnly>
+                    <button
+                      type="button"
+                      className="focus-ring font-semibold text-alert hover:underline"
+                      aria-label={`Retirer ${item.title} du plan`}
+                      onClick={() => {
+                        remove.reset()
+                        setDialog({ kind: 'delete', item })
+                      }}
+                    >
+                      Retirer du plan
+                    </button>
+                  </OwnerOnly>
                 </div>
               </li>
             ))}

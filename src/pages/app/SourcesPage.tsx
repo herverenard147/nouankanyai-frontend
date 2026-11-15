@@ -19,6 +19,7 @@ import { isRouteAllowed } from '@/lib/navConfig'
 import { useInterventionStore } from '@/store/interventionStore'
 import { useSessionStore } from '@/store/sessionStore'
 import type { BackendDevice } from '@/types/backend'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 /**
  * Sources de mesures (étape 6, 2026-10-16) : comment les mesures du compte arrivent (boîtier, passerelle, logiciel du
@@ -129,9 +130,11 @@ export function SourceDetailPage() {
             <BoitierSectionBlock
               title={device.nom}
               action={
-                <Button type="button" variant="ghost" onClick={() => setRevoking(true)}>
-                  Révoquer la source
-                </Button>
+                <OwnerOnly>
+                  <Button type="button" variant="ghost" onClick={() => setRevoking(true)}>
+                    Révoquer la source
+                  </Button>
+                </OwnerOnly>
               }
             >
               <DefinitionRows

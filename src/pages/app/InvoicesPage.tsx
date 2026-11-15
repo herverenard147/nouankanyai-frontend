@@ -28,6 +28,7 @@ import { ApiError } from '@/lib/apiClient'
 import { formatFcfa, formatMonth, formatNumberFr, NARROW_NBSP } from '@/lib/formatters'
 import { useSessionStore } from '@/store/sessionStore'
 import type { InvoiceRecord } from '@/types/domain'
+import { OwnerOnly } from '@/components/ui/OwnerOnly'
 
 type Dialog =
   | { kind: 'add' }
@@ -212,17 +213,19 @@ export function InvoicesPage() {
                       </button>
                     )}
                     {!invoice.locked && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          deleteMutation.reset()
-                          setDialog({ kind: 'delete', invoice })
-                        }}
-                        className="focus-ring text-sm font-semibold text-alert hover:underline"
-                        aria-label={`Supprimer la facture ${invoice.period}`}
-                      >
-                        Supprimer
-                      </button>
+                      <OwnerOnly>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            deleteMutation.reset()
+                            setDialog({ kind: 'delete', invoice })
+                          }}
+                          className="focus-ring text-sm font-semibold text-alert hover:underline"
+                          aria-label={`Supprimer la facture ${invoice.period}`}
+                        >
+                          Supprimer
+                        </button>
+                      </OwnerOnly>
                     )}
                   </div>
                 </div>
