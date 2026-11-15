@@ -142,3 +142,25 @@ describe('RowDetailDrawer : comportement générique', () => {
     expect(container).toBeEmptyDOMElement()
   })
 })
+
+describe('DataTable : clavier', () => {
+  it('une ligne cliquable est atteignable au clavier et s’ouvre avec Entrée ou Espace', () => {
+    const onRowClick = vi.fn()
+    render(<DataTable columns={columns} rows={rows} onRowClick={onRowClick} />)
+    const row = screen.getAllByRole('row')[1]
+    expect(row.getAttribute('tabindex')).toBe('0')
+    fireEvent.keyDown(row, { key: 'Enter' })
+    fireEvent.keyDown(row, { key: ' ' })
+    expect(onRowClick).toHaveBeenCalledTimes(2)
+  })
+  it('une touche pressée dans un bouton de la ligne n’ouvre pas la fiche', () => {
+    const onRowClick = vi.fn()
+    render(<DataTable columns={columns} rows={rows} onRowClick={onRowClick} renderActions={() => <button type="button">Modifier</button>} />)
+    fireEvent.keyDown(screen.getAllByRole('button', { name: 'Modifier' })[0], { key: 'Enter' })
+    expect(onRowClick).not.toHaveBeenCalled()
+  })
+  it('sans onRowClick, la ligne n’est pas focalisable', () => {
+    render(<DataTable columns={columns} rows={rows} />)
+    expect(screen.getAllByRole('row')[1].getAttribute('tabindex')).toBeNull()
+  })
+})

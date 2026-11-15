@@ -1,5 +1,5 @@
 import { ImageOff } from 'lucide-react'
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, type KeyboardEvent, type ReactNode } from 'react'
 
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -19,6 +19,22 @@ interface DataTableProps<T extends { id: string; provenance: Provenance; photo_d
   renderActions?: (row: T) => ReactNode
   /** Ajoute une vignette (`row.photo_data_url`) en première colonne : seulement pour les tables de machines/équipements. */
   photoColumn?: boolean
+}
+
+/** Ligne cliquable atteignable au clavier : Entrée ou Espace ouvrent la fiche, sauf si l'événement vient d'un lien ou bouton interne. */
+function rowProps<R>(row: R, onRowClick?: (row: R) => void) {
+  if (!onRowClick) return {}
+  return {
+    tabIndex: 0,
+    onClick: () => onRowClick(row),
+    onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+      if (event.target !== event.currentTarget) return
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        onRowClick(row)
+      }
+    },
+  }
 }
 
 export function DataTable<T extends { id: string; provenance: Provenance; photo_data_url?: string | null }>({
@@ -76,8 +92,8 @@ export function DataTable<T extends { id: string; provenance: Provenance; photo_
             return (
               <li
                 key={row.id}
-                className={`flex gap-3 border-t border-border py-3 first:border-t-0 ${onRowClick ? 'cursor-pointer hover:bg-bg-elevated' : ''}`}
-                onClick={() => onRowClick?.(row)}
+                className={`flex gap-3 border-t border-border py-3 first:border-t-0 ${onRowClick ? 'focus-ring cursor-pointer hover:bg-bg-elevated' : ''}`}
+                {...rowProps(row, onRowClick)}
               >
                 {photoColumn &&
                   (row.photo_data_url ? (
@@ -143,8 +159,8 @@ export function DataTable<T extends { id: string; provenance: Provenance; photo_
               {filtered.map((row) => (
                 <tr
                   key={row.id}
-                  className={`border-t border-border ${onRowClick ? 'cursor-pointer hover:bg-bg-elevated' : ''}`}
-                  onClick={() => onRowClick?.(row)}
+                  className={`border-t border-border ${onRowClick ? 'focus-ring cursor-pointer hover:bg-bg-elevated' : ''}`}
+                  {...rowProps(row, onRowClick)}
                 >
                   {photoColumn && (
                     <td className="px-4 py-3">
