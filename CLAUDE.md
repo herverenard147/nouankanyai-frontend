@@ -123,4 +123,14 @@ vrai clic et mesurer par script. La technique de l'iframe ne vaut qu'avec le sit
 - Tuiles de la vue d'ensemble (`src/api/kpis.ts`) : la provenance suit l'origine des relevés lue sur `/api/v1/consumption` (mesure, déclaré, démonstration, simulation) ; mélange : la moins sûre l'emporte ; origine inconnue : « synthétique ». Libellé « Puissance en ce moment ».
 - Un gain en FCFA est affiché avec « ordre de grandeur » (`ImpactFigure`). Les pourcentages et les textes par famille viennent du moteur backend : à corriger là-bas (S-16).
 - `MetricState` accepte `emptyAction` (lien dans l'état vide) ; `addEquipmentAction(profile)` dans `navConfig.ts`.
-- Non fait : S-14 (fusion Recommandations/Rapports du menu PME et Industrie) : bloqué par le test `importsEtMenuMenage.test.tsx` qui impose le menu complet ; S-26 : pas de route de révocation par session côté API.
+- Non fait : S-14 (fusion Recommandations/Rapports du menu PME et Industrie) : bloqué par le test `importsEtMenuMenage.test.tsx` qui impose le menu complet (décision du propriétaire).
+
+## Lot front du 2026-11-15, suite (S-03, S-20, S-21, S-26, S-27, performance, accessibilité)
+
+- S-26 : `logout()` (`sessionStore.ts`) appelle `POST /api/auth/logout` avec le jeton de renouvellement, sans attendre ni bloquer ; la route existe côté API (PR backend #160).
+- S-20 : `Session.isTrial` vient de `trial_active` (essai en cours), plus de `is_trial` (vrai à vie).
+- S-27 : la fiche client admin n'a plus de champ mot de passe ; le serveur envoie un lien au titulaire, erreur 503 si le mailer n'est pas configuré.
+- S-21 : `OwnerOnly`/`useCanDelete` (`components/ui/OwnerOnly.tsx`) masquent les suppressions pour un membre PME/Industrie (profil sans `isTeamOwner`). Le serveur ne refuse (403) aujourd'hui que site, facture et machine ; boîtier, compteur, recharge et item de plan sont masqués d'avance, à faire suivre côté API.
+- S-03 : « ×1,65 » de l'accueil = 94,21 / 57,17 (grille ANARE-CI 2019, moyenne tension). Le chiffre « 79 → 87 » reste à trancher par le propriétaire (73 ou 79).
+- Visualiseur 3D (`BoitierViewer`) : three.js et le GLB (2,18 Mo) ne se chargent qu'à l'approche du viewport, jamais sous 768 px, avec `prefers-reduced-data` ou `saveData`. En-têtes de cache de `/images`, `/models`, `/logo.*` : `max-age=86400, stale-while-revalidate=604800` (fichiers non hachés).
+- Accessibilité : bordure des champs `text-tertiary` (#6e6e64, 5,15:1 sur blanc, ancien 1,31:1), erreurs de champ en `role="alert"`, onglets Connexion/Inscription en `aria-pressed`. Reste : les autres contrôles (listes déroulantes, etc.) non revus.
