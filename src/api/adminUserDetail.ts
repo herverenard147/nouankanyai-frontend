@@ -23,8 +23,8 @@ export function deleteUser(targetUserId: string) {
   return rawDeleteUser(targetUserId)
 }
 
-export function resetUserPassword(targetUserId: string, newPassword: string) {
-  return rawAdminResetPassword(targetUserId, newPassword)
+export function resetUserPassword(targetUserId: string) {
+  return rawAdminResetPassword(targetUserId)
 }
 
 export function updateUserProfile(targetUserId: string, nom: string) {

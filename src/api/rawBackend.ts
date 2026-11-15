@@ -284,8 +284,9 @@ export const rawUserMachines = (targetUserId: string) =>
 export const rawSuspendUser = (targetUserId: string, suspended: boolean) =>
   api.patch<BackendUser>(`/api/admin/users/${targetUserId}/suspend`, { suspended })
 export const rawDeleteUser = (targetUserId: string) => api.delete<{ deleted: boolean }>(`/api/admin/users/${targetUserId}`)
-export const rawAdminResetPassword = (targetUserId: string, newPassword: string) =>
-  api.post<{ ok: boolean }>(`/api/admin/users/${targetUserId}/reset-password`, { new_password: newPassword })
+/** Le serveur envoie un lien au titulaire (S-27) ; l'administrateur ne fixe jamais de mot de passe. */
+export const rawAdminResetPassword = (targetUserId: string) =>
+  api.post<{ ok: boolean; email_envoye: boolean }>(`/api/admin/users/${targetUserId}/reset-password`)
 export const rawAdminUpdateUserProfile = (targetUserId: string, nom: string) =>
   api.patch<BackendUser>(`/api/admin/users/${targetUserId}/profile`, { nom })
 export const rawUserPredictions = (targetUserId: string) =>

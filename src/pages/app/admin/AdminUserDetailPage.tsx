@@ -6,14 +6,13 @@ import { Link, useParams } from 'react-router-dom'
 import { useBreadcrumbLabel } from '@/store/breadcrumbStore'
 import type { EditableRole } from '@/api/adminUsers'
 
-import { MIN_PASSWORD_LENGTH } from '@/lib/validation'
+import { ApiError } from '@/lib/apiClient'
 import { AdminVerifyMachineButton } from '@/components/admin/AdminVerifyMachineButton'
 import { AdminBillingSection } from '@/components/billing/AdminBillingSection'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, SelectField } from '@/components/ui/Modal'
-import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
 import {
   useAdminUsers,
@@ -59,7 +58,6 @@ export function AdminUserDetailPage() {
   const [roleTarget, setRoleTarget] = useState<EditableRole>('client')
   const [nom, setNom] = useState('')
   const [nameError, setNameError] = useState<string | null>(null)
-  const [newPassword, setNewPassword] = useState('')
 
   if (usersQuery.status === 'pending') return <p className="text-sm text-text-secondary">Chargement…</p>
 
@@ -119,7 +117,6 @@ export function AdminUserDetailPage() {
               type="button"
               variant="outline"
               onClick={() => {
-                setNewPassword('')
                 resetPassword.reset()
                 setDialog('reset-password')
               }}
@@ -219,39 +216,32 @@ export function AdminUserDetailPage() {
       {dialog === 'reset-password' && (
         <Modal
           title={`Réinitialiser le mot de passe de ${user.name}`}
-          description="L'utilisateur devra utiliser ce nouveau mot de passe à sa prochaine connexion."
+          description="Un lien de réinitialisation sera envoyé à l'adresse du compte. Vous ne choisissez ni ne voyez jamais le mot de passe."
           onClose={() => setDialog(null)}
           actions={
             <>
               <Button type="button" variant="outline" onClick={() => setDialog(null)}>
                 Annuler
               </Button>
-              <Button loading={resetPassword.isPending} type="submit" form="reset-password-form" disabled={resetPassword.isPending}>
-                {resetPassword.isPending ? 'Enregistrement…' : 'Réinitialiser'}
+              <Button
+                loading={resetPassword.isPending}
+                type="button"
+                disabled={resetPassword.isPending}
+                onClick={() => resetPassword.mutate(user.id, { onSuccess: () => setDialog(null) })}
+              >
+                {resetPassword.isPending ? 'Envoi…' : 'Envoyer le lien'}
               </Button>
             </>
           }
         >
-          <form
-            id="reset-password-form"
-            onSubmit={(event) => {
-              event.preventDefault()
-              if (newPassword.length < MIN_PASSWORD_LENGTH) return
-              resetPassword.mutate({ userId: user.id, newPassword }, { onSuccess: () => setDialog(null) })
-            }}
-            className="flex flex-col gap-3"
-          >
-            <PasswordField
-              label="Nouveau mot de passe"
-              value={newPassword}
-              onChange={(event) => setNewPassword(event.target.value)}
-              autoComplete="new-password"
-              required
-              minLength={MIN_PASSWORD_LENGTH}
-            />
-            <p className="text-xs text-text-secondary">Au moins {MIN_PASSWORD_LENGTH} caractères.</p>
+          <p className="text-sm text-text-secondary">Le lien est valable 30 minutes et ne sert qu'une fois.</p>
+          {resetPassword.error instanceof ApiError && resetPassword.error.status === 503 ? (
+            <p role="alert" className="text-sm text-alert">
+              L&rsquo;envoi d&rsquo;e-mail n&rsquo;est pas configuré sur le serveur : le lien n&rsquo;a pas pu partir. Rien n&rsquo;a été modifié sur le compte.
+            </p>
+          ) : (
             <MutationError error={resetPassword.error} />
-          </form>
+          )}
         </Modal>
       )}
 

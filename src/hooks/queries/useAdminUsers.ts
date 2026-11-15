@@ -107,7 +107,7 @@ export function useUserManagementMutations() {
       onSuccess: (_data, { userId }) => refresh(userId),
     }),
     resetPassword: useMutation({
-      mutationFn: ({ userId, newPassword }: { userId: string; newPassword: string }) => resetUserPassword(userId, newPassword),
+      mutationFn: (userId: string) => resetUserPassword(userId),
     }),
     updateProfile: useMutation({
       mutationFn: ({ userId, nom }: { userId: string; nom: string }) => updateUserProfile(userId, nom),
