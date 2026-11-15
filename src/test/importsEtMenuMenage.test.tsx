@@ -119,7 +119,7 @@ describe('menus resserrés (audit S-14, 2026-11-15)', () => {
   })
   it('Admin : dix entrées', () => {
     expect(visibleNav('admin').map((entry) => entry.label)).toEqual([
-      "Vue d'ensemble", 'Alertes', 'Conso & coûts', 'Santé plateforme', 'Utilisateurs', 'Impayés et abonnements', 'Boîtiers', 'Journal', 'Paramètres', 'Documentation',
+      "Vue d'ensemble", 'Alertes', 'Conso & coûts', 'Santé plateforme', 'Utilisateurs', 'Impayés et abonnements', "Demandes d'audit", 'Journal', 'Paramètres', 'Documentation',
     ])
   })
   it('aucun menu visible ne dépasse dix entrées', () => {

@@ -16,10 +16,12 @@ describe('boîtier : navigation et accès', () => {
     expect(NAV_BY_PROFILE.industrie.some((e) => e.path.includes('boitier'))).toBe(false)
   })
 
-  it('la page Boîtier reste atteignable depuis le menu resserré : visible pour l’admin, rangée sous une entrée visible pour le ménage et la PME (2026-11-15)', () => {
+  it('la page Boîtier reste atteignable depuis le menu resserré : rangée sous une entrée visible pour l’admin (Santé plateforme), le ménage et la PME (2026-11-15, parents revus)', () => {
     const shown = (profile: 'menage' | 'pme' | 'admin') => visibleNav(profile).map((e) => e.path)
     const boitier = (profile: 'menage' | 'pme') => NAV_BY_PROFILE[profile].find((e) => e.path === '/app/boitier')
-    expect(shown('admin')).toContain('/app/admin/boitiers')
+    const adminBoitiers = NAV_BY_PROFILE.admin.find((e) => e.path === '/app/admin/boitiers')
+    expect(adminBoitiers?.under).toBe('/app/admin/sante')
+    expect(shown('admin')).toContain('/app/admin/sante')
     for (const profile of ['menage', 'pme'] as const) {
       expect(boitier(profile)?.under, profile).toBeTruthy()
       expect(shown(profile), profile).toContain(boitier(profile)?.under)

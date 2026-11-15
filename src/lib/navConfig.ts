@@ -14,6 +14,8 @@ import type { NavByProfile, RouteAccess } from '@/types/nav'
 export const NAV_BY_PROFILE: NavByProfile = {
   // Menus resserrés (2026-11-15, audit S-14) : au plus dix entrées par profil. Les pages marquées `under` n'ont pas d'entrée propre : elles
   // s'ouvrent depuis leur page parente (rangée « Pages liées », `RelatedPages`), qui reste surlignée dans le menu ; aucune route n'est supprimée.
+  // Parents revus le 2026-11-15 : Rapports sous « Ma consommation » / « Conso & coûts » (ce n'est pas une facture), Abonnement sous Paramètres (ce n'est pas une facture CIE),
+  // Messages sous « Demandes d'audit » (prospects, pas comptes), Boîtiers admin sous Santé plateforme.
   // Décision du 2026-11-15 (le propriétaire : en cas de contradiction avec une ancienne décision, retenir le meilleur choix) : « Abonnement » et « Facture prévue »,
   // mis dans le menu le 2026-10-21 parce qu'ils étaient introuvables, sont rangés sous leur page parente, que la rangée « Pages liées » rend visible.
   menage: [
@@ -28,8 +30,8 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/premiers-pas', label: 'Premiers pas', under: '/app/apercu' },
     { path: '/app/boitier', label: 'Mon boîtier (prototype)', under: '/app/equipements' },
     { path: '/app/prediction', label: 'Facture prévue', under: '/app/consommation' },
-    { path: '/app/facturation', label: 'Abonnement', under: '/app/factures' },
-    { path: '/app/rapports', label: 'Rapports', under: '/app/factures' },
+    { path: '/app/facturation', label: 'Abonnement', under: '/app/parametres' },
+    { path: '/app/rapports', label: 'Rapports', under: '/app/consommation' },
     { path: '/app/recommandations', label: 'Recommandations', under: '/app/conseils' },
   ],
   pme: [
@@ -43,10 +45,10 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/parametres', label: 'Paramètres' },
     { path: '/app/aide', label: 'Documentation' },
     { path: '/app/premiers-pas', label: 'Premiers pas', under: '/app/apercu' },
-    { path: '/app/prediction', label: 'Prédiction', under: '/app/consommation' },
+    { path: '/app/prediction', label: 'Prévision', under: '/app/consommation' },
     { path: '/app/recommandations', label: 'Recommandations', under: '/app/conseils' },
     { path: '/app/plan-action', label: "Plan d'action", under: '/app/conseils' },
-    { path: '/app/rapports', label: 'Rapports', under: '/app/factures' },
+    { path: '/app/rapports', label: 'Rapports', under: '/app/consommation' },
     { path: '/app/boitier', label: 'Boîtier (prototype)', under: '/app/sources' },
     { path: '/app/facturation', label: 'Facturation Nouankany', under: '/app/parametres' },
     { path: '/app/audit', label: 'Audit', under: '/app/parametres' },
@@ -62,10 +64,10 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/parametres', label: 'Paramètres' },
     { path: '/app/aide', label: 'Documentation' },
     { path: '/app/premiers-pas', label: 'Premiers pas', under: '/app/apercu' },
-    { path: '/app/prediction', label: 'Prédiction', under: '/app/consommation' },
+    { path: '/app/prediction', label: 'Prévision', under: '/app/consommation' },
     { path: '/app/recommandations', label: 'Recommandations', under: '/app/conseils' },
     { path: '/app/plan-action', label: "Plan d'action", under: '/app/conseils' },
-    { path: '/app/rapports', label: 'Rapports', under: '/app/factures' },
+    { path: '/app/rapports', label: 'Rapports', under: '/app/consommation' },
     { path: '/app/facturation', label: 'Facturation Nouankany', under: '/app/parametres' },
     { path: '/app/journal', label: 'Journal', under: '/app/parametres' },
     { path: '/app/audit', label: 'Audit', under: '/app/parametres' },
@@ -77,17 +79,18 @@ export const NAV_BY_PROFILE: NavByProfile = {
     { path: '/app/admin/sante', label: 'Santé plateforme' },
     { path: '/app/admin/utilisateurs', label: 'Utilisateurs' },
     { path: '/app/admin/facturation', label: 'Impayés et abonnements' },
-    { path: '/app/admin/boitiers', label: 'Boîtiers' },
+    { path: '/app/admin/leads', label: "Demandes d'audit" },
     { path: '/app/journal', label: 'Journal' },
     { path: '/app/parametres', label: 'Paramètres' },
     { path: '/app/aide', label: 'Documentation' },
     { path: '/app/premiers-pas', label: 'Premiers pas', under: '/app/apercu' },
-    { path: '/app/prediction', label: 'Prédiction', under: '/app/consommation' },
+    { path: '/app/prediction', label: 'Prévision', under: '/app/consommation' },
     { path: '/app/admin/modeles', label: 'Modèles & observabilité', under: '/app/admin/sante' },
     { path: '/app/admin/donnees', label: "Données d'entraînement", under: '/app/admin/sante' },
-    { path: '/app/admin/leads', label: "Demandes d'audit", under: '/app/admin/utilisateurs' },
-    { path: '/app/admin/messages', label: 'Messages et inscriptions', under: '/app/admin/utilisateurs' },
-    { path: '/app/admin/prix-materiel', label: 'Prix du matériel', under: '/app/admin/boitiers' },
+    { path: '/app/admin/boitiers', label: 'Boîtiers', under: '/app/admin/sante' },
+    { path: '/app/admin/messages', label: 'Messages et inscriptions', under: '/app/admin/leads' },
+    // Commande de matériel fermée (S-09) : pas d'entrée de menu propre ; la route reste, rangée sous Paramètres.
+    { path: '/app/admin/prix-materiel', label: 'Prix du matériel', under: '/app/parametres' },
     { path: '/app/audit', label: 'Audit', under: '/app/journal' },
   ],
   // Personne de Nouankany qui installe chez les clients : ses interventions et sa documentation, rien d'autre.

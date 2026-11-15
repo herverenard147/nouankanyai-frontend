@@ -15,8 +15,8 @@ describe('pages liées : une page rangée reste atteignable depuis son parent', 
   it('sur une page rangée : le même groupe, pour passer de l\'une à l\'autre', () => {
     expect(relatedPages('industrie', '/app/plan-action').map((page) => page.label)).toEqual(['Conseils', 'Recommandations', "Plan d'action"])
   })
-  it('un sous-chemin hérite du groupe de sa page (fiche utilisateur de l\'admin)', () => {
-    expect(relatedPages('admin', '/app/admin/utilisateurs/42').map((page) => page.label)).toEqual(['Utilisateurs', "Demandes d'audit", 'Messages et inscriptions'])
+  it('un sous-chemin hérite du groupe de sa page (fiche d\'une demande de l\'admin)', () => {
+    expect(relatedPages('admin', '/app/admin/leads/42').map((page) => page.label)).toEqual(["Demandes d'audit", 'Messages et inscriptions'])
   })
   it('une page sans groupe n\'affiche rien', () => {
     expect(relatedPages('industrie', '/app/machines')).toEqual([])
@@ -38,5 +38,21 @@ describe('pages liées : une page rangée reste atteignable depuis son parent', 
         expect(shown, `${profile} ${entry.path}`).toContain(group[0])
       }
     }
+  })
+})
+
+describe('parents revus (2026-11-15)', () => {
+  it('Rapports sous Ma consommation / Conso & coûts, Abonnement sous Paramètres, jamais sous les factures', () => {
+    const parent = (profile: 'menage' | 'pme' | 'industrie', path: string) => NAV_BY_PROFILE[profile].find((e) => e.path === path)?.under
+    expect(parent('menage', '/app/rapports')).toBe('/app/consommation')
+    expect(parent('pme', '/app/rapports')).toBe('/app/consommation')
+    expect(parent('industrie', '/app/rapports')).toBe('/app/consommation')
+    expect(parent('menage', '/app/facturation')).toBe('/app/parametres')
+    expect(relatedPages('menage', '/app/factures')).toEqual([])
+  })
+  it('Prix du matériel (commande fermée) n’a plus d’entrée de menu mais garde sa route, sous Paramètres', () => {
+    const prix = NAV_BY_PROFILE.admin.find((e) => e.path === '/app/admin/prix-materiel')
+    expect(prix?.under).toBe('/app/parametres')
+    expect(visibleNav('admin').map((e) => e.path)).not.toContain('/app/admin/prix-materiel')
   })
 })
