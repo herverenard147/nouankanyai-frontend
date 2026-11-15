@@ -47,7 +47,7 @@ export const CGU_SECTIONS: LegalSection[] = [
         ],
       },
       'Un essai de 14 jours, à l’inscription, ouvre toutes les fonctions. Vous changez de formule vous-même, depuis la page Abonnement ; une formule plus petite est refusée tant que vos appareils ou logements dépassent ses limites, et rien n’est supprimé à votre place.',
-      'Une formule payante se paie d’avance, pour 30 jours à partir du jour du paiement. Payée avant la fin de la période en cours, la nouvelle période suit l’actuelle, sans perdre de jour. Payée après, elle commence le jour du paiement : les jours sans abonnement ne sont jamais facturés. Sans paiement, le compte repasse en Découverte jusqu’au règlement ; vos données et votre historique restent intacts.',
+      'Le paiement des formules payantes n’est pas encore ouvert : tant qu’il ne l’est pas, rien n’est à payer et les relevés sont indicatifs. À l’ouverture, une formule payante se paie d’avance, pour 30 jours à partir du jour du paiement. Payée avant la fin de la période en cours, la nouvelle période suit l’actuelle, sans perdre de jour. Payée après, elle commence le jour du paiement : les jours sans abonnement ne sont jamais facturés. Sans paiement, le compte repasse en Découverte jusqu’au règlement ; vos données et votre historique restent intacts.',
       'Un rappel s’affiche dans vos notifications et vous est envoyé par email 5 jours avant la fin de la période, puis le jour de la fin.',
     ],
   },

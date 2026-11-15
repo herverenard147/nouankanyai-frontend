@@ -7,9 +7,9 @@ import { CguPage } from '@/pages/legal/CguPage'
 
 // S-09/S-19 (texte) : pas de promesse de commande ni de prix qui laisse croire que le paiement est ouvert.
 describe('Textes publics : boîtier prototype, paiement non ouvert', () => {
-  it('la tarification dit « gratuit pendant la phase pilote, paiement non ouvert »', () => {
+  it('la tarification dit que le paiement n’est pas encore ouvert et qu’il se fera d’avance (une seule vérité avec les CGU)', () => {
     render(<MemoryRouter><PricingSection /></MemoryRouter>)
-    expect(screen.getByText(/2 900 FCFA\/mois\) et Optimum \(7 900 FCFA\/mois\) : gratuit pendant la phase pilote, paiement non ouvert/)).toBeTruthy()
+    expect(screen.getByText(/Le paiement n’est pas encore ouvert : aucune somme n’est due aujourd’hui/)).toBeTruthy()
   })
 
   it('les CGU ne disent plus que le boîtier se commande depuis la plateforme', () => {
