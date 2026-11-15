@@ -41,7 +41,7 @@ const REVENUE_LINES = [
   },
   {
     title: 'Abonnement SaaS',
-    body: 'Accès mensuel à la plateforme : dashboards, alertes, recommandations et reporting.',
+    body: 'Accès mensuel à la plateforme : tableaux de bord, alertes, recommandations et reporting.',
   },
 ]
 

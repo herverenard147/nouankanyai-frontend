@@ -54,7 +54,11 @@ export function EquipmentPage() {
   const [editing, setEditing] = useState<BackendMachine | null>(null)
   const [deleting, setDeleting] = useState<BackendMachine | null>(null)
   const level = useLevel(profile)
-  const columns = levelAtLeast(level, 'amateur') ? COLUMNS_FULL : COLUMNS_BASE
+  // Un ménage dit « appareil », une PME « équipement » (même mot que son menu).
+  const isMenage = profile === 'menage'
+  const word = isMenage ? 'appareil' : 'équipement'
+  const baseColumns = levelAtLeast(level, 'amateur') ? COLUMNS_FULL : COLUMNS_BASE
+  const columns = isMenage ? baseColumns.map((c) => (c.key === 'nom' ? { ...c, label: 'Appareil' } : c)) : baseColumns
 
   const maxMachines = useBilling().data?.access?.max_machines ?? null
   const atLimit = maxMachines !== null && (rawQuery.data?.length ?? 0) >= maxMachines
@@ -64,7 +68,7 @@ export function EquipmentPage() {
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-section-title font-semibold text-text-primary">{query.data?.title ?? 'Équipements déclarés'}</h1>
+        <h2 className="text-section-title font-semibold text-text-primary">{query.data?.title ?? (isMenage ? 'Appareils déclarés' : 'Équipements déclarés')}</h2>
         {/* Limite de la formule atteinte : le bouton n'est pas montré, on dit pourquoi et où changer. */}
         {atLimit ? (
           <p className="text-sm text-text-secondary">
@@ -75,14 +79,14 @@ export function EquipmentPage() {
           </p>
         ) : (
           <Button type="button" onClick={() => setAdding(true)}>
-            Ajouter un équipement
+            Ajouter un {word}
           </Button>
         )}
       </div>
-      <p className="text-sm text-text-secondary">Inventaire des équipements déclarés sur vos sites, utilisé pour estimer votre consommation en l’absence de capteur.</p>
+      <p className="text-sm text-text-secondary">Inventaire des {word}s déclarés {isMenage ? 'chez vous' : 'sur vos sites'}, utilisé pour estimer votre consommation en l’absence de capteur.</p>
       <MetricState status={query.status} onRetry={() => void query.refetch()}
         isEmpty={query.data?.rows.length === 0}
-        emptyAction={{ label: profile === 'menage' ? 'Ajouter un appareil' : 'Ajouter un équipement', onClick: () => setAdding(true) }}
+        emptyAction={{ label: `Ajouter un ${word}`, onClick: () => setAdding(true) }}
       >
         {query.data && (
           <DataTable
@@ -105,14 +109,14 @@ export function EquipmentPage() {
         )}
         {selected && rawOf(selected.id) && <MachineTools machine={rawOf(selected.id) as BackendMachine} />}
       </RowDetailDrawer>
-      {adding && <MachineFormDrawer machine={null} itemLabel="un équipement" onClose={() => setAdding(false)} />}
-      {editing && <MachineFormDrawer machine={editing} itemLabel="l’équipement" onClose={() => setEditing(null)} />}
+      {adding && <MachineFormDrawer machine={null} itemLabel={`un ${word}`} onClose={() => setAdding(false)} />}
+      {editing && <MachineFormDrawer machine={editing} itemLabel={`l’${word}`} onClose={() => setEditing(null)} />}
       {deleting && (
         <ConfirmDeleteModal
           title={`Supprimer « ${deleting.nom} » ?`}
           consequences={[
             'Ses relevés et son historique d’alertes sont supprimés.',
-            'Les prédictions et le plan d’action ne tiendront plus compte de cet équipement.',
+            isMenage ? 'La facture prévue ne tiendra plus compte de cet appareil.' : 'Les prévisions et le plan d’action ne tiendront plus compte de cet équipement.',
             'Les factures déjà saisies ne changent pas.',
           ]}
           confirmText={deleting.nom}
@@ -122,7 +126,7 @@ export function EquipmentPage() {
           onCancel={() => setDeleting(null)}
         />
       )}
-      <BulkReadingsImport itemLabel="équipement" />
+      <BulkReadingsImport itemLabel={word} />
     </div>
   )
 }

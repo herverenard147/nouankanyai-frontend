@@ -177,7 +177,7 @@ export async function fetchPredictionsBundle(
     displayValue: formatNumberFr(value, 1),
     percent: Math.round((value / max) * 100),
   }))
-  const global = toPrediction('Prédiction globale : tous les équipements', granularity, {
+  const global = toPrediction('Prévision globale : tous les équipements', granularity, {
     series: globalSeries,
     totalCostFcfa: globalCostFcfa,
     starts: perMachine[0]?.bucketed.starts ?? [],

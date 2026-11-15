@@ -22,7 +22,7 @@ export function AdminPlatformPrediction() {
   return (
     <div className="flex flex-col gap-4 border-t-2 border-text-primary pt-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-section-title font-semibold text-text-primary">Prédiction par compte (heure suivante)</h2>
+        <h2 className="text-section-title font-semibold text-text-primary">Prévision par compte (heure suivante)</h2>
         <ProvenanceBadge value="synthetique" />
       </div>
       <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={rows.length === 0}>
@@ -49,7 +49,7 @@ export function AdminPlatformPrediction() {
 
       {open && (
         <Modal
-          title={`Prédiction · ${open.ownerNom}`}
+          title={`Prévision · ${open.ownerNom}`}
           description="Puissance attendue à l'heure suivante, par équipement."
           onClose={() => setOpenOwnerId(null)}
           actions={null}

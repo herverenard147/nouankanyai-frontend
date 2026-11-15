@@ -352,7 +352,7 @@ export function AdminUserDetailPage() {
       {user.platformRole === null && !user.ownerId && <AdminBillingSection userId={user.id} />}
 
       <section className={SECTION}>
-        <h3 className="text-sm font-medium text-text-secondary">Prédiction (heure suivante, par équipement)</h3>
+        <h3 className="text-sm font-medium text-text-secondary">Prévision (heure suivante, par équipement)</h3>
         <MetricState status={predictionsQuery.status} onRetry={() => void predictionsQuery.refetch()} isEmpty={predictionsQuery.data?.length === 0}>
           <ul className="flex flex-col gap-1.5 text-sm">
             {predictionsQuery.data?.map((p) => (

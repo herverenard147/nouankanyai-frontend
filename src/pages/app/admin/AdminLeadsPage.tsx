@@ -25,7 +25,7 @@ export function AdminLeadsPage() {
   return (
     <div className="flex flex-col gap-5">
       <p className="text-sm text-text-secondary">
-        Demandes d&rsquo;audit soumises depuis la landing (segments PME et Industrie). Chaque ligne est un prospect à
+        Demandes d&rsquo;audit soumises depuis le site public (segments PME et Industrie). Chaque ligne est un prospect à
         recontacter, pas un compte utilisateur.
       </p>
       <MutationError error={update.error} />

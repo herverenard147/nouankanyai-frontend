@@ -23,7 +23,7 @@ export function AdminUsersPage() {
     <div className="flex flex-col gap-5">
       <p className="text-sm text-text-secondary">
         Comptes utilisateurs de la plateforme, tous profils confondus. Cliquez une ligne pour voir sa fiche
-        détail (équipements, facturation, prédiction, alertes, actions).
+        détail (équipements, facturation, prévision, alertes, actions).
       </p>
       <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0}>
         {query.data && (

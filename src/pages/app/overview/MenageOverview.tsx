@@ -27,7 +27,7 @@ export function MenageOverview() {
       <DemoDataBanner />
       <GettingStartedStrip />
       <p className="text-sm text-text-secondary">
-        Vue d&rsquo;ensemble de votre foyer : consommation, prédiction et dernière facture CIE en un coup d&rsquo;œil.
+        Vue d&rsquo;ensemble de votre foyer : consommation, facture prévue et dernière facture CIE en un coup d&rsquo;œil.
       </p>
 
       <KpiStrip profile="menage" targets={kpiTargets('menage')} />

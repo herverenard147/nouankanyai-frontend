@@ -211,7 +211,7 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
       <h2 className="text-section-title font-semibold text-text-primary">Équipe</h2>
       <p className="text-sm text-text-secondary">
         {isOwner
-          ? `Jusqu'à ${MAX_TEAM_MEMBERS} comptes membres peuvent utiliser ce dashboard avec vous, mêmes machines, mêmes factures, mêmes alertes. Vous seul pouvez en ajouter ou en retirer.`
+          ? `Jusqu'à ${MAX_TEAM_MEMBERS} comptes membres peuvent utiliser ce tableau de bord avec vous, mêmes machines, mêmes factures, mêmes alertes. Vous seul pouvez en ajouter ou en retirer.`
           : 'Vous faites partie de cette équipe. Le compte principal de l’entreprise gère les membres.'}
       </p>
       <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0}>
@@ -632,7 +632,7 @@ export function SettingsPage() {
         <section className={SECTION}>
           <h2 className="text-section-title font-semibold text-text-primary">Niveau d&rsquo;affichage</h2>
           <p className="text-sm text-text-secondary">
-            Contrôle la densité d&rsquo;information affichée sur le dashboard. Accessible ici sur mobile ; en haut de
+            Contrôle la densité d&rsquo;information affichée sur le tableau de bord. Accessible ici sur mobile ; en haut de
             l&rsquo;écran sur desktop.
           </p>
           <LevelSelector value={level} onChange={(l) => setLevel(session.profile, l)} />

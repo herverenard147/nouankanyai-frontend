@@ -155,7 +155,7 @@ export function AuditRequestPage() {
 
         <p className="mt-6 text-center text-sm text-text-secondary">
           <Link to="/" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
-            Retour à la landing
+            Retour à l’accueil du site
           </Link>
         </p>
       </div>

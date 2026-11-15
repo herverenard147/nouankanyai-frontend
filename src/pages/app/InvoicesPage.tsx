@@ -9,7 +9,6 @@ import { ConfirmDeleteModal, ConfirmEditModal, Modal, MutationError, type FieldC
 import { TextField } from '@/components/ui/TextField'
 import { InvoicePhotoModal } from '@/components/upload/InvoicePhotoModal'
 import { OcrFieldList } from '@/components/upload/OcrFieldList'
-import { Link } from 'react-router-dom'
 import { UploadCard } from '@/components/upload/UploadCard'
 import { BulkInvoiceImport } from '@/components/import/BulkInvoiceImport'
 import { PrepaidSection } from '@/components/billing/PrepaidSection'
@@ -121,12 +120,6 @@ export function InvoicesPage() {
 
   return (
     <div className="flex flex-col gap-7">
-      {profile === 'menage' && (
-        <nav aria-label="Autres pages liées aux factures" className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
-          <Link to="/app/facturation" className="focus-ring text-accent-cta hover:text-accent-cta-hover">Mon abonnement →</Link>
-          <Link to="/app/rapports" className="focus-ring text-accent-cta hover:text-accent-cta-hover">Mes rapports →</Link>
-        </nav>
-      )}
       {/* Compteur à carte (2026-10-20) : recharges et crédit restant, avant les factures. */}
       <PrepaidSection />
       <div className="grid gap-7 lg:grid-cols-3 lg:gap-8">
@@ -289,8 +282,7 @@ export function InvoicesPage() {
               automatiquement.
             </p>
             <p className="text-xs text-text-secondary">
-              Elle n’entre dans vos relevés Nouankany qu’une fois validée par notre équipe. Cette action sera enregistrée dans l’onglet
-              Audit.
+              Elle n’entre dans vos relevés Nouankany qu’une fois validée par notre équipe.{profile !== 'menage' && ' Cette action sera enregistrée dans la page Audit.'}
             </p>
             <MutationError error={manualMutation.error} />
           </form>

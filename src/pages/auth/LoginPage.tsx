@@ -80,7 +80,7 @@ export function LoginPage() {
         <div className="flex flex-col items-center gap-3 text-center">
           <img src="/logo.webp" alt="Nouankany" className="h-10 w-10 object-contain" />
           <h1 className="text-h2-secondary font-bold text-text-primary">{mode === 'login' ? 'Connexion' : 'Créer un compte'}</h1>
-          <p className="text-sm text-text-secondary">Accédez à votre dashboard Nouankany.</p>
+          <p className="text-sm text-text-secondary">Accédez à votre tableau de bord Nouankany.</p>
         </div>
 
         {isTrialSignup && mode === 'signup' && (
@@ -121,6 +121,7 @@ export function LoginPage() {
                       key={type}
                       type="button"
                       onClick={() => setAccountType(type)}
+                      aria-pressed={accountType === type}
                       className={`focus-ring min-w-0 flex-1 rounded-control border px-3 py-2 text-sm font-medium ${
                         accountType === type ? 'border-text-primary bg-text-primary text-white' : 'border-border text-text-secondary'
                       }`}
@@ -187,7 +188,7 @@ export function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-text-secondary">
           <Link to="/" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
-            Retour à la landing
+            Retour à l’accueil du site
           </Link>
         </p>
 
