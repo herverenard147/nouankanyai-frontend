@@ -24,13 +24,13 @@ describe('inscription des ménages', () => {
 })
 
 describe('graphique du tarif moyen', () => {
-  it('cite une source officielle et les dates d’application du 79 et du 87', () => {
+  it('affiche la série annuelle officielle 71 → 83 FCFA/kWh HT et cite la Direction générale de l’Économie (décision du 2026-11-15)', () => {
     const tarif = LANDING_CHARTS.find((chart) => chart.id === 'tarif')
-    expect(tarif?.headline).toBe('79 → 87')
+    expect(tarif?.headline).toBe('71 → 83')
     expect(tarif?.bars.map((bar) => [bar.x, bar.value])).toEqual([
-      ['juil. 2023', 79],
-      ['janv. 2024', 87],
+      ['2023', 71],
+      ['2024', 83],
     ])
-    expect(tarif?.source).toMatch(/gouvernement/i)
+    expect(tarif?.source).toMatch(/Direction générale de l’Économie/i)
   })
 })

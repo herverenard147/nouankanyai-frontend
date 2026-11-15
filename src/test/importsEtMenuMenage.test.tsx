@@ -24,23 +24,119 @@ const file = (name: string) => new File(['x'], name)
 
 beforeEach(() => Object.values(api).forEach((mock) => mock.mockReset()))
 
-describe('menu resserré du Ménage (partie H2)', () => {
-  it('entrées au vocabulaire du quotidien, Documentation (2026-10-16), Abonnement et Facture prévue (2026-10-21), sans Rapports ni Recommandations', () => {
+const ROUTES_AVANT_2026_11_15 = {
+  menage: [
+    '/app/aide',
+    '/app/alertes',
+    '/app/apercu',
+    '/app/boitier',
+    '/app/conseils',
+    '/app/consommation',
+    '/app/equipements',
+    '/app/facturation',
+    '/app/factures',
+    '/app/parametres',
+    '/app/prediction',
+    '/app/premiers-pas',
+    '/app/rapports',
+    '/app/recommandations',
+  ],
+  pme: [
+    '/app/aide',
+    '/app/alertes',
+    '/app/apercu',
+    '/app/audit',
+    '/app/boitier',
+    '/app/conseils',
+    '/app/consommation',
+    '/app/equipements',
+    '/app/facturation',
+    '/app/factures',
+    '/app/parametres',
+    '/app/plan-action',
+    '/app/prediction',
+    '/app/premiers-pas',
+    '/app/rapports',
+    '/app/recommandations',
+    '/app/sources',
+  ],
+  industrie: [
+    '/app/aide',
+    '/app/alertes',
+    '/app/apercu',
+    '/app/audit',
+    '/app/conseils',
+    '/app/consommation',
+    '/app/facturation',
+    '/app/factures',
+    '/app/journal',
+    '/app/machines',
+    '/app/parametres',
+    '/app/plan-action',
+    '/app/prediction',
+    '/app/premiers-pas',
+    '/app/rapports',
+    '/app/recommandations',
+    '/app/sources',
+  ],
+  admin: [
+    '/app/admin/boitiers',
+    '/app/admin/donnees',
+    '/app/admin/facturation',
+    '/app/admin/leads',
+    '/app/admin/messages',
+    '/app/admin/modeles',
+    '/app/admin/prix-materiel',
+    '/app/admin/sante',
+    '/app/admin/utilisateurs',
+    '/app/aide',
+    '/app/alertes',
+    '/app/apercu',
+    '/app/audit',
+    '/app/consommation',
+    '/app/journal',
+    '/app/parametres',
+    '/app/prediction',
+    '/app/premiers-pas',
+  ],
+} as const
+
+describe('menus resserrés (audit S-14, 2026-11-15)', () => {
+  it('Ménage : huit entrées ; Abonnement et Facture prévue, mis dans le menu le 2026-10-21, sont rangés sous leur page parente (décision du 2026-11-15)', () => {
     expect(visibleNav('menage').map((entry) => entry.label)).toEqual([
-      'Accueil', 'Premiers pas', 'Mes appareils', 'Ma consommation', 'Facture prévue', 'Mes factures', 'Abonnement', 'Conseils', 'À surveiller', 'Mon boîtier (prototype)', 'Paramètres', 'Documentation',
+      'Accueil', 'Mes appareils', 'Ma consommation', 'Mes factures', 'Conseils', 'À surveiller', 'Paramètres', 'Documentation',
     ])
   })
-  it('aucune fonction supprimée : les pages retirées du menu restent accessibles et rattachées à une entrée visible', () => {
-    const shown = visibleNav('menage').map((entry) => entry.path)
-    for (const path of ['/app/rapports', '/app/recommandations']) {
-      expect(isRouteAllowed(path, 'menage'), path).toBe(true)
-      expect(shown).toContain(NAV_BY_PROFILE.menage.find((entry) => entry.path === path)?.under)
+  it('Industrie : neuf entrées', () => {
+    expect(visibleNav('industrie').map((entry) => entry.label)).toEqual([
+      "Vue d'ensemble", 'Alertes', 'Machines', 'Conso & coûts', 'Conseils', 'Factures CIE', 'Sources de mesures', 'Paramètres', 'Documentation',
+    ])
+  })
+  it('PME : neuf entrées', () => {
+    expect(visibleNav('pme').map((entry) => entry.label)).toEqual([
+      "Vue d'ensemble", 'Alertes', 'Équipements', 'Conso & coûts', 'Conseils', 'Factures CIE', 'Sources de mesures', 'Paramètres', 'Documentation',
+    ])
+  })
+  it('Admin : dix entrées', () => {
+    expect(visibleNav('admin').map((entry) => entry.label)).toEqual([
+      "Vue d'ensemble", 'Alertes', 'Conso & coûts', 'Santé plateforme', 'Utilisateurs', 'Impayés et abonnements', 'Boîtiers', 'Journal', 'Paramètres', 'Documentation',
+    ])
+  })
+  it('aucun menu visible ne dépasse dix entrées', () => {
+    for (const profile of ['menage', 'pme', 'industrie', 'admin', 'technicien'] as const) {
+      expect(visibleNav(profile).length, profile).toBeLessThanOrEqual(10)
     }
   })
-  it('PME, Industrie et Admin gardent leur menu complet', () => {
-    for (const profile of ['pme', 'industrie', 'admin'] as const) {
-      expect(visibleNav(profile)).toEqual(NAV_BY_PROFILE[profile])
-      expect(NAV_BY_PROFILE[profile][0].label).toBe("Vue d'ensemble")
+  it('aucune fonction supprimée : chaque route d\'avant reste autorisée, et chaque page rangée dépend d\'une entrée visible', () => {
+    for (const profile of ['menage', 'pme', 'industrie', 'admin'] as const) {
+      const paths = NAV_BY_PROFILE[profile].map((entry) => entry.path).sort()
+      expect(paths, profile).toEqual([...ROUTES_AVANT_2026_11_15[profile]])
+      const shown = visibleNav(profile).map((entry) => entry.path)
+      for (const entry of NAV_BY_PROFILE[profile].filter((e) => e.under)) {
+        expect(isRouteAllowed(entry.path, profile), `${profile} ${entry.path}`).toBe(true)
+        expect(shown, `${profile} ${entry.path}`).toContain(entry.under)
+      }
+      expect(NAV_BY_PROFILE[profile][0].path).toBe('/app/apercu')
     }
   })
 })

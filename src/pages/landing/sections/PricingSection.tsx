@@ -70,7 +70,6 @@ const TIERS: Tier[] = [
     ],
     ctas: [
       { label: 'Demander un audit', href: '/demander-un-audit?type=industrie', primary: true },
-      { label: 'Essayer gratuitement', href: '/login?mode=signup&type=industrie&trial=1', primary: false },
     ],
   },
 ]

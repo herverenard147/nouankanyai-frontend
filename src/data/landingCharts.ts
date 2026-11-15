@@ -3,18 +3,18 @@ import type { LandingChart } from '@/types/domain'
 export const LANDING_CHARTS: LandingChart[] = [
   {
     id: 'tarif',
-    headline: '79 → 87',
-    label: 'FCFA/kWh, prix moyen de vente : 79 depuis juillet 2023, 87 depuis janvier 2024',
+    headline: '71 → 83',
+    label: 'FCFA/kWh hors taxes, prix moyen de vente annuel : 71 en 2023, 83 en 2024',
     axisY: 'FCFA/kWh',
-    axisX: 'date d’application',
-    source: 'annonces officielles du gouvernement ivoirien (juillet 2023, janvier 2024)',
+    axisX: 'année',
+    source: 'Direction générale de l’Économie (ministère de l’Économie), secteur de l’électricité',
     ticks: ['100', '50', '0'],
     min: 0,
     max: 100,
     gapPx: 30,
     bars: [
-      { x: 'juil. 2023', value: 79, tip: '79 FCFA/kWh' },
-      { x: 'janv. 2024', value: 87, tip: '87 FCFA/kWh' },
+      { x: '2023', value: 71, tip: '71 FCFA/kWh HT' },
+      { x: '2024', value: 83, tip: '83 FCFA/kWh HT' },
     ],
   },
   {

@@ -20,10 +20,10 @@ describe('Premiers pas', () => {
     }
   })
 
-  it('la page est dans le menu de chaque profil, juste après la vue d’ensemble', () => {
+  it('la page est rangée sous la vue d’ensemble pour chaque profil (menu resserré du 2026-11-15) : atteignable par la rangée « Pages liées »', () => {
     for (const profile of PROFILES) {
       expect(NAV_BY_PROFILE[profile][0].path).toBe('/app/apercu')
-      expect(NAV_BY_PROFILE[profile][1]).toEqual({ path: '/app/premiers-pas', label: 'Premiers pas' })
+      expect(NAV_BY_PROFILE[profile].find((entry) => entry.path === '/app/premiers-pas')).toEqual({ path: '/app/premiers-pas', label: 'Premiers pas', under: '/app/apercu' })
     }
   })
 
