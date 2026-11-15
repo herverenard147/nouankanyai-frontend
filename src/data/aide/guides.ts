@@ -99,7 +99,7 @@ const SOURCES_CLIENT: Section = {
         ['Vous avez des compteurs ou rien du tout, et pas de logiciel', 'Passerelle de mesure : un petit boîtier muet dans le tableau électrique, qui lit les compteurs', 'Un technicien Nouankany, sur place'],
         ['Votre logiciel (supervision, gestion d’énergie, GTB) sait envoyer ses données', 'Logiciel du client : il envoie avec une clé', 'Votre informaticien ou intégrateur, avec le technicien'],
         ['Votre logiciel sait seulement exporter un fichier (CSV, Excel)', 'Dépôt de fichiers : chaque jour, automatiquement ou à la main', 'Le technicien règle les colonnes une fois'],
-        ['Vous voulez un assistant qui parle', 'Boîtier Nouankany (page Boîtier)', 'Vous, avec un code'],
+        ['Vous voulez un assistant qui parle', 'Boîtier Nouankany (page Boîtier, prototype non commercialisé)', 'Vous, avec un code'],
         ['Vous voulez mesurer un appareil précis, ou pouvoir le couper', 'Capteur d’un appareil : un petit module posé sur l’appareil', 'Un technicien, ou vous avec un code'],
         ['Vous n’avez aucun compteur', 'Vos factures CIE (page Factures)', 'Vous'],
       ],
@@ -446,7 +446,7 @@ const TECHNICIEN: Guide = {
             ['Une supervision ou GTB qui sait envoyer en HTTPS', 'Logiciel du client', '≈ 1 minute'],
             ['Une supervision qui expose ses valeurs en Modbus-TCP', 'Passerelle de mesure, qui lit la supervision comme un compteur', '≈ 1 minute'],
             ['Un logiciel qui ne sait qu’exporter des fichiers', 'Dépôt de fichiers', '≈ 1 jour'],
-            ['Un ménage qui veut le boîtier qui parle', 'Boîtier Nouankany', '≈ 1 minute'],
+            ['Un ménage qui veut le boîtier qui parle', 'Boîtier Nouankany (prototype)', '≈ 1 minute'],
             ['Un appareil à mesurer seul, ou à pouvoir couper', 'Capteur d’un appareil', '≈ 1 minute'],
           ],
         },
@@ -462,7 +462,7 @@ const TECHNICIEN: Guide = {
         {
           kind: 'steps',
           items: [
-            'Dans l’intervention, « Ajouter une source », « Je veux le boîtier qui parle » : nommez-le (« Boîtier du salon »). Si le compte n’a pas de site, le boîtier couvre tous ses appareils.',
+            'Dans l’intervention, « Ajouter une source », « J’ai le boîtier qui parle (prototype) » : nommez-le (« Boîtier du salon »). Si le compte n’a pas de site, le boîtier couvre tous ses appareils.',
             'Le code s’affiche une fois (15 minutes) : branchez le boîtier, connectez votre téléphone à son Wi-Fi « Nouankany-… » et tapez le code sur la page de réglage, avec le Wi-Fi du foyer (voir « Connecter un boîtier, un capteur ou une passerelle »). Il passe « En ligne ».',
             'Vérifiez que les appareils du foyer sont déclarés avec leur vraie puissance (plaque signalétique).',
             'Montrez au client sa page « Mon boîtier » : c’est lui qui choisit les appareils que le boîtier peut éteindre, et les quatre lumières.',
@@ -705,7 +705,7 @@ const ADMIN: Guide = {
       id: 'sources',
       title: 'Sources de mesures et compteurs',
       blocks: [
-        { kind: 'p', text: 'Quatre types : boîtier vocal (ménages), passerelle muette (PME, industrie), logiciel du client, dépôt de fichiers. Toutes envoient dans les mêmes unités (kW, kWh, V, A, 0 à 1, °C, mm/s, bar, UTC) et passent les mêmes contrôles (bornes, dates, doublons, garde des unités à 50 fois la puissance nominale).' },
+        { kind: 'p', text: 'Quatre types : boîtier vocal (ménages, prototype non commercialisé), passerelle muette (PME, industrie), logiciel du client, dépôt de fichiers. Toutes envoient dans les mêmes unités (kW, kWh, V, A, 0 à 1, °C, mm/s, bar, UTC) et passent les mêmes contrôles (bornes, dates, doublons, garde des unités à 50 fois la puissance nominale).' },
         { kind: 'p', text: 'Ajouter un modèle de compteur à la liste demande un développement : sa table de registres doit être vérifiée sur la notice du fabricant et une seconde source indépendante. En attendant, les techniciens utilisent « Autre compteur ».' },
       ],
     },

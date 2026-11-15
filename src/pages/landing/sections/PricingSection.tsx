@@ -35,7 +35,7 @@ const TIERS: Tier[] = [
       'Suivi de consommation à partir de votre facture CIE',
       'Jusqu’à 3 appareils, rapport mensuel',
       'Conseils classés par impact',
-      'Essentiel (2 900 FCFA/mois) et Optimum (7 900 FCFA/mois) depuis votre espace',
+      'Essentiel (2 900 FCFA/mois) et Optimum (7 900 FCFA/mois) : gratuit pendant la phase pilote, paiement non ouvert',
     ],
     ctas: [{ label: 'Créer mon compte', href: '/login?mode=signup&type=menage', primary: true }],
   },

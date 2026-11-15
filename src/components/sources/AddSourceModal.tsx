@@ -17,7 +17,7 @@ const CHOICES: { value: Choice; title: string; text: string }[] = [
   { value: 'passerelle', title: 'Je n’ai pas de logiciel : des compteurs, ou rien', text: SOURCE_KIND_SENTENCE.passerelle },
   { value: 'logiciel', title: 'Mon logiciel peut envoyer ses mesures', text: SOURCE_KIND_SENTENCE.logiciel },
   { value: 'fichier', title: 'Mon logiciel exporte seulement des fichiers', text: SOURCE_KIND_SENTENCE.fichier },
-  { value: 'boitier', title: 'Je veux le boîtier qui parle', text: SOURCE_KIND_SENTENCE.vocal },
+  { value: 'boitier', title: 'J’ai le boîtier qui parle (prototype)', text: SOURCE_KIND_SENTENCE.vocal },
   { value: 'capteur', title: 'Je veux un capteur sur un appareil', text: SOURCE_KIND_SENTENCE.capteur },
   { value: 'factures', title: 'Je n’ai aucun compteur', text: 'Vos factures CIE suffisent pour commencer : envoyez-les en photo ou en PDF.' },
 ]

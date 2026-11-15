@@ -116,7 +116,7 @@ export const CGU_SECTIONS: LegalSection[] = [
     title: 'Matériel, boîtiers et coupure d’un appareil',
     scope: 'Tous les comptes',
     blocks: [
-      'Le boîtier qui parle, le capteur d’un appareil et la passerelle de mesure se commandent depuis la plateforme. Le prix est détaillé ligne par ligne avant la commande (composants, transport et douane, montage, livraison, pose) et reste celui de la demande, même si les tarifs changent ensuite. Les compteurs Modbus d’une passerelle ne sont pas compris : ils se chiffrent selon le tableau électrique.',
+      'Le boîtier qui parle est un prototype, non commercialisé : il ne se commande pas depuis la plateforme et aucun prix n’est affiché. La commande ouvrira après le pilote. Il en va de même du capteur d’un appareil et de la passerelle de mesure : la plateforme ne les vend pas, elle relie ceux que l’équipe Nouankany ou un technicien a installés. Les compteurs Modbus d’une passerelle sont à part : ils se chiffrent selon le tableau électrique.',
       'Seul le client peut couper un appareil à distance, s’il l’a déclaré éteignable et qu’un capteur avec relais y est posé ; le boîtier demande toujours une confirmation, et un ordre sans accusé de réception du capteur est affiché comme échoué. L’équipe Nouankany ne coupe ni ne relance jamais un appareil à votre place ; elle peut seulement révoquer un boîtier (il cesse alors d’envoyer des mesures), par exemple en cas de perte ou de compromission.',
     ],
   },
