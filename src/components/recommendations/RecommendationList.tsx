@@ -1,5 +1,5 @@
 import { Spinner } from '@/components/ui/Button'
-import { impactClassName } from '@/lib/severity'
+import { ImpactFigure } from '@/components/advice/ImpactFigure'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
@@ -58,7 +58,7 @@ function RecommendationRow({ reco, showImpact, canApply }: { reco: Advice; showI
           />
         )}
       </div>
-      {showImpact && <span className={`text-lg font-semibold tabular-nums ${impactClassName(reco.impactKind, reco.impactLabel)}`}>{reco.impactLabel}</span>}
+      {showImpact && <ImpactFigure advice={reco} />}
       <ProvenanceBadge value={reco.provenance} />
       {showApplyButton &&
         (applyMutation.isSuccess ? (

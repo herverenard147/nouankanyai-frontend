@@ -6,7 +6,7 @@ import { adviceSectionTitle } from '@/api/advice'
 import { ApiErrorMessage } from '@/components/errors/ApiErrorMessage'
 import { levelAtLeast } from '@/lib/levelGating'
 import { measureOrigin, measuredReading } from '@/lib/formatters'
-import { impactClassName } from '@/lib/severity'
+import { ImpactFigure } from '@/components/advice/ImpactFigure'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
 import { MetricState } from '@/components/state/MetricState'
 import { useAdvice } from '@/hooks/queries/useAdvice'
@@ -60,7 +60,7 @@ function AdviceCard({ advice, showImpact }: { advice: Advice; showImpact: boolea
           <p className="font-semibold text-text-primary">{advice.title}</p>
           <p className="text-sm text-text-secondary">{advice.detail}</p>
         </div>
-        {showImpact && <span className={`text-lg font-semibold tabular-nums ${impactClassName(advice.impactKind, advice.impactLabel)}`}>{advice.impactLabel}</span>}
+        {showImpact && <ImpactFigure advice={advice} />}
         <ProvenanceBadge value={advice.provenance} />
       </div>
 
