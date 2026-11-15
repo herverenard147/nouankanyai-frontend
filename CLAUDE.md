@@ -116,3 +116,11 @@ vrai clic et mesurer par script. La technique de l'iframe ne vaut qu'avec le sit
   (`estimé`/`synthétique`/`télémétrie système`/`mesuré`), jamais codé en dur.
 - `backend/.env` (dans l'autre dépôt) n'est plus suivi par git depuis le
   2026-10-08 ; les anciennes clés de son historique ne servent plus.
+
+## Lot front du 2026-11-15 (S-13, S-15, S-16, S-46)
+
+- `vercel.json` : `/assets/*` en `Cache-Control: public, max-age=31536000, immutable` (fichiers hachés). Logo servi en `/logo.webp` (256 px) ; `logo.png` ne sert plus que d'icône d'onglet (64 px). Photos de `public/images/profiles/` en WebP.
+- Tuiles de la vue d'ensemble (`src/api/kpis.ts`) : la provenance suit l'origine des relevés lue sur `/api/v1/consumption` (mesure, déclaré, démonstration, simulation) ; mélange : la moins sûre l'emporte ; origine inconnue : « synthétique ». Libellé « Puissance en ce moment ».
+- Un gain en FCFA est affiché avec « ordre de grandeur » (`ImpactFigure`). Les pourcentages et les textes par famille viennent du moteur backend : à corriger là-bas (S-16).
+- `MetricState` accepte `emptyAction` (lien dans l'état vide) ; `addEquipmentAction(profile)` dans `navConfig.ts`.
+- Non fait : S-14 (fusion Recommandations/Rapports du menu PME et Industrie) : bloqué par le test `importsEtMenuMenage.test.tsx` qui impose le menu complet ; S-26 : pas de route de révocation par session côté API.
