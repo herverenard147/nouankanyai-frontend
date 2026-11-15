@@ -16,6 +16,7 @@ export function TopBar() {
   const level = useLevel(session?.profile ?? 'menage')
   const setLevel = useLevelStore((s) => s.setLevel)
   const toggleMobileDrawer = useUiStore((s) => s.toggleMobileDrawer)
+  const drawerOpen = useUiStore((s) => s.mobileDrawerOpen)
 
   if (!session) return null
 
@@ -38,6 +39,8 @@ export function TopBar() {
           onClick={toggleMobileDrawer}
           className="focus-ring rounded-control border border-border p-2 lg:hidden"
           aria-label="Ouvrir la navigation"
+          aria-expanded={drawerOpen}
+          aria-controls="mobile-drawer"
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
