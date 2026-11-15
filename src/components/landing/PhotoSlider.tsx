@@ -59,7 +59,7 @@ export function PhotoSlider({ images, label, offsetMs = 0, intervalMs = 3500 }: 
         style={{ transform: `translateX(-${index * 100}%)` }}
       >
         {strip.map((src, i) => (
-          <img key={`${src}-${i}`} src={src} alt="" aria-hidden="true" className="h-full w-full shrink-0 object-cover" />
+          <img key={`${src}-${i}`} src={src} alt="" aria-hidden="true" loading="lazy" className="h-full w-full shrink-0 object-cover" />
         ))}
       </div>
       {count > 1 && (

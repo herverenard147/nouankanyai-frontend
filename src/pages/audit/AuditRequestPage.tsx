@@ -54,7 +54,7 @@ export function AuditRequestPage() {
     return (
       <div id="main-content" className="flex min-h-screen items-center justify-center bg-bg px-6 py-12">
         <div className="w-full max-w-md text-center">
-          <img src="/logo.png" alt="Nouankany" className="mx-auto h-10 w-10 object-contain" />
+          <img src="/logo.webp" alt="Nouankany" className="mx-auto h-10 w-10 object-contain" />
           <h1 className="mt-4 text-h2-secondary font-bold text-text-primary">Demande envoyée</h1>
           <p className="mt-3 text-text-secondary">
             Merci. Notre équipe revient vers vous sous 48h ouvrées pour organiser l&rsquo;audit initial et poser les
@@ -72,7 +72,7 @@ export function AuditRequestPage() {
     <div id="main-content" className="flex min-h-screen items-center justify-center bg-bg px-6 py-12">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center gap-3 text-center">
-          <img src="/logo.png" alt="Nouankany" className="h-10 w-10 object-contain" />
+          <img src="/logo.webp" alt="Nouankany" className="h-10 w-10 object-contain" />
           <h1 className="text-h2-secondary font-bold text-text-primary">Demander un audit</h1>
           <p className="text-sm text-text-secondary">
             Diagnostic initial et ligne de base de votre consommation, avant tout engagement. Notre équipe vous
