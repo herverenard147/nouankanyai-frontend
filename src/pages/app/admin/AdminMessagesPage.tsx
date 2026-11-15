@@ -198,7 +198,7 @@ export function AdminMessagesPage() {
             </Button>
           </div>
         )}
-        <MetricState status={messages.status} isEmpty={total === 0}>
+        <MetricState status={messages.status} onRetry={() => void messages.refetch()} isEmpty={total === 0}>
           <p className="text-sm text-text-secondary">
             {formatNumberFr(total)} message{total > 1 ? 's' : ''}
             {search ? ` pour « ${search} »` : ''}, page {page} sur {pages}
@@ -324,7 +324,7 @@ export function AdminMessagesPage() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-section-title font-semibold text-text-primary">Liste d&rsquo;attente et newsletter</h2>
-        <MetricState status={waitlist.status} isEmpty={waitlist.data?.length === 0}>
+        <MetricState status={waitlist.status} onRetry={() => void waitlist.refetch()} isEmpty={waitlist.data?.length === 0}>
           <div className="relative overflow-x-auto border-y border-border">
             <table className="w-full min-w-[480px] border-collapse text-sm">
               <thead className="bg-bg-elevated">

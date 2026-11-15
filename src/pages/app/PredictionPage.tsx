@@ -78,13 +78,13 @@ export function PredictionPage() {
       </div>
 
       {view === 'nouvelle' ? (
-        <MetricState status={query.status}>
+        <MetricState status={query.status} onRetry={() => void query.refetch()}>
           {query.data && <PredictionNewView bundle={query.data} granularity={granularity} showModelDetails={showModelDetails} />}
         </MetricState>
       ) : (
         <>
           <section className="flex flex-col gap-4 border-t-2 border-text-primary pt-4" aria-label="Prédiction globale">
-            <MetricState status={query.status} isEmpty={!query.data?.global}>
+            <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={!query.data?.global}>
               {query.data?.global && (
                 <PredictionContent prediction={query.data.global} showModelDetails={showModelDetails} />
               )}

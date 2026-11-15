@@ -86,7 +86,7 @@ export function AliasesPanel({ deviceId }: { deviceId: string }) {
       <p className="text-sm text-text-secondary">
         Le logiciel du client nomme ses appareils à sa façon (« COMP_01_kW »). Reliez chaque nom à l’appareil Nouankany. Une mesure sous un nom non relié est refusée, avec ce nom dans la raison.
       </p>
-      <MetricState status={aliases.status}>
+      <MetricState status={aliases.status} onRetry={() => void aliases.refetch()}>
         <div className="relative overflow-x-auto">
           <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
             <thead>

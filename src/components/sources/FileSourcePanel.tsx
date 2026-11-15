@@ -211,7 +211,7 @@ function HistorySection({ deviceId }: { deviceId: string }) {
   const rows = files.data ?? []
   return (
     <BoitierSectionBlock title="Fichiers reçus" rule>
-      <MetricState status={files.status}>
+      <MetricState status={files.status} onRetry={() => void files.refetch()}>
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">Aucun fichier reçu pour le moment.</p>
         ) : (

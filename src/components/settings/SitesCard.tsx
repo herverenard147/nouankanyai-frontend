@@ -43,7 +43,7 @@ export function SitesCard() {
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Sites</h2>
       <p className="text-sm text-text-secondary">Les lieux où se trouvent vos équipements. Un boîtier écoute un site.</p>
-      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0}>
         <ul>
           {query.data?.map((site) => (
             <li key={site.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-border py-2.5">

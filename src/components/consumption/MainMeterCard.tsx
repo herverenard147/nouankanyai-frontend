@@ -39,7 +39,7 @@ export function MainMeterCard({ granularity, window, profile }: { granularity: C
         Un capteur posé sur le compteur général mesure tout ce que le site consomme. Comparé à la somme de vos appareils suivis, il montre la part
         de consommation qui n’est pas suivie et vérifie nos mesures.
       </p>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {meters.length === 0 ? (
           <div className="flex flex-wrap items-end gap-3">
             {hasSites && (sites.data?.length ?? 0) > 1 && (

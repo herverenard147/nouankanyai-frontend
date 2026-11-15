@@ -25,7 +25,7 @@ export function AdminPlatformPrediction() {
         <h2 className="text-section-title font-semibold text-text-primary">Prédiction par compte (heure suivante)</h2>
         <ProvenanceBadge value="synthetique" />
       </div>
-      <MetricState status={query.status} isEmpty={rows.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={rows.length === 0}>
         <div className="flex flex-col">
           {rows.map((row) => (
             <button

@@ -22,7 +22,7 @@ export function InterventionsPage() {
           Les règles
         </Link>
       </p>
-      <MetricState status={accounts.status}>
+      <MetricState status={accounts.status} onRetry={() => void accounts.refetch()}>
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">Aucun compte ouvert pour le moment. Le client l’ouvre depuis « Accès technicien » (Sources de mesures ou Paramètres).</p>
         ) : (

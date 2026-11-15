@@ -20,7 +20,7 @@ export function FacturationPage() {
   const query = useBilling()
   return (
     <div className="flex flex-col gap-7">
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data && (query.data.segment === 'menage' ? <MenageSubscription billing={query.data} /> : <BusinessContract billing={query.data} />)}
       </MetricState>
       {query.data && <EstimatedSavings billing={query.data} />}

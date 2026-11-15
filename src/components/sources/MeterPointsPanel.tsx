@@ -48,7 +48,7 @@ export function MeterPointsPanel({ deviceId, sensor = false }: { deviceId: strin
           ? 'Le capteur envoie une première lecture pour vérifier ses réglages, dès qu’il est en ligne. Ses mesures ne sont prises en compte que si cette lecture est plausible.'
           : 'Chaque nouveau compteur est lu une première fois pour vérifier ses réglages (dans la minute, si la passerelle est en ligne). Il n’est mis en service que si cette lecture est plausible.'}
       </p>
-      <MetricState status={points.status}>
+      <MetricState status={points.status} onRetry={() => void points.refetch()}>
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">Aucun compteur pour le moment.</p>
         ) : (

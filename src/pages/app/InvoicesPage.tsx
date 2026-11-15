@@ -170,7 +170,7 @@ export function InvoicesPage() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-section-title font-semibold text-text-primary">Factures</h2>
-        <MetricState status={invoicesQuery.status} isEmpty={invoicesQuery.data?.length === 0}>
+        <MetricState status={invoicesQuery.status} onRetry={() => void invoicesQuery.refetch()} isEmpty={invoicesQuery.data?.length === 0}>
           <div className="flex flex-col border-t-2 border-text-primary">
             {invoicesQuery.data?.map((invoice) => (
               <article key={invoice.id} id={`facture-${invoice.id}`} className="flex flex-col gap-3 border-b border-border py-4">

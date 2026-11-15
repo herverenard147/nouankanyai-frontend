@@ -78,7 +78,7 @@ function ProfileCard({ session }: { session: Session }) {
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Profil</h2>
 
-      <MetricState status={meQuery.status}>
+      <MetricState status={meQuery.status} onRetry={() => void meQuery.refetch()}>
         <dl>
           <div className={ROW}>
             <dt className="text-text-secondary">Email</dt>
@@ -214,7 +214,7 @@ function TeamCard({ isOwner }: { isOwner: boolean }) {
           ? `Jusqu'à ${MAX_TEAM_MEMBERS} comptes membres peuvent utiliser ce dashboard avec vous, mêmes machines, mêmes factures, mêmes alertes. Vous seul pouvez en ajouter ou en retirer.`
           : 'Vous faites partie de cette équipe. Le compte principal de l’entreprise gère les membres.'}
       </p>
-      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0}>
         <ul>
           {query.data?.map((member) => (
             <li key={member.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-border py-2.5">
@@ -324,7 +324,7 @@ function ThresholdsCard() {
   return (
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Seuils d&rsquo;alerte</h2>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {current && (
           <dl>
             <div className={ROW}>
@@ -437,7 +437,7 @@ function AutomationCard() {
   return (
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Automatisation IA</h2>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {current && (
           <label className="flex items-start gap-3 text-sm text-text-primary">
             <input
@@ -473,7 +473,7 @@ function EmailCard() {
   return (
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Emails</h2>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {me && (
           <>
             <div className={ROW}>

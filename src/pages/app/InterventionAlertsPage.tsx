@@ -53,7 +53,7 @@ export function InterventionAlertsPage() {
   return (
     <div className="flex flex-col gap-6">
       <BoitierSectionBlock title="Alertes ouvertes" rule>
-        <MetricState status={open.status} isEmpty={open.data?.length === 0}>
+        <MetricState status={open.status} onRetry={() => void open.refetch()} isEmpty={open.data?.length === 0}>
           <ul>{open.data?.map((a) => <AlertLine key={a.id} alert={a} />)}</ul>
         </MetricState>
       </BoitierSectionBlock>
@@ -62,7 +62,7 @@ export function InterventionAlertsPage() {
         <p className="text-sm text-text-secondary">
           Répondez pour celles que vous avez traitées : la réponse aide à améliorer les recommandations, et le client la voit.
         </p>
-        <MetricState status={toDocument.status} isEmpty={toDocument.data?.length === 0}>
+        <MetricState status={toDocument.status} onRetry={() => void toDocument.refetch()} isEmpty={toDocument.data?.length === 0}>
           {toDocument.data?.filter((a) => !later.includes(a.id)).map((a) => (
             <AlertFeedbackForm key={a.id} alert={a} level="technique" onLater={() => setLater((ids) => [...ids, a.id])} />
           ))}
@@ -70,7 +70,7 @@ export function InterventionAlertsPage() {
       </BoitierSectionBlock>
 
       <BoitierSectionBlock title="Historique" rule>
-        <MetricState status={history.status} isEmpty={history.data?.length === 0}>
+        <MetricState status={history.status} onRetry={() => void history.refetch()} isEmpty={history.data?.length === 0}>
           <ul>{history.data?.slice(0, 20).map((a) => <AlertLine key={a.id} alert={a} />)}</ul>
         </MetricState>
       </BoitierSectionBlock>

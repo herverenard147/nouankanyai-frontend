@@ -22,7 +22,7 @@ export function AdminBillingSection({ userId }: { userId: string }) {
   return (
     <section className={SECTION}>
       <h3 className="text-sm font-medium text-text-secondary">Facturation Nouankany</h3>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data && (
           <>
             {query.data.segment === 'menage' ? <TierEditor billing={query.data} userId={userId} /> : <ContractEditor billing={query.data} userId={userId} />}

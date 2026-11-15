@@ -45,7 +45,7 @@ export function MenageOverview() {
               Toutes les factures →
             </Link>
           </div>
-          <MetricState status={invoicesQuery.status} isEmpty={!latestInvoice}>
+          <MetricState status={invoicesQuery.status} onRetry={() => void invoicesQuery.refetch()} isEmpty={!latestInvoice}>
             {latestInvoice && <OcrFieldList fields={latestInvoice.fields} />}
           </MetricState>
         </section>

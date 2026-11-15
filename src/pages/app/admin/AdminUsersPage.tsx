@@ -25,7 +25,7 @@ export function AdminUsersPage() {
         Comptes utilisateurs de la plateforme, tous profils confondus. Cliquez une ligne pour voir sa fiche
         détail (équipements, facturation, prédiction, alertes, actions).
       </p>
-      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0}>
         {query.data && (
           <DataTable
             columns={COLUMNS}

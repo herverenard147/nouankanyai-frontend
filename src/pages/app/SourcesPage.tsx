@@ -50,7 +50,7 @@ export function SourcesPage() {
         </Button>
       </div>
 
-      <MetricState status={sources.status}>
+      <MetricState status={sources.status} onRetry={() => void sources.refetch()}>
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">Aucune source pour le moment. « Ajouter une source » vous guide selon votre installation.</p>
         ) : (
@@ -122,7 +122,7 @@ export function SourceDetailPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <MetricState status={sources.status}>
+      <MetricState status={sources.status} onRetry={() => void sources.refetch()}>
         {!device ? (
           <p className="text-sm text-text-secondary">Cette source n’existe plus, ou n’appartient pas à ce compte.</p>
         ) : (

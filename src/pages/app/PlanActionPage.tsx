@@ -73,7 +73,7 @@ export function PlanActionPage() {
         {blocks.showResolutions ? ' et le résultat de chaque vérification lancée sur vos machines.' : '.'}
       </p>
 
-      <MetricState status={summary.status}>
+      <MetricState status={summary.status} onRetry={() => void summary.refetch()}>
         {summary.data && (
           <section aria-label="Totaux du plan" className="grid grid-cols-1 border-y border-border border-t-2 border-t-text-primary sm:grid-cols-2">
             <div className="flex flex-col gap-1 px-4 py-4 lg:px-5">
@@ -104,7 +104,7 @@ export function PlanActionPage() {
             Ajouter une action
           </Button>
         </div>
-        <MetricState status={plan.status} isEmpty={plan.data?.length === 0}>
+        <MetricState status={plan.status} onRetry={() => void plan.refetch()} isEmpty={plan.data?.length === 0}>
           <ol className="border-t-2 border-text-primary">
             {plan.data?.map((item, index) => (
               <li key={item.id} id={`plan-${item.id}`} className="flex flex-col gap-2 border-b border-border py-4">
@@ -156,7 +156,7 @@ export function PlanActionPage() {
       {blocks.showResolutions && (
         <section className="flex flex-col gap-3">
           <h2 className="text-section-title font-semibold text-text-primary">Historique des résolutions</h2>
-          <MetricState status={resolutions.status} isEmpty={resolutions.data?.length === 0}>
+          <MetricState status={resolutions.status} onRetry={() => void resolutions.refetch()} isEmpty={resolutions.data?.length === 0}>
             <div className="relative overflow-x-auto border-t-2 border-text-primary">
               <table className="w-full min-w-[560px] border-collapse text-sm">
                 <thead>

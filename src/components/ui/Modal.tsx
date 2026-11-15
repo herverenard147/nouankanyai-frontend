@@ -123,7 +123,11 @@ export function errorText(error: unknown): string {
 
 export function MutationError({ error }: { error: unknown }) {
   if (!error) return null
-  return <ApiErrorMessage message={errorText(error)} className="text-sm text-alert" />
+  return (
+    <div role="alert">
+      <ApiErrorMessage message={errorText(error)} className="text-sm text-alert" />
+    </div>
+  )
 }
 
 export interface FieldChange {

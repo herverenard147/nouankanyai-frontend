@@ -80,7 +80,10 @@ export function EquipmentPage() {
         )}
       </div>
       <p className="text-sm text-text-secondary">Inventaire des équipements déclarés sur vos sites, utilisé pour estimer votre consommation en l’absence de capteur.</p>
-      <MetricState status={query.status} isEmpty={query.data?.rows.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}
+        isEmpty={query.data?.rows.length === 0}
+        emptyAction={{ label: profile === 'menage' ? 'Ajouter un appareil' : 'Ajouter un équipement', onClick: () => setAdding(true) }}
+      >
         {query.data && (
           <DataTable
             columns={columns}

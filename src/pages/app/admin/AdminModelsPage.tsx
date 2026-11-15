@@ -23,7 +23,7 @@ function MlHealthPanel() {
   const yesNo = (value: boolean) => (value ? 'Oui' : 'Non')
   return (
     <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data && (
           <>
             <div className="flex flex-wrap items-start justify-between gap-2">
@@ -105,7 +105,7 @@ function ColdStartPanel() {
           lui est favorable.
         </p>
       </div>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         <div className="grid gap-4 sm:grid-cols-3">
           {query.data?.map((s) => {
             const usable = Object.entries(s.category_counts).filter(([, n]) => n >= s.min_per_category)
@@ -165,7 +165,7 @@ function DriftPanel() {
           </span>
         )}
       </div>
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data &&
           (query.data.global_status === 'insuffisant' ? (
             <p className="text-sm text-text-secondary">
@@ -193,7 +193,7 @@ function AdminPanel({ panelId }: { panelId: string }) {
 
   return (
     <section className="flex flex-col gap-3 border-t-2 border-text-primary pt-4">
-      <MetricState status={query.status}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data && (
           <>
             <div className="flex flex-wrap items-start justify-between gap-2">

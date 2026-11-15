@@ -31,7 +31,7 @@ export function RecommendationList({ profile, level }: RecommendationListProps) 
         Des suggestions pour réduire votre consommation, pas des problèmes à résoudre, juste de bonnes pratiques
         pour chaque équipement.
       </p>
-      <MetricState status={query.status} isEmpty={query.data?.length === 0} emptyAction={addEquipmentAction(profile)}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0} emptyAction={addEquipmentAction(profile)}>
         <div className="flex flex-col border-t-2 border-text-primary">
           {query.data?.map((reco) => (
             <RecommendationRow key={reco.rank} reco={reco} showImpact={showImpact} canApply={canApply} />

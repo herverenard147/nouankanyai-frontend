@@ -336,7 +336,7 @@ export function AdminUserDetailPage() {
       <div className="grid gap-7 sm:grid-cols-2">
         <section className={SECTION}>
           <h3 className="text-sm font-medium text-text-secondary">Équipements</h3>
-          <MetricState status={machinesQuery.status} isEmpty={machinesQuery.data?.length === 0}>
+          <MetricState status={machinesQuery.status} onRetry={() => void machinesQuery.refetch()} isEmpty={machinesQuery.data?.length === 0}>
             <ul className="flex flex-col gap-1.5 text-sm">
               {machinesQuery.data?.map((m) => (
                 <li key={m.id} className="flex justify-between border-b border-border pb-1.5 text-text-primary">
@@ -353,7 +353,7 @@ export function AdminUserDetailPage() {
 
       <section className={SECTION}>
         <h3 className="text-sm font-medium text-text-secondary">Prédiction (heure suivante, par équipement)</h3>
-        <MetricState status={predictionsQuery.status} isEmpty={predictionsQuery.data?.length === 0}>
+        <MetricState status={predictionsQuery.status} onRetry={() => void predictionsQuery.refetch()} isEmpty={predictionsQuery.data?.length === 0}>
           <ul className="flex flex-col gap-1.5 text-sm">
             {predictionsQuery.data?.map((p) => (
               <li key={p.machineId} className="flex justify-between border-b border-border pb-1.5 text-text-primary">
@@ -367,7 +367,7 @@ export function AdminUserDetailPage() {
 
       <section className={SECTION}>
         <h3 className="text-sm font-medium text-text-secondary">Alertes et recommandations</h3>
-        <MetricState status={alertsQuery.status} isEmpty={alertsQuery.data?.length === 0}>
+        <MetricState status={alertsQuery.status} onRetry={() => void alertsQuery.refetch()} isEmpty={alertsQuery.data?.length === 0}>
           <ul className="flex flex-col">
             {alertsQuery.data?.map((a) => (
               <li key={a.id} className="flex flex-wrap items-center gap-4 border-b border-border py-3">

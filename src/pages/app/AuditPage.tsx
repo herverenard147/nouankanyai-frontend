@@ -66,7 +66,7 @@ export function AuditPage() {
       </div>
       {exportError && <p className="text-sm text-alert">{exportError}</p>}
 
-      <MetricState status={query.status} isEmpty={data?.events.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={data?.events.length === 0}>
         {data && (
           <>
             <div className="relative overflow-x-auto border-t-2 border-text-primary">

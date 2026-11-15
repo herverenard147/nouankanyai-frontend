@@ -46,7 +46,7 @@ export function LogementsCard() {
         Chaque logement a son compteur CIE : à facture, ou à carte que vous rechargez. Le calibre du disjoncteur sert à savoir si vous approchez de sa
         limite.
       </p>
-      <MetricState status={query.status} isEmpty={false}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={false}>
         {query.data && query.data.length === 0 ? (
           <p className="border-t border-border py-2.5 text-sm text-text-secondary">
             Aucun logement enregistré pour l’instant. Il est créé tout seul quand vous indiquez le calibre de votre disjoncteur, ou ajoutez-le ici.

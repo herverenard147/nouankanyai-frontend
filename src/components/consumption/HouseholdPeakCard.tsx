@@ -44,7 +44,7 @@ export function HouseholdPeakCard({ day }: { day?: string }) {
       <h2 id="pic-menage" className="text-section-title font-semibold text-text-primary">
         Ma plus forte consommation {day ? 'ce jour-là' : 'aujourd’hui'}
       </h2>
-      <MetricState status={query.status} isEmpty={sites.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={sites.length === 0}>
         {/* Plusieurs logements (selon l'abonnement) : un bloc par logement, chacun face à son disjoncteur. */}
         {sites.map((site) => {
           const peakNow = shortestPeak(site)

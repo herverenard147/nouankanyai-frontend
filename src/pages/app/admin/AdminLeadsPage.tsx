@@ -29,7 +29,7 @@ export function AdminLeadsPage() {
         recontacter, pas un compte utilisateur.
       </p>
       <MutationError error={update.error} />
-      <MetricState status={query.status} isEmpty={query.data?.length === 0}>
+      <MetricState status={query.status} onRetry={() => void query.refetch()} isEmpty={query.data?.length === 0}>
         <div className="relative overflow-x-auto border-y border-border">
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead className="bg-bg-elevated">

@@ -77,7 +77,7 @@ export function AlertsPage() {
       {ownAccount && (
         <section className="flex flex-col gap-3">
           <h2 className="text-section-title font-semibold text-text-primary">Historique des alertes</h2>
-          <MetricState status={history.status} isEmpty={history.data?.length === 0}>
+          <MetricState status={history.status} onRetry={() => void history.refetch()} isEmpty={history.data?.length === 0}>
             <div className="flex flex-col border-t-2 border-text-primary">
               {history.data?.map((alert) => {
                 const provenance = alertProvenance(alert)

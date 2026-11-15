@@ -99,7 +99,7 @@ export function MachineDetailPage() {
         </fieldset>
       </div>
 
-      <MetricState status={query.status}>{d && <DetailBody d={d} />}</MetricState>
+      <MetricState status={query.status} onRetry={() => void query.refetch()}>{d && <DetailBody d={d} />}</MetricState>
 
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Prévision des 24 prochaines heures</h2>
@@ -109,7 +109,7 @@ export function MachineDetailPage() {
             message={access.predictions ? `Votre formule prévoit ${access.maxPredictions} appareils, ceux qui consomment le plus ; celui-ci n’en fait pas partie. Optimum en prévoit 4.` : LOCKED.predictions.message}
           />
         ) : (
-        <MetricState status={forecast.status} isEmpty={!device}>
+        <MetricState status={forecast.status} onRetry={() => void forecast.refetch()} isEmpty={!device}>
           {device && (() => {
             const decor = device.starts?.length === device.series.length ? hourlyDecor(device.starts) : null
             return (
@@ -137,7 +137,7 @@ export function MachineDetailPage() {
 
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Alertes de cet appareil</h2>
-        <MetricState status={alerts.status} isEmpty={mine.length === 0}>
+        <MetricState status={alerts.status} onRetry={() => void alerts.refetch()} isEmpty={mine.length === 0}>
           <ul className="flex flex-col">
             {mine.map((a) => (
               <li key={a.id} className="flex flex-wrap items-baseline justify-between gap-2 border-t border-border py-2.5 text-sm">
