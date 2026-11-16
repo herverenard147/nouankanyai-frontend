@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 
+import { PaymentReturnBanner } from '@/components/billing/PaymentReturnBanner'
 import { StatementList } from '@/components/billing/StatementList'
 import { SubscriptionStatus } from '@/components/billing/SubscriptionStatus'
 import { ProvenanceBadge } from '@/components/provenance/ProvenanceBadge'
@@ -18,8 +19,11 @@ const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
  * « Facturation Nouankany » pour PME et Industrie. */
 export function FacturationPage() {
   const query = useBilling()
+  const [params] = useSearchParams()
+  const outcome = params.get('paiement')
   return (
     <div className="flex flex-col gap-7">
+      {outcome && <PaymentReturnBanner outcome={outcome} reference={params.get('ref')} />}
       <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data && (query.data.segment === 'menage' ? <MenageSubscription billing={query.data} /> : <BusinessContract billing={query.data} />)}
       </MetricState>
@@ -84,12 +88,14 @@ function BusinessContract({ billing }: { billing: BackendBilling }) {
         {billing.abonnement && <SubscriptionStatus abonnement={billing.abonnement} />}
       </section>
       <section className={SECTION}>
-        <h2 className="text-section-title font-semibold text-text-primary">Relevés indicatifs</h2>
+        <h2 className="text-section-title font-semibold text-text-primary">{billing.paiement_en_ligne ? 'Relevés' : 'Relevés indicatifs'}</h2>
         <p className="text-sm text-text-secondary">
-          Ces relevés ne sont ni des factures ni des demandes de paiement : aucune facture n’est émise tant que le modèle de facturation n’est pas validé.
+          {billing.paiement_en_ligne
+            ? 'Un relevé « à payer » se règle ici, par mobile money. Le montant est celui du relevé, calculé par le serveur ; la confirmation vient de Jèko, notre prestataire de paiement.'
+            : 'Ces relevés ne sont ni des factures ni des demandes de paiement : aucune facture n’est émise tant que le modèle de facturation n’est pas validé.'}
         </p>
         <MetricState status="success" isEmpty={billing.statements.length === 0}>
-          <StatementList statements={billing.statements} />
+          <StatementList statements={billing.statements} payable={billing.paiement_en_ligne} />
         </MetricState>
       </section>
     </>
@@ -186,12 +192,14 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
         </Modal>
       )}
       <section className={SECTION}>
-        <h2 className="text-section-title font-semibold text-text-primary">Relevés indicatifs</h2>
+        <h2 className="text-section-title font-semibold text-text-primary">{billing.paiement_en_ligne ? 'Relevés' : 'Relevés indicatifs'}</h2>
         <p className="text-sm text-text-secondary">
-          Ces relevés ne sont ni des factures ni des demandes de paiement : aucune facture n’est émise tant que le modèle de facturation n’est pas validé.
+          {billing.paiement_en_ligne
+            ? 'Un relevé « à payer » se règle ici, par mobile money. Le montant est celui du relevé, calculé par le serveur ; la confirmation vient de Jèko, notre prestataire de paiement.'
+            : 'Ces relevés ne sont ni des factures ni des demandes de paiement : aucune facture n’est émise tant que le modèle de facturation n’est pas validé.'}
         </p>
         <MetricState status="success" isEmpty={billing.statements.length === 0}>
-          <StatementList statements={billing.statements} />
+          <StatementList statements={billing.statements} payable={billing.paiement_en_ligne} />
         </MetricState>
       </section>
     </>

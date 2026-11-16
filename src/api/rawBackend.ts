@@ -175,6 +175,19 @@ export const rawUpdateAlertThresholds = (payload: BackendAlertThresholds) =>
 // --- Facturation Nouankany (/api/v1/billing) ---
 export const rawBilling = () => api.get<BackendBilling>('/api/v1/billing')
 /** Changement d'abonnement par le client, immédiat (2026-10-21) ; pas encore de paiement. */
+export type PaymentMethod = 'wave' | 'orange' | 'mtn' | 'moov' | 'djamo'
+export interface PaymentStarted {
+  reference: string
+  redirect_url: string
+}
+export interface PaymentState {
+  reference: string
+  status: 'pending' | 'paid' | 'failed'
+  paid_at: string | null
+}
+export const rawPayStatement = (statementId: string, method: PaymentMethod) =>
+  api.post<PaymentStarted>('/api/v1/billing/pay', { statement_id: statementId, method })
+export const rawPaymentState = (reference: string) => api.get<PaymentState>(`/api/v1/billing/pay/${encodeURIComponent(reference)}`)
 export const rawChangeTier = (tier: BillingTierId) => api.put<BackendBilling>('/api/v1/billing/tier', { tier })
 export const rawAdminUserBilling = (userId: string) => api.get<BackendBilling>(`/api/v1/billing/admin/users/${userId}`)
 export const rawAdminSaveContract = (userId: string, payload: BackendContractPayload) =>
