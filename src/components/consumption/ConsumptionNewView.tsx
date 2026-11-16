@@ -15,7 +15,9 @@ import type { Provenance } from '@/types/domain'
  * consomme quoi » empilé ou superposé, coût de chaque appareil, habitudes jour × heure. Mêmes données que
  * l'ancienne vue, qui reste disponible.
  */
-const SECTION = 'flex flex-col gap-4 border-t-2 border-text-primary pt-4'
+// min-w-0 et max-w-full (N-01, 2026-11-10) : à 360 px la page Consommation défilait de côté ; un tableau large
+// défile dans son propre cadre, jamais la page.
+const SECTION = 'flex min-w-0 max-w-full flex-col gap-4 border-t-2 border-text-primary pt-4'
 const X_LABEL: Record<ConsumptionGranularity, string> = { hour: 'Heure', day: 'Jour', week: 'Semaine', month: 'Mois' }
 const PROVENANCE: Record<BackendConsumptionProvenance, Provenance> = {
   mesure: 'mesure',
@@ -78,7 +80,7 @@ export function ConsumptionNewView({
   const name = data.machines[0]?.nom ?? 'appareil'
 
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex min-w-0 max-w-full flex-col gap-7">
       <section className={SECTION}>
         <h2 className="text-section-title font-semibold text-text-primary">Consommation, {window}</h2>
         <dl className="grid gap-4 sm:grid-cols-3">
@@ -216,7 +218,7 @@ function CostPerDevice({ data, technical }: { data: BackendConsumption; technica
   return (
     <section className={SECTION}>
       <h2 className="text-section-title font-semibold text-text-primary">Ce que coûte chaque appareil</h2>
-      <div className="relative overflow-x-auto">
+      <div className="relative max-w-full overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-text-secondary">
@@ -233,7 +235,7 @@ function CostPerDevice({ data, technical }: { data: BackendConsumption; technica
               const share = totalCost > 0 ? (100 * m.cout_fcfa) / totalCost : 0
               return (
                 <tr key={m.code} className="border-b border-border">
-                  <td className="py-2 text-text-primary">
+                  <td className="break-words py-2 text-text-primary">
                     {detailBase ? (
                       <Link to={`${detailBase}/${encodeURIComponent(m.code)}`} className="focus-ring font-medium text-accent-cta hover:underline">
                         {m.nom}
@@ -290,7 +292,7 @@ function Habits({ habits, withTariff }: { habits: BackendConsumptionHabits | nul
       {!habits && (
         <p className="text-sm font-semibold text-text-primary">Aucun relevé sur les {weeks} dernières semaines : la grille se remplira dès que vos appareils enverront des relevés.</p>
       )}
-      <div className="relative overflow-x-auto">
+      <div className="relative max-w-full overflow-x-auto">
         <table className="border-separate" style={{ borderSpacing: 2 }}>
           <thead>
             {withTariff && (

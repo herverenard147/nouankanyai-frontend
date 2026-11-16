@@ -5,7 +5,7 @@ import type { JournalEntry, Profile } from '@/types/domain'
 
 /**
  * Journal : les faits système enregistrés par le backend (`/api/v1/journal/events`) : alertes, résultat de chaque
- * vérification, réinitialisations, délestages automatiques, analyses média, factures importées. Rien n'est
+ * vérification, réinitialisations, analyses média, factures importées (aucun délestage automatique n'existe). Rien n'est
  * reconstitué côté frontend. Les connexions et les actions de personnes sont dans l'Audit, pas ici.
  * L'Admin reçoit toute la plateforme (avec le compte concerné), un client son entreprise.
  */

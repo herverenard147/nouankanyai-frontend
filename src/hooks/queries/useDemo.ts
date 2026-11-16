@@ -13,7 +13,7 @@ import { rawSeedDemoData } from '@/api/rawBackend'
 export function useSeedDemoData() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: rawSeedDemoData,
+    mutationFn: (scenario?: 'supermarche') => rawSeedDemoData(scenario),
     onSuccess: () => queryClient.invalidateQueries(),
   })
 }
