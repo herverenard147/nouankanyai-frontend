@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 
+import { PayStatementButtons } from '@/components/billing/PayStatementButtons'
 import { formatFcfa, formatMonth } from '@/lib/formatters'
 import type { BackendBillingStatement } from '@/types/backend'
 
@@ -27,7 +28,7 @@ function title(s: BackendBillingStatement): string {
 
 /** Relevés avec le détail du calcul, tel que le serveur l'a fait (règle d'or : le client voit
  * comment on arrive au montant). `action` permet à l'admin d'ajouter « Marquer payé ». */
-export function StatementList({ statements, action }: { statements: BackendBillingStatement[]; action?: (s: BackendBillingStatement) => ReactNode }) {
+export function StatementList({ statements, action, payable = false }: { statements: BackendBillingStatement[]; action?: (s: BackendBillingStatement) => ReactNode; payable?: boolean }) {
   return (
     <ul className="flex flex-col">
       {statements.map((s) => (
@@ -56,6 +57,7 @@ export function StatementList({ statements, action }: { statements: BackendBilli
           {s.detail.mention && <p className="text-xs font-semibold text-text-secondary">{s.detail.mention}</p>}
           {s.detail.bareme_a_confirmer && s.detail.bareme_note && <p className="text-xs text-text-secondary">{s.detail.bareme_note}</p>}
           {s.detail.palier_nom && <p className="text-text-secondary">Abonnement {s.detail.palier_nom}</p>}
+          {payable && s.status === 'a_payer' && (s.total_fcfa ?? 0) > 0 && <PayStatementButtons statementId={s.id} />}
           {action?.(s)}
         </li>
       ))}

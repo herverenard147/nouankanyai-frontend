@@ -438,6 +438,8 @@ export interface BackendBilling {
   /** Palier gratuit d'une PME sans contrat. */
   pme_free_tier?: BackendBillingTier
   real_billing_enabled?: boolean
+  /** Jèko configuré côté serveur : les boutons « Payer » n'apparaissent que si c'est vrai. */
+  paiement_en_ligne?: boolean
   defaults: { audit_fee_fcfa: number; saas_fee_fcfa: number; savings_share_pct: number }
   statements: BackendBillingStatement[]
   /** Abonnement payé d'avance pour 30 jours à partir du paiement (2026-10-21). */
