@@ -15,24 +15,36 @@ import { useSessionStore } from '@/store/sessionStore'
  */
 export function DemoDataBanner() {
   const isTrial = useSessionStore((s) => s.session?.isTrial)
+  // Compte de démonstration (jury, comptes invités) : le serveur l'autorise aussi (is_demo_account).
+  const isDemo = useSessionStore((s) => s.session?.isDemo)
+  const profile = useSessionStore((s) => s.session?.profile)
   const rawQuery = useRawMachines()
   const seedMutation = useSeedDemoData()
 
-  if (!isTrial) return null
+  if (!isTrial && !isDemo) return null
   if (rawQuery.status !== 'success' || rawQuery.data.length > 0) return null
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border bg-card p-5">
       <div>
-        <p className="text-sm font-semibold text-text-primary">Essai gratuit : ce compte est vide</p>
+        <p className="text-sm font-semibold text-text-primary">{isTrial ? 'Essai gratuit : ce compte est vide' : 'Compte de démonstration : ce compte est vide'}</p>
         <p className="mt-1 text-sm text-text-secondary">
           Chargez des sites, équipements et factures fictifs pour explorer le tableau de bord, tout est
           clairement identifié comme simulé, rien n&rsquo;est présenté comme une mesure réelle.
+          {profile === 'industrie' &&
+            ' Ou le scénario supermarché : chambres froides positive et négative, relevés toutes les 15 minutes, une sortie de consigne en cours.'}
         </p>
       </div>
-      <Button loading={seedMutation.isPending} type="button" disabled={seedMutation.isPending} onClick={() => seedMutation.mutate()}>
-        {seedMutation.isPending ? 'Génération…' : 'Charger des données de démonstration'}
-      </Button>
+      <div className="flex flex-wrap gap-3">
+        <Button loading={seedMutation.isPending} type="button" disabled={seedMutation.isPending} onClick={() => seedMutation.mutate(undefined)}>
+          {seedMutation.isPending ? 'Génération…' : 'Charger des données de démonstration'}
+        </Button>
+        {profile === 'industrie' && (
+          <Button type="button" variant="outline" disabled={seedMutation.isPending} onClick={() => seedMutation.mutate('supermarche')}>
+            Scénario supermarché (simulé)
+          </Button>
+        )}
+      </div>
       {seedMutation.isError && <p className="w-full text-sm text-alert">Échec du chargement des données.</p>}
     </div>
   )

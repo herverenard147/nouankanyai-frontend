@@ -19,7 +19,7 @@ export function JournalPage() {
   return (
     <div className="flex flex-col gap-5">
       <p className="text-sm text-text-secondary">
-        Ce que le système a constaté ou fait : alertes, résultat de chaque vérification, réinitialisations, délestages automatiques, analyses média, factures importées. Les connexions et les actions des utilisateurs sont dans l’Audit.
+        Ce que le système a constaté ou fait : alertes, résultat de chaque vérification, réinitialisations, analyses média, factures importées. Les connexions et les actions des utilisateurs sont dans l’Audit.
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {types.map((type) => (

@@ -10,7 +10,7 @@ import { Modal, MutationError } from '@/components/ui/Modal'
 import { useBilling, useChangeTier } from '@/hooks/queries/useBilling'
 import { formatFcfa, formatNumberFr } from '@/lib/formatters'
 import { useSessionStore } from '@/store/sessionStore'
-import type { BackendBilling, BackendBillingTier } from '@/types/backend'
+import type { BackendBilling, BackendBillingTier, BackendEstimatedSavings } from '@/types/backend'
 
 const SECTION = 'flex flex-col gap-3 border-t-2 border-text-primary pt-4'
 
@@ -23,7 +23,7 @@ export function FacturationPage() {
       <MetricState status={query.status} onRetry={() => void query.refetch()}>
         {query.data && (query.data.segment === 'menage' ? <MenageSubscription billing={query.data} /> : <BusinessContract billing={query.data} />)}
       </MetricState>
-      {query.data && <EstimatedSavings billing={query.data} />}
+      {query.data && query.data.segment !== 'menage' && query.data.economies_estimees && <EstimatedSavings savings={query.data.economies_estimees} />}
     </div>
   )
 }
@@ -198,13 +198,28 @@ function MenageSubscription({ billing }: { billing: BackendBilling }) {
   )
 }
 
-function EstimatedSavings({ billing }: { billing: BackendBilling }) {
-  const s = billing.estimated_ai_savings
+/** D13 et D3 (décisions CNID du 2026-11-10) : gain attendu des actions du plan faites ce mois, en FCFA, kWh et kg CO2.
+ * L'ancienne section « actions automatiques » valait toujours 0 : aucune action automatique n'existe. Le facteur CO2
+ * et sa source viennent du serveur. */
+function EstimatedSavings({ savings: s }: { savings: BackendEstimatedSavings }) {
+  const f = s.facteur_co2
   return (
     <section className={SECTION}>
-      <h2 className="text-section-title font-semibold text-text-primary">Économies estimées par les actions automatiques</h2>
-      <p className="text-sm text-text-secondary">
-        À titre indicatif, ce mois : {formatFcfa(s.month_total_fcfa)}. Ce chiffre ne sert jamais de base à la facturation, qui repose sur vos factures CIE.
+      <h2 className="text-section-title font-semibold text-text-primary">Économies attendues des actions faites ce mois</h2>
+      {s.actions_faites === 0 ? (
+        <p className="text-sm text-text-secondary">
+          Aucune action de votre <Link to="/app/plan-action" className="font-semibold text-accent-cta hover:underline">plan d’action</Link> n’est
+          marquée faite ce mois.
+        </p>
+      ) : (
+        <p className="text-sm text-text-primary">
+          {s.actions_faites} action{s.actions_faites > 1 ? 's' : ''} faite{s.actions_faites > 1 ? 's' : ''} : {formatFcfa(s.fcfa)},{' '}
+          {formatNumberFr(s.kwh)} kWh et {formatNumberFr(s.kg_co2)} kg CO2 évités attendus.
+        </p>
+      )}
+      <p className="text-xs text-text-secondary">
+        À titre indicatif : ce chiffre ne sert jamais de base à la facturation, qui repose sur vos factures CIE. CO2 : {f.methode} (
+        {formatNumberFr(f.kg_par_kwh * 1000)} g CO2 par kWh), source : {f.source}.
       </p>
       <ProvenanceBadge value="estime" className="w-fit" />
     </section>

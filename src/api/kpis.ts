@@ -42,7 +42,9 @@ const ADMIN_LABELS: Record<(typeof ADMIN_KPI_IDS)[number], string> = {
  * pendant le chargement ou en cas d'échec de la query de valeur : voir CLAUDE.md
  * du backend, `LATENCY_WINDOW_SECONDS = 300` dans main.py pour la fenêtre admin. */
 export function kpiIdsFor(profile: Profile): string[] {
-  return profile === 'admin' ? [...ADMIN_KPI_IDS] : [...CLIENT_KPI_IDS]
+  if (profile === 'admin') return [...ADMIN_KPI_IDS]
+  // Le ménage n'a pas de plan d'action : sa tuile « Économies » vaudrait toujours 0 (D13, 2026-11-10).
+  return profile === 'menage' ? CLIENT_KPI_IDS.filter((id) => id !== 'economies-mois') : [...CLIENT_KPI_IDS]
 }
 
 export function kpiMeta(profile: Profile, kpiId: string): { label: string; window?: KpiWindow } {
@@ -93,6 +95,7 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
   // toute la bande, pas une fois par indicateur (KpiStrip montait 4 KpiTile, chacun refetchait tout).
   const [machines, billing] = await Promise.all([getCachedMachines(), rawBilling()])
   const lastStatement = billing.statements.find((s) => s.total_fcfa !== null)
+  const savings = billing.economies_estimees
   const activeMachines = machines.filter((m) => m.status === 'actif')
   // Une machine est en anomalie si son statut le dit OU si le diagnostic liste une alerte pour elle :
   // la vue d'ensemble affichait « Aucune alerte active » à côté d'une alerte listée (audit du 2026-10-12).
@@ -126,11 +129,16 @@ async function fetchClientKpiSet(profile: Profile): Promise<Record<string, Kpi>>
     'economies-mois': {
       id: 'economies-mois',
       label: labels['economies-mois'],
-      // Indicatif : gains des seules actions réellement exécutées (plus les délestages jamais faits,
-      // Volet 2 C3) ; la facturation se fait sur les économies mesurées.
-      value: formatNumberFr(billing.estimated_ai_savings.month_total_fcfa),
-      unit: 'FCFA',
-      note: lastStatement ? `Dernier relevé Nouankany (${formatMonth(lastStatement.month)}) : ${formatFcfa(lastStatement.total_fcfa ?? 0)}` : 'Aucun relevé Nouankany pour l’instant',
+      // D13 (2026-11-10) : gain attendu des actions du plan marquées « fait » ce mois, calculé par le serveur avec son
+      // facteur CO2. Une estimation, jamais une mesure : la facturation se fait sur les factures CIE.
+      value: savings && savings.actions_faites > 0 ? formatNumberFr(savings.fcfa) : '-',
+      unit: savings && savings.actions_faites > 0 ? 'FCFA' : '',
+      note:
+        savings && savings.actions_faites > 0
+          ? `Estimé : ${savings.actions_faites} action${plural(savings.actions_faites)} faite${plural(savings.actions_faites)}, ${formatNumberFr(savings.kwh)} kWh et ${formatNumberFr(savings.kg_co2)} kg CO2 évités`
+          : lastStatement
+            ? `Aucune action du plan d’action faite ce mois. Dernier relevé Nouankany (${formatMonth(lastStatement.month)}) : ${formatFcfa(lastStatement.total_fcfa ?? 0)}`
+            : 'Aucune action du plan d’action faite ce mois',
       provenance: 'estime',
     },
     'anomalies-actives': {
