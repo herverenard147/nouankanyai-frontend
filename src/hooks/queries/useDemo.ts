@@ -14,6 +14,10 @@ export function useSeedDemoData() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (scenario?: 'supermarche') => rawSeedDemoData(scenario),
-    onSuccess: () => queryClient.invalidateQueries(),
+    // Sans `return` : TanStack attend la promesse renvoyée avant de finir la mutation, et le bouton resterait
+    // sur « Génération… » tant que chaque requête de l'écran (prévision, recommandation) n'a pas fini de se recharger.
+    onSuccess: () => {
+      void queryClient.invalidateQueries()
+    },
   })
 }
