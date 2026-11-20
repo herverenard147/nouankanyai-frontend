@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import type { BackendBilling } from '@/types/backend'
 
@@ -42,6 +42,7 @@ function wrap(node: React.ReactNode) {
 }
 
 describe('affirmations retirées du site de base (S-09)', () => {
+  afterEach(() => vi.unstubAllEnvs())
   it('aucune source du front ni la méta-description ne porte une formulation interdite', () => {
     const fichiers: Record<string, string> = { ...SOURCES, '/index.html': INDEX_HTML }
     const trouves = Object.entries(fichiers).flatMap(([f, texte]) => INTERDITS.filter((re) => re.test(texte)).map((re) => `${f} : ${re}`))
@@ -61,6 +62,7 @@ describe('affirmations retirées du site de base (S-09)', () => {
   })
 
   it('Comment ça marche : pas de prédiction', () => {
+    vi.stubEnv('VITE_EDITION', 'cnid') // ce texte décrit l'édition CNID (ménages ouverts)
     wrap(<HowItWorksPage />)
     expect(document.body.textContent).not.toMatch(/prédit|prédictive/i)
     expect(document.body.textContent).toMatch(/analyse statistiquement votre consommation/)

@@ -8,6 +8,7 @@ import { PasswordField } from '@/components/ui/PasswordField'
 import { TextField } from '@/components/ui/TextField'
 import { DEMO_ACCOUNTS } from '@/data/demoAccounts'
 import { ACCOUNT_TYPE_LABELS } from '@/lib/profileMapping'
+import { isCnidEdition } from '@/lib/edition'
 import { firstRouteFor } from '@/lib/navConfig'
 import { useSessionStore } from '@/store/sessionStore'
 import type { Profile } from '@/types/domain'
@@ -28,7 +29,7 @@ export function LoginPage() {
   const [nom, setNom] = useState('')
   const typeParam = searchParams.get('type')
   const [accountType, setAccountType] = useState<Exclude<Profile, 'admin'>>(
-    typeParam === 'pme' || typeParam === 'industrie' ? typeParam : 'menage',
+    typeParam === 'pme' || typeParam === 'industrie' ? typeParam : isCnidEdition() ? 'menage' : 'pme',
   )
   const isTrialSignup = searchParams.get('trial') === '1'
   const [emailError, setEmailError] = useState<string | null>(null)
@@ -116,7 +117,7 @@ export function LoginPage() {
               <div className="flex flex-col gap-1.5">
                 <span className="text-sm font-medium text-text-primary">Type de compte</span>
                 <div className="flex gap-2">
-                  {ACCOUNT_TYPES.map((type) => (
+                  {ACCOUNT_TYPES.filter((type) => type !== 'menage' || isCnidEdition()).map((type) => (
                     <button
                       key={type}
                       type="button"

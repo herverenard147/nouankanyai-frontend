@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 
+import { isCnidEdition } from '@/lib/edition'
+
 import { Footer } from '@/pages/landing/sections/Footer'
 import { NavBar } from '@/pages/landing/sections/NavBar'
 
@@ -59,8 +61,8 @@ export function HowItWorksPage() {
             <h1 className="mt-2 text-h1 font-bold text-text-primary">Deux parcours, un seul produit</h1>
             <p className="mt-4 max-w-[47.5rem] text-lede text-text-secondary">
               PME et Industrie sont en phase pilote active dès aujourd&rsquo;hui : audit, installation ciblée, puis
-              6 à 9 mois de mesure avant généralisation. Les ménages peuvent déjà s&rsquo;inscrire avec la formule
-              Découverte, gratuite ; l&rsquo;offre complète suivra le pilote industriel.
+              6 à 9 mois de mesure avant généralisation.{isCnidEdition() &&
+                ' Les ménages peuvent déjà s’inscrire avec la formule Découverte, gratuite ; l’offre complète suivra le pilote industriel.'}
             </p>
           </div>
         </section>
@@ -114,6 +116,7 @@ export function HowItWorksPage() {
           </div>
         </section>
 
+        {isCnidEdition() && (
         <section className="py-16">
           <div className="mx-auto max-w-[70rem] px-6">
             <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -141,6 +144,7 @@ export function HowItWorksPage() {
             </div>
           </div>
         </section>
+        )}
       </main>
       <Footer />
     </>

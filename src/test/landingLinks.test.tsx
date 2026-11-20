@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { LANDING_CHARTS } from '@/data/landingCharts'
 import { FaqSection } from '@/pages/landing/sections/FaqSection'
@@ -8,7 +8,9 @@ import { Hero } from '@/pages/landing/sections/Hero'
 import { PricingSection } from '@/pages/landing/sections/PricingSection'
 
 describe('inscription des ménages', () => {
+  afterEach(() => vi.unstubAllEnvs())
   it('ouverte : hero, formules et FAQ mènent à la création de compte (plus « d’ici 12 à 24 mois »)', () => {
+    vi.stubEnv('VITE_EDITION', 'cnid') // ce texte décrit l'édition CNID (ménages ouverts)
     render(
       <MemoryRouter>
         <Hero />
