@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 
+import { isCnidEdition } from '@/lib/edition'
+
 export function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-dark-bg text-white">
@@ -31,6 +33,7 @@ export function Hero() {
               Voir comment ça marche
             </Link>
           </div>
+          {isCnidEdition() && (
           <p className="mt-6 text-[0.9rem] text-white">
             {/* L'inscription d'un ménage est ouverte (test du site, 2026-10-18 : la page disait « d'ici 12 à 24 mois »). */}
             <span className="font-semibold text-white">Ménages :</span> inscription ouverte, formule Découverte gratuite.{' '}
@@ -38,6 +41,7 @@ export function Hero() {
               Créer mon compte
             </Link>
           </p>
+          )}
         </div>
       </div>
     </section>

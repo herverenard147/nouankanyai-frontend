@@ -3,7 +3,9 @@ import type { ReactNode } from 'react'
 import { Minus, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
+import { isCnidEdition } from '@/lib/edition'
+
+const FAQ_ITEMS: { question: string; answer: ReactNode; cnidOnly?: boolean }[] = [
   {
     question: 'Nouankany, c’est quoi exactement ?',
     answer:
@@ -47,6 +49,7 @@ const FAQ_ITEMS: { question: string; answer: ReactNode }[] = [
       'Chaque chiffre indique son origine : mesuré, estimé ou synthétique. Jamais une valeur inventée.',
   },
   {
+    cnidOnly: true,
     question: 'Quand la formule Ménage sera-t-elle disponible ?',
     answer: (
       <>
@@ -82,7 +85,7 @@ export function FaqSection() {
         </div>
 
         <div className="border-b border-border">
-          {FAQ_ITEMS.map((item, index) => {
+          {FAQ_ITEMS.filter((item) => !item.cnidOnly || isCnidEdition()).map((item, index) => {
             const isOpen = openIndex === index
             const panelId = `faq-panel-${index}`
             const Icon = isOpen ? Minus : Plus

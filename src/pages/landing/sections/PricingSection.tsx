@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 
+import { isCnidEdition } from '@/lib/edition'
+
 interface TierCta {
   label: string
   href: string
@@ -76,6 +78,8 @@ const TIERS: Tier[] = [
 ]
 
 export function PricingSection() {
+  // Hors édition CNID, l'offre ménage (Découverte) n'est pas présentée.
+  const tiers = isCnidEdition() ? TIERS : TIERS.filter((tier) => tier.name !== 'Découverte')
   return (
     <section id="formules" className="bg-dark-bg py-20 text-white lg:py-28">
       <div className="mx-auto max-w-[75rem] px-6">
@@ -87,8 +91,8 @@ export function PricingSection() {
           s&rsquo;ajoute progressivement sur vos équipements prioritaires, à mesure que le pilote avance.
         </p>
 
-        <div className="mt-14 grid gap-12 lg:mt-16 lg:grid-cols-3 lg:gap-0">
-          {TIERS.map((tier) => (
+        <div className={`mt-14 grid gap-12 lg:mt-16 ${tiers.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} lg:gap-0`}>
+          {tiers.map((tier) => (
             <div key={tier.name} className="flex flex-col lg:px-9 lg:first:pl-0 lg:last:pr-0">
               <div
                 className={`flex h-full flex-col border-t-4 pt-6 ${

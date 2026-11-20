@@ -1,13 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { PricingSection } from '@/pages/landing/sections/PricingSection'
 import { CguPage } from '@/pages/legal/CguPage'
 
 // S-09/S-19 (texte) : pas de promesse de commande ni de prix qui laisse croire que le paiement est ouvert.
 describe('Textes publics : boîtier prototype, paiement non ouvert', () => {
+  afterEach(() => vi.unstubAllEnvs())
   it('la tarification dit que le paiement n’est pas encore ouvert et qu’il se fera d’avance (une seule vérité avec les CGU)', () => {
+    vi.stubEnv('VITE_EDITION', 'cnid') // ce texte décrit l'édition CNID (ménages ouverts)
     render(<MemoryRouter><PricingSection /></MemoryRouter>)
     expect(screen.getByText(/Le paiement n’est pas encore ouvert : aucune somme n’est due aujourd’hui/)).toBeTruthy()
   })

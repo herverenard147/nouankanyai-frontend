@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { PricingSection } from '@/pages/landing/sections/PricingSection'
 import { FaqSection } from '@/pages/landing/sections/FaqSection'
 import { ProfilesSection } from '@/pages/landing/sections/ProfilesSection'
@@ -12,7 +12,9 @@ function text(ui: React.ReactElement) {
 }
 
 describe('la communication dit ce que chaque formule inclut', () => {
+  afterEach(() => vi.unstubAllEnvs())
   it('la carte Découverte ne promet plus les conseils comme acquis', () => {
+    vi.stubEnv('VITE_EDITION', 'cnid') // ce texte décrit l'édition CNID (ménages ouverts)
     const t = text(<PricingSection />)
     expect(t).not.toContain('Conseils classés par impact')
     expect(t).not.toContain('gratuit pendant la phase pilote')
