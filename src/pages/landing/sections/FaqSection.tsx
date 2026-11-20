@@ -15,7 +15,8 @@ const FAQ_ITEMS: { question: string; answer: ReactNode; cnidOnly?: boolean }[] =
     question: 'Qui peut utiliser Nouankany aujourd’hui ?',
     answer: (
       <>
-        Les PME et Industries (pilote de 6 à 9 mois) et les ménages : l&rsquo;inscription des ménages est ouverte, avec la formule gratuite Découverte.{' '}
+        Les PME et Industries (pilote de 6 à 9 mois)
+        {isCnidEdition() && ' et les ménages : l’inscription des ménages est ouverte, avec la formule gratuite Découverte'}.{' '}
         <Link to="/comment-ca-marche" className="font-semibold text-accent-cta hover:text-accent-cta-hover">
           Voir le détail du fonctionnement
         </Link>

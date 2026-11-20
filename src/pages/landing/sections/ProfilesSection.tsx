@@ -1,5 +1,6 @@
 import { PhotoSlider } from '@/components/landing/PhotoSlider'
 import { LevelSelector } from '@/components/level/LevelSelector'
+import { isCnidEdition } from '@/lib/edition'
 import type { Level } from '@/types/domain'
 
 const PROFILES: { tag: string; caption: string; images: string[]; title: string; body: string; level: Level; badge?: string }[] = [
@@ -42,6 +43,8 @@ const PROFILES: { tag: string; caption: string; images: string[]; title: string;
 ]
 
 export function ProfilesSection() {
+  // Hors édition CNID, le profil ménage n'est pas présenté.
+  const profiles = isCnidEdition() ? PROFILES : PROFILES.filter((profile) => profile.tag !== 'Ménage')
   return (
     <section id="profils" className="py-20 lg:py-28">
       <div className="mx-auto max-w-[75rem] px-6">
@@ -49,11 +52,11 @@ export function ProfilesSection() {
           Le tableau de bord s&rsquo;adapte à qui l&rsquo;utilise
         </h2>
         <p className="mt-4 max-w-[60ch] text-text-secondary">
-          PME et Industrie en pilote, Ménage en inscription ouverte. Le niveau de détail suit votre profil.
+          {isCnidEdition() ? 'PME et Industrie en pilote, Ménage en inscription ouverte.' : 'PME et Industrie en pilote.'} Le niveau de détail suit votre profil.
         </p>
 
         <div className="mt-14 flex flex-col gap-16 lg:mt-16 lg:gap-20">
-          {PROFILES.map((profile, index) => {
+          {profiles.map((profile, index) => {
             return (
               <div
                 key={profile.tag}

@@ -4,7 +4,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { PricingSection } from '@/pages/landing/sections/PricingSection'
+import { FaqSection } from '@/pages/landing/sections/FaqSection'
 import { Hero } from '@/pages/landing/sections/Hero'
+import { ProfilesSection } from '@/pages/landing/sections/ProfilesSection'
 
 /** Deux plateformes (`VITE_EDITION`) : le ménage n'existe qu'en édition CNID ; la plateforme Nouankany (ESATIC) est PME et Industrie. */
 afterEach(() => vi.unstubAllEnvs())
@@ -45,6 +47,28 @@ describe('édition Nouankany (par défaut) : pas de ménage', () => {
   })
 })
 
+describe('édition Nouankany : plus aucune mention de l’inscription des ménages sur l’accueil', () => {
+  it('la section des profils ne montre que PME et Industrie', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <ProfilesSection />
+      </MemoryRouter>,
+    )
+    expect(container.textContent).not.toMatch(/Ménage/)
+    expect(container.textContent).toMatch(/PME et Industrie en pilote\./)
+  })
+
+  it('la FAQ ne dit pas que les ménages peuvent s’inscrire', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <FaqSection />
+      </MemoryRouter>,
+    )
+    expect(container.textContent).not.toMatch(/inscription des ménages/i)
+    expect(container.textContent).not.toMatch(/formule Ménage/i)
+  })
+})
+
 describe('édition CNID : le ménage est ouvert', () => {
   it('le formulaire propose Ménage, préselectionné', () => {
     vi.stubEnv('VITE_EDITION', 'cnid')
@@ -60,5 +84,15 @@ describe('édition CNID : le ménage est ouvert', () => {
       </MemoryRouter>,
     )
     expect(screen.getByText('Découverte')).toBeTruthy()
+  })
+
+  it('la section des profils montre le ménage en inscription ouverte', () => {
+    vi.stubEnv('VITE_EDITION', 'cnid')
+    const { container } = render(
+      <MemoryRouter>
+        <ProfilesSection />
+      </MemoryRouter>,
+    )
+    expect(container.textContent).toMatch(/Ménage en inscription ouverte/)
   })
 })
